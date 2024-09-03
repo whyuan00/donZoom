@@ -36,10 +36,10 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
     User TempOAuthUser = User.builder()
         .pwdHash(passhwd)
         .role(role)
-        .username(userCreateDto.getUsername())
+        .name(userCreateDto.getUsername())
         .build();
     findUser.OAuth2Update(TempOAuthUser);
-    return findUser.getId();
+    return findUser.getUserId();
   }
 
   @Override
