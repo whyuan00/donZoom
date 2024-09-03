@@ -22,7 +22,7 @@ public class Quiz {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long quizId;
 
-  private QuizType questionType;
+  private QuizType quizType;
 
   private String question;
 
@@ -35,8 +35,8 @@ public class Quiz {
 
 
   @Builder
-  public Quiz(QuizType questionType, String question, Integer answer, String option1, String option2, String option3, String option4){
-    this.questionType = questionType;
+  public Quiz(QuizType quizType, String question, Integer answer, String option1, String option2, String option3, String option4){
+    this.quizType = quizType;
     this.question = question;
     this.answer = answer;
     this.option1 = option1;
