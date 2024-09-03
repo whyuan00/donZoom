@@ -30,5 +30,4 @@ public class Collection {
     this.collectionName = collectionName;
   }
 
-
 }
