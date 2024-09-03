@@ -22,8 +22,7 @@ public class Stock {
   private Float stockPrice;
 
   @Builder
-  public Stock(Long stockId, String stockName, Float stockPrice) {
-    this.stockId = stockId;
+  public Stock(String stockName, Float stockPrice) {
     this.stockName = stockName;
     this.stockPrice = stockPrice;
   }
