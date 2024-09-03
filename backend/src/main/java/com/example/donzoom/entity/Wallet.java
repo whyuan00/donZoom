@@ -3,6 +3,7 @@ package com.example.donzoom.entity;
 import jakarta.persistence.*;
 import java.util.Collection;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,4 +27,13 @@ public class Wallet {
     private Integer coin;
 
     private Integer ticket;
+
+    @Builder
+    public Wallet(Integer coin, Integer ticket, List<MyCollection> mycollection) {
+        this.coin = coin;
+        this.ticket = ticket;
+        if (mycollection != null) {
+            this.mycollection = mycollection;
+        }
+    }
 }

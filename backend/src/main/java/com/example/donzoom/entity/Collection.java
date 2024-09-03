@@ -8,6 +8,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -22,5 +23,12 @@ public class Collection {
   private String imageUrl;
 
   private String collectionName;
+
+  @Builder
+  public Collection(String imageUrl, String collectionName){
+    this.imageUrl = imageUrl;
+    this.collectionName = collectionName;
+  }
+
 
 }

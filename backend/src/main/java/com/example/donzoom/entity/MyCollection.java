@@ -10,6 +10,7 @@ import jakarta.persistence.ManyToOne;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,4 +32,9 @@ public class MyCollection {
     @JoinColumn(name = "COLLECTION_ID") // 외래 키 컬럼명 설정
     private Collection collection;
 
+    @Builder
+    public MyCollection(Wallet wallet, Collection collection) {
+        this.wallet = wallet;
+        this.collection = collection;
+    }
 }
