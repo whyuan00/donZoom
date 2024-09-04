@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,10 +26,15 @@ public class StockHistory {
 
   private Float price;
 
+  private LocalDateTime createdAt;  // TODO: Base Entity 생기면 교체 예정
+  private LocalDateTime modifiedAt; // TODO: Base Entity 생기면 교체 예정
+
   @Builder
   public StockHistory(Stock stock, Float price) {
     this.stock = stock;
     this.price = price;
+    this.createdAt = LocalDateTime.now();   // TODO: Base Entity 생기면 교체 예정
+    this.modifiedAt = LocalDateTime.now();  // TODO: Base Entity 생기면 교체 예정
   }
 
 }
