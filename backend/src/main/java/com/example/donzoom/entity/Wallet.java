@@ -21,18 +21,26 @@ public class Wallet {
 //    private User user;
 
     @OneToMany(mappedBy = "wallet")
-    private List<MyPig> mycollection = new ArrayList<>();
+    private List<MyPig> mypigs = new ArrayList<>();
 
     private Integer coin;
 
     private Integer ticket;
 
     @Builder
-    public Wallet(Integer coin, Integer ticket, List<MyPig> mycollection) {
+    public Wallet(Integer coin, Integer ticket, List<MyPig> mypigs) {
         this.coin = coin;
         this.ticket = ticket;
-        if (mycollection != null) {
-            this.mycollection = mycollection;
+        if (mypigs != null) {
+            this.mypigs = mypigs;
         }
+    }
+
+    public void setCoin(Integer coin) {
+        this.coin = coin;
+    }
+
+    public void setTicket(Integer ticket) {
+        this.ticket = ticket;
     }
 }

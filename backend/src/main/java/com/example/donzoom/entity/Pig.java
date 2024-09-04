@@ -15,16 +15,16 @@ import lombok.NoArgsConstructor;
 public class Pig {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long collectionId;
+  private Long pigId;
 
   private String imageUrl;
 
-  private String collectionName;
+  private String pigName;
 
   @Builder
-  public Pig(String imageUrl, String collectionName){
+  public Pig(String imageUrl, String pigName){
     this.imageUrl = imageUrl;
-    this.collectionName = collectionName;
+    this.pigName = pigName;
   }
 
 }

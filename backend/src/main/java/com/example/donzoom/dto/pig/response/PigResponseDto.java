@@ -8,7 +8,7 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class PigResponseDto {
-  private final Long collectionId;
+  private final Long pigId;
   private final String imageUrl;
-  private final String collectionName;
+  private final String pigName;
 }

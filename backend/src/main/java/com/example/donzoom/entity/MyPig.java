@@ -19,7 +19,7 @@ public class MyPig {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long walletCollectionId;
+    private Long myPigId;
 
     @ManyToOne(fetch = FetchType.LAZY) // ManyToOne 관계 설정
     @JoinColumn(name = "WALLET_ID") // 외래 키 컬럼명 설정
@@ -27,7 +27,7 @@ public class MyPig {
 
 
     @ManyToOne(fetch = FetchType.LAZY) // ManyToOne 관계 설정
-    @JoinColumn(name = "COLLECTION_ID") // 외래 키 컬럼명 설정
+    @JoinColumn(name = "PIG_ID") // 외래 키 컬럼명 설정
     private Pig pig;
 
     @Builder
