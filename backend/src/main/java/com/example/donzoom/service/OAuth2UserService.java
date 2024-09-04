@@ -27,7 +27,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 
   // OAuth2로 유저 등록하기
   public Long saveOAuth2User(UserCreateDto userCreateDto) {
-    User findUser = userRepository.findByEmailAndDeletedAtNull(userCreateDto.getEmail())
+    User findUser = userRepository.findByEmail(userCreateDto.getEmail())
         .orElseThrow(() -> new IllegalArgumentException(
             "찾을 수 없는 이메일입니다. " + userCreateDto.getEmail()));
 
@@ -36,7 +36,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
     User TempOAuthUser = User.builder()
         .pwdHash(passhwd)
         .role(role)
-        .name(userCreateDto.getUsername())
+        .name(userCreateDto.getNickname())
         .build();
     findUser.OAuth2Update(TempOAuthUser);
     return findUser.getUserId();
@@ -53,7 +53,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
     String provider = oAuth2Response.getProvider() + "-" + oAuth2Response.getProviderId();
     String email = oAuth2Response.getEmail();
     log.info("OAuth2에서 받은 email입니다. = {}", email);
-    Optional<User> findUser = userRepository.findByEmailAndDeletedAtNull(email);
+    Optional<User> findUser = userRepository.findByEmail(email);
 
     // 추가 회원가입 처리 유무 판단
     // TODO : 임시로 ROlE의 유무로 계정 로그인 판단하기
