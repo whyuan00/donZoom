@@ -7,8 +7,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MyCollection {
+public class MyPig {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,11 +28,11 @@ public class MyCollection {
 
     @ManyToOne(fetch = FetchType.LAZY) // ManyToOne 관계 설정
     @JoinColumn(name = "COLLECTION_ID") // 외래 키 컬럼명 설정
-    private Collection collection;
+    private Pig pig;
 
     @Builder
-    public MyCollection(Wallet wallet, Collection collection) {
+    public MyPig(Wallet wallet, Pig pig) {
         this.wallet = wallet;
-        this.collection = collection;
+        this.pig = pig;
     }
 }

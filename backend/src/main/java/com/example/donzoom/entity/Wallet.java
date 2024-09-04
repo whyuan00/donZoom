@@ -1,7 +1,6 @@
 package com.example.donzoom.entity;
 
 import jakarta.persistence.*;
-import java.util.Collection;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,14 +21,14 @@ public class Wallet {
 //    private User user;
 
     @OneToMany(mappedBy = "wallet")
-    private List<MyCollection> mycollection = new ArrayList<>();
+    private List<MyPig> mycollection = new ArrayList<>();
 
     private Integer coin;
 
     private Integer ticket;
 
     @Builder
-    public Wallet(Integer coin, Integer ticket, List<MyCollection> mycollection) {
+    public Wallet(Integer coin, Integer ticket, List<MyPig> mycollection) {
         this.coin = coin;
         this.ticket = ticket;
         if (mycollection != null) {
