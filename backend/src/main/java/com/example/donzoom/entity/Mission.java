@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +22,7 @@ public class Mission {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "mission_id")
+  @NotNull
   private Long id;
 
   @ManyToOne
