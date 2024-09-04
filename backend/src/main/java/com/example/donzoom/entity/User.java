@@ -23,7 +23,6 @@ public class User {
   @GeneratedValue(strategy = GenerationType.IDENTITY) // PK 자동 생성(생성 전략 = 데이터베이스에 의존)
   private Long userId;
 
-
   private String email;
 
   private String pwdHash;
