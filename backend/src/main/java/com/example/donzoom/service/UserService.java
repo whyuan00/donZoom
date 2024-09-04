@@ -35,7 +35,7 @@ public class UserService {
         .build();
 
     userRepository.save(user);
-    return user.getUserId();
+    return user.getId();
   }
 
   public LoginResponseDto login(LoginRequestDto loginRequestDto) {
