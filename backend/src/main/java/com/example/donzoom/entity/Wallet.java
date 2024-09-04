@@ -15,7 +15,8 @@ import java.util.List;
 public class Wallet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long walletId;
+    @Column(name="WALLET_ID")
+    private Long id;
 
 //    @OneToOne(mappedBy = "user")
 //    private User user;

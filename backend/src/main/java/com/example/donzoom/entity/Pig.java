@@ -1,5 +1,6 @@
 package com.example.donzoom.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,7 +16,8 @@ import lombok.NoArgsConstructor;
 public class Pig {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long pigId;
+  @Column(name="PIG_ID")
+  private Long id;
 
   private String imageUrl;
 

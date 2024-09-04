@@ -1,5 +1,6 @@
 package com.example.donzoom.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -19,7 +20,8 @@ public class MyPig {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long myPigId;
+    @Column(name="MY_PIG_ID")
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY) // ManyToOne 관계 설정
     @JoinColumn(name = "WALLET_ID") // 외래 키 컬럼명 설정

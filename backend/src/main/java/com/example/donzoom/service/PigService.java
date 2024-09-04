@@ -28,10 +28,10 @@ public class PigService {
 
   //지갑에있는 돼지 정보 보기
   public List<PigResponseDto> getPigs(long walletId) {
-    List<MyPig> myPigs = myPigRepository.findByWallet_WalletId(walletId);
+    List<MyPig> myPigs = myPigRepository.findByWallet_Id(walletId); //Wallet ID를 기준으로 MyPigs 엔티티 리스트를 반환
     return myPigs.stream()
         .map(myPig -> PigResponseDto.builder()
-            .pigId(myPig.getPig().getPigId())
+            .pigId(myPig.getPig().getId())
             .imageUrl(myPig.getPig().getImageUrl())
             .pigName(myPig.getPig().getPigName())
             .build())
@@ -44,7 +44,7 @@ public class PigService {
         .orElseThrow(() -> new IllegalArgumentException("Pig not found with id: " + pigId));
 
     return PigResponseDto.builder()
-        .pigId(pig.getPigId())
+        .pigId(pig.getId())
         .imageUrl(pig.getImageUrl())
         .pigName(pig.getPigName())
         .build();
@@ -83,7 +83,7 @@ public class PigService {
     // PigResponseDto 리스트 반환
     return randomPigs.stream()
         .map(pig -> PigResponseDto.builder()
-            .pigId(pig.getPigId())
+            .pigId(pig.getId())
             .imageUrl(pig.getImageUrl())
             .pigName(pig.getPigName())
             .build())
