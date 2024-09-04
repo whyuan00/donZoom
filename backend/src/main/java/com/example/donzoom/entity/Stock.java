@@ -1,5 +1,6 @@
 package com.example.donzoom.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,7 +17,8 @@ public class Stock {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long stockId;
+  @Column(name = "stock_id")
+  private Long id;
 
   private String stockName;
 
