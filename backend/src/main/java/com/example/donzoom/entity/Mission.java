@@ -1,6 +1,7 @@
 package com.example.donzoom.entity;
 
 import com.example.donzoom.constant.MissionStatus;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,7 +20,8 @@ public class Mission {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long missionId;
+  @Column(name = "mission_id")
+  private Long id;
 
   @ManyToOne
   private User user;

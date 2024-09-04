@@ -1,26 +1,30 @@
 package com.example.donzoom.security;
 
+import com.example.donzoom.dto.user.CustomUserDetails;
+import com.example.donzoom.entity.User;
+import com.example.donzoom.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
-public class CustomUserDetailsService {
+@RequiredArgsConstructor
+public class CustomUserDetailsService implements UserDetailsService {
+  // authn
+  private final UserRepository userRepository;
 
-//  @Autowired
-//  private UserRepository userRepository;
-//
-//  @Override
-//  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//    User user = userRepository.findByUsername(username)
-//        .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
-//
-//    return org.springframework.security.core.userdetails.User.withUsername(user.getUsername())
-//        .password(user.getPassword())
-//        .authorities(user.getRoles().toArray(new String[0]))
-//        .accountExpired(false)
-//        .accountLocked(false)
-//        .credentialsExpired(false)
-//        .disabled(false)
-//        .build();
-//  }
+  @Override
+  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+
+    User userData = userRepository.findByEmail(email)
+        .orElseThrow(() -> new UsernameNotFoundException("요청한 이메일에 해당하는 유저가 없습니다: " + email));
+    log.info("요청한 유저 데이터: {}", userData.getEmail());
+
+    return new CustomUserDetails(userData); // AuthenticationManger 에게 보냄
+  }
 }
 

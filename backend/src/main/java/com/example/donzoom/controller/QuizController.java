@@ -17,7 +17,7 @@ public class QuizController {
 
   private final QuizService quizService;
 
-  @GetMapping("/")
+  @GetMapping
   public ResponseEntity<String> getQuiz() {
     // 내가 푼 퀴즈 가져오기
     return new ResponseEntity<>(HttpStatus.OK);

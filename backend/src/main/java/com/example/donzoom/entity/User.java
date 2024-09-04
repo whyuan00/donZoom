@@ -1,6 +1,7 @@
 package com.example.donzoom.entity;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -21,7 +22,8 @@ public class User {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY) // PK 자동 생성(생성 전략 = 데이터베이스에 의존)
-  private Long userId;
+  @Column(name = "user_id")
+  private Long id;
 
   private String email;
 

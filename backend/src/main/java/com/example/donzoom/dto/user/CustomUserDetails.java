@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Getter
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
-
+  // authenticationManager에서 사용하는 UserDetails의 구현체입니다.
   private final User user;
 
   @Override

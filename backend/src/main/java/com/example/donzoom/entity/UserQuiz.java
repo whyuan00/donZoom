@@ -1,5 +1,6 @@
 package com.example.donzoom.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,7 +17,8 @@ public class UserQuiz {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long userQuizId;
+  @Column(name ="user_quiz_id")
+  private Long id;
 
   @ManyToOne
   private User user;

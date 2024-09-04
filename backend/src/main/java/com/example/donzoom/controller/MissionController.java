@@ -23,13 +23,13 @@ public class MissionController {
 
   private final MissionService missionService;
 
-  @GetMapping("/")
+  @GetMapping
   public ResponseEntity<?> getAllMissions() {
-    // 미션 전체 조회
+    // 내 미션 전체 조회
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
-  @PostMapping("/")
+  @PostMapping
   public ResponseEntity<?> addMission(@RequestBody Mission mission) {
     // 미션 생성
     return new ResponseEntity<>(HttpStatus.OK);
