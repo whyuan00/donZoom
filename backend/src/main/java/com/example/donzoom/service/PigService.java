@@ -1,5 +1,6 @@
 package com.example.donzoom.service;
 
+import com.example.donzoom.dto.pig.response.PigResponseDto;
 import com.example.donzoom.entity.MyPig;
 import com.example.donzoom.entity.Pig;
 import com.example.donzoom.repository.MyPigRepository;
@@ -16,10 +17,14 @@ public class PigService {
 
   private final MyPigRepository myPigRepository;
 
-  public List<Pig> getPigs(long walletId) {
-    List<MyPig> myCollections = myPigRepository.findByWallet_WalletId(walletId);
-    return myCollections.stream()
-        .map(MyPig::getPig)
+  public List<PigResponseDto> getPigs(long walletId) {
+    List<MyPig> myPigs = myPigRepository.findByWallet_WalletId(walletId);
+    return myPigs.stream()
+        .map(myPig -> PigResponseDto.builder()
+            .collectionId(myPig.getPig().getCollectionId())
+            .imageUrl(myPig.getPig().getImageUrl())
+            .collectionName(myPig.getPig().getCollectionName())
+            .build())
         .collect(Collectors.toList());
   }
 }

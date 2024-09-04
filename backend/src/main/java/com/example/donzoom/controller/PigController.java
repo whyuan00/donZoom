@@ -1,5 +1,6 @@
 package com.example.donzoom.controller;
 
+import com.example.donzoom.dto.pig.response.PigResponseDto;
 import com.example.donzoom.entity.Pig;
 import com.example.donzoom.service.PigService;
 import java.util.Collection;
@@ -23,9 +24,9 @@ public class PigController {
   private final PigService pigService;
 
   @GetMapping
-  public ResponseEntity<List<Pig>> getPigs() {
+  public ResponseEntity<List<PigResponseDto>> getPigs() {
     try {
-      List<Pig> pigs = pigService.getPigs(1); //일단 임의의 지갑아이디
+      List<PigResponseDto> pigs = pigService.getPigs(1); //일단 임의의 지갑아이디
       return new ResponseEntity<>(pigs, HttpStatus.OK); // 성공 상태 코드와 데이터 반환
     } catch (Exception e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 잘못된 요청인 경우
