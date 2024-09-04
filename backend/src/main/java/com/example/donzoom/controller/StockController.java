@@ -17,11 +17,9 @@ public class StockController {
   private final StockService stockService;
 
   @GetMapping
-  public ResponseEntity<List<StockSimpleResponseDto>> getAllStocks() {
-    List<StockSimpleResponseDto> allStocks = stockService.getAllStocks();
+  public ResponseEntity<StockSimpleResponseDto> getAllStocks() {
+    StockSimpleResponseDto allStocks = stockService.getAllStocks();
     return ResponseEntity.ok().body(allStocks);
   }
-
-
 
 }

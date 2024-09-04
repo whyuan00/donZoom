@@ -1,6 +1,6 @@
 package com.example.donzoom.dto.stock.response;
 
-import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -8,9 +8,6 @@ import lombok.Getter;
 @Builder
 public class StockSimpleResponseDto {
 
-  private Long stockId;
-  private String stockName;
-  private Float stockPrice;
-  private LocalDateTime lastCreatedAt;
+  private List<StockDetailResponseDto> stocks;
 
 }
