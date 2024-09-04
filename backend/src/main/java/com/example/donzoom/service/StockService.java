@@ -25,6 +25,7 @@ public class StockService {
 
     List<StockSimpleResponseDto> stockDtos = stockHistories.stream()
         .map(stockHistory -> StockSimpleResponseDto.builder()
+            .stockId(stockHistory.getStock().getStockId())
             .stockName(stockHistory.getStock().getStockName())
             .stockPrice(stockHistory.getPrice())
             .lastCreatedAt(stockHistory.getCreatedAt())

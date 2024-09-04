@@ -8,6 +8,7 @@ import lombok.Getter;
 @Builder
 public class StockSimpleResponseDto {
 
+  private Long stockId;
   private String stockName;
   private Float stockPrice;
   private LocalDateTime lastCreatedAt;
