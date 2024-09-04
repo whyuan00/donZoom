@@ -7,15 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-
-  boolean existsByEmailAndDeletedAtNull(String email);
-
-  boolean existsByUsernameAndDeletedAtNull(String nickname);
-
-  Optional<User> findByEmailAndDeletedAtNull(String email);
-
-  Optional<User> findUserByIdAndDeletedAtNull(Long id);
-
-  Optional<User> findByUsernameAndDeletedAtNull(String nickname);
-
+  // Optional은 객체가 없으면 null 대신 빈 객체 반환
+  Optional<User> findByEmail(String email);
 }

@@ -82,11 +82,11 @@ public class SecurityConfig  {
         .anyRequest().permitAll());
 
     // 필터 추가
-    http.addFilterBefore(new JWTFilter(jwtUtil),
-        UsernamePasswordAuthenticationFilter.class);
-    http.addFilterAt(
-        new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil),
-        UsernamePasswordAuthenticationFilter.class);
+//    http.addFilterBefore(new JWTFilter(jwtUtil),
+//        UsernamePasswordAuthenticationFilter.class);
+//    http.addFilterAt(
+//        new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil),
+//        UsernamePasswordAuthenticationFilter.class);
 
     //세션 설정 ( JWT 를 사용해 유저 정보를 인증하기 때문에 세션은 필요 없음 )
     http.sessionManagement((session) -> session

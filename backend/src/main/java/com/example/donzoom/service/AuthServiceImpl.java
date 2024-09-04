@@ -70,7 +70,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     String email = jwtUtil.getUsername(refreshToken);
-    User user = userRepository.findByEmailAndDeletedAtNull(email)
+    User user = userRepository.findByEmail(email)
         .orElseThrow(() -> new IllegalArgumentException("해당하는 이메일의 유저가 없습니다"));
     String userId = user.getUserId().toString();
 
@@ -99,7 +99,7 @@ public class AuthServiceImpl implements AuthService {
     String refreshToken = jwtUtil.createRefreshJwt(email, role);
     response.addCookie(createCookie("refreshToken", refreshToken));
 
-    User user = userRepository.findByEmailAndDeletedAtNull(email)
+    User user = userRepository.findByEmail(email)
         .orElseThrow(() -> new IllegalArgumentException("해당하는 이메일의 유저가 없습니다"));
 
     // OAuthAuthorization 쿠키 제거
@@ -113,7 +113,7 @@ public class AuthServiceImpl implements AuthService {
       return null;
     }
     String email = ((CustomUserDetails) principal).getUsername();
-    return userRepository.findByEmailAndDeletedAtNull(email)
+    return userRepository.findByEmail(email)
         .orElseThrow(() -> new IllegalArgumentException(
             LoginMessage.WRONG_LOGIN_REQUEST.getValue()));
   }
