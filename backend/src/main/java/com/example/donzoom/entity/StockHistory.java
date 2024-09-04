@@ -1,6 +1,7 @@
 package com.example.donzoom.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,20 +20,15 @@ public class StockHistory {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long stockHistoryId;
 
-  @ManyToOne
-  private Wallet wallet;
-
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   private Stock stock;
 
   private Float price;
-  private Integer amount;
 
   @Builder
-  public StockHistory(Wallet wallet, Stock stock, Float price, Integer amount) {
-    this.wallet = wallet;
+  public StockHistory(Stock stock, Float price) {
     this.stock = stock;
     this.price = price;
-    this.amount = amount;
   }
+
 }
