@@ -1,6 +1,7 @@
 package com.example.donzoom.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,7 +20,7 @@ public class News {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long newsId;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   private Stock stock;
 
   private String title;
