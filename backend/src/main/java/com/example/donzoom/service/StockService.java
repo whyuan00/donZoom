@@ -11,10 +11,13 @@ import com.example.donzoom.dto.stockHistory.response.StockHistoryResponseDto;
 import com.example.donzoom.entity.Stock;
 import com.example.donzoom.entity.StockHistory;
 import com.example.donzoom.entity.StockWallet;
+import com.example.donzoom.entity.User;
 import com.example.donzoom.repository.StockHistoryRepository;
 import com.example.donzoom.repository.StockRepository;
 import com.example.donzoom.repository.StockWalletRepository;
 import com.example.donzoom.repository.TransactionHistoryRepository;
+import com.example.donzoom.repository.UserRepository;
+import com.example.donzoom.util.SecurityUtil;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +26,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class StockService {
 
-  private final TransactionHistoryRepository tHistoryRepository;
+  private final UserService userService;
+
   private final StockWalletRepository stockWalletRepository;
   private final StockHistoryRepository stockHistoryRepository;
   private final StockRepository stockRepository;
@@ -68,9 +72,12 @@ public class StockService {
   }
 
   // 내 주식 조회
-  public StockWalletSimpleResponseDto getAllMyStock(Long userId) {
-//    Long walletId = walletService.getWalletId(userId);
-    Long walletId = userId; // TODO: 1:1이라 이렇게 해도 상관없긴 하겠다
+  public StockWalletSimpleResponseDto getAllMyStock() {
+    String email = SecurityUtil.getAuthenticatedUsername();
+    User user = userService.findUserByEmail(email);
+//    Long walletId = walletService.getWalletId(user.getId());
+    Long walletId = user.getId(); // TODO: 1:1이라 이렇게 해도 상관없긴 하겠다
+
     List<StockWalletResponseDto> stockWalletDtos = stockWalletRepository.findByWalletId(walletId).stream()
         .map(stockWallet -> StockWalletResponseDto.builder()
             .stockWalletId(stockWallet.getId())
@@ -86,9 +93,11 @@ public class StockService {
         .build();
   }
 
-  public StockTransactionHistorySimpleResponseDto getAllTransaction(Long userId) {
-    //    Long walletId = walletService.getWalletId(userId);
-    Long walletId = userId; // TODO: 1:1이라 이렇게 해도 상관없긴 하겠다
+  public StockTransactionHistorySimpleResponseDto getAllTransaction() {
+    String email = SecurityUtil.getAuthenticatedUsername();
+    User user = userService.findUserByEmail(email);
+//    Long walletId = walletService.getWalletId(user.getId());
+    Long walletId = user.getId(); // TODO: 1:1이라 이렇게 해도 상관없긴 하겠다
 
     List<StockTransactionHistoryResponseDto> transactionHistoryDtos = transactionHistoryRepository.findByWalletId(
         walletId).stream().map(transactionHistory
@@ -106,9 +115,11 @@ public class StockService {
         .build();
   }
 
-  public StockTransactionHistorySimpleResponseDto getTransaction(Long userId, Long stockId) {
-    //    Long walletId = walletService.getWalletId(userId);
-    Long walletId = userId; // TODO: 1:1이라 이렇게 해도 상관없긴 하겠다
+  public StockTransactionHistorySimpleResponseDto getTransaction(Long stockId) {
+    String email = SecurityUtil.getAuthenticatedUsername();
+    User user = userService.findUserByEmail(email);
+//    Long walletId = walletService.getWalletId(user.getId());
+    Long walletId = user.getId(); // TODO: 1:1이라 이렇게 해도 상관없긴 하겠다
 
     List<StockTransactionHistoryResponseDto> transactionHistoryDtos = transactionHistoryRepository.findByWalletIdAndStockId(
         walletId, stockId).stream().map(transactionHistory

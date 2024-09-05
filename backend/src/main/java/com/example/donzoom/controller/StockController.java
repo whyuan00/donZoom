@@ -5,9 +5,7 @@ import com.example.donzoom.dto.stock.response.StockSimpleResponseDto;
 import com.example.donzoom.dto.stock.response.StockTransactionHistorySimpleResponseDto;
 import com.example.donzoom.dto.stock.response.StockWalletSimpleResponseDto;
 import com.example.donzoom.service.StockService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,25 +32,24 @@ public class StockController {
   }
 
   @GetMapping("/my")
-  public ResponseEntity<StockWalletSimpleResponseDto> getMyStocks(HttpServletRequest request) {
+  public ResponseEntity<StockWalletSimpleResponseDto> getMyStocks() {
     Long userId = 1L; // TODO: UserId 헤더에서 가져옴
-    StockWalletSimpleResponseDto allMyStock = stockService.getAllMyStock(userId);
+    StockWalletSimpleResponseDto allMyStock = stockService.getAllMyStock();
     return ResponseEntity.ok().body(allMyStock);
   }
 
   @GetMapping("/myhistory")
-  public ResponseEntity<StockTransactionHistorySimpleResponseDto> getMyTransactionHistory(
-      HttpServletRequest request) {
+  public ResponseEntity<StockTransactionHistorySimpleResponseDto> getMyTransactionHistory() {
     Long userId = 1L; // TODO: UserId 헤더에서 가져옴
-    StockTransactionHistorySimpleResponseDto allMyHistories = stockService.getAllTransaction(userId);
+    StockTransactionHistorySimpleResponseDto allMyHistories = stockService.getAllTransaction();
     return ResponseEntity.ok().body(allMyHistories);
   }
 
   @GetMapping("/myhistory/{stockId}")
   public ResponseEntity<StockTransactionHistorySimpleResponseDto> getMyTransactionHistoryByStockId(
-      @PathVariable(name = "stockId") Long stockId, HttpServletRequest request) {
+      @PathVariable(name = "stockId") Long stockId) {
     Long userId = 1L; // TODO: UserId 헤더에서 가져옴
-    StockTransactionHistorySimpleResponseDto historiesByStockId = stockService.getTransaction(userId, stockId);
+    StockTransactionHistorySimpleResponseDto historiesByStockId = stockService.getTransaction(stockId);
     return ResponseEntity.ok().body(historiesByStockId);
   }
 
