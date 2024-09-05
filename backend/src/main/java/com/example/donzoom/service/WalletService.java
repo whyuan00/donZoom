@@ -6,6 +6,7 @@ import com.example.donzoom.entity.Wallet;
 import com.example.donzoom.repository.WalletRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -14,11 +15,12 @@ import org.springframework.stereotype.Service;
 public class WalletService {
 
   private final WalletRepository walletRepository;
+  @Value("${ticketPrice}")
+  private int ticketPrice;
 
   //가상머니로 돼지뽑기권 구매하기
   public void buyTicket(TicketPurchaseRequestDto ticketPurchaseRequestDto,Long walletId){
     int amount = ticketPurchaseRequestDto.getAmount();
-    int ticketPrice = 5;
     int totalPrice = amount*ticketPrice;
 
     // 지갑을 ID로 조회

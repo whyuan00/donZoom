@@ -54,19 +54,24 @@ public class PigService {
   public List<PigResponseDto> getRandomPigsAndAddToWallet(PigRequestDto pigRequestDto, Long walletId) {
     Integer count = pigRequestDto.getAmount();
 
+    // 지갑 조회
+    Wallet wallet = walletRepository.findById(walletId)
+        .orElseThrow(() -> new IllegalArgumentException("Invalid wallet ID"));
 
-    List<Pig> allPigs = pigRepository.findAll(); // 모든 Pig를 조회
+    // 티켓이 충분한지 검사
+    if (wallet.getTicket() < count) {
+      throw new IllegalArgumentException("돼지를 뽑을만큼 티켓이 없어요");
+    }
 
-    // 랜덤으로 Pig를 선택합니다.
+    List<Pig> allPigs = pigRepository.findAll(); // 모든 Pig 조회
+
+    // 랜덤으로 Pig 선택
     Random random = new Random();
     List<Pig> randomPigs = random.ints(0, allPigs.size())
         .limit(count)
         .mapToObj(allPigs::get)
         .collect(Collectors.toList());
 
-    // Wallet 조회
-    Wallet wallet = walletRepository.findById(walletId)
-        .orElseThrow(() -> new IllegalArgumentException("Invalid wallet ID"));
 
     //티켓 쓴 만큼 차감
     wallet.setTicket(wallet.getTicket()-count);
