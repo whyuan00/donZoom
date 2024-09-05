@@ -37,11 +37,11 @@ public class Wallet {
         }
     }
 
-    public void setCoin(Integer coin) {
+    public void updateCoin(Integer coin) {
         this.coin = coin;
     }
 
-    public void setTicket(Integer ticket) {
+    public void updateTicket(Integer ticket) {
         this.ticket = ticket;
     }
 }

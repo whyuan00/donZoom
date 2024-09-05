@@ -33,8 +33,8 @@ public class WalletService {
     }
 
     // 코인 차감 및 티켓 추가
-    wallet.setCoin(wallet.getCoin() - totalPrice);
-    wallet.setTicket(wallet.getTicket() + amount);
+    wallet.updateCoin(wallet.getCoin() - totalPrice);
+    wallet.updateTicket(wallet.getTicket() + amount);
 
     // 변경된 지갑 정보를 저장
     walletRepository.save(wallet);

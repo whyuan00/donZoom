@@ -27,8 +27,10 @@ public class PigService {
   private final WalletRepository walletRepository;
 
   //지갑에있는 돼지 정보 보기
-  public List<PigResponseDto> getPigs(long walletId) {
-    List<MyPig> myPigs = myPigRepository.findByWallet_Id(walletId); //Wallet ID를 기준으로 MyPigs 엔티티 리스트를 반환
+  @Transactional(readOnly = true)
+  public List<PigResponseDto> findPigs(long walletId) {
+    List<MyPig> myPigs = myPigRepository.findByWallet_Id(
+        walletId); //Wallet ID를 기준으로 MyPigs 엔티티 리스트를 반환
     return myPigs.stream()
         .map(myPig -> PigResponseDto.builder()
             .pigId(myPig.getPig().getId())
@@ -39,7 +41,8 @@ public class PigService {
   }
 
   //돼지 아이디로 돼지 상세보기
-  public PigResponseDto getPigById(Long pigId) {
+  @Transactional(readOnly = true)
+  public PigResponseDto findPigById(Long pigId) {
     Pig pig = pigRepository.findById(pigId)
         .orElseThrow(() -> new IllegalArgumentException("Pig not found with id: " + pigId));
 
@@ -51,7 +54,8 @@ public class PigService {
   }
 
   @Transactional
-  public List<PigResponseDto> getRandomPigsAndAddToWallet(PigRequestDto pigRequestDto, Long walletId) {
+  public List<PigResponseDto> getRandomPigsAndAddToWallet(PigRequestDto pigRequestDto,
+      Long walletId) {
     Integer count = pigRequestDto.getAmount();
 
     // 지갑 조회
@@ -72,9 +76,8 @@ public class PigService {
         .mapToObj(allPigs::get)
         .collect(Collectors.toList());
 
-
     //티켓 쓴 만큼 차감
-    wallet.setTicket(wallet.getTicket()-count);
+    wallet.updateTicket(wallet.getTicket() - count);
 
     // MyPig에 뽑은 돼지 추가
     for (Pig pig : randomPigs) {
