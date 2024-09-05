@@ -1,7 +1,9 @@
 package com.example.donzoom.controller;
 
 import com.example.donzoom.dto.mission.request.MissionCreateDto;
+import com.example.donzoom.dto.mission.request.MissionUpdateDto;
 import com.example.donzoom.entity.Mission;
+import com.example.donzoom.repository.MissionRepository;
 import com.example.donzoom.service.MissionService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -26,34 +28,36 @@ public class MissionController {
 
   @GetMapping
   public ResponseEntity<?> getAllMissions() {
-    List<Mission> missions = missionService.getUserMissions();
     // 내 미션 전체 조회
+    List<Mission> missions = missionService.getUserMissions();
     return new ResponseEntity<>(missions,HttpStatus.OK);
   }
 
   @PostMapping
   public ResponseEntity<?> createMission(@RequestBody MissionCreateDto missionCreateDto) {
     // 미션 생성
-
-    return new ResponseEntity<>(HttpStatus.OK);
+    Mission mission = missionService.createMission(missionCreateDto);
+    return new ResponseEntity<>(mission, HttpStatus.OK);
   }
 
   @GetMapping("/{missionId}")
-  public ResponseEntity<?> getMissionById(@PathVariable long missionId) {
+  public ResponseEntity<?> getMission(@PathVariable long missionId) {
     // 미션 단일 조회
     Mission mission = missionService.getMissionById(missionId);
-    return new ResponseEntity<>(HttpStatus.OK);
+    return new ResponseEntity<>(mission,HttpStatus.OK);
   }
 
   @PatchMapping("/{missionId}")
-  public ResponseEntity<?> updateMission(@PathVariable int missionId, @RequestBody Mission mission) {
+  public ResponseEntity<?> updateMission(@PathVariable Long missionId, @RequestBody MissionUpdateDto missionUpdateDto) {
     // 미션 수정
-    return new ResponseEntity<>(HttpStatus.OK);
+    Mission mission = missionService.updateMission(missionId,missionUpdateDto);
+    return new ResponseEntity<>(mission,HttpStatus.OK);
   }
 
   @DeleteMapping("/{missionId}")
-  public ResponseEntity<?> deleteMissionById(@PathVariable int missionId) {
+  public ResponseEntity<?> deleteMission(@PathVariable Long missionId) {
     // 미션 삭제
+    missionService.deleteMission(missionId);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 

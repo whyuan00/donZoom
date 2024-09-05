@@ -82,8 +82,8 @@ public class SecurityConfig  {
         .anyRequest().permitAll());
 
     // 필터 추가
-//    http.addFilterBefore(new JWTFilter(jwtUtil),
-//        UsernamePasswordAuthenticationFilter.class);
+    http.addFilterBefore(new JWTFilter(jwtUtil),
+        UsernamePasswordAuthenticationFilter.class);
 //    http.addFilterAt(
 //        new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil),
 //        UsernamePasswordAuthenticationFilter.class);
