@@ -32,7 +32,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     UserDetailDto userDetailDto = UserDetailDto.builder()
-        .id(loginUser.getUserId())
+        .id(loginUser.getId())
         .role(loginUser.getRole())
         .username(loginUser.getName())
         .email(loginUser.getEmail())
@@ -72,7 +72,7 @@ public class AuthServiceImpl implements AuthService {
     String email = jwtUtil.getUsername(refreshToken);
     User user = userRepository.findByEmail(email)
         .orElseThrow(() -> new IllegalArgumentException("해당하는 이메일의 유저가 없습니다"));
-    String userId = user.getUserId().toString();
+    String userId = user.getId().toString();
 
     // refreshToken 쿠키 제거
     Cookie cookie = new Cookie("refreshToken", null);

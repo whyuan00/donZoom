@@ -39,7 +39,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         .name(userCreateDto.getNickname())
         .build();
     findUser.OAuth2Update(TempOAuthUser);
-    return findUser.getUserId();
+    return findUser.getId();
   }
 
   @Override

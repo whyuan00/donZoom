@@ -1,6 +1,7 @@
 package com.example.donzoom.entity;
 
 import com.example.donzoom.constant.QuizType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,7 +18,8 @@ public class Quiz {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long quizId;
+  @Column(name="quiz_id")
+  private Long id;
 
   private QuizType quizType;
 
