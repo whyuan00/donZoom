@@ -16,11 +16,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StockWallet {
+public class TransactionHistory {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "stock_wallet_id")
+  @Column(name = "transaction_history_id")
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -35,7 +35,7 @@ public class StockWallet {
   private Integer amount;
 
   @Builder
-  public StockWallet(Wallet wallet, Stock stock, Float price, Integer amount) {
+  public TransactionHistory(Wallet wallet, Stock stock, Float price, Integer amount) {
     this.wallet = wallet;
     this.stock = stock;
     this.price = price;
