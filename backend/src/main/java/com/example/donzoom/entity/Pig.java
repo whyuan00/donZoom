@@ -1,12 +1,10 @@
 package com.example.donzoom.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,19 +13,20 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Collection {
+public class Pig {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long collectionId;
+  @Column(name="PIG_ID")
+  private Long id;
 
   private String imageUrl;
 
-  private String collectionName;
+  private String pigName;
 
   @Builder
-  public Collection(String imageUrl, String collectionName){
+  public Pig(String imageUrl, String pigName){
     this.imageUrl = imageUrl;
-    this.collectionName = collectionName;
+    this.pigName = pigName;
   }
 
 }
