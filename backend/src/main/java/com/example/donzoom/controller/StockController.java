@@ -53,10 +53,10 @@ public class StockController {
     return ResponseEntity.ok().body(historiesByStockId);
   }
 
-  @PostMapping("/{stockId}/buy")
-  public ResponseEntity<?> buyStocks(@PathVariable(name = "stockId") Long stockId,
-      @RequestParam(name = "amount") Integer amount) {
-    stockService.buyStocks(stockId, amount);
-  }
+//  @PostMapping("/{stockId}/buy")
+//  public ResponseEntity<?> buyStocks(@PathVariable(name = "stockId") Long stockId,
+//      @RequestParam(name = "amount") Integer amount) {
+//    stockService.buyStocks(stockId, amount);
+//  }
 
 }
