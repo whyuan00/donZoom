@@ -1,9 +1,11 @@
 package com.example.donzoom.external;
 
 import com.example.donzoom.dto.account.request.CreateMemberDto;
+import com.example.donzoom.dto.account.request.TransferRequestDto;
 import com.example.donzoom.dto.account.response.AccountCreateResponseDto;
 import com.example.donzoom.dto.account.response.AccountResponseDto;
 import com.example.donzoom.dto.account.response.BankUserResponseDto;
+import com.example.donzoom.dto.account.response.TransferResponseDto;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -30,7 +32,8 @@ public class BankApi {
   private String createMemberUrl;
   @Value("${fin.user-info-url}")
   private String userInfoUrl;
-
+  @Value("${fin.update-demand-deposit-account-transfer-url}")
+  private String transferUrl;
 
   private final WebClient webClient;
 
@@ -107,6 +110,7 @@ public class BankApi {
             "apiKey", apiKey,
             "userKey", userKey
         )
+
     );
 
 
@@ -117,6 +121,38 @@ public class BankApi {
         .bodyToMono(AccountResponseDto.class)
         .block();
   }
+
+
+  public TransferResponseDto transfer(TransferRequestDto transferRequestDto,String userKey) {
+    // 요청 본문 구성
+    Map<String, Object> requestBody = Map.of(
+        "Header", Map.of(
+            "apiName", "updateDemandDepositAccountTransfer",
+            "transmissionDate",  getDate(),
+            "transmissionTime", getTime(),
+            "institutionCode", "00100",
+            "fintechAppNo", "001",
+            "apiServiceCode", "updateDemandDepositAccountTransfer",
+            "institutionTransactionUniqueNo", generateUniqueNumber(),
+            "apiKey", apiKey,
+            "userKey", userKey
+        ),
+        "depositAccountNo", transferRequestDto.getDepositAccountNo(),
+        "depositTransactionSummary",transferRequestDto.getDepositTransactionSummary(),
+        "transactionBalance",transferRequestDto.getTransactionBalance(),
+        "withdrawalAccountNo",transferRequestDto.getWithdrawalAccountNo(),
+        "withdrawalTransactionSummary",transferRequestDto.getDepositTransactionSummary()
+    );
+
+    return webClient.post()
+        .uri(transferUrl)
+        .bodyValue(requestBody)
+        .retrieve()
+        .bodyToMono(TransferResponseDto.class)
+        .block();
+  }
+
+
   private static final Random random = new Random();
 
   public static String generateUniqueNumber() {
