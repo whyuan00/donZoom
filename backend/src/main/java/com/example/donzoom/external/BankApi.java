@@ -62,18 +62,27 @@ public class BankApi {
         .block();
   }
 
-  public String createDemandDepositAccount(String accountTypeUniqueNo) {
-    CreateAccountRequest request = CreateAccountRequest.builder()
-        .accountTypeUniqueNo(accountTypeUniqueNo)
-        .build();
+  //계좌 생성
+  public String createDemandDepositAccount(String accountTypeUniqueNo,String userKey) {
+    // 요청 본문 구성
+    Map<String, Object> requestBody = Map.of(
+        "Header", Map.of(
+            "apiName", "createDemandDepositAccount",
+            "transmissionDate", "20240401",
+            "transmissionTime", "105000",
+            "institutionCode", "00100",
+            "fintechAppNo", "001",
+            "apiServiceCode", "createDemandDepositAccount",
+            "institutionTransactionUniqueNo", "20240215121212123473",
+            "apiKey", apiKey,
+            "userKey", userKey
+        ),
+        "accountTypeUniqueNo", accountTypeUniqueNo
+    );
 
     return webClient.post()
         .uri(createAccountUrl)
-        .headers(headers -> {
-          headers.set("apiName", "dDDDD");
-          headers.set("transmissionDate", "dDD");
-        })
-        .bodyValue(request)
+        .bodyValue(requestBody)
         .retrieve()
         .bodyToMono(String.class)
         .block();
