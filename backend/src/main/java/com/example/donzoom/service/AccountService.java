@@ -1,6 +1,8 @@
 package com.example.donzoom.service;
 
+import com.example.donzoom.dto.account.response.AccountCreateResponseDto;
 import com.example.donzoom.dto.account.response.BankUserResponseDto;
+import com.example.donzoom.dto.account.response.RecDto;
 import com.example.donzoom.entity.User;
 import com.example.donzoom.external.BankApi;
 import com.example.donzoom.repository.UserRepository;
@@ -22,12 +24,9 @@ public class AccountService {
 
   //뱅크사용자 가입
   public BankUserResponseDto createMember() {
-    // 현재 인증된 사용자 정보 가져오기
-    String username = SecurityUtil.getAuthenticatedUsername();
 
     //유저정보 가져오기
-    User user = userRepository.findByEmail("test3@ssafy.com")
-        .orElseThrow(() -> new RuntimeException("User not found"));
+    User user = getUser();;
 
     BankUserResponseDto bankUser = bankApi.createMember("test3@ssafy.com");
     // 코인 차감 및 티켓 추가
@@ -46,15 +45,29 @@ public class AccountService {
   }
 
   //계좌 생성
-  public String createDemandDepositAccount() {
+  public AccountCreateResponseDto createDemandDepositAccount() {
     String accountTypeUniqueNo = "001-1-ffa4253081d540";
-    return bankApi.createDemandDepositAccount(accountTypeUniqueNo,"5da8eb1d-10e6-4210-8c1f-c297674d1e44");
+
+    //유저정보 가져오기
+    User user = getUser();
+
+    return bankApi.createDemandDepositAccount(accountTypeUniqueNo,user.getUserKey());
   }
 
   //계좌정보조회
   public String getAccountInfo() {
-    return bankApi.getAccountInfo("5da8eb1d-10e6-4210-8c1f-c297674d1e44");
+
+    //유저정보 가져오기
+    User user = getUser();
+    return bankApi.getAccountInfo(user.getUserKey());
   }
 
-
+  public User getUser(){
+    // 현재 인증된 사용자 정보 가져오기
+    String username = SecurityUtil.getAuthenticatedUsername();
+    //유저정보 가져오기
+    User user = userRepository.findByEmail("test3@ssafy.com")
+        .orElseThrow(() -> new RuntimeException("User not found"));
+    return user;
+  }
 }

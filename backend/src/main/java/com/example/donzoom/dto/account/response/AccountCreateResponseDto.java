@@ -7,6 +7,8 @@ import lombok.Getter;
 @Getter
 @Builder
 public class AccountCreateResponseDto {
-  private final String bankCode;
+
+  private HeaderDto Header;
+  private RecDto REC;
 
 }

@@ -1,8 +1,13 @@
 package com.example.donzoom.external;
 
 import com.example.donzoom.dto.account.request.CreateMemberDto;
+import com.example.donzoom.dto.account.response.AccountCreateResponseDto;
 import com.example.donzoom.dto.account.response.BankUserResponseDto;
+import com.example.donzoom.dto.account.response.RecDto;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.Random;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -63,7 +68,7 @@ public class BankApi {
   }
 
   //계좌 생성
-  public String createDemandDepositAccount(String accountTypeUniqueNo,String userKey) {
+  public AccountCreateResponseDto createDemandDepositAccount(String accountTypeUniqueNo,String userKey) {
     // 요청 본문 구성
     Map<String, Object> requestBody = Map.of(
         "Header", Map.of(
@@ -73,18 +78,18 @@ public class BankApi {
             "institutionCode", "00100",
             "fintechAppNo", "001",
             "apiServiceCode", "createDemandDepositAccount",
-            "institutionTransactionUniqueNo", "20240215121212123473",
+            "institutionTransactionUniqueNo", generateUniqueNumber(),
             "apiKey", apiKey,
             "userKey", userKey
         ),
-        "accountTypeUniqueNo", accountTypeUniqueNo
+        "accountTypeUniqueNo", accountTypeUniqueNo //상품번호. 일단 임의로해놓음
     );
 
     return webClient.post()
         .uri(createAccountUrl)
         .bodyValue(requestBody)
         .retrieve()
-        .bodyToMono(String.class)
+        .bodyToMono(AccountCreateResponseDto.class)
         .block();
   }
 
@@ -98,7 +103,7 @@ public class BankApi {
             "institutionCode", "00100",
             "fintechAppNo", "001",
             "apiServiceCode", "inquireDemandDepositAccountList",
-            "institutionTransactionUniqueNo", "20240215121212123473",
+            "institutionTransactionUniqueNo", generateUniqueNumber(),
             "apiKey", apiKey,
             "userKey", userKey
         )
@@ -112,6 +117,23 @@ public class BankApi {
         .bodyToMono(String.class)
         .block();
   }
+  private static final Random random = new Random();
 
+  public static String generateUniqueNumber() {
+    // 현재 날짜와 시간 얻기
+    LocalDateTime now = LocalDateTime.now();
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmmss");
+
+    // 날짜와 시간 문자열 생성
+    String date = now.format(dateFormatter);
+    String time = now.format(timeFormatter);
+
+    // 일련번호 6자리 생성
+    String serialNumber = String.format("%06d", random.nextInt(1000000));
+
+    // 최종 채번 생성
+    return date + time + serialNumber;
+  }
 
 }
