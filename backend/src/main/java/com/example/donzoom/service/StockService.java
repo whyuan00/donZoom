@@ -12,6 +12,7 @@ import com.example.donzoom.entity.Stock;
 import com.example.donzoom.entity.StockHistory;
 import com.example.donzoom.entity.StockWallet;
 import com.example.donzoom.entity.User;
+import com.example.donzoom.entity.Wallet;
 import com.example.donzoom.repository.StockHistoryRepository;
 import com.example.donzoom.repository.StockRepository;
 import com.example.donzoom.repository.StockWalletRepository;
@@ -93,6 +94,7 @@ public class StockService {
         .build();
   }
 
+  // 모든 주식 거래내역 조회
   public StockTransactionHistorySimpleResponseDto getAllTransaction() {
     String email = SecurityUtil.getAuthenticatedUsername();
     User user = userService.findUserByEmail(email);
@@ -115,6 +117,7 @@ public class StockService {
         .build();
   }
 
+  // 주식 종목별 거래내역 조회
   public StockTransactionHistorySimpleResponseDto getTransaction(Long stockId) {
     String email = SecurityUtil.getAuthenticatedUsername();
     User user = userService.findUserByEmail(email);
@@ -136,4 +139,26 @@ public class StockService {
         .myHistories(transactionHistoryDtos)
         .build();
   }
+
+  // 주식 매수
+//  public Long buyStocks(Long stockId, Integer amount) {
+//
+//    String email = SecurityUtil.getAuthenticatedUsername();
+//    User user = userService.findUserByEmail(email);
+////    Long walletId = walletService.getWalletId(user.getId());
+//    Long walletId = user.getId(); // TODO: 1:1이라 이렇게 해도 상관없긴 하겠다
+//
+//    // 지갑을 찾아와서
+////    Wallet myWallet = stockWalletRepository.findByWalletId(walletId);
+//
+//    // 주식 현재가 들고오기
+//    StockHistory top1ByStockIdOrderByCreatedAtDesc =
+//        stockHistoryRepository.findTop1ByStockIdOrderByCreatedAtDesc(stockId);
+//
+//    // 지갑 내 유동자산이랑 비교
+////    if(myWa)
+//
+//    return 1L;
+//  }
+
 }

@@ -9,7 +9,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -33,14 +36,12 @@ public class StockController {
 
   @GetMapping("/my")
   public ResponseEntity<StockWalletSimpleResponseDto> getMyStocks() {
-    Long userId = 1L; // TODO: UserId 헤더에서 가져옴
     StockWalletSimpleResponseDto allMyStock = stockService.getAllMyStock();
     return ResponseEntity.ok().body(allMyStock);
   }
 
   @GetMapping("/myhistory")
   public ResponseEntity<StockTransactionHistorySimpleResponseDto> getMyTransactionHistory() {
-    Long userId = 1L; // TODO: UserId 헤더에서 가져옴
     StockTransactionHistorySimpleResponseDto allMyHistories = stockService.getAllTransaction();
     return ResponseEntity.ok().body(allMyHistories);
   }
@@ -48,9 +49,14 @@ public class StockController {
   @GetMapping("/myhistory/{stockId}")
   public ResponseEntity<StockTransactionHistorySimpleResponseDto> getMyTransactionHistoryByStockId(
       @PathVariable(name = "stockId") Long stockId) {
-    Long userId = 1L; // TODO: UserId 헤더에서 가져옴
     StockTransactionHistorySimpleResponseDto historiesByStockId = stockService.getTransaction(stockId);
     return ResponseEntity.ok().body(historiesByStockId);
+  }
+
+  @PostMapping("/{stockId}/buy")
+  public ResponseEntity<?> buyStocks(@PathVariable(name = "stockId") Long stockId,
+      @RequestParam(name = "amount") Integer amount) {
+    stockService.buyStocks(stockId, amount);
   }
 
 }
