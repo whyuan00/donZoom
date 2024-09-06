@@ -1,7 +1,6 @@
 package com.example.donzoom.entity;
 
 import jakarta.persistence.*;
-import java.util.Collection;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,24 +15,33 @@ import java.util.List;
 public class Wallet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long walletId;
+    @Column(name="WALLET_ID")
+    private Long id;
 
 //    @OneToOne(mappedBy = "user")
 //    private User user;
 
     @OneToMany(mappedBy = "wallet")
-    private List<MyCollection> mycollection = new ArrayList<>();
+    private List<MyPig> mypigs = new ArrayList<>();
 
     private Integer coin;
 
     private Integer ticket;
 
     @Builder
-    public Wallet(Integer coin, Integer ticket, List<MyCollection> mycollection) {
+    public Wallet(Integer coin, Integer ticket, List<MyPig> mypigs) {
         this.coin = coin;
         this.ticket = ticket;
-        if (mycollection != null) {
-            this.mycollection = mycollection;
+        if (mypigs != null) {
+            this.mypigs = mypigs;
         }
+    }
+
+    public void updateCoin(Integer coin) {
+        this.coin = coin;
+    }
+
+    public void updateTicket(Integer ticket) {
+        this.ticket = ticket;
     }
 }
