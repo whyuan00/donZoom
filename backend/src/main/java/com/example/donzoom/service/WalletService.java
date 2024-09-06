@@ -2,8 +2,11 @@ package com.example.donzoom.service;
 
 import com.example.donzoom.dto.pig.request.TicketPurchaseRequestDto;
 import com.example.donzoom.dto.pig.response.PigResponseDto;
+import com.example.donzoom.entity.User;
 import com.example.donzoom.entity.Wallet;
+import com.example.donzoom.repository.UserRepository;
 import com.example.donzoom.repository.WalletRepository;
+import com.example.donzoom.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,13 +18,22 @@ import org.springframework.stereotype.Service;
 public class WalletService {
 
   private final WalletRepository walletRepository;
+  private final UserRepository userRepository;
   @Value("${ticketPrice}")
   private int ticketPrice;
 
   //가상머니로 돼지뽑기권 구매하기
-  public void buyTicket(TicketPurchaseRequestDto ticketPurchaseRequestDto,Long walletId){
+  public void buyTicket(TicketPurchaseRequestDto ticketPurchaseRequestDto){
+
     int amount = ticketPurchaseRequestDto.getAmount();
     int totalPrice = amount*ticketPrice;
+
+    // 현재 인증된 사용자 정보 가져오기
+    String username = SecurityUtil.getAuthenticatedUsername();
+    // user에서  지갑 가져오기
+    User user = userRepository.findByEmail(username)
+        .orElseThrow(() -> new RuntimeException("User not found"));
+    Long walletId = user.getWallet().getId();
 
     // 지갑을 ID로 조회
     Wallet wallet = walletRepository.findById(walletId)

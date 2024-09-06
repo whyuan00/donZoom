@@ -5,10 +5,13 @@ import com.example.donzoom.dto.pig.request.TicketPurchaseRequestDto;
 import com.example.donzoom.dto.pig.response.PigResponseDto;
 import com.example.donzoom.entity.MyPig;
 import com.example.donzoom.entity.Pig;
+import com.example.donzoom.entity.User;
 import com.example.donzoom.entity.Wallet;
 import com.example.donzoom.repository.MyPigRepository;
 import com.example.donzoom.repository.PigRepository;
+import com.example.donzoom.repository.UserRepository;
 import com.example.donzoom.repository.WalletRepository;
+import com.example.donzoom.util.SecurityUtil;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -25,12 +28,20 @@ public class PigService {
   private final MyPigRepository myPigRepository;
   private final PigRepository pigRepository;
   private final WalletRepository walletRepository;
+  private final UserRepository userRepository;
 
   //지갑에있는 돼지 정보 보기
   @Transactional(readOnly = true)
-  public List<PigResponseDto> findPigs(long walletId) {
-    List<MyPig> myPigs = myPigRepository.findByWallet_Id(
-        walletId); //Wallet ID를 기준으로 MyPigs 엔티티 리스트를 반환
+  public List<PigResponseDto> findPigs() {
+
+    // 현재 인증된 사용자 정보 가져오기
+    String username = SecurityUtil.getAuthenticatedUsername();
+    // user에서  지갑 가져오기
+    User user = userRepository.findByEmail(username)
+        .orElseThrow(() -> new RuntimeException("User not found"));
+    Wallet wallet = user.getWallet();
+
+    List<MyPig> myPigs = myPigRepository.findByWallet_Id(wallet.getId()); //Wallet ID를 기준으로 MyPigs 엔티티 리스트를 반환
     return myPigs.stream()
         .map(myPig -> PigResponseDto.builder()
             .pigId(myPig.getPig().getId())
@@ -54,9 +65,14 @@ public class PigService {
   }
 
   @Transactional
-  public List<PigResponseDto> getRandomPigsAndAddToWallet(PigRequestDto pigRequestDto,
-      Long walletId) {
+  public List<PigResponseDto> getRandomPigsAndAddToWallet(PigRequestDto pigRequestDto) {
     Integer count = pigRequestDto.getAmount();
+    // 현재 인증된 사용자 정보 가져오기
+    String username = SecurityUtil.getAuthenticatedUsername();
+    // user에서  지갑 가져오기
+    User user = userRepository.findByEmail(username)
+        .orElseThrow(() -> new RuntimeException("User not found"));
+    Long walletId = user.getWallet().getId();
 
     // 지갑 조회
     Wallet wallet = walletRepository.findById(walletId)
