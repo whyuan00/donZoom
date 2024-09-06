@@ -1,14 +1,12 @@
 package com.example.donzoom.dto.pig.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
+import lombok.Builder;
+import lombok.Getter;
+
+
+@Getter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class TicketPurchaseRequestDto {
   private Integer amount;
 }

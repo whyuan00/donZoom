@@ -1,12 +1,11 @@
 package com.example.donzoom.dto.account.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 
-@Data
+import lombok.Builder;
+import lombok.Getter;
+
+@Getter
 @Builder
-@AllArgsConstructor
 public class CreateMemberDto {
   private final String apiKey;
   private final String userId;

@@ -104,7 +104,7 @@ public class BankApi {
         )
     );
 
-    
+
     return webClient.post()
         .uri(getAccountUrl)
         .bodyValue(requestBody)
