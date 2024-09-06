@@ -50,7 +50,7 @@ public class AccountService {
 
     //유저정보 가져오기
     User user = getUser();
-
+    System.out.println(user.getUserKey());
     return bankApi.createDemandDepositAccount(accountTypeUniqueNo,user.getUserKey());
   }
 

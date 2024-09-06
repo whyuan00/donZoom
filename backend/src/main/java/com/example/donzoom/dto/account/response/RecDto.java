@@ -10,5 +10,5 @@ import lombok.Getter;
 public class RecDto {
   private final String bankCode;
   private final String accountNo;
-  private final CurrencyDto currencies;
+  private final CurrencyDto currency;
 }

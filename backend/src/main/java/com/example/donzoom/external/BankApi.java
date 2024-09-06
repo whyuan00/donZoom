@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.http.MediaType;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @Component
@@ -73,8 +74,8 @@ public class BankApi {
     Map<String, Object> requestBody = Map.of(
         "Header", Map.of(
             "apiName", "createDemandDepositAccount",
-            "transmissionDate", "20240401",
-            "transmissionTime", "105000",
+            "transmissionDate", getDate(),
+            "transmissionTime", getTime(),
             "institutionCode", "00100",
             "fintechAppNo", "001",
             "apiServiceCode", "createDemandDepositAccount",
@@ -82,7 +83,7 @@ public class BankApi {
             "apiKey", apiKey,
             "userKey", userKey
         ),
-        "accountTypeUniqueNo", accountTypeUniqueNo //상품번호. 일단 임의로해놓음
+        "accountTypeUniqueNo", "001-1-c468f2dd7ccb42" //상품번호. 일단 임의로해놓음
     );
 
     return webClient.post()
@@ -98,8 +99,8 @@ public class BankApi {
     Map<String, Object> requestBody = Map.of(
         "Header", Map.of(
             "apiName", "inquireDemandDepositAccountList",
-            "transmissionDate", "20240401",
-            "transmissionTime", "101000",
+            "transmissionDate", "20240906",
+            "transmissionTime", "143939",
             "institutionCode", "00100",
             "fintechAppNo", "001",
             "apiServiceCode", "inquireDemandDepositAccountList",
@@ -131,9 +132,26 @@ public class BankApi {
 
     // 일련번호 6자리 생성
     String serialNumber = String.format("%06d", random.nextInt(1000000));
-
+    log.info(date + time + serialNumber);
     // 최종 채번 생성
     return date + time + serialNumber;
+  }
+
+  public static String getDate() {
+    // 현재 날짜와 시간 얻기
+    LocalDateTime now = LocalDateTime.now();
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+    return now.format(dateFormatter);
+
+  }
+  public static String getTime() {
+    // 현재 날짜와 시간 얻기
+    LocalDateTime now = LocalDateTime.now();
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmmss");
+
+    return now.format(timeFormatter);
+
   }
 
 }
