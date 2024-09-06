@@ -11,6 +11,7 @@ import lombok.ToString;
 @ToString
 @Builder
 public class UserCreateDto {
+  // 회원 가입 시 유저 정보를 받는 Dto입니다.
 
   @NotNull
   @Pattern(regexp = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])+[.][a-zA-Z]{2,3}$")

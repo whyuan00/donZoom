@@ -1,15 +1,20 @@
 package com.example.donzoom.entity;
 
 import com.example.donzoom.constant.MissionStatus;
+import com.example.donzoom.dto.mission.request.MissionUpdateDto;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 
 @Entity
@@ -19,24 +24,31 @@ public class Mission {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long missionId;
+  @Column(name = "mission_id")
+  private Long id;
 
   @ManyToOne
   private User user;
 
-  private String title;
   private String contents;
   private Long reward;
   private MissionStatus status;
+  private LocalDateTime dueDate;
 
   @Builder
-  public Mission(User user, String title, String contents, Long reward, MissionStatus status) {
+  public Mission(User user, String contents, Long reward, MissionStatus status, LocalDateTime dueDate) {
     this.user = user;
-    this.title = title;
     this.contents = contents;
     this.reward = reward;
     this.status = status;
+    this.dueDate = dueDate;
   }
 
+  public void updateMission(MissionUpdateDto missionUpdateDto){
+    this.contents = missionUpdateDto.getContents() == null ? this.contents : missionUpdateDto.getContents();
+    this.reward = missionUpdateDto.getReward() == null ? this.reward : missionUpdateDto.getReward();
+    this.dueDate = missionUpdateDto.getDueDate() == null ? this.dueDate : missionUpdateDto.getDueDate();
+    this.status =  missionUpdateDto.getStatus() == null ? this.status : missionUpdateDto.getStatus();
+  }
 
 }
