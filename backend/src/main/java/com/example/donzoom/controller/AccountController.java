@@ -1,15 +1,11 @@
 package com.example.donzoom.controller;
 
-import com.example.donzoom.dto.account.response.AccountCreateResponseDto;
-import com.example.donzoom.dto.pig.request.PigRequestDto;
-import com.example.donzoom.dto.pig.response.PigResponseDto;
+import com.example.donzoom.dto.account.response.BankUserResponseDto;
 import com.example.donzoom.service.AccountService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,7 +21,7 @@ public class AccountController {
 
   @PostMapping
   public String createAccount() {
-    return accountService.createDemandDepositAccount("temp");
+    return accountService.createDemandDepositAccount();
   }
 
   @GetMapping("/info")
@@ -34,11 +30,12 @@ public class AccountController {
   }
 
   @PostMapping("/member")
-  public String createMember() {
+  public BankUserResponseDto createMember() {
     return accountService.createMember();
   }
+
   @GetMapping("/member")
-  public String getMember() {
+  public BankUserResponseDto getMember() {
     return accountService.getMember();
   }
 }

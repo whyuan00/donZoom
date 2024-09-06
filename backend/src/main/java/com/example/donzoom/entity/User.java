@@ -68,4 +68,9 @@ public class User extends BaseEntity{
     this.name = TempOAuthUser.getName();
     this.pwdHash = TempOAuthUser.getPwdHash();
   }
+
+  public void updateUserKey(String userKey) {
+    this.userKey = userKey;
+  }
+
 }

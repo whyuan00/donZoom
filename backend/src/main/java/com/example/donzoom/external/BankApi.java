@@ -1,8 +1,7 @@
 package com.example.donzoom.external;
 
-import com.example.donzoom.dto.account.bank.CreateAccountRequest;
 import com.example.donzoom.dto.account.request.CreateMemberDto;
-import com.example.donzoom.dto.account.response.RecResponseDto;
+import com.example.donzoom.dto.account.response.BankUserResponseDto;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,7 +36,7 @@ public class BankApi {
   }
 
   //회원생성
-  public String createMember(String userId) {
+  public BankUserResponseDto createMember(String userId) {
     CreateMemberDto member = CreateMemberDto.builder()
         .apiKey(apiKey)
         .userId(userId)
@@ -46,10 +45,11 @@ public class BankApi {
         .uri(createMemberUrl)
         .bodyValue(member)
         .retrieve()
-        .bodyToMono(String.class)
+        .bodyToMono(BankUserResponseDto.class)
         .block();
   }
-  public String getMember(String userId) {
+
+  public BankUserResponseDto getMember(String userId) {
     CreateMemberDto member = CreateMemberDto.builder()
         .apiKey(apiKey)
         .userId(userId)
@@ -58,7 +58,7 @@ public class BankApi {
         .uri(userInfoUrl)
         .bodyValue(member)
         .retrieve()
-        .bodyToMono(String.class)
+        .bodyToMono(BankUserResponseDto.class)
         .block();
   }
 
