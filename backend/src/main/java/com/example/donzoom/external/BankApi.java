@@ -2,8 +2,8 @@ package com.example.donzoom.external;
 
 import com.example.donzoom.dto.account.request.CreateMemberDto;
 import com.example.donzoom.dto.account.response.AccountCreateResponseDto;
+import com.example.donzoom.dto.account.response.AccountResponseDto;
 import com.example.donzoom.dto.account.response.BankUserResponseDto;
-import com.example.donzoom.dto.account.response.RecDto;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.http.MediaType;
-import reactor.core.publisher.Mono;
 
 @Slf4j
 @Component
@@ -94,13 +93,13 @@ public class BankApi {
         .block();
   }
 
-  public String getAccountInfo(String userKey) {
+  public AccountResponseDto getAccountInfo(String userKey) {
     // 요청 본문 구성
     Map<String, Object> requestBody = Map.of(
         "Header", Map.of(
             "apiName", "inquireDemandDepositAccountList",
-            "transmissionDate", "20240906",
-            "transmissionTime", "143939",
+            "transmissionDate",  getDate(),
+            "transmissionTime", getTime(),
             "institutionCode", "00100",
             "fintechAppNo", "001",
             "apiServiceCode", "inquireDemandDepositAccountList",
@@ -115,7 +114,7 @@ public class BankApi {
         .uri(getAccountUrl)
         .bodyValue(requestBody)
         .retrieve()
-        .bodyToMono(String.class)
+        .bodyToMono(AccountResponseDto.class)
         .block();
   }
   private static final Random random = new Random();

@@ -4,11 +4,9 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
-
 @Getter
 @Builder
-public class RecDto {
-  private final String bankCode;
-  private final String accountNo;
-  private final CurrencyDto currency;
+public class AccountResponseDto {
+  private HeaderDto Header;
+  private List<GetRecDto> REC;
 }

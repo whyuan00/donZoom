@@ -1,8 +1,8 @@
 package com.example.donzoom.service;
 
 import com.example.donzoom.dto.account.response.AccountCreateResponseDto;
+import com.example.donzoom.dto.account.response.AccountResponseDto;
 import com.example.donzoom.dto.account.response.BankUserResponseDto;
-import com.example.donzoom.dto.account.response.RecDto;
 import com.example.donzoom.entity.User;
 import com.example.donzoom.external.BankApi;
 import com.example.donzoom.repository.UserRepository;
@@ -51,11 +51,17 @@ public class AccountService {
     //유저정보 가져오기
     User user = getUser();
     System.out.println(user.getUserKey());
+
+    //유저가 뱅크에 가입되있지 않으면 가입 후 계좌생성
+    if(user.getUserKey()==null){
+      createMember();
+    }
+
     return bankApi.createDemandDepositAccount(accountTypeUniqueNo,user.getUserKey());
   }
 
   //계좌정보조회
-  public String getAccountInfo() {
+  public AccountResponseDto getAccountInfo() {
 
     //유저정보 가져오기
     User user = getUser();

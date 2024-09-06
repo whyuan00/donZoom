@@ -1,8 +1,8 @@
 package com.example.donzoom.controller;
 
 import com.example.donzoom.dto.account.response.AccountCreateResponseDto;
+import com.example.donzoom.dto.account.response.AccountResponseDto;
 import com.example.donzoom.dto.account.response.BankUserResponseDto;
-import com.example.donzoom.dto.account.response.RecDto;
 import com.example.donzoom.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,14 +27,14 @@ public class AccountController {
   }
 
   @GetMapping("/info")
-  public String getAccountInfo() {
+  public AccountResponseDto getAccountInfo() {
     return accountService.getAccountInfo();
   }
 
-  @PostMapping("/member")
-  public BankUserResponseDto createMember() {
-    return accountService.createMember();
-  }
+//  @PostMapping("/member")
+//  public BankUserResponseDto createMember() {
+//    return accountService.createMember();
+//  }
 
   @GetMapping("/member")
   public BankUserResponseDto getMember() {

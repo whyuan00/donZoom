@@ -9,6 +9,6 @@ import lombok.Getter;
 public class AccountCreateResponseDto {
 
   private HeaderDto Header;
-  private RecDto REC;
+  private CreateRecDto REC;
 
 }
