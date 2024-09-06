@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StockHistory {
+public class StockHistory extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,15 +30,10 @@ public class StockHistory {
 
   private Float price;
 
-  private LocalDateTime createdAt;  // TODO: Base Entity 생기면 교체 예정
-  private LocalDateTime modifiedAt; // TODO: Base Entity 생기면 교체 예정
-
   @Builder
   public StockHistory(Stock stock, Float price) {
     this.stock = stock;
     this.price = price;
-    this.createdAt = LocalDateTime.now();   // TODO: Base Entity 생기면 교체 예정
-    this.modifiedAt = LocalDateTime.now();  // TODO: Base Entity 생기면 교체 예정
   }
 
 }
