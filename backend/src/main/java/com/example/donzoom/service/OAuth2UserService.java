@@ -1,8 +1,6 @@
 package com.example.donzoom.service;
 
-import com.example.donzoom.dto.user.CustomOAuth2User;
-import com.example.donzoom.dto.user.NaverResponse;
-import com.example.donzoom.dto.user.OAuth2Response;
+import com.example.donzoom.dto.user.*;
 import com.example.donzoom.dto.user.request.UserCreateDto;
 import com.example.donzoom.entity.User;
 import com.example.donzoom.repository.UserRepository;
@@ -56,14 +54,12 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
     Optional<User> findUser = userRepository.findByEmail(email);
 
     // 추가 회원가입 처리 유무 판단
-    // TODO : 임시로 ROlE의 유무로 계정 로그인 판단하기
     if (findUser.isEmpty()) {
       // 해당 이메일이 없는 경우 -> 회원가입 진행하기
       log.info("해당 이메일로 가입된 계정이 없습니다. = {}", oAuth2Response.getEmail());
       User newUser = User.builder()
           // TODO : 추가 정보 있으면 넘기기
           .email(oAuth2Response.getEmail())
-//                    .role("ROLE_TEMP") // 없으면 회원가입 필요
           .provider(provider)
           .build();
       userRepository.save(newUser); // 이후에 가입으로 추가 업데이트 하기
@@ -77,10 +73,13 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 
   private OAuth2Response getOAuth2Response(OAuth2UserRequest userRequest, OAuth2User oAuth2User) {
     String registrationId = userRequest.getClientRegistration().getRegistrationId();
+    log.info(oAuth2User.getAttributes().toString());
     if (registrationId.equals("naver")) {
       return new NaverResponse(oAuth2User.getAttributes());
     } else if (registrationId.equals("google")) {
-      // return new GoogleResponse(oAuth2User.getAttributes());
+      return new GoogleResponse(oAuth2User.getAttributes());
+    }else if(registrationId.equals("kakao")){
+      return new KakaoResponse(oAuth2User.getAttributes());
     }
     throw new OAuth2AuthenticationException("Unsupported OAuth2 service");
   }
