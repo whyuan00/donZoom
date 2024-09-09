@@ -54,6 +54,22 @@ public class BankApi {
         .build();
   }
 
+  private Map<String, Object> createHeader(String apiName, String userKey) {
+    return Map.of(
+        "Header", Map.of(
+            "apiName", apiName,
+            "transmissionDate", getDate(),
+            "transmissionTime", getTime(),
+            "institutionCode", "00100",
+            "fintechAppNo", "001",
+            "apiServiceCode", apiName,
+            "institutionTransactionUniqueNo", generateUniqueNumber(),
+            "apiKey", apiKey,
+            "userKey", userKey
+        )
+    );
+  }
+
   //회원생성
   public BankUserResponseDto createMember(String userId) {
     CreateMemberDto member = CreateMemberDto.builder()
@@ -82,21 +98,11 @@ public class BankApi {
   }
 
   //계좌 생성
-  public AccountCreateResponseDto createDemandDepositAccount(String accountTypeUniqueNo,String userKey) {
-    // 요청 본문 구성
+  public AccountCreateResponseDto createDemandDepositAccount(String accountTypeUniqueNo,
+      String userKey) {
     Map<String, Object> requestBody = Map.of(
-        "Header", Map.of(
-            "apiName", "createDemandDepositAccount",
-            "transmissionDate", getDate(),
-            "transmissionTime", getTime(),
-            "institutionCode", "00100",
-            "fintechAppNo", "001",
-            "apiServiceCode", "createDemandDepositAccount",
-            "institutionTransactionUniqueNo", generateUniqueNumber(),
-            "apiKey", apiKey,
-            "userKey", userKey
-        ),
-        "accountTypeUniqueNo", "001-1-c468f2dd7ccb42" //상품번호. 일단 임의로해놓음
+        "Header", createHeader("createDemandDepositAccount", userKey),
+        "accountTypeUniqueNo", accountTypeUniqueNo
     );
 
     return webClient.post()
@@ -108,22 +114,7 @@ public class BankApi {
   }
 
   public AccountResponseDto getAccountInfo(String userKey) {
-    // 요청 본문 구성
-    Map<String, Object> requestBody = Map.of(
-        "Header", Map.of(
-            "apiName", "inquireDemandDepositAccountList",
-            "transmissionDate",  getDate(),
-            "transmissionTime", getTime(),
-            "institutionCode", "00100",
-            "fintechAppNo", "001",
-            "apiServiceCode", "inquireDemandDepositAccountList",
-            "institutionTransactionUniqueNo", generateUniqueNumber(),
-            "apiKey", apiKey,
-            "userKey", userKey
-        )
-
-    );
-
+    Map<String, Object> requestBody = createHeader("inquireDemandDepositAccountList", userKey);
 
     return webClient.post()
         .uri(getAccountUrl)
@@ -133,26 +124,14 @@ public class BankApi {
         .block();
   }
 
-
-  public TransferResponseDto transfer(TransferRequestDto transferRequestDto,String userKey) {
-    // 요청 본문 구성
+  public TransferResponseDto transfer(TransferRequestDto transferRequestDto, String userKey) {
     Map<String, Object> requestBody = Map.of(
-        "Header", Map.of(
-            "apiName", "updateDemandDepositAccountTransfer",
-            "transmissionDate",  getDate(),
-            "transmissionTime", getTime(),
-            "institutionCode", "00100",
-            "fintechAppNo", "001",
-            "apiServiceCode", "updateDemandDepositAccountTransfer",
-            "institutionTransactionUniqueNo", generateUniqueNumber(),
-            "apiKey", apiKey,
-            "userKey", userKey
-        ),
+        "Header", createHeader("updateDemandDepositAccountTransfer", userKey),
         "depositAccountNo", transferRequestDto.getDepositAccountNo(),
-        "depositTransactionSummary",transferRequestDto.getDepositTransactionSummary(),
-        "transactionBalance",transferRequestDto.getTransactionBalance(),
-        "withdrawalAccountNo",transferRequestDto.getWithdrawalAccountNo(),
-        "withdrawalTransactionSummary",transferRequestDto.getDepositTransactionSummary()
+        "depositTransactionSummary", transferRequestDto.getDepositTransactionSummary(),
+        "transactionBalance", transferRequestDto.getTransactionBalance(),
+        "withdrawalAccountNo", transferRequestDto.getWithdrawalAccountNo(),
+        "withdrawalTransactionSummary", transferRequestDto.getDepositTransactionSummary()
     );
 
     return webClient.post()
@@ -163,23 +142,10 @@ public class BankApi {
         .block();
   }
 
-
   public BalanceResponseDto getBalance(String accountNo, String userKey) {
-    // 요청 본문 구성
     Map<String, Object> requestBody = Map.of(
-        "Header", Map.of(
-            "apiName", "inquireDemandDepositAccountBalance",
-            "transmissionDate",  getDate(),
-            "transmissionTime", getTime(),
-            "institutionCode", "00100",
-            "fintechAppNo", "001",
-            "apiServiceCode", "inquireDemandDepositAccountBalance",
-            "institutionTransactionUniqueNo", generateUniqueNumber(),
-            "apiKey", apiKey,
-            "userKey", userKey
-        ),
-        "accountNo",accountNo
-
+        "Header", createHeader("inquireDemandDepositAccountBalance", userKey),
+        "accountNo", accountNo
     );
 
     return webClient.post()
@@ -190,25 +156,15 @@ public class BankApi {
         .block();
   }
 
-  public TransactionResponseDto getHistory(TransactionRequestDto transactionRequestDto, String userKey) {
-    // 요청 본문 구성
+  public TransactionResponseDto getHistory(TransactionRequestDto transactionRequestDto,
+      String userKey) {
     Map<String, Object> requestBody = Map.of(
-        "Header", Map.of(
-            "apiName", "inquireTransactionHistoryList",
-            "transmissionDate",  getDate(),
-            "transmissionTime", getTime(),
-            "institutionCode", "00100",
-            "fintechAppNo", "001",
-            "apiServiceCode", "inquireTransactionHistoryList",
-            "institutionTransactionUniqueNo", generateUniqueNumber(),
-            "apiKey", apiKey,
-            "userKey", userKey
-        ),
-        "accountNo",transactionRequestDto.getAccountNo(),
-        "startDate",transactionRequestDto.getStartDate(),
-        "endDate",transactionRequestDto.getEndDate(),
-        "transactionType",transactionRequestDto.getTransactionType(),
-        "orderByType",transactionRequestDto.getOrderByType()
+        "Header", createHeader("inquireTransactionHistoryList", userKey),
+        "accountNo", transactionRequestDto.getAccountNo(),
+        "startDate", transactionRequestDto.getStartDate(),
+        "endDate", transactionRequestDto.getEndDate(),
+        "transactionType", transactionRequestDto.getTransactionType(),
+        "orderByType", transactionRequestDto.getOrderByType()
     );
 
     return webClient.post()
@@ -219,23 +175,13 @@ public class BankApi {
         .block();
   }
 
-  public CreateCardResponseDto createCard(CreateCardRequestDto createCardRequestDto, String userKey) {
-    // 요청 본문 구성
+  public CreateCardResponseDto createCard(CreateCardRequestDto createCardRequestDto,
+      String userKey) {
     Map<String, Object> requestBody = Map.of(
-        "Header", Map.of(
-            "apiName", "createCreditCard",
-            "transmissionDate",  getDate(),
-            "transmissionTime", getTime(),
-            "institutionCode", "00100",
-            "fintechAppNo", "001",
-            "apiServiceCode", "createCreditCard",
-            "institutionTransactionUniqueNo", generateUniqueNumber(),
-            "apiKey", apiKey,
-            "userKey", userKey
-        ),
-        "cardUniqueNo" , createCardRequestDto.getCardUniqueNo(),
-        "withdrawalAccountNo" , createCardRequestDto.getWithdrawalAccountNo(),
-        "withdrawalDate" , createCardRequestDto.getWithdrawalDate()
+        "Header", createHeader("createCreditCard", userKey),
+        "cardUniqueNo", createCardRequestDto.getCardUniqueNo(),
+        "withdrawalAccountNo", createCardRequestDto.getWithdrawalAccountNo(),
+        "withdrawalDate", createCardRequestDto.getWithdrawalDate()
     );
 
     return webClient.post()
@@ -245,41 +191,30 @@ public class BankApi {
         .bodyToMono(CreateCardResponseDto.class)
         .block();
   }
+
   private static final Random random = new Random();
 
-  public static String generateUniqueNumber() {
-    // 현재 날짜와 시간 얻기
+  private static String generateUniqueNumber() {
     LocalDateTime now = LocalDateTime.now();
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmmss");
 
-    // 날짜와 시간 문자열 생성
     String date = now.format(dateFormatter);
     String time = now.format(timeFormatter);
-
-    // 일련번호 6자리 생성
     String serialNumber = String.format("%06d", random.nextInt(1000000));
     log.info(date + time + serialNumber);
-    // 최종 채번 생성
     return date + time + serialNumber;
   }
 
-
-  public static String getDate() {
-    // 현재 날짜와 시간 얻기
+  private static String getDate() {
     LocalDateTime now = LocalDateTime.now();
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-
     return now.format(dateFormatter);
-
   }
-  public static String getTime() {
-    // 현재 날짜와 시간 얻기
+
+  private static String getTime() {
     LocalDateTime now = LocalDateTime.now();
     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmmss");
-
     return now.format(timeFormatter);
-
   }
-
 }
