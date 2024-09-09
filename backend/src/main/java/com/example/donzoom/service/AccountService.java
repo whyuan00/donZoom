@@ -2,6 +2,7 @@ package com.example.donzoom.service;
 
 import com.example.donzoom.dto.account.request.TransactionRequestDto;
 import com.example.donzoom.dto.account.request.TransferRequestDto;
+import com.example.donzoom.dto.account.request.UpdateLimitRequestDto;
 import com.example.donzoom.dto.account.response.AccountCreateResponseDto;
 import com.example.donzoom.dto.account.response.AccountResponseDto;
 import com.example.donzoom.dto.account.response.BalanceResponseDto;
@@ -93,10 +94,20 @@ public class AccountService {
     return bankApi.getHistory(transactionRequestDto,user.getUserKey());
   }
 
-  public TransactionResponseDto updateLimit(TransactionRequestDto transactionRequestDto) {
-    //유저정보 가져오기
-    User user = getUser();
-    return bankApi.getHistory(transactionRequestDto,user.getUserKey());
+  // 1일 결제 한도 수정
+  public void updateDailyLimit(UpdateLimitRequestDto updateLimitRequestDto) {
+    User child = userRepository.findById(updateLimitRequestDto.getChildId())
+        .orElseThrow(() -> new RuntimeException("User not found"));
+    child.updateDailyLimit(updateLimitRequestDto.getLimit());
+    userRepository.save(child);
+  }
+
+  // 1회 결제 한도 수정
+  public void updatePerTransactionLimit(UpdateLimitRequestDto updateLimitRequestDto) {
+    User child = userRepository.findById(updateLimitRequestDto.getChildId())
+        .orElseThrow(() -> new RuntimeException("User not found"));
+    child.updatePerTransactionLimit(updateLimitRequestDto.getLimit());
+    userRepository.save(child);
   }
 
   public User getUser(){

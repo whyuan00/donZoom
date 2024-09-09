@@ -47,9 +47,12 @@ public class User extends BaseEntity{
   @JoinColumn(name = "WALLET_ID")
   private Wallet wallet;
 
+  private Long dailyLimit;             // 1일 결제 한도
+  private Long perTransactionLimit;    // 1회 결제 한도
+
   @Builder
   public User(User parent, String email, String pwdHash, String name, String nickname,
-      String userKey, String role, String provider,Wallet wallet) {
+      String userKey, String role, String provider,Wallet wallet,Long dailyLimit, Long perTransactionLimit) {
     this.parent = parent;
     this.email = email;
     this.pwdHash = pwdHash;
@@ -59,6 +62,8 @@ public class User extends BaseEntity{
     this.role = role;
     this.provider = provider;
     this.wallet = wallet;
+    this.dailyLimit = dailyLimit;
+    this.perTransactionLimit = perTransactionLimit;
   }
 
 
@@ -71,6 +76,17 @@ public class User extends BaseEntity{
 
   public void updateUserKey(String userKey) {
     this.userKey = userKey;
+  }
+
+
+  // 1일결제한도 변경
+  public void updateDailyLimit(Long newLimit) {
+    this.dailyLimit = newLimit;
+  }
+
+  // 1회결제한도 변경
+  public void updatePerTransactionLimit(Long newLimit) {
+    this.perTransactionLimit = newLimit;
   }
 
 }
