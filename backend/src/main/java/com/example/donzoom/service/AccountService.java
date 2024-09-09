@@ -1,5 +1,6 @@
 package com.example.donzoom.service;
 
+import com.example.donzoom.dto.account.request.AutoTransferRequestDto;
 import com.example.donzoom.dto.account.request.CreateCardRequestDto;
 import com.example.donzoom.dto.account.request.TransactionRequestDto;
 import com.example.donzoom.dto.account.request.TransferRequestDto;
@@ -11,24 +12,30 @@ import com.example.donzoom.dto.account.response.BankUserResponseDto;
 import com.example.donzoom.dto.account.response.CreateCardResponseDto;
 import com.example.donzoom.dto.account.response.TransactionResponseDto;
 import com.example.donzoom.dto.account.response.TransferResponseDto;
+import com.example.donzoom.entity.AutoTransfer;
 import com.example.donzoom.entity.User;
 import com.example.donzoom.external.BankApi;
 import com.example.donzoom.repository.UserRepository;
+import com.example.donzoom.repository.AutoTransferRepository;
 import com.example.donzoom.util.SecurityUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
+@Slf4j
 public class AccountService {
 
   private final BankApi bankApi;
   private final UserRepository userRepository;
+  private final AutoTransferRepository autoTransferRepository;
 
   @Autowired
-  public AccountService(BankApi bankApi, UserRepository userRepository) {
+  public AccountService(BankApi bankApi, UserRepository userRepository,
+      AutoTransferRepository autoTransferRepository) {
     this.bankApi = bankApi;
     this.userRepository = userRepository;
+    this.autoTransferRepository = autoTransferRepository;
   }
 
   //뱅크사용자 가입
@@ -119,11 +126,46 @@ public class AccountService {
     return bankApi.createCard(createCardRequestDto,user.getUserKey());
   }
 
+  public void setAutoTransfer(AutoTransferRequestDto autoTransferRequestDto) {
+    // 현재 유저 정보 가져오기
+    User user = getUser();
+
+    // 자동이체 정보를 DB에 저장
+    AutoTransfer autoTransfer = AutoTransfer.builder()
+        .withdrawalAccountNo(autoTransferRequestDto.getWithdrawalAccountNo())
+        .depositAccountNo(autoTransferRequestDto.getDepositAccountNo())
+        .transactionBalance(autoTransferRequestDto.getTransactionBalance())
+        .transferDate(autoTransferRequestDto.getTransferDate())
+        .userKey(user.getUserKey())
+        .build();
+
+    autoTransferRepository.save(autoTransfer);
+
+    // 자동이체 정보를 저장하거나 로깅 등 처리
+    log.info("자동이체가 설정되었습니다. 출금 계좌: {}, 입금 계좌: {}, 금액: {}, 날짜: {}",
+        autoTransferRequestDto.getWithdrawalAccountNo(),
+        autoTransferRequestDto.getDepositAccountNo(),
+        autoTransferRequestDto.getTransactionBalance(),
+        autoTransferRequestDto.getTransferDate());
+  }
+
+  public void executeTransfer(AutoTransfer autoTransfer) {
+    TransferRequestDto transferRequestDto = TransferRequestDto.builder()
+        .withdrawalAccountNo(autoTransfer.getWithdrawalAccountNo())
+        .depositAccountNo(autoTransfer.getDepositAccountNo())
+        .transactionBalance(autoTransfer.getTransactionBalance())
+        .depositTransactionSummary("자동이체")
+        .withdrawalTransactionSummary("자동이체")
+        .build();
+
+    bankApi.transfer(transferRequestDto, autoTransfer.getUserKey());  // 이체 API 호출
+  }
+
   public User getUser(){
     // 현재 인증된 사용자 정보 가져오기
     String username = SecurityUtil.getAuthenticatedUsername();
     //유저정보 가져오기
-    User user = userRepository.findByEmail("test3@ssafy.com")
+    User user = userRepository.findByEmail(username)
         .orElseThrow(() -> new RuntimeException("User not found"));
     return user;
   }

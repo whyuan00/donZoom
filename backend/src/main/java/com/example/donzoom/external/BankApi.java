@@ -264,6 +264,7 @@ public class BankApi {
     return date + time + serialNumber;
   }
 
+
   public static String getDate() {
     // 현재 날짜와 시간 얻기
     LocalDateTime now = LocalDateTime.now();

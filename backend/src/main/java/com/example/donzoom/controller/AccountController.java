@@ -1,5 +1,6 @@
 package com.example.donzoom.controller;
 
+import com.example.donzoom.dto.account.request.AutoTransferRequestDto;
 import com.example.donzoom.dto.account.request.CreateCardRequestDto;
 import com.example.donzoom.dto.account.request.TransactionRequestDto;
 import com.example.donzoom.dto.account.request.TransferRequestDto;
@@ -52,6 +53,14 @@ public class AccountController {
     TransferResponseDto response = accountService.transfer(transferRequestDto);
     return ResponseEntity.ok(response);
   }
+
+  // 자동이체 설정
+  @PatchMapping("/transfer")
+  public ResponseEntity<Void> setAutoTransfer(@RequestBody AutoTransferRequestDto requestDto) {
+    accountService.setAutoTransfer(requestDto);
+    return ResponseEntity.noContent().build();
+  }
+
   //계좌잔액조회
   @GetMapping(value = "/balance")
   public ResponseEntity<BalanceResponseDto> getBalance(
