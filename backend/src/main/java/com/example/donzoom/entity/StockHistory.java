@@ -13,11 +13,12 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.LastModifiedDate;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StockHistory extends BaseEntity {
+public class StockHistory {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,10 +31,16 @@ public class StockHistory extends BaseEntity {
 
   private Float price;
 
+  private LocalDateTime createdAt;
+
+  @LastModifiedDate
+  private LocalDateTime updatedAt;
+
   @Builder
-  public StockHistory(Stock stock, Float price) {
+  public StockHistory(Stock stock, Float price, LocalDateTime createdAt) {
     this.stock = stock;
     this.price = price;
+    this.createdAt = createdAt;
   }
 
 }

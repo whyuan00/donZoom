@@ -31,7 +31,7 @@ public class StockWallet {
   @JoinColumn(name = "stock_id")
   private Stock stock;
 
-  // 총 매입 금액 (평단가 * 수량)
+  // 총 매입 금액
   private Float totalInvestedPrice;
 
   // 보유한 주식의 수량
@@ -39,12 +39,6 @@ public class StockWallet {
 
   // 평균 매입 단가
   private Float averagePrice;
-
-  // 미실현 수익률 (현재가 대비 평단가 수익률)
-  private Float unrealizedProfitRate;
-
-  // 실현된 수익
-  private Float realizedProfit = 0.0f; // 실현된 수익은 처음에는 0
 
   @Builder
   public StockWallet(Wallet wallet, Stock stock, Float totalInvestedPrice, Integer amount, Float averagePrice) {
@@ -62,13 +56,4 @@ public class StockWallet {
     this.averagePrice = totalInvestedPrice / amount;
   }
 
-  // 실현 수익 업데이트 (매도할 때 호출)
-  public void updateRealizedProfit(Float realizedProfit) {
-    this.realizedProfit += realizedProfit;
-  }
-
-  // 미실현 수익률 업데이트 (현재 주가에 따라)
-  public void updateUnrealizedProfitRate(Float currentPrice) {
-    this.unrealizedProfitRate = ((currentPrice - this.averagePrice) / this.averagePrice) * 100;
-  }
 }
