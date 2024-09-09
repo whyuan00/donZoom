@@ -1,8 +1,11 @@
 package com.example.donzoom.controller;
 
+import com.example.donzoom.dto.news.response.NewsSimpleResponseDto;
 import com.example.donzoom.dto.stock.response.StockResponseDto;
 import com.example.donzoom.dto.stock.response.StockSimpleResponseDto;
+import com.example.donzoom.dto.stock.response.StockTransactionHistoryResponseDto;
 import com.example.donzoom.dto.stock.response.StockTransactionHistorySimpleResponseDto;
+import com.example.donzoom.dto.stock.response.StockWalletResponseDto;
 import com.example.donzoom.dto.stock.response.StockWalletSimpleResponseDto;
 import com.example.donzoom.service.StockService;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,10 +55,26 @@ public class StockController {
     return ResponseEntity.ok().body(historiesByStockId);
   }
 
-//  @PostMapping("/{stockId}/buy")
-//  public ResponseEntity<?> buyStocks(@PathVariable(name = "stockId") Long stockId,
-//      @RequestParam(name = "amount") Integer amount) {
-//    stockService.buyStocks(stockId, amount);
-//  }
+  @PostMapping("/{stockId}/buy")
+  public ResponseEntity<?> buyStocks(@PathVariable(name = "stockId") Long stockId,
+      @RequestParam(name = "amount") Integer amount) {
+    StockTransactionHistoryResponseDto transaction = stockService.buyStocks(
+        stockId, amount);
+    return ResponseEntity.ok().body(transaction);
+  }
+
+  @PostMapping("/{stockId}/sell")
+  public ResponseEntity<?> sellStocks(@PathVariable(name = "stockId") Long stockId,
+      @RequestParam(name = "amount") Integer amount) {
+    StockTransactionHistoryResponseDto transaction = stockService.sellStocks(
+        stockId, amount);
+    return ResponseEntity.ok().body(transaction);
+  }
+
+  @GetMapping("/{stockId}/news")
+  public ResponseEntity<?> getArticle(@PathVariable(name = "stockId") Long stockId) {
+    NewsSimpleResponseDto recentNews = stockService.getRecentArticles(stockId);
+    return ResponseEntity.ok().body(recentNews);
+  }
 
 }
