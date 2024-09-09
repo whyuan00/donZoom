@@ -18,8 +18,8 @@ public class Wallet {
     @Column(name="WALLET_ID")
     private Long id;
 
-//    @OneToOne(mappedBy = "user")
-//    private User user;
+    @OneToOne(mappedBy = "wallet")
+    private User user;
 
     @OneToMany(mappedBy = "wallet")
     private List<MyPig> mypigs = new ArrayList<>();
@@ -29,12 +29,13 @@ public class Wallet {
     private Integer ticket;
 
     @Builder
-    public Wallet(Integer coin, Integer ticket, List<MyPig> mypigs) {
+    public Wallet(Integer coin, Integer ticket, List<MyPig> mypigs,User user) {
         this.coin = coin;
         this.ticket = ticket;
         if (mypigs != null) {
             this.mypigs = mypigs;
         }
+        this.user = user;
     }
 
     public void updateCoin(Integer coin) {

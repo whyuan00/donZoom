@@ -1,12 +1,10 @@
 package com.example.donzoom.dto.pig.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 @Builder
-@AllArgsConstructor
 public class PigResponseDto {
   private final Long pigId;
   private final String imageUrl;

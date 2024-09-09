@@ -7,8 +7,10 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -41,9 +43,20 @@ public class User extends BaseEntity{
   @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<User> children;
 
+  @OneToOne(cascade = CascadeType.ALL)
+  @JoinColumn(name = "WALLET_ID")
+  private Wallet wallet;
+
+  private Long dailyLimit;             // 1일 결제 한도
+  private Long perTransactionLimit;    // 1회 결제 한도
+
+
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<AutoTransfer> autoTransfers;  // AutoTransfer와의 연관관계 추가
+
   @Builder
   public User(User parent, String email, String pwdHash, String name, String nickname,
-      String userKey, String role, String provider) {
+      String userKey, String role, String provider,Wallet wallet,Long dailyLimit, Long perTransactionLimit, List<AutoTransfer> autoTransfers) {
     this.parent = parent;
     this.email = email;
     this.pwdHash = pwdHash;
@@ -52,6 +65,12 @@ public class User extends BaseEntity{
     this.userKey = userKey;
     this.role = role;
     this.provider = provider;
+    this.wallet = wallet;
+    this.dailyLimit = dailyLimit;
+    this.perTransactionLimit = perTransactionLimit;
+    if (autoTransfers != null) {
+      this.autoTransfers = autoTransfers;
+    }
   }
 
 
@@ -61,4 +80,20 @@ public class User extends BaseEntity{
     this.name = TempOAuthUser.getName();
     this.pwdHash = TempOAuthUser.getPwdHash();
   }
+
+  public void updateUserKey(String userKey) {
+    this.userKey = userKey;
+  }
+
+
+  // 1일결제한도 변경
+  public void updateDailyLimit(Long newLimit) {
+    this.dailyLimit = newLimit;
+  }
+
+  // 1회결제한도 변경
+  public void updatePerTransactionLimit(Long newLimit) {
+    this.perTransactionLimit = newLimit;
+  }
+
 }

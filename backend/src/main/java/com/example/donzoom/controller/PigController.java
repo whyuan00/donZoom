@@ -35,7 +35,7 @@ public class PigController {
   @GetMapping
   public ResponseEntity<List<PigResponseDto>> getPigs() {
     try {
-      List<PigResponseDto> pigs = pigService.findPigs(1); //일단 임의의 지갑아이디
+      List<PigResponseDto> pigs = pigService.findPigs();
       return new ResponseEntity<>(pigs, HttpStatus.OK); // 성공 상태 코드와 데이터 반환
     } catch (Exception e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 잘못된 요청인 경우
@@ -57,7 +57,7 @@ public class PigController {
       @RequestBody TicketPurchaseRequestDto ticketPurchaseRequestDto) {
     try {
 
-      walletService.buyTicket(ticketPurchaseRequestDto, 1L);
+      walletService.buyTicket(ticketPurchaseRequestDto);
       return new ResponseEntity<>(HttpStatus.CREATED); // 성공 상태 코드
     } catch (Exception e) {
       e.printStackTrace();
@@ -68,6 +68,6 @@ public class PigController {
   @PostMapping
   public List<PigResponseDto> getRandomPigsAndAddToWallet(
       @RequestBody PigRequestDto pigRequestDto) {
-    return pigService.getRandomPigsAndAddToWallet(pigRequestDto, 1L);
+    return pigService.getRandomPigsAndAddToWallet(pigRequestDto);
   }
 }

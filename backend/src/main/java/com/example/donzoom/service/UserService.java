@@ -5,7 +5,9 @@ import com.example.donzoom.dto.user.request.UserCreateDto;
 import com.example.donzoom.dto.user.request.LoginRequestDto;
 import com.example.donzoom.dto.user.response.LoginResponseDto;
 import com.example.donzoom.entity.User;
+import com.example.donzoom.entity.Wallet;
 import com.example.donzoom.repository.UserRepository;
+import com.example.donzoom.repository.WalletRepository;
 import com.example.donzoom.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 
@@ -24,14 +26,19 @@ public class UserService {
   private final UserRepository userRepository;
   private final PasswordService passwordService;
   private final JWTUtil jwtUtil;
+  private final WalletRepository walletRepository;
 
   public Long registerUser(UserCreateDto userCreateDto) {
+    // 새로운 지갑 생성
+    Wallet wallet = Wallet.builder().build();
+    walletRepository.save(wallet);
 
     User user = User.builder()
         .email(userCreateDto.getEmail())
         .pwdHash(passwordService.encode(userCreateDto.getPassword()))
         .name(userCreateDto.getName())
         .nickname(userCreateDto.getNickname())
+        .wallet(wallet)
         .build();
 
     userRepository.save(user);
