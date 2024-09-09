@@ -96,17 +96,17 @@ public class AccountService {
 
   // 1일 결제 한도 수정
   public void updateDailyLimit(UpdateLimitRequestDto updateLimitRequestDto) {
-    User child = userRepository.findById(updateLimitRequestDto.getChildId())
+    User child = userRepository.findById(Long.parseLong(updateLimitRequestDto.getChildId()))
         .orElseThrow(() -> new RuntimeException("User not found"));
-    child.updateDailyLimit(updateLimitRequestDto.getLimit());
+    child.updateDailyLimit(Long.parseLong(updateLimitRequestDto.getLimit()));
     userRepository.save(child);
   }
 
   // 1회 결제 한도 수정
   public void updatePerTransactionLimit(UpdateLimitRequestDto updateLimitRequestDto) {
-    User child = userRepository.findById(updateLimitRequestDto.getChildId())
+    User child = userRepository.findById(Long.parseLong(updateLimitRequestDto.getChildId()))
         .orElseThrow(() -> new RuntimeException("User not found"));
-    child.updatePerTransactionLimit(updateLimitRequestDto.getLimit());
+    child.updatePerTransactionLimit(Long.parseLong(updateLimitRequestDto.getLimit()));
     userRepository.save(child);
   }
 

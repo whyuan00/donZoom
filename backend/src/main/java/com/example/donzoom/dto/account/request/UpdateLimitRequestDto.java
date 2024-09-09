@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class UpdateLimitRequestDto {
-  private final Long childId;
-  private final Long limit;
+  private final String childId;
+  private final String limit;
 }

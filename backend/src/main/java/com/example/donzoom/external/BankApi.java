@@ -41,6 +41,8 @@ public class BankApi {
   private String getBalanceUrl;
   @Value("${fin.inquire-transaction-history-list-url}")
   private String getTransactionUrl;
+  @Value("${fin.create-credit-card-url}")
+  private String createCarUrl;
 
   private final WebClient webClient;
 
