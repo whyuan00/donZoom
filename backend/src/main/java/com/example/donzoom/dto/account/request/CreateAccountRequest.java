@@ -1,4 +1,4 @@
-package com.example.donzoom.dto.account.bank;
+package com.example.donzoom.dto.account.request;
 
 import lombok.Builder;
 import lombok.Getter;

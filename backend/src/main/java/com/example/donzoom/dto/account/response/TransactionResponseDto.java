@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class BalanceResponseDto {
+public class TransactionResponseDto {
   private HeaderDto Header;
-  private BalanceRecDto REC;
+  private TransactionRecDto REC;
 }

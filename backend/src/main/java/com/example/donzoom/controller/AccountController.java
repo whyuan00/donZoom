@@ -1,15 +1,21 @@
 package com.example.donzoom.controller;
 
+import com.example.donzoom.dto.account.request.TransactionRequestDto;
 import com.example.donzoom.dto.account.request.TransferRequestDto;
+import com.example.donzoom.dto.account.request.UpdateLimitRequestDto;
 import com.example.donzoom.dto.account.response.AccountCreateResponseDto;
 import com.example.donzoom.dto.account.response.AccountResponseDto;
+import com.example.donzoom.dto.account.response.BalanceResponseDto;
 import com.example.donzoom.dto.account.response.BankUserResponseDto;
+import com.example.donzoom.dto.account.response.TransactionResponseDto;
 import com.example.donzoom.dto.account.response.TransferResponseDto;
 import com.example.donzoom.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.sql.Update;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,13 +49,32 @@ public class AccountController {
     return ResponseEntity.ok(response);
   }
   //계좌잔액조회
-  @PostMapping(value = "/balance")
-  public ResponseEntity<TransferResponseDto> getBalance(
+  @GetMapping(value = "/balance")
+  public ResponseEntity<BalanceResponseDto> getBalance(
       @RequestParam("accountNo") String accountNo) {
 
-    TransferResponseDto response = accountService.transfer(accountId, amount, transferRequestDto);
+    BalanceResponseDto response = accountService.getBalance(accountNo);
     return ResponseEntity.ok(response);
   }
+
+  //거래내역조회
+  @GetMapping(value = "/history")
+  public ResponseEntity<TransactionResponseDto> getHistory(
+      @RequestBody TransactionRequestDto transactionRequestDto) {
+
+    TransactionResponseDto response = accountService.getHistory(transactionRequestDto);
+    return ResponseEntity.ok(response);
+  }
+
+//  //결제 한도 설정
+//  @PatchMapping(value = "/limit")
+//  public ResponseEntity<TransactionResponseDto> updateLimit(
+//      @RequestBody UpdateLimitRequestDto updateLimitRequestDto) {
+//
+//    TransactionResponseDto response = accountService.updateLimt(updateLimitRequestDto);
+//    return ResponseEntity.ok(response);
+//  }
+
 //  @PostMapping("/member")
 //  public BankUserResponseDto createMember() {
 //    return accountService.createMember();

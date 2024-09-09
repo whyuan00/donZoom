@@ -6,7 +6,8 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class BalanceResponseDto {
-  private HeaderDto Header;
-  private BalanceRecDto REC;
+public class TransactionRecDto {
+  private final String totalCount;
+  private final List<TransactionDto> list;
+
 }
