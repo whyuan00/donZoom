@@ -137,9 +137,12 @@ public class AccountService {
         .transactionBalance(autoTransferRequestDto.getTransactionBalance())
         .transferDate(autoTransferRequestDto.getTransferDate())
         .userKey(user.getUserKey())
+        .user(user)  // User 객체 설정
         .build();
 
-    autoTransferRepository.save(autoTransfer);
+    // AutoTransfer를 저장하기 전에 User의 autoTransfers에 추가
+    user.getAutoTransfers().add(autoTransfer);
+    userRepository.save(user);  // User를 저장하면 연관된 AutoTransfer도 저장됨
 
     // 자동이체 정보를 저장하거나 로깅 등 처리
     log.info("자동이체가 설정되었습니다. 출금 계좌: {}, 입금 계좌: {}, 금액: {}, 날짜: {}",

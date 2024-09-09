@@ -50,9 +50,13 @@ public class User extends BaseEntity{
   private Long dailyLimit;             // 1일 결제 한도
   private Long perTransactionLimit;    // 1회 결제 한도
 
+
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<AutoTransfer> autoTransfers;  // AutoTransfer와의 연관관계 추가
+
   @Builder
   public User(User parent, String email, String pwdHash, String name, String nickname,
-      String userKey, String role, String provider,Wallet wallet,Long dailyLimit, Long perTransactionLimit) {
+      String userKey, String role, String provider,Wallet wallet,Long dailyLimit, Long perTransactionLimit, List<AutoTransfer> autoTransfers) {
     this.parent = parent;
     this.email = email;
     this.pwdHash = pwdHash;
@@ -64,6 +68,9 @@ public class User extends BaseEntity{
     this.wallet = wallet;
     this.dailyLimit = dailyLimit;
     this.perTransactionLimit = perTransactionLimit;
+    if (autoTransfers != null) {
+      this.autoTransfers = autoTransfers;
+    }
   }
 
 
