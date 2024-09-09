@@ -1,5 +1,7 @@
 package com.example.donzoom.service;
 
+import com.example.donzoom.dto.news.response.NewsResponseDto;
+import com.example.donzoom.dto.news.response.NewsSimpleResponseDto;
 import com.example.donzoom.dto.stock.response.StockDetailResponseDto;
 import com.example.donzoom.dto.stock.response.StockResponseDto;
 import com.example.donzoom.dto.stock.response.StockSimpleResponseDto;
@@ -8,22 +10,22 @@ import com.example.donzoom.dto.stock.response.StockTransactionHistorySimpleRespo
 import com.example.donzoom.dto.stock.response.StockWalletResponseDto;
 import com.example.donzoom.dto.stock.response.StockWalletSimpleResponseDto;
 import com.example.donzoom.dto.stockHistory.response.StockHistoryResponseDto;
+import com.example.donzoom.entity.News;
 import com.example.donzoom.entity.Stock;
 import com.example.donzoom.entity.StockHistory;
 import com.example.donzoom.entity.StockWallet;
 import com.example.donzoom.entity.TransactionHistory;
 import com.example.donzoom.entity.User;
 import com.example.donzoom.entity.Wallet;
+import com.example.donzoom.repository.NewsRepository;
 import com.example.donzoom.repository.StockHistoryRepository;
 import com.example.donzoom.repository.StockRepository;
 import com.example.donzoom.repository.StockWalletRepository;
 import com.example.donzoom.repository.TransactionHistoryRepository;
-import com.example.donzoom.repository.UserRepository;
 import com.example.donzoom.repository.WalletRepository;
 import com.example.donzoom.util.SecurityUtil;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,7 @@ public class StockService {
 
   private final UserService userService;
 
+  private final NewsRepository newsRepository;
   private final StockWalletRepository stockWalletRepository;
   private final StockHistoryRepository stockHistoryRepository;
   private final StockRepository stockRepository;
@@ -43,6 +46,7 @@ public class StockService {
   private final WalletRepository walletRepository;
 
   // 주식 목록 조회
+  @Transactional(readOnly = true)
   public StockSimpleResponseDto getAllStocks() {
     List<Long> stockIds = stockRepository.findAll().stream().map(Stock::getId).toList();
     log.info("getAllStocks: {}", stockIds);
@@ -62,6 +66,7 @@ public class StockService {
   }
 
   // 주식 상세 조회
+  @Transactional(readOnly = true)
   public StockResponseDto getStockById(Long stockId) {
     Stock stock = stockRepository.findById(stockId).orElseThrow();
     List<StockHistory> stockHistories = stockHistoryRepository.findByStockId(stockId);
@@ -81,6 +86,7 @@ public class StockService {
   }
 
   // 내 주식 조회
+  @Transactional(readOnly = true)
   public StockWalletSimpleResponseDto getAllMyStock() {
     String email = SecurityUtil.getAuthenticatedUsername();
     User user = userService.findUserByEmail(email);
@@ -98,6 +104,7 @@ public class StockService {
   }
 
   // 모든 주식 거래내역 조회
+  @Transactional(readOnly = true)
   public StockTransactionHistorySimpleResponseDto getAllTransaction() {
     String email = SecurityUtil.getAuthenticatedUsername();
     User user = userService.findUserByEmail(email);
@@ -122,6 +129,7 @@ public class StockService {
   }
 
   // 주식 종목별 거래내역 조회
+  @Transactional(readOnly = true)
   public StockTransactionHistorySimpleResponseDto getTransaction(Long stockId) {
     String email = SecurityUtil.getAuthenticatedUsername();
     User user = userService.findUserByEmail(email);
@@ -313,4 +321,17 @@ public class StockService {
     return transactionHistory.getId();
   }
 
+  @Transactional(readOnly = true)
+  public NewsSimpleResponseDto getRecentArticles(Long stockId) {
+    List<News> recentNews = newsRepository.findTop3ByStockIdOrderByCreatedAtDesc(
+        stockId);
+
+    List<NewsResponseDto> articles = recentNews.stream().map(news -> NewsResponseDto.builder()
+        .title(news.getTitle())
+        .contents(news.getContents())
+        .createdAt(news.getCreatedAt())
+        .build()).toList();
+
+    return NewsSimpleResponseDto.builder().articles(articles).build();
+  }
 }

@@ -1,5 +1,6 @@
 package com.example.donzoom.controller;
 
+import com.example.donzoom.dto.news.response.NewsSimpleResponseDto;
 import com.example.donzoom.dto.stock.response.StockResponseDto;
 import com.example.donzoom.dto.stock.response.StockSimpleResponseDto;
 import com.example.donzoom.dto.stock.response.StockTransactionHistoryResponseDto;
@@ -68,6 +69,12 @@ public class StockController {
     StockTransactionHistoryResponseDto transaction = stockService.sellStocks(
         stockId, amount);
     return ResponseEntity.ok().body(transaction);
+  }
+
+  @GetMapping("/{stockId}/news")
+  public ResponseEntity<?> getArticle(@PathVariable(name = "stockId") Long stockId) {
+    NewsSimpleResponseDto recentNews = stockService.getRecentArticles(stockId);
+    return ResponseEntity.ok().body(recentNews);
   }
 
 }
