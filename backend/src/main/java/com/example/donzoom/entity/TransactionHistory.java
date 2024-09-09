@@ -1,7 +1,10 @@
 package com.example.donzoom.entity;
 
+import com.example.donzoom.constant.TransactionType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,6 +34,10 @@ public class TransactionHistory extends BaseEntity {
   @JoinColumn(name = "stock_id")
   private Stock stock;
 
+  // 거래타입
+  @Enumerated(EnumType.STRING)
+  private TransactionType transactionType;
+
   // 매수 또는 매도 가격
   private Float price;
 
@@ -38,19 +45,20 @@ public class TransactionHistory extends BaseEntity {
   private Integer amount;
 
   // 총 거래 금액 (단가 * 수량)
-  private Float totalAmount;
+  private Float total;
 
-  // 매도 시 실현된 수익
-  private Float realizedProfit;
+  // 발생 수익
+  private Float profit;
 
   @Builder
   public TransactionHistory(Wallet wallet, Stock stock, Float price, Integer amount,
-      Float totalAmount, Float realizedProfit) {
+      Float total, Float profit, TransactionType transactionType) {
     this.wallet = wallet;
     this.stock = stock;
     this.price = price;
     this.amount = amount;
-    this.totalAmount = totalAmount;
-    this.realizedProfit = realizedProfit;
+    this.total = total;
+    this.profit = profit;
+    this.transactionType = transactionType;
   }
 }
