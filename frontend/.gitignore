@@ -36,6 +36,9 @@ local.properties
 android/.gradle
 android/app/build/
 
+# package-lock.json
+package-lock.json
+
 # node.js
 #
 node_modules/
