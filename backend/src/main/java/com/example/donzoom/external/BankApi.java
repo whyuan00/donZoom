@@ -1,5 +1,6 @@
 package com.example.donzoom.external;
 
+import com.example.donzoom.dto.account.request.CreateCardRequestDto;
 import com.example.donzoom.dto.account.request.CreateMemberDto;
 import com.example.donzoom.dto.account.request.TransactionRequestDto;
 import com.example.donzoom.dto.account.request.TransferRequestDto;
@@ -7,6 +8,7 @@ import com.example.donzoom.dto.account.response.AccountCreateResponseDto;
 import com.example.donzoom.dto.account.response.AccountResponseDto;
 import com.example.donzoom.dto.account.response.BalanceResponseDto;
 import com.example.donzoom.dto.account.response.BankUserResponseDto;
+import com.example.donzoom.dto.account.response.CreateCardResponseDto;
 import com.example.donzoom.dto.account.response.TransactionResponseDto;
 import com.example.donzoom.dto.account.response.TransferResponseDto;
 import java.time.LocalDateTime;
@@ -217,6 +219,32 @@ public class BankApi {
         .block();
   }
 
+  public CreateCardResponseDto createCard(CreateCardRequestDto createCardRequestDto, String userKey) {
+    // 요청 본문 구성
+    Map<String, Object> requestBody = Map.of(
+        "Header", Map.of(
+            "apiName", "createCreditCard",
+            "transmissionDate",  getDate(),
+            "transmissionTime", getTime(),
+            "institutionCode", "00100",
+            "fintechAppNo", "001",
+            "apiServiceCode", "createCreditCard",
+            "institutionTransactionUniqueNo", generateUniqueNumber(),
+            "apiKey", apiKey,
+            "userKey", userKey
+        ),
+        "cardUniqueNo" , createCardRequestDto.getCardUniqueNo(),
+        "withdrawalAccountNo" , createCardRequestDto.getWithdrawalAccountNo(),
+        "withdrawalDate" , createCardRequestDto.getWithdrawalDate()
+    );
+
+    return webClient.post()
+        .uri(createCarUrl)
+        .bodyValue(requestBody)
+        .retrieve()
+        .bodyToMono(CreateCardResponseDto.class)
+        .block();
+  }
   private static final Random random = new Random();
 
   public static String generateUniqueNumber() {

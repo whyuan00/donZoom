@@ -1,5 +1,6 @@
 package com.example.donzoom.service;
 
+import com.example.donzoom.dto.account.request.CreateCardRequestDto;
 import com.example.donzoom.dto.account.request.TransactionRequestDto;
 import com.example.donzoom.dto.account.request.TransferRequestDto;
 import com.example.donzoom.dto.account.request.UpdateLimitRequestDto;
@@ -7,6 +8,7 @@ import com.example.donzoom.dto.account.response.AccountCreateResponseDto;
 import com.example.donzoom.dto.account.response.AccountResponseDto;
 import com.example.donzoom.dto.account.response.BalanceResponseDto;
 import com.example.donzoom.dto.account.response.BankUserResponseDto;
+import com.example.donzoom.dto.account.response.CreateCardResponseDto;
 import com.example.donzoom.dto.account.response.TransactionResponseDto;
 import com.example.donzoom.dto.account.response.TransferResponseDto;
 import com.example.donzoom.entity.User;
@@ -108,6 +110,13 @@ public class AccountService {
         .orElseThrow(() -> new RuntimeException("User not found"));
     child.updatePerTransactionLimit(Long.parseLong(updateLimitRequestDto.getLimit()));
     userRepository.save(child);
+  }
+
+  //카드생성
+  public CreateCardResponseDto createCard(CreateCardRequestDto createCardRequestDto){
+    //유저정보 가져오기
+    User user = getUser();
+    return bankApi.createCard(createCardRequestDto,user.getUserKey());
   }
 
   public User getUser(){

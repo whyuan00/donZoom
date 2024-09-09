@@ -1,5 +1,6 @@
 package com.example.donzoom.controller;
 
+import com.example.donzoom.dto.account.request.CreateCardRequestDto;
 import com.example.donzoom.dto.account.request.TransactionRequestDto;
 import com.example.donzoom.dto.account.request.TransferRequestDto;
 import com.example.donzoom.dto.account.request.UpdateLimitRequestDto;
@@ -7,6 +8,7 @@ import com.example.donzoom.dto.account.response.AccountCreateResponseDto;
 import com.example.donzoom.dto.account.response.AccountResponseDto;
 import com.example.donzoom.dto.account.response.BalanceResponseDto;
 import com.example.donzoom.dto.account.response.BankUserResponseDto;
+import com.example.donzoom.dto.account.response.CreateCardResponseDto;
 import com.example.donzoom.dto.account.response.TransactionResponseDto;
 import com.example.donzoom.dto.account.response.TransferResponseDto;
 import com.example.donzoom.service.AccountService;
@@ -84,6 +86,12 @@ public class AccountController {
     return ResponseEntity.ok().build();
   }
 
+  //카드발금
+  @PostMapping("/card")
+  public ResponseEntity<CreateCardResponseDto> createCard(@RequestBody CreateCardRequestDto createCardRequestDto) {
+    CreateCardResponseDto response = accountService.createCard(createCardRequestDto);
+    return ResponseEntity.ok(response);
+  }
 //  @PostMapping("/member")
 //  public BankUserResponseDto createMember() {
 //    return accountService.createMember();
