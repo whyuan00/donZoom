@@ -1,14 +1,13 @@
 import React from 'react';
-import {SafeAreaView, StyleSheet, Text} from 'react-native';
+import AuthStackNavigator from '../navigation/AuthStackNavigator';
+import {NavigationContainer} from '@react-navigation/native';
 
-function App(): React.JSX.Element {
+function App() {
   return (
-    <SafeAreaView>
-      <Text>Hello World</Text>
-    </SafeAreaView>
+    <NavigationContainer>
+      <AuthStackNavigator />
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({});
 
 export default App;
