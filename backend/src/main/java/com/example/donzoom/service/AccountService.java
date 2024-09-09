@@ -1,6 +1,7 @@
 package com.example.donzoom.service;
 
 import com.example.donzoom.dto.account.request.AutoTransferRequestDto;
+import com.example.donzoom.dto.account.request.AutoTransferUpdateRequestDto;
 import com.example.donzoom.dto.account.request.CreateCardRequestDto;
 import com.example.donzoom.dto.account.request.TransactionRequestDto;
 import com.example.donzoom.dto.account.request.TransferRequestDto;
@@ -150,6 +151,41 @@ public class AccountService {
         autoTransferRequestDto.getDepositAccountNo(),
         autoTransferRequestDto.getTransactionBalance(),
         autoTransferRequestDto.getTransferDate());
+  }
+
+  // 자동이체 정보 수정
+  public void updateAutoTransfer(AutoTransferUpdateRequestDto updateRequestDto) {
+    // 현재 유저 정보 가져오기
+    User user = getUser();
+
+    // 입금계좌와 출금계좌로 자동이체 정보 찾기
+    AutoTransfer autoTransfer = autoTransferRepository.findByWithdrawalAccountNoAndDepositAccountNo(
+            updateRequestDto.getWithdrawalAccountNo(),
+            updateRequestDto.getDepositAccountNo())
+        .orElseThrow(() -> new RuntimeException("AutoTransfer not found"));
+
+    // 해당 자동이체가 현재 유저의 것이 맞는지 확인
+    if (!autoTransfer.getUser().equals(user)) {
+      throw new RuntimeException("Unauthorized to update this AutoTransfer");
+    }
+
+    // 자동이체 정보 수정
+    if (updateRequestDto.getTransactionBalance() != null) {
+      autoTransfer.updateTransactionBalance(updateRequestDto.getTransactionBalance());
+    }
+    if (updateRequestDto.getTransferDate() != null) {
+      autoTransfer.updateTransferDate(updateRequestDto.getTransferDate());
+    }
+
+    // 수정된 자동이체 정보 저장
+    autoTransferRepository.save(autoTransfer);
+
+    // 로그 남기기
+    log.info("자동이체 정보가 수정되었습니다. 출금 계좌: {}, 입금 계좌: {}, 금액: {}, 날짜: {}",
+        updateRequestDto.getWithdrawalAccountNo(),
+        updateRequestDto.getDepositAccountNo(),
+        updateRequestDto.getTransactionBalance(),
+        updateRequestDto.getTransferDate());
   }
 
   public void executeTransfer(AutoTransfer autoTransfer) {

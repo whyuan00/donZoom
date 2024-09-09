@@ -1,6 +1,7 @@
 package com.example.donzoom.controller;
 
 import com.example.donzoom.dto.account.request.AutoTransferRequestDto;
+import com.example.donzoom.dto.account.request.AutoTransferUpdateRequestDto;
 import com.example.donzoom.dto.account.request.CreateCardRequestDto;
 import com.example.donzoom.dto.account.request.TransactionRequestDto;
 import com.example.donzoom.dto.account.request.TransferRequestDto;
@@ -55,9 +56,16 @@ public class AccountController {
   }
 
   // 자동이체 설정
-  @PatchMapping("/transfer")
+  @PostMapping("/transfer/auto")
   public ResponseEntity<Void> setAutoTransfer(@RequestBody AutoTransferRequestDto requestDto) {
     accountService.setAutoTransfer(requestDto);
+    return ResponseEntity.noContent().build();
+  }
+
+  // 자동이체 수정
+  @PatchMapping("/transfer/auto")
+  public ResponseEntity<Void> setAutoTransfer(@RequestBody AutoTransferUpdateRequestDto requestDto) {
+    accountService.updateAutoTransfer(requestDto);
     return ResponseEntity.noContent().build();
   }
 

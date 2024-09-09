@@ -47,4 +47,13 @@ public class AutoTransfer {
     this.userKey = userKey;
     this.user = user;
   }
+
+
+  public void updateTransferDate(String transferDate) {
+    this.transferDate = transferDate;
+  }
+
+  public void updateTransactionBalance(Long transactionBalance) {
+    this.transactionBalance = transactionBalance;
+  }
 }
