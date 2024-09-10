@@ -7,25 +7,14 @@ pipeline {
     }
 
     stages {
-        stage('Start MySQL') {
-            steps {
-                echo 'Starting MySQL container...'
-                sh """
-                    docker run -d --name mysql \
-                    -e MYSQL_ROOT_PASSWORD=ssafy \
-                    -e MYSQL_USER=ssafy \
-                    -e MYSQL_PASSWORD=ssafy \
-                    -e MYSQL_DATABASE=donzoom \
-                    -p 3306:3306 \
-                    mysql:latest
-                """
-            }
-        }
-
         stage('Build JAR') {
             steps {
                 echo 'Building JAR file...'
-                sh 'cd backend && chmod +x gradlew && ./gradlew clean build'
+                sh '''
+                    cd backend
+                    chmod +x gradlew  # gradlew 파일에 실행 권한 부여
+                    ./gradlew clean build
+                '''
             }
         }
 
@@ -40,20 +29,14 @@ pipeline {
 
         stage('Deploy to EC2') {
             steps {
-                echo 'Deploying Docker container to EC2...'
+                echo 'Run Docker...'
                 sh """
-                    docker stop donzoom || true &&
-                    docker rm donzoom || true &&
-                    docker run -d --name donzoom -p 8080:8080 ${DOCKER_IMAGE}:latest
+                    docker stop donzoom || true &&         # 기존 컨테이너를 중지
+                    docker rm donzoom || true &&           # 기존 컨테이너를 삭제
+                    docker run -d --name donzoom -p 8080:8080 ${DOCKER_IMAGE}:latest  # 새로운 컨테이너 실행
+
                 """
             }
-        }
-    }
-
-    post {
-        always {
-            echo 'Cleaning up MySQL container...'
-            sh 'docker stop mysql || true && docker rm mysql || true'
         }
     }
 }
