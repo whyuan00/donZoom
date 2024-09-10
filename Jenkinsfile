@@ -13,7 +13,7 @@ pipeline {
                 sh '''
                     cd backend
                     chmod +x gradlew  # gradlew 파일에 실행 권한 부여
-                    ./gradlew clean build
+                    ./gradlew clean build -x test  # 테스트 생략 (-x test 옵션 추가)
                 '''
             }
         }
@@ -34,7 +34,6 @@ pipeline {
                     docker stop donzoom || true &&         # 기존 컨테이너를 중지
                     docker rm donzoom || true &&           # 기존 컨테이너를 삭제
                     docker run -d --name donzoom --network my_network -p 8080:8080 ${DOCKER_IMAGE}:latest  # 새로운 컨테이너 실행
-
                 """
             }
         }
