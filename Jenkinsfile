@@ -1,28 +1,37 @@
 pipeline {
-
     agent any
 
+    environment {
+        DOCKER_CREDENTIALS_ID = 'docker-hub-credentials'    // Docker Hub 자격 증명 ID
+        DOCKER_IMAGE = 'jooboy/donzoom'                     // Docker 이미지 이름
+    }
+
     stages {
-
-        stage("build") {
-
+        stage('Build JAR') {
             steps {
-                echo 'Building'
-                sh 'java -version'
+                echo 'Building JAR file...'
+                sh './gradlew clean build'  // Gradle을 사용하여 JAR 파일 빌드
             }
         }
 
-        stage("test") {
-
+        stage('Build Docker Image') {
             steps {
-                echo 'Testing'
+                echo 'Building Docker image...'
+                script {
+                    docker.build("${DOCKER_IMAGE}:latest")
+                }
             }
         }
 
-        stage("deploy") {
-
+        stage('Deploy to EC2') {
             steps {
-                echo 'Deploying'
+                echo 'Run Docker...'
+                sh """
+                    docker stop donzoom || true &&         # 기존 컨테이너를 중지
+                    docker rm donzoom || true &&           # 기존 컨테이너를 삭제
+                    docker run -d --name donzoom -p 8080:8080 ${DOCKER_IMAGE}:latest  # 새로운 컨테이너 실행
+
+                """
             }
         }
     }
