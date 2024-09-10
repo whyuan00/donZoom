@@ -3,6 +3,7 @@ package com.example.donzoom.controller;
 import com.example.donzoom.dto.account.request.AutoTransferRequestDto;
 import com.example.donzoom.dto.account.request.AutoTransferUpdateRequestDto;
 import com.example.donzoom.dto.account.request.CreateCardRequestDto;
+import com.example.donzoom.dto.account.request.PayRequestDto;
 import com.example.donzoom.dto.account.request.TransactionRequestDto;
 import com.example.donzoom.dto.account.request.TransferRequestDto;
 import com.example.donzoom.dto.account.request.UpdateLimitRequestDto;
@@ -113,7 +114,12 @@ public class AccountController {
 //  public BankUserResponseDto createMember() {
 //    return accountService.createMember();
 //  }
-
+//카드발금
+@PostMapping("/payment")
+public ResponseEntity<Void> pay(@RequestBody PayRequestDto payRequestDto) {
+  accountService.pay(payRequestDto);
+  return ResponseEntity.ok().build();
+}
   @GetMapping("/member")
   public BankUserResponseDto getMember() {
     return accountService.getMember();

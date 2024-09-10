@@ -1,4 +1,4 @@
-package com.example.donzoom.service;
+package com.example.donzoom.scheduler;
 import com.example.donzoom.entity.AutoTransfer;
 import com.example.donzoom.repository.AutoTransferRepository;
 import com.example.donzoom.service.AccountService;
