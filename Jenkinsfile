@@ -9,7 +9,6 @@ pipeline {
             steps {
                 echo 'Building'
                 sh 'java -version'
-                sh 'gradle -version'
             }
         }
 
