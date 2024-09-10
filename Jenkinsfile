@@ -10,7 +10,7 @@ pipeline {
         stage('Build JAR') {
             steps {
                 echo 'Building JAR file...'
-                sh './gradlew clean build'  // Gradle을 사용하여 JAR 파일 빌드
+                sh 'cd backend && ./gradlew clean build'  // Gradle을 사용하여 JAR 파일 빌드
             }
         }
 
