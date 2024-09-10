@@ -22,7 +22,7 @@ pipeline {
             steps {
                 echo 'Building Docker image...'
                 script {
-                    docker.build("${DOCKER_IMAGE}:latest", "backend")
+                    sh 'sudo docker build -t jooboy/donzoom:latest backend'
                 }
             }
         }
