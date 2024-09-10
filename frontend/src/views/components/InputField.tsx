@@ -7,7 +7,8 @@ import {
   TextInputProps,
   View,
 } from 'react-native';
-import {colors} from '../../constants/colors';
+import {colors} from '@/constants/colors';
+import {fonts} from '@/constants/font';
 
 const deviceHeight = Dimensions.get('screen').height;
 
@@ -40,14 +41,14 @@ const InputField = ({
 
 const styles = StyleSheet.create({
   container: {
-    borderWidth: 1,
-    borderColor: colors.GRAY_75,
-    padding: deviceHeight > 700 ? 15 : 10,
+    width: 235,
+    height: 40,
   },
   input: {
-    fontSize: 16,
+    fontSize: 14,
+    textAlign: 'center',
     color: colors.BLACK,
-    padding: 0,
+    fontFamily: fonts.LIGHT,
   },
   disabled: {
     backgroundColor: colors.GRAY_25,
