@@ -8,9 +8,9 @@ pipeline {
 
             steps {
                 echo 'Building'
-                bat 'java -version'
-                bat 'mvn -version'
-                bat 'gradle -version'
+                sh 'java -version'
+                sh 'mvn -version'
+                sh 'gradle -version'
             }
         }
 
