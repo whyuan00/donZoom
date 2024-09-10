@@ -33,7 +33,7 @@ pipeline {
                 sh """
                     docker stop donzoom || true &&         # 기존 컨테이너를 중지
                     docker rm donzoom || true &&           # 기존 컨테이너를 삭제
-                    docker run -d --name donzoom -p 8080:8080 ${DOCKER_IMAGE}:latest  # 새로운 컨테이너 실행
+                    docker run -d --name donzoom --network my_network -p 8080:8080 ${DOCKER_IMAGE}:latest  # 새로운 컨테이너 실행
 
                 """
             }
