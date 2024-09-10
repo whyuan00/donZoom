@@ -3,6 +3,7 @@ package com.example.donzoom.service;
 import com.example.donzoom.dto.account.request.AutoTransferRequestDto;
 import com.example.donzoom.dto.account.request.AutoTransferUpdateRequestDto;
 import com.example.donzoom.dto.account.request.CreateCardRequestDto;
+import com.example.donzoom.dto.account.request.PayRequestDto;
 import com.example.donzoom.dto.account.request.TransactionRequestDto;
 import com.example.donzoom.dto.account.request.TransferRequestDto;
 import com.example.donzoom.dto.account.request.UpdateLimitRequestDto;
@@ -10,6 +11,8 @@ import com.example.donzoom.dto.account.response.AccountCreateResponseDto;
 import com.example.donzoom.dto.account.response.AccountResponseDto;
 import com.example.donzoom.dto.account.response.BalanceResponseDto;
 import com.example.donzoom.dto.account.response.BankUserResponseDto;
+import com.example.donzoom.dto.account.response.CardListRecDto;
+import com.example.donzoom.dto.account.response.CardListResponseDto;
 import com.example.donzoom.dto.account.response.CreateCardResponseDto;
 import com.example.donzoom.dto.account.response.TransactionResponseDto;
 import com.example.donzoom.dto.account.response.TransferResponseDto;
@@ -19,6 +22,11 @@ import com.example.donzoom.external.BankApi;
 import com.example.donzoom.repository.UserRepository;
 import com.example.donzoom.repository.AutoTransferRepository;
 import com.example.donzoom.util.SecurityUtil;
+import com.example.donzoom.util.StoreMappingUtil;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -198,6 +206,54 @@ public class AccountService {
         .build();
 
     bankApi.transfer(transferRequestDto, autoTransfer.getUserKey());  // 이체 API 호출
+  }
+
+  public void pay(PayRequestDto payRequestDto) {
+    // 유저정보 가져오기
+    User user = getUser();
+
+    // 결제 금액
+    Long paymentBalance = payRequestDto.getPaymentBalance();
+
+    // 유저의 1일한도와 1회한도를 검증
+    if (user.getDailyUsageAmount() + paymentBalance > user.getDailyLimit()) {
+      throw new RuntimeException("1일 한도 초과");
+    }
+
+    if (paymentBalance > user.getPerTransactionLimit()) {
+      throw new RuntimeException("1회 결제 한도 초과");
+    }
+
+    // 유저의 1일 사용 금액 업데이트
+    user.updateDailyUsageAmount(user.getDailyUsageAmount() + paymentBalance);
+
+    userRepository.save(user); // 유저 정보 업데이트
+
+    // 신용카드 결제 -> 신용카드에 연동된 계좌에서 빠져나가도록
+    String accountNo = getAccountNoFromCardNo(user, payRequestDto);
+    log.info("Account No: {}", accountNo);
+
+    // merchantId로 storeName 조회
+    String storeName = StoreMappingUtil.getStoreNameByMerchantId(payRequestDto.getMerchantId());
+
+    // 계좌에서 돈 빼내기
+    bankApi.withdrawal(accountNo, paymentBalance, storeName, user.getUserKey());
+
+    // 유저의 1일 한도 넘게되면 추가 처리 (예: 알림, 로깅 등)
+  }
+
+
+  public String getAccountNoFromCardNo(User user,PayRequestDto payRequestDto){
+    //내 카드 목록 조회
+    CardListResponseDto response = bankApi.getMyCards(user.getUserKey());
+    List<CardListRecDto> cards = response.getREC();  // REC 리스트 추출
+
+    // 가져온 카드 목록에서 결제 요청한 카드 번호에 해당하는 계좌 번호 찾기
+    return cards.stream()
+        .filter(card -> card.getCardNo().equals(payRequestDto.getCardNo()))  // 카드 번호가 일치하는지 확인
+        .findFirst()  // 첫 번째 일치하는 카드 찾기
+        .map(CardListRecDto::getWithdrawalAccountNo)  // 해당 카드의 계좌 번호 추출
+        .orElseThrow(() -> new IllegalArgumentException("해당 카드 번호에 해당하는 계좌가 없습니다."));  // 없으면 예외 발생
   }
 
   public User getUser(){
