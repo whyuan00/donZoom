@@ -30,6 +30,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
             "/users/check-email",
             "/auth/login", "/auth/logout", "/auth/token", "/auth/refresh",
+            "/login",
             "login/oauth2/code/kakao", "/api/login/oauth2/code/kakao", "/login/oauth2/code/kakao",
             "login/oauth2/code/naver", "/api/login/oauth2/code/naver", "/login/oauth2/code/naver",
             "login/oauth2/code/google", "/api/login/oauth2/code/google", "/login/oauth2/code/google",

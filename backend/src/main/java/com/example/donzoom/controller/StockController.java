@@ -39,7 +39,7 @@ public class StockController {
     return ResponseEntity.ok().body(stock);
   }
 
-  // 주식 현재가 갱신
+  // 주식 정보 받아오기 및 현재가 갱신
   @PostMapping("/{stockId}")
   public ResponseEntity<?> addStockHistory(@PathVariable(name = "stockId") Long stockId, @RequestBody StockRequestDto stockRequestDto) {
     Long stockHistoryId = stockService.createStockHistory(stockId, stockRequestDto);
