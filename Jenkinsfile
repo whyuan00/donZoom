@@ -13,7 +13,7 @@ pipeline {
                 sh '''
                     cd backend
                     chmod +x gradlew  # gradlew 파일에 실행 권한 부여
-                    ./gradlew clean build -x test  # 테스트 생략 (-x test 옵션 추가)
+                    ./gradlew clean bootJar -x test  # 테스트 생략하고 bootJar 생성
                 '''
             }
         }
