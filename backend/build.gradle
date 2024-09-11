@@ -44,15 +44,13 @@ dependencies {
 	// WebSocket 관련 의존성 추가
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
-
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	//WebClient 관련 의존성 추가
+	// WebClient 관련 의존성 추가
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-
 }
 
 tasks.named('test') {
@@ -61,11 +59,12 @@ tasks.named('test') {
 
 bootJar {
 	manifest {
-		attributes 'Main-Class': 'com.example.donzoom.SpecialApplication'
+		// Spring Boot 애플리케이션에서는 JarLauncher를 사용해야 합니다.
+		attributes 'Main-Class': 'org.springframework.boot.loader.JarLauncher'
 	}
 
 	archiveBaseName.set('donzoom')    // JAR 파일의 기본 이름 설정
-	archiveVersion.set('1.0')       // 버전 설정
-	archiveClassifier.set('release') // 선택적: 분류자 설정 (필요 없으면 생략 가능)
+	archiveVersion.set('1.0')         // 버전 설정
+	archiveClassifier.set('release')  // 선택적: 분류자 설정 (필요 없으면 생략 가능)
 	archiveFileName.set('donzoom.jar') // 전체 파일 이름 지정 (선택 사항)
 }
