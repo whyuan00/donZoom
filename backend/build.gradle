@@ -60,6 +60,11 @@ tasks.named('test') {
 }
 
 jar {
+
+	manifest {
+		attributes 'Main-Class': 'com.example.donzoom.SpecialApplication'
+	}
+
 	archiveBaseName.set('donzoom')    // JAR 파일의 기본 이름 설정
 	archiveVersion.set('1.0')       // 버전 설정
 	archiveClassifier.set('release') // 선택적: 분류자 설정 (필요 없으면 생략 가능)
