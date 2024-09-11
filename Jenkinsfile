@@ -13,7 +13,7 @@ pipeline {
                 sh '''
                     cd backend
                     chmod +x gradlew  # gradlew 파일에 실행 권한 부여
-                    ./gradlew clean --no-build-cache bootJar -x test
+                    ./gradlew clean bootJar --no-build-cache -x test
 
                 '''
             }
