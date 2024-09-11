@@ -10,6 +10,12 @@ const AuthHomeScreen = ({navigation}) => {
           onPress={() => navigation.navigate('Login')}
         />
       </View>
+      <View>
+        <Button
+          title="미션페이지로 이동"
+          onPress={() => navigation.navigate('Mission')}
+        />
+      </View>
     </SafeAreaView>
   );
 };
