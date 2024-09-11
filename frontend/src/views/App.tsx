@@ -1,7 +1,8 @@
 import React from 'react';
+import {NavigationContainer} from '@react-navigation/native';
 import AuthStackNavigator from '../navigation/AuthStackNavigator';
 import DrawStackNavigator from '../navigation/DrawStackNavigator';
-import {NavigationContainer} from '@react-navigation/native';
+
 
 function App() {
   return (
@@ -11,5 +12,4 @@ function App() {
     </NavigationContainer>
   );
 }
-
 export default App;
