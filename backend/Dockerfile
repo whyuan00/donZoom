@@ -11,4 +11,4 @@ COPY build/libs/donzoom.jar /app/donzoom.jar
 EXPOSE 8081
 
 # Step 5: 컨테이너가 실행될 때 JAR 파일을 실행
-ENTRYPOINT ["java", "-jar", "/app/donzoom.jar"]
+ENTRYPOINT ["java", "-jar", "/donzoom.jar"]
