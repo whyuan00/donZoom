@@ -1,7 +1,7 @@
 import React from 'react';
-import {Button, SafeAreaView, StyleSheet, View} from 'react-native';
+import {Button, Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
 
-const AuthHomeScreen = ({navigation}) => {
+const AuthHomeScreen = ({navigation}: any) => {
   return (
     <SafeAreaView>
       <View>
