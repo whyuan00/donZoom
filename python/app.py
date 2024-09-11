@@ -11,6 +11,7 @@ from pathlib import PurePosixPath
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -24,7 +25,13 @@ load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")  # .env 파일에서 API 키 로드
 
 # ChromeDriver 설정 (전역 변수로 설정)
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+chrome_options = Options()
+chrome_options.add_argument("--headless")  # 헤드리스 모드 활성화
+chrome_options.add_argument("--no-sandbox")  # 필요 시 추가
+chrome_options.add_argument("--disable-dev-shm-usage")  # 필요 시 추가
+
+# ChromeDriver 설정 (전역 변수로 설정)
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
 # 금 선물 티커 심볼 (Gold Futures)
 gold_ticker = "GC=F"
@@ -35,7 +42,9 @@ KST = pytz.timezone('Asia/Seoul')
 # Spring Boot 서버의 엔드포인트 URL
 spring_boot_url = os.getenv("SPRING_BOOT_URL")
 stock_path = os.getenv("STOCK_PATH")
+news_path = os.getenv("NEWS_PATH")
 save_stock_history_url = spring_boot_url+stock_path
+save_news_URL = spring_boot_url+news_path
 
 # 스케줄러 설정
 scheduler = BackgroundScheduler()
@@ -48,8 +57,7 @@ ticker_to_id_map = {
 
 
 # 데이터를 가져와서 Spring Boot 서버로 보내는 함수
-def fetch_and_send_data(ticker):
-    print(f"실시간 데이터 가져오기 시작: {datetime.now(KST)}")
+
 header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'}
 
 # 뉴스 기사 정보를 저장할 리스트
@@ -82,7 +90,7 @@ def summarize_text(text):
 
 
 # 데이터를 가져오는 함수
-def fetch_gold_data(ticker):
+def fetch_and_send_data(ticker):
     print(f"실시간 데이터 가져오기 시작: {datetime.now(KST)}")
     
     # 금 선물 데이터를 가져옴 (1분 간격 데이터)
@@ -108,7 +116,7 @@ def fetch_gold_data(ticker):
                 "price": float(close_price),
                 "createdAt": adjusted_timestamp.strftime('%Y-%m-%dT%H:%M:%S'),
             }
-            
+            print(data)
     # Spring Boot 서버로 데이터 전송
     stockId = ticker_to_id_map.get(ticker)
     try:
@@ -235,8 +243,10 @@ def fetch_article_contents():
     driver.quit()
 
 def send_news_data(all_articles):
+    print(all_articles)
     try:
-        response = requests.post(f"{spring_boot_url}/news", json={"articles": all_articles})
+        print("뉴스 본문 전송 시작")
+        response = requests.post(save_news_URL, json={"articles": all_articles}, headers={'Content-Type': 'application/json'})
         if response.status_code == 200:
             print(f"뉴스 본문 전송 성공: {len(all_articles)}개 기사")
         else:
@@ -245,10 +255,10 @@ def send_news_data(all_articles):
         print(f"요청 실패: {e}")
 
 # 1분마다 실행되도록 스케줄러 설정 (1분마다 fetch_gold_data 실행)
-scheduler.add_job(fetch_gold_data, 'interval', minutes=1)
+scheduler.add_job(fetch_and_send_data, 'interval', minutes=1, args=[gold_ticker])
 
 # 매일 오후 4시 20분에 뉴스 기사를 가져오고 바로 본문을 가져오도록 스케줄러 설정
-scheduler.add_job(fetch_news_articles, 'cron', hour=14, minute=12, timezone=KST)
+scheduler.add_job(fetch_news_articles, 'cron', hour=16, minute=43, timezone=KST)
 
 # Lifespan 이벤트 핸들러 사용
 @asynccontextmanager
@@ -268,7 +278,7 @@ app = FastAPI(lifespan=lifespan)
 # 기본 라우트
 @app.get("/")
 def read_root():
-    return {"message": "스케줄러가 실행 중입니다."};
+    return {"message": "스케줄러가 실행 중입니다."}
 
 # 앱 실행 명령어
 # uvicorn app:app --reload --port 8082
