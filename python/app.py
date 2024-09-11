@@ -114,7 +114,7 @@ def fetch_and_send_data(ticker):
             # 전송할 데이터 생성
             data = {
                 "price": float(close_price),
-                "createdAt": adjusted_timestamp.strftime('%Y-%m-%dT%H:%M:%S'),
+                "createdAt": adjusted_timestamp.strftime('%Y-%m-%dT%H:%M:%S')
             }
             print(data)
     # Spring Boot 서버로 데이터 전송
