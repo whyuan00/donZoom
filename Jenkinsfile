@@ -14,7 +14,6 @@ pipeline {
                     cd backend
                     chmod +x gradlew  # gradlew 파일에 실행 권한 부여
                     ./gradlew clean bootJar --no-build-cache -x test
-
                 '''
             }
         }
@@ -32,14 +31,14 @@ pipeline {
             }
         }
 
-        stage('Deploy to EC2') {
+        stage('Deploy with Docker Compose') {
             steps {
-                echo 'Run Docker...'
-                sh """
-                    docker stop donzoom || true &&         # 기존 컨테이너를 중지
-                    docker rm donzoom || true &&           # 기존 컨테이너를 삭제
-                    docker run -d --name donzoom --network my_network -p 8081:8081 ${DOCKER_IMAGE}:latest  # 새로운 컨테이너 실행
-                """
+                echo 'Deploying with Docker Compose...'
+                sh '''
+                    # 기존 컨테이너를 중지 및 제거 (docker-compose를 사용해 관리)
+                    docker-compose down || true
+                    docker-compose up -d --build  # 빌드 후 백그라운드로 컨테이너 실행
+                '''
             }
         }
     }
