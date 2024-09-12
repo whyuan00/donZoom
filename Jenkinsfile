@@ -37,7 +37,7 @@ pipeline {
                 sh '''
                     # 기존 컨테이너를 중지 및 제거 (docker-compose를 사용해 관리)
                     docker-compose down || true
-                    docker-compose up -d backend --build  # 빌드 후 백그라운드로 컨테이너 실행
+                    docker-compose up -d springboot --build  # 빌드 후 백그라운드로 컨테이너 실행
                 '''
             }
         }
