@@ -10,14 +10,8 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
       - "3306:3306"
-    volumes:
-      - ./mysql_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
+    # volumes:
+    #   - ./mysql_data:/var/lib/mysql
 
   springboot:
     build: ./backend
@@ -25,5 +19,4 @@ services:
     ports:
       - "8081:8081"
     depends_on:
-      mysql:
-        condition: service_healthy  # MySQL이 healthcheck를 통과한 후에 시작
+      - mysql
