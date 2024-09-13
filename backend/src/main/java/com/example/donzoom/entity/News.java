@@ -30,10 +30,13 @@ public class News extends BaseEntity {
   private String title;
   private String contents;
 
+  private String dateTime;
+
   @Builder
-  public News(Stock stock, String title, String contents) {
+  public News(Stock stock, String title, String contents, String dateTime) {
     this.stock = stock;
     this.title = title;
     this.contents = contents;
+    this.dateTime = dateTime;
   }
 }
