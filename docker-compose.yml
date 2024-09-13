@@ -4,6 +4,7 @@ services:
     image: mysql:8.0
     container_name: mysql
     environment:
+      TZ: Asia/Seoul
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
@@ -17,6 +18,8 @@ services:
     image: backend
     build: ./backend
     container_name: donzoom
+    environment:
+      TZ: Asia/Seoul
     ports:
       - "8081:8081"
     depends_on:

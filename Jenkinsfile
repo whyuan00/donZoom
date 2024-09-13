@@ -2,9 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_CREDENTIALS_ID = 'docker-hub-credentials'    // Docker Hub 자격 증명 ID
-        DOCKER_IMAGE = 'jooboy/donzoom'                     // Docker 이미지 이름
-        SONARQUBE_ENV = 'SonarQube'                         // SonarQube 인스턴스 이름 (Jenkins 관리 페이지에서 설정된 이름)
+        DOCKER_IMAGE = 'jooboy/donzoom'  // Docker 이미지 이름
     }
 
     stages {
@@ -28,7 +26,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 echo 'Running SonarQube analysis...'
-                withSonarQubeEnv('SonarQube'){          // SonarQube 인스턴스 이름을 사용
+                withSonarQubeEnv('SonarQube'){  // SonarQube 인스턴스 이름을 사용
                     sh '''
                         cd backend
                         ./gradlew sonar
@@ -53,7 +51,7 @@ pipeline {
                 echo 'Building Docker image...'
                 script {
                     try {
-                        docker.build("${DOCKER_IMAGE}:latest", "backend")
+                        docker.build("${DOCKER_IMAGE}:latest", "backend")  // Spring Boot Docker 이미지 빌드
                     } catch (e) {
                         error "Failed to build Docker image. Error: ${e.message}"
                     }
@@ -67,11 +65,12 @@ pipeline {
                 sh '''
                     # 기존 컨테이너를 중지 및 제거 (docker-compose를 사용해 관리)
                     docker-compose down || true
-                    docker-compose up --build -d springboot  # 빌드 후 백그라운드로 컨테이너 실행
+                    docker-compose up -d  # 기존 이미지를 사용해 모든 컨테이너 실행
                 '''
             }
         }
     }
+
     post {
         always {
             echo 'Pipeline finished.'
