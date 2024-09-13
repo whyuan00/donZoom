@@ -4,9 +4,29 @@ pipeline {
     environment {
         DOCKER_CREDENTIALS_ID = 'docker-hub-credentials'    // Docker Hub 자격 증명 ID
         DOCKER_IMAGE = 'jooboy/donzoom'                     // Docker 이미지 이름
+        SONARQUBE_ENV = 'SonarQube'                         // SonarQube 인스턴스 이름 (Jenkins 관리 페이지에서 설정된 이름)
     }
 
     stages {
+        stage('Checkout SCM') {
+            steps {
+                echo 'Checking out SCM...'
+                checkout scm
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                echo 'Running SonarQube analysis...'
+                withSonarQubeEnv('SONARQUBE_ENV') {          // SonarQube 인스턴스 이름을 사용
+                    sh '''
+                        cd backend
+                        ./gradlew sonar
+                    '''
+                }
+            }
+        }
+
         stage('Build JAR') {
             steps {
                 echo 'Building JAR file...'
@@ -40,6 +60,17 @@ pipeline {
                     docker-compose up --build -d springboot  # 빌드 후 백그라운드로 컨테이너 실행
                 '''
             }
+        }
+    }
+    post {
+        always {
+            echo 'Pipeline finished.'
+        }
+        success {
+            echo 'Pipeline completed successfully.'
+        }
+        failure {
+            echo 'Pipeline failed.'
         }
     }
 }
