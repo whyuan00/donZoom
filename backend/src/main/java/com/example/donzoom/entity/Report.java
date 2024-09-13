@@ -17,11 +17,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class News extends BaseEntity {
+public class Report extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "news_id")
+  @Column(name = "report_id")
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -36,7 +36,7 @@ public class News extends BaseEntity {
   private LocalDateTime createdAt;
 
   @Builder
-  public News(Stock stock, String title, String contents, LocalDateTime createdAt) {
+  public Report(Stock stock, String title, String contents, LocalDateTime createdAt) {
     this.stock = stock;
     this.title = title;
     this.contents = contents;

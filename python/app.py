@@ -23,6 +23,19 @@ from apscheduler.triggers.date import DateTrigger
 from datetime import datetime, timedelta
 import pytz
 
+# 종목과 stockId 매핑 (key-value 형태)
+stock_mapping = {
+    1: "005930",  # 삼성전자
+    2: "001210"   # 금호전기
+}
+
+# 종목과 stockId 매핑 (key-value 형태)
+stock_mapping_report= {
+    1: "005930 삼성전자",
+    2: "001210 금호전기"   # 금호전기
+}
+
+
 # 환경 변수 로드
 load_dotenv()
 
@@ -109,39 +122,53 @@ def fetch_and_send_data(ticker):
         print(f"요청 실패: {e}")
 
 
-# 뉴스 데이터 Spring Boot 서버로 전송
+# 뉴스 데이터 Spring Boot 서버로 전송 (모든 stockId에 대해 반복)
 def send_news_data():
+    for stockId in stock_mapping.keys():
+        # 각 stockId에 대한 뉴스 크롤링
+        all_articles = crawl_news(stockId)
 
-    all_articles = crawl_news()
-   
-    try:
-        print("뉴스 본문 전송 시작")
-        response = requests.post(save_news_URL, json={"articles": all_articles}, headers={'Content-Type': 'application/json'})
-        if response.status_code == 200:
-            print(f"뉴스 본문 전송 성공: {len(all_articles)}개 기사")
-        else:
-            print(f"뉴스 본문 전송 실패: {response.status_code}")
-    except requests.exceptions.RequestException as e:
-        print(f"요청 실패: {e}")
+        if not all_articles:
+            print(f"stockId {stockId}에 대한 뉴스가 없습니다.")
+            continue
 
-
-# Spring Boot로 데이터 전송하는 함수
-def send_reports_to_springboot():
-    print(f"리포트 크롤링 및 전송 시작: {datetime.now(KST)}")
-    
-    # 크롤링 함수 호출
-    reports = crawl_reports()
-    
-    # Spring Boot 서버로 전송
-    for report in reports:
         try:
-            response = requests.post(save_report_URL, json=report, headers={'Content-Type': 'application/json'})
+            # Spring Boot 서버로 뉴스 데이터 전송
+            print(f"stockId {stockId}에 대한 뉴스 본문 전송 시작")
+            
+            # 데이터를 리스트 형식으로 바로 전송
+            response = requests.post(save_news_URL+"/"+str(stockId), json=all_articles, headers={'Content-Type': 'application/json'})
+
             if response.status_code == 200:
-                print(f"리포트 전송 성공: {report['title']}")
+                print(f"stockId {stockId}에 대한 뉴스 본문 전송 성공: {len(all_articles)}개 기사")
             else:
-                print(f"리포트 전송 실패: {response.status_code}, {report['title']}")
+                print(f"stockId {stockId}에 대한 뉴스 본문 전송 실패: {response.status_code}")
+        
         except requests.exceptions.RequestException as e:
-            print(f"리포트 전송 오류 발생: {e}")
+            print(f"stockId {stockId}에 대한 요청 실패: {e}")
+
+
+# 리포트 데이터를 Spring Boot 서버로 전송하는 함수
+def send_reports_to_springboot():
+    for stockId in stock_mapping_report.keys():
+        reports = crawl_reports(stockId)
+
+        if not reports:
+            print(f"stockId {stockId}에 대한 리포트가 없습니다.")
+            continue
+
+        try:
+            # Spring Boot 서버로 리포트 데이터 전송
+            print(f"stockId {stockId}에 대한 리포트 본문 전송 시작")
+            response = requests.post(save_report_URL + "/" + str(stockId), json=reports, headers={'Content-Type': 'application/json'})
+
+            if response.status_code == 200:
+                print(f"stockId {stockId}에 대한 리포트 본문 전송 성공: {len(reports)}개 리포트")
+            else:
+                print(f"stockId {stockId}에 대한 리포트 본문 전송 실패: {response.status_code}")
+
+        except requests.exceptions.RequestException as e:
+            print(f"stockId {stockId}에 대한 요청 실패: {e}")
 
 
 
