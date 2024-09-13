@@ -8,6 +8,6 @@ import lombok.Getter;
 @Builder
 public class NewsSimpleResponseDto {
 
-  private List<NewsResponseDto> articles;
+  private final List<NewsResponseDto> articles;
 
 }
