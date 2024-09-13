@@ -2,6 +2,7 @@ import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {StyleSheet, TouchableOpacity, Text} from 'react-native';
 import {colors} from '../constants/colors';
+import {useNavigation} from '@react-navigation/native';
 
 import AuthHomeScreen from '../views/screens/auth/AuthHomeScreen';
 import LoginScreen from '../views/screens/auth/LoginScreen';
@@ -12,7 +13,7 @@ import CheckFamilyScreen from '@/views/screens/auth/CheckFamilyScreen';
 
 const Stack = createNativeStackNavigator();
 
-const AuthStackNavigator = ({}) => {
+const AuthStackNavigator = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name="AuthHome" component={AuthHomeScreen} />
@@ -26,14 +27,18 @@ const AuthStackNavigator = ({}) => {
       <Stack.Screen
         name="Mission"
         component={MissionHomeScreen}
-        options={{
+        options={({navigation}) => ({
           title: '미션',
-          headerRight: () => (
-            <TouchableOpacity onPress={() => {}}>
-              <Text> 추가</Text>
-            </TouchableOpacity>
-          ),
-        }}
+          headerRight: () => {
+            return (
+              <Text onPress={() => navigation.navigate('MakeNewMission')}
+              style={{color:colors.BLUE_100}}
+              >
+                추가
+              </Text>
+            );
+          },
+        })}
       />
       <Stack.Screen name="Signup" component={SignupScreen} />
       <Stack.Screen name="Check" component={CheckFamilyScreen} />

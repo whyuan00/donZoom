@@ -41,7 +41,7 @@ const InputField = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: 235,
+    // width: 200, // 인풋필드 너비 미정으로 바꿔둠 
     height: 40,
   },
   input: {
