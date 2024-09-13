@@ -61,7 +61,7 @@ const MissionBox = ({
           {
             width: animatedButtonWidth.interpolate({
               inputRange: [0, 1],
-              outputRange: [0, 80], //글자 길이도 이거보다 짧아야함 
+              outputRange: [0, 100], //글자 길이도 이거보다 짧아야함 
             }),
             opacity: animatedButtonWidth,
           },
@@ -80,19 +80,18 @@ const MissionBox = ({
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    alignItems: 'center',
-    // justifyContent: 'space-between',
+    alignItems: 'center', // 버튼 정렬
     marginVertical: 10,
   },
   buttonContainer: {
-    marginLeft:20,
     overflow: 'hidden',
   },
   modifyButton: {
     justifyContent: 'center',
     alignItems: 'center',
     height: 40,
-    marginBottom: 5,
+    marginLeft: 20,
+    marginBottom:5,
     borderColor:colors.BLACK,
     borderRadius: 10,
     backgroundColor: colors.BLUE_100,
@@ -101,7 +100,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     height: 40,
-    marginTop: 5,
+    marginLeft: 20,
+    marginBottom:5,
     borderColor:colors.BLACK,
     borderRadius: 10,
     backgroundColor: colors.WHITE,
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: colors.BLACK,
   },
-  boxContainer: {
+  boxContainer: { // 미션 박스 스타일 
     height: 130,
     padding: 20,
     borderColor: colors.BLACK,

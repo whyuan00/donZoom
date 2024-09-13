@@ -33,15 +33,13 @@ LocaleConfig.locales['fr'] = {
 };
 LocaleConfig.defaultLocale = 'fr';
 
-const CustomCalendar = ({selectedDate, onDateSelect}) => {
-  const handleDayPress = day => {
-    onDateSelect(day.dateString);
+const CustomCalendar = ({selectedDate, onDateSelect}:any) => {
+  const handleDayPress = (day:any) => {
+    onDateSelect(day.dateString); //props에 인자 담아 넘기기 
   };
 
-  const markedDates = selectedDate
-    ? {
-        [selectedDate]: {selected: true, selectedColor: colors.BLUE_100},
-      }
+  const markedDates = selectedDate // 선택된 날짜에 마크 
+    ? {[selectedDate]: {selected: true, selectedColor: colors.BLUE_100},}
     : {};
 
   return (
@@ -52,8 +50,8 @@ const CustomCalendar = ({selectedDate, onDateSelect}) => {
         disableArrowLeft={true}
         enableSwipeMonths={true}
         minDate={new Date().toISOString().split('T')[0]}
-        onDayPress={handleDayPress}
-        markedDates={markedDates}
+        onDayPress={handleDayPress} // 날짜 클릭할떄 
+        markedDates={markedDates} // 동그라미할 날짜
       />
     </View>
   );
@@ -62,7 +60,8 @@ const CustomCalendar = ({selectedDate, onDateSelect}) => {
 const styles = StyleSheet.create({
   container: {
     borderRadius: 20,
-    width: 300,
+    width: 400,
+    height:450,
   },
 });
 

@@ -17,22 +17,24 @@ const MakeNewMissionScreen = () => {
   const [text, setText] = useState('');
   const [textCount, setTextCount] = useState(0);
   const [showCalendar, setShowCalendar] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null); //선택된 날짜
 
-  const onChangeText = input => {
+  const onChangeText = (input: any) => {
     if (input.length <= 20) {
       setText(input);
       setTextCount(input.length);
     }
   };
 
-  const handleDateSelect = date => {
+  const handleDateSelect = (date: any) => {
     setSelectedDate(date);
   };
 
   const toggleCalendar = () => {
     setShowCalendar(!showCalendar);
   };
+  // 버튼 diabled: 글자안썼거나 날짜선택안하면 true
+  const disabled = textCount === 0 || selectedDate === null;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -48,7 +50,7 @@ const MakeNewMissionScreen = () => {
           <Text>{textCount}/20</Text>
         </View>
         <TouchableOpacity
-          onPress={toggleCalendar}
+          onPress={toggleCalendar} // 캘린더 모달, 다른데 클릭하면 내려가
           style={styles.dateSettingContainer}>
           <Icon name="edit-calendar" size={30} />
           <Text style={styles.dateSettingText}>
@@ -56,6 +58,7 @@ const MakeNewMissionScreen = () => {
           </Text>
         </TouchableOpacity>
       </View>
+      {/* 달력모달 */}
       <Modal
         transparent={true}
         visible={showCalendar}
@@ -63,22 +66,23 @@ const MakeNewMissionScreen = () => {
         <TouchableWithoutFeedback onPress={toggleCalendar}>
           <View style={styles.modalOverlay}>
             <TouchableWithoutFeedback>
-              <View style={styles.modalContent}>
-                <CustomCalendar
-                  selectedDate={selectedDate}
-                  onDateSelect={handleDateSelect}
-                />
-              </View>
+              <CustomCalendar
+                // props 넘기기
+                selectedDate={selectedDate}
+                onDateSelect={handleDateSelect}
+              />
             </TouchableWithoutFeedback>
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-      <TouchableOpacity style={styles.goNextButtonAcitve}>
-        <Text style={styles.goNextButtonAcitveText}>다음</Text>
+
+      <TouchableOpacity
+        style={disabled ? styles.inAcitve : styles.Active}
+        disabled={disabled}
+        // onPress={}
+        >
+        <Text style={styles.buttonText}>다음</Text>
       </TouchableOpacity>
-      {
-        //액티브 설정
-      }
     </SafeAreaView>
   );
 };
@@ -125,15 +129,18 @@ const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     alignItems: 'center',
   },
-  modalContent: {
-    backgroundColor: 'white',
-    padding: 20,
+  inAcitve: {
+    marginTop: 10,
+    width: 300,
+    height: 45,
     borderRadius: 10,
+    backgroundColor: colors.GRAY_50,
+    justifyContent: 'center',
   },
-  goNextButtonAcitve: {
+  Active: {
     marginTop: 10,
     width: 300,
     height: 45,
@@ -141,10 +148,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.BLUE_100,
     justifyContent: 'center',
   },
-  goNextButtonAcitveText: {
-    color: colors.WHITE,
-    textAlign: 'center',
-  },
+  buttonText:{
+    textAlign:'center',
+    color:colors.WHITE,
+    fontSize:18,
+  }
 });
 
 export default MakeNewMissionScreen;
