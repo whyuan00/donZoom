@@ -8,13 +8,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 
 @Entity
@@ -36,7 +34,8 @@ public class Mission {
   private LocalDateTime dueDate;
 
   @Builder
-  public Mission(User user, String contents, Long reward, MissionStatus status, LocalDateTime dueDate) {
+  public Mission(User user, String contents, Long reward, MissionStatus status,
+      LocalDateTime dueDate) {
     this.user = user;
     this.contents = contents;
     this.reward = reward;
@@ -44,11 +43,13 @@ public class Mission {
     this.dueDate = dueDate;
   }
 
-  public void updateMission(MissionUpdateDto missionUpdateDto){
-    this.contents = missionUpdateDto.getContents() == null ? this.contents : missionUpdateDto.getContents();
+  public void updateMission(MissionUpdateDto missionUpdateDto) {
+    this.contents =
+        missionUpdateDto.getContents() == null ? this.contents : missionUpdateDto.getContents();
     this.reward = missionUpdateDto.getReward() == null ? this.reward : missionUpdateDto.getReward();
-    this.dueDate = missionUpdateDto.getDueDate() == null ? this.dueDate : missionUpdateDto.getDueDate();
-    this.status =  missionUpdateDto.getStatus() == null ? this.status : missionUpdateDto.getStatus();
+    this.dueDate =
+        missionUpdateDto.getDueDate() == null ? this.dueDate : missionUpdateDto.getDueDate();
+    this.status = missionUpdateDto.getStatus() == null ? this.status : missionUpdateDto.getStatus();
   }
 
 }

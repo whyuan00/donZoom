@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class AccountResponseDto {
+
   private HeaderDto Header;
   private List<GetRecDto> REC;
 }

@@ -50,13 +50,9 @@ public class MissionService {
     User user = userRepository.findByEmail(username)
         .orElseThrow(() -> new RuntimeException("User not found"));
 
-    Mission mission = Mission.builder()
-        .user(user)
-        .contents(missionCreateDto.getContents())
-        .reward(missionCreateDto.getReward())
-        .dueDate(missionCreateDto.getDueDate())
-        .status(MissionStatus.CREATED)
-        .build();
+    Mission mission = Mission.builder().user(user).contents(missionCreateDto.getContents())
+        .reward(missionCreateDto.getReward()).dueDate(missionCreateDto.getDueDate())
+        .status(MissionStatus.CREATED).build();
     missionRepository.save(mission);
     return mission;
   }
@@ -75,20 +71,20 @@ public class MissionService {
 
   public Long deleteMission(Long missionId) {
     // 테스트를 위해서 권한체크 임시로 껐습니다.
-//    // 현재 인증된 사용자 정보 가져오기
-//    String username = SecurityUtil.getAuthenticatedUsername();
-//    // 사용자 정보 (예: PK) 가져오기
-//    User user = userRepository.findByEmail(username)
-//        .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//    // 삭제할 미션이 존재하는지 확인
-//    Mission mission = missionRepository.findById(missionId)
-//        .orElseThrow(() -> new RuntimeException("Mission not found"));
-//
-//    // 미션이 현재 사용자의 것인지 확인 (권한 체크)
-//    if (!mission.getUser().equals(user)) {
-//      throw new RuntimeException("You are not authorized to delete this mission");
-//    }
+    //    // 현재 인증된 사용자 정보 가져오기
+    //    String username = SecurityUtil.getAuthenticatedUsername();
+    //    // 사용자 정보 (예: PK) 가져오기
+    //    User user = userRepository.findByEmail(username)
+    //        .orElseThrow(() -> new RuntimeException("User not found"));
+    //
+    //    // 삭제할 미션이 존재하는지 확인
+    //    Mission mission = missionRepository.findById(missionId)
+    //        .orElseThrow(() -> new RuntimeException("Mission not found"));
+    //
+    //    // 미션이 현재 사용자의 것인지 확인 (권한 체크)
+    //    if (!mission.getUser().equals(user)) {
+    //      throw new RuntimeException("You are not authorized to delete this mission");
+    //    }
 
     missionRepository.deleteById(missionId);
     return missionId;

@@ -11,7 +11,7 @@ import com.example.donzoom.dto.stock.response.StockTransactionHistoryResponseDto
 import com.example.donzoom.dto.stock.response.StockTransactionHistorySimpleResponseDto;
 import com.example.donzoom.dto.stock.response.StockWalletResponseDto;
 import com.example.donzoom.dto.stock.response.StockWalletSimpleResponseDto;
-import com.example.donzoom.dto.stockHistory.response.StockHistoryResponseDto;
+import com.example.donzoom.dto.stockhistory.response.StockHistoryResponseDto;
 import com.example.donzoom.entity.News;
 import com.example.donzoom.entity.Stock;
 import com.example.donzoom.entity.StockHistory;
@@ -54,20 +54,16 @@ public class StockService {
     List<Long> stockIds = stockRepository.findAll().stream().map(Stock::getId).toList();
     log.info("getAllStocks: {}", stockIds);
 
-    List<StockDetailResponseDto> stockDtos = stockIds.stream()
-        .map(stockId -> {
-          StockHistory stockHistory = stockHistoryRepository
-              .findTop1ByStockIdOrderByCreatedAtDesc(stockId);
-          Stock stock = stockRepository.findById(stockId).orElseThrow(); // 필요시 예외 처리
+    List<StockDetailResponseDto> stockDtos = stockIds.stream().map(stockId -> {
+      StockHistory stockHistory = stockHistoryRepository.findTop1ByStockIdOrderByCreatedAtDesc(
+          stockId);
+      Stock stock = stockRepository.findById(stockId).orElseThrow(); // 필요시 예외 처리
 
-          return StockDetailResponseDto.builder()
-              .stockId(stock.getId())
-              .stockName(stock.getStockName())
-              .stockPrice(stockHistory != null ? stockHistory.getPrice() : 0.0f)
-              .lastCreatedAt(
-                  stockHistory != null ? stockHistory.getCreatedAt() : LocalDateTime.MIN)  // 기본값 처리
-              .build();
-        }).toList();
+      return StockDetailResponseDto.builder().stockId(stock.getId()).stockName(stock.getStockName())
+          .stockPrice(stockHistory != null ? stockHistory.getPrice() : 0.0f).lastCreatedAt(
+              stockHistory != null ? stockHistory.getCreatedAt() : LocalDateTime.MIN)  // 기본값 처리
+          .build();
+    }).toList();
 
     return StockSimpleResponseDto.builder().stocks(stockDtos).build();
   }
@@ -79,18 +75,13 @@ public class StockService {
     Stock stock = stockRepository.findById(stockId).orElseThrow();
     List<StockHistory> stockHistories = stockHistoryRepository.findByStockId(stockId);
 
-    List<StockHistoryResponseDto> stockHistoryDtos = stockHistories.stream()
-        .map(stockHistory -> StockHistoryResponseDto.builder()
-            .stockHistoryId(stockHistory.getId())
-            .price(stockHistory.getPrice())
-            .createdAt(stockHistory.getCreatedAt())
-            .build()).toList();
+    List<StockHistoryResponseDto> stockHistoryDtos = stockHistories.stream().map(
+            stockHistory -> StockHistoryResponseDto.builder().stockHistoryId(stockHistory.getId())
+                .price(stockHistory.getPrice()).createdAt(stockHistory.getCreatedAt()).build())
+        .toList();
 
-    return StockResponseDto.builder()
-        .stockId(stock.getId())
-        .stockName(stock.getStockName())
-        .stockHistories(stockHistoryDtos)
-        .build();
+    return StockResponseDto.builder().stockId(stock.getId()).stockName(stock.getStockName())
+        .stockHistories(stockHistoryDtos).build();
   }
 
   // 내 주식 조회
@@ -98,7 +89,7 @@ public class StockService {
   public StockWalletSimpleResponseDto getAllMyStock() {
     String email = SecurityUtil.getAuthenticatedUsername();
     User user = userService.findUserByEmail(email);
-//    Long walletId = walletService.getWalletId(user.getId());
+    //    Long walletId = walletService.getWalletId(user.getId());
     Long walletId = user.getId(); // TODO: 1:1이라 이렇게 해도 상관없긴 하겠다
 
     List<StockWalletResponseDto> stockWalletDtos = stockWalletRepository.findByWalletId(walletId)
@@ -106,9 +97,7 @@ public class StockService {
         .map(stockWallet -> StockWalletResponseDto.builder().stockWallet(stockWallet).build())
         .toList();
 
-    return StockWalletSimpleResponseDto.builder()
-        .myStocks(stockWalletDtos)
-        .build();
+    return StockWalletSimpleResponseDto.builder().myStocks(stockWalletDtos).build();
   }
 
   // 모든 주식 거래내역 조회
@@ -116,24 +105,20 @@ public class StockService {
   public StockTransactionHistorySimpleResponseDto getAllTransaction() {
     String email = SecurityUtil.getAuthenticatedUsername();
     User user = userService.findUserByEmail(email);
-//    Long walletId = walletService.getWalletId(user.getId());
+    //    Long walletId = walletService.getWalletId(user.getId());
     Long walletId = user.getId(); // TODO: 1:1이라 이렇게 해도 상관없긴 하겠다
 
     List<StockTransactionHistoryResponseDto> transactionHistoryDtos = transactionHistoryRepository.findByWalletId(
-        walletId).stream().map(transactionHistory
-        -> StockTransactionHistoryResponseDto.builder()
+        walletId).stream().map(transactionHistory -> StockTransactionHistoryResponseDto.builder()
         .transactionHistoryId(transactionHistory.getId())
         .stockId(transactionHistory.getStock().getId())
         .transactionType(transactionHistory.getTransactionType())
-        .price(transactionHistory.getPrice())
-        .amount(transactionHistory.getAmount())
+        .price(transactionHistory.getPrice()).amount(transactionHistory.getAmount())
         .total(transactionHistory.getPrice() * transactionHistory.getAmount())
-        .profit(transactionHistory.getProfit())
-        .createdAt(transactionHistory.getCreatedAt())
+        .profit(transactionHistory.getProfit()).createdAt(transactionHistory.getCreatedAt())
         .build()).toList();
 
-    return StockTransactionHistorySimpleResponseDto.builder()
-        .myHistories(transactionHistoryDtos)
+    return StockTransactionHistorySimpleResponseDto.builder().myHistories(transactionHistoryDtos)
         .build();
   }
 
@@ -142,34 +127,30 @@ public class StockService {
   public StockTransactionHistorySimpleResponseDto getTransaction(Long stockId) {
     String email = SecurityUtil.getAuthenticatedUsername();
     User user = userService.findUserByEmail(email);
-//    Long walletId = walletService.getWalletId(user.getId());
+    //    Long walletId = walletService.getWalletId(user.getId());
     Long walletId = user.getId(); // TODO: 1:1이라 이렇게 해도 상관없긴 하겠다
 
     List<StockTransactionHistoryResponseDto> transactionHistoryDtos = transactionHistoryRepository.findByWalletIdAndStockId(
-        walletId, stockId).stream().map(transactionHistory
-        -> StockTransactionHistoryResponseDto.builder()
-        .transactionHistoryId(transactionHistory.getId())
-        .stockId(transactionHistory.getStock().getId())
-        .transactionType(transactionHistory.getTransactionType())
-        .price(transactionHistory.getPrice())
-        .amount(transactionHistory.getAmount())
-        .total(transactionHistory.getPrice() * transactionHistory.getAmount())
-        .profit(transactionHistory.getProfit())
-        .createdAt(transactionHistory.getCreatedAt())
-        .build()).toList();
+        walletId, stockId).stream().map(
+        transactionHistory -> StockTransactionHistoryResponseDto.builder()
+            .transactionHistoryId(transactionHistory.getId())
+            .stockId(transactionHistory.getStock().getId())
+            .transactionType(transactionHistory.getTransactionType())
+            .price(transactionHistory.getPrice()).amount(transactionHistory.getAmount())
+            .total(transactionHistory.getPrice() * transactionHistory.getAmount())
+            .profit(transactionHistory.getProfit()).createdAt(transactionHistory.getCreatedAt())
+            .build()).toList();
 
-    return StockTransactionHistorySimpleResponseDto.builder()
-        .myHistories(transactionHistoryDtos)
+    return StockTransactionHistorySimpleResponseDto.builder().myHistories(transactionHistoryDtos)
         .build();
   }
 
-  // TODO
-  // 매수하기
+  // TODO : 매수하기
   @Transactional
   public StockTransactionHistoryResponseDto buyStocks(Long stockId, Integer amount) {
     String email = SecurityUtil.getAuthenticatedUsername();
     User user = userService.findUserByEmail(email);
-//    Long walletId = walletService.getWalletId(user.getId());
+    //    Long walletId = walletService.getWalletId(user.getId());
     Long walletId = user.getId(); // TODO: 1:1이라 이렇게 해도 상관없긴 하겠다
 
     // 내 지갑 찾아오기
@@ -215,9 +196,7 @@ public class StockService {
       // 처음 사는 주식이라면,
 
       // 새로운 주식 매수
-      StockWallet newStock = StockWallet.builder()
-          .wallet(myWallet)
-          .stock(stock)
+      StockWallet newStock = StockWallet.builder().wallet(myWallet).stock(stock)
           .totalInvestedPrice(requiredPrice)  // 초기 투자 금액
           .amount(amount)                      // 초기 수량
           .averagePrice(recentPrice.getPrice()) // 초기 평단가
@@ -230,18 +209,16 @@ public class StockService {
     Long transactionHistoryId = createTransactionHistory(myWallet, stock, recentPrice.getPrice(),
         amount, requiredPrice, 0.0f, TransactionType.BUY);
 
-    TransactionHistory transactionHistory =
-        transactionHistoryRepository.findById(transactionHistoryId).orElseThrow();
+    TransactionHistory transactionHistory = transactionHistoryRepository.findById(
+        transactionHistoryId).orElseThrow();
 
     return StockTransactionHistoryResponseDto.builder()
         .transactionHistoryId(transactionHistory.getId())
         .stockId(transactionHistory.getStock().getId())
         .transactionType(transactionHistory.getTransactionType())
-        .price(transactionHistory.getPrice())
-        .amount(transactionHistory.getAmount())
+        .price(transactionHistory.getPrice()).amount(transactionHistory.getAmount())
         .total(transactionHistory.getPrice() * transactionHistory.getAmount())
-        .profit(transactionHistory.getProfit())
-        .createdAt(transactionHistory.getCreatedAt())
+        .profit(transactionHistory.getProfit()).createdAt(transactionHistory.getCreatedAt())
         .build();
 
   }
@@ -252,7 +229,7 @@ public class StockService {
   public StockTransactionHistoryResponseDto sellStocks(Long stockId, Integer amount) {
     String email = SecurityUtil.getAuthenticatedUsername();
     User user = userService.findUserByEmail(email);
-//    Long walletId = walletService.getWalletId(user.getId());
+    //    Long walletId = walletService.getWalletId(user.getId());
     Long walletId = user.getId(); // TODO: 1:1이라 이렇게 해도 상관없긴 하겠다
 
     // 내 지갑 찾아오기
@@ -314,23 +291,19 @@ public class StockService {
         .transactionHistoryId(transactionHistory.getId())
         .stockId(transactionHistory.getStock().getId())
         .transactionType(transactionHistory.getTransactionType())
-        .price(transactionHistory.getPrice())
-        .amount(transactionHistory.getAmount())
+        .price(transactionHistory.getPrice()).amount(transactionHistory.getAmount())
         .total(transactionHistory.getPrice() * transactionHistory.getAmount())
-        .profit(transactionHistory.getProfit())
-        .createdAt(transactionHistory.getCreatedAt())
+        .profit(transactionHistory.getProfit()).createdAt(transactionHistory.getCreatedAt())
         .build();
   }
 
   // 주식 변동내역 기록
   @Transactional
   public Long createStockHistory(Long stockId, StockRequestDto stockRequestDto) {
-    Stock stock = stockRepository.findById(stockId).orElseThrow(() -> new NoSuchElementException("Stock not found"));
-    StockHistory stockHistory = StockHistory.builder()
-        .stock(stock)
-        .price(stockRequestDto.getPrice())
-        .createdAt(stockRequestDto.getCreatedAt())
-        .build();
+    Stock stock = stockRepository.findById(stockId)
+        .orElseThrow(() -> new NoSuchElementException("Stock not found"));
+    StockHistory stockHistory = StockHistory.builder().stock(stock)
+        .price(stockRequestDto.getPrice()).createdAt(stockRequestDto.getCreatedAt()).build();
 
     stockHistoryRepository.save(stockHistory);
     return stockHistory.getId();
@@ -341,14 +314,8 @@ public class StockService {
   public Long createTransactionHistory(Wallet wallet, Stock stock, Float price, Integer amount,
       Float total, Float profit, TransactionType transactionType) {
 
-    TransactionHistory transactionHistory = TransactionHistory.builder()
-        .wallet(wallet)
-        .stock(stock)
-        .price(price)
-        .amount(amount)
-        .total(total)
-        .profit(profit)
-        .transactionType(transactionType)
+    TransactionHistory transactionHistory = TransactionHistory.builder().wallet(wallet).stock(stock)
+        .price(price).amount(amount).total(total).profit(profit).transactionType(transactionType)
         .build();
 
     transactionHistoryRepository.save(transactionHistory);
@@ -357,14 +324,11 @@ public class StockService {
 
   @Transactional(readOnly = true)
   public NewsSimpleResponseDto getRecentArticles(Long stockId) {
-    List<News> recentNews = newsRepository.findTop3ByStockIdOrderByCreatedAtDesc(
-        stockId);
+    List<News> recentNews = newsRepository.findTop3ByStockIdOrderByCreatedAtDesc(stockId);
 
-    List<NewsResponseDto> articles = recentNews.stream().map(news -> NewsResponseDto.builder()
-        .title(news.getTitle())
-        .contents(news.getContents())
-        .createdAt(news.getCreatedAt())
-        .build()).toList();
+    List<NewsResponseDto> articles = recentNews.stream().map(
+        news -> NewsResponseDto.builder().title(news.getTitle()).contents(news.getContents())
+            .createdAt(news.getCreatedAt()).build()).toList();
 
     return NewsSimpleResponseDto.builder().articles(articles).build();
   }

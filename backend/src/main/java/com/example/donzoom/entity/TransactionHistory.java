@@ -51,8 +51,8 @@ public class TransactionHistory extends BaseEntity {
   private Float profit;
 
   @Builder
-  public TransactionHistory(Wallet wallet, Stock stock, Float price, Integer amount,
-      Float total, Float profit, TransactionType transactionType) {
+  public TransactionHistory(Wallet wallet, Stock stock, Float price, Integer amount, Float total,
+      Float profit, TransactionType transactionType) {
     this.wallet = wallet;
     this.stock = stock;
     this.price = price;

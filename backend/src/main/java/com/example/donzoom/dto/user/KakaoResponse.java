@@ -4,10 +4,10 @@ import java.util.Map;
 
 public class KakaoResponse implements OAuth2Response {
 
-  private final Map<String, Object> attribute ; // JSON 형식
+  private final Map<String, Object> attribute; // JSON 형식
 
   public KakaoResponse(final Map<String, Object> attribute) {
-    this.attribute = (Map<String, Object>) attribute;
+    this.attribute = attribute;
   }
 
   @Override
@@ -22,7 +22,7 @@ public class KakaoResponse implements OAuth2Response {
 
   @Override
   public String getEmail() {
-    return ((Map<String, String>)attribute.get("kakao_account")).get("email");
+    return ((Map<String, String>) attribute.get("kakao_account")).get("email");
   }
 
   @Override

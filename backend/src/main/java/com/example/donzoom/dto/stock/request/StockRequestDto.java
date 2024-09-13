@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class StockRequestDto {
+
   private Long stockId;
   private Float price;
   private LocalDateTime createdAt;

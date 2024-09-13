@@ -1,6 +1,5 @@
 package com.example.donzoom.controller;
 
-import com.example.donzoom.dto.stock.response.StockResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;

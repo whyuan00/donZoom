@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class TransferResponseDto {
+
   private HeaderDto Header;
   private List<TransferRecDto> REC;
 }

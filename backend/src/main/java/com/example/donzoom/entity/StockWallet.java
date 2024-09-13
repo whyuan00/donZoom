@@ -41,7 +41,8 @@ public class StockWallet {
   private Float averagePrice;
 
   @Builder
-  public StockWallet(Wallet wallet, Stock stock, Float totalInvestedPrice, Integer amount, Float averagePrice) {
+  public StockWallet(Wallet wallet, Stock stock, Float totalInvestedPrice, Integer amount,
+      Float averagePrice) {
     this.wallet = wallet;
     this.stock = stock;
     this.totalInvestedPrice = totalInvestedPrice;

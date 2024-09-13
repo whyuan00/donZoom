@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+
   // Optional은 객체가 없으면 null 대신 빈 객체 반환
   Optional<User> findByEmail(String email);
 }

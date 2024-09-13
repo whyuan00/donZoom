@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/stock") // TODO: Base URL 생기면 교체 예정
+@RequestMapping("/stock")
 public class StockController {
 
   private final StockService stockService;
@@ -34,14 +34,16 @@ public class StockController {
 
   // 주식 상세 조회
   @GetMapping("/{stockId}")
-  public ResponseEntity<StockResponseDto> getStockById(@PathVariable(name = "stockId") Long stockId) {
+  public ResponseEntity<StockResponseDto> getStockById(
+      @PathVariable(name = "stockId") Long stockId) {
     StockResponseDto stock = stockService.getStockById(stockId);
     return ResponseEntity.ok().body(stock);
   }
 
   // 주식 정보 받아오기 및 현재가 갱신
   @PostMapping("/{stockId}")
-  public ResponseEntity<?> addStockHistory(@PathVariable(name = "stockId") Long stockId, @RequestBody StockRequestDto stockRequestDto) {
+  public ResponseEntity<?> addStockHistory(@PathVariable(name = "stockId") Long stockId,
+      @RequestBody StockRequestDto stockRequestDto) {
     Long stockHistoryId = stockService.createStockHistory(stockId, stockRequestDto);
     return ResponseEntity.ok().body(stockHistoryId);
   }
@@ -64,7 +66,8 @@ public class StockController {
   @GetMapping("/myhistory/{stockId}")
   public ResponseEntity<StockTransactionHistorySimpleResponseDto> getMyTransactionHistoryByStockId(
       @PathVariable(name = "stockId") Long stockId) {
-    StockTransactionHistorySimpleResponseDto historiesByStockId = stockService.getTransaction(stockId);
+    StockTransactionHistorySimpleResponseDto historiesByStockId = stockService.getTransaction(
+        stockId);
     return ResponseEntity.ok().body(historiesByStockId);
   }
 
@@ -72,8 +75,7 @@ public class StockController {
   @PostMapping("/{stockId}/buy")
   public ResponseEntity<?> buyStocks(@PathVariable(name = "stockId") Long stockId,
       @RequestParam(name = "amount") Integer amount) {
-    StockTransactionHistoryResponseDto transaction = stockService.buyStocks(
-        stockId, amount);
+    StockTransactionHistoryResponseDto transaction = stockService.buyStocks(stockId, amount);
     return ResponseEntity.ok().body(transaction);
   }
 
@@ -81,8 +83,7 @@ public class StockController {
   @PostMapping("/{stockId}/sell")
   public ResponseEntity<?> sellStocks(@PathVariable(name = "stockId") Long stockId,
       @RequestParam(name = "amount") Integer amount) {
-    StockTransactionHistoryResponseDto transaction = stockService.sellStocks(
-        stockId, amount);
+    StockTransactionHistoryResponseDto transaction = stockService.sellStocks(stockId, amount);
     return ResponseEntity.ok().body(transaction);
   }
 

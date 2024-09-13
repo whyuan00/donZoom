@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class CreateMemberDto {
+
   private final String apiKey;
   private final String userId;
 }

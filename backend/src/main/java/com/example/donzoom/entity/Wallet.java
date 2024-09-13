@@ -1,48 +1,54 @@
 package com.example.donzoom.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Wallet {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="WALLET_ID")
-    private Long id;
 
-    @OneToOne(mappedBy = "wallet")
-    private User user;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "WALLET_ID")
+  private Long id;
 
-    @OneToMany(mappedBy = "wallet")
-    private List<MyPig> mypigs = new ArrayList<>();
+  @OneToOne(mappedBy = "wallet")
+  private User user;
 
-    private Integer coin;
+  @OneToMany(mappedBy = "wallet")
+  private List<MyPig> mypigs = new ArrayList<>();
 
-    private Integer ticket;
+  private Integer coin;
 
-    @Builder
-    public Wallet(Integer coin, Integer ticket, List<MyPig> mypigs,User user) {
-        this.coin = coin;
-        this.ticket = ticket;
-        if (mypigs != null) {
-            this.mypigs = mypigs;
-        }
-        this.user = user;
+  private Integer ticket;
+
+  @Builder
+  public Wallet(Integer coin, Integer ticket, List<MyPig> mypigs, User user) {
+    this.coin = coin;
+    this.ticket = ticket;
+    if (mypigs != null) {
+      this.mypigs = mypigs;
     }
+    this.user = user;
+  }
 
-    public void updateCoin(Integer coin) {
-        this.coin = coin;
-    }
+  public void updateCoin(Integer coin) {
+    this.coin = coin;
+  }
 
-    public void updateTicket(Integer ticket) {
-        this.ticket = ticket;
-    }
+  public void updateTicket(Integer ticket) {
+    this.ticket = ticket;
+  }
 }

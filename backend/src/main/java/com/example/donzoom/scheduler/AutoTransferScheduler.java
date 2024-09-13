@@ -1,4 +1,5 @@
 package com.example.donzoom.scheduler;
+
 import com.example.donzoom.entity.AutoTransfer;
 import com.example.donzoom.repository.AutoTransferRepository;
 import com.example.donzoom.service.AccountService;
@@ -16,7 +17,8 @@ public class AutoTransferScheduler {
   private final AutoTransferRepository autoTransferRepository;
   private final AccountService accountService;
 
-  public AutoTransferScheduler(AutoTransferRepository autoTransferRepository, AccountService accountService) {
+  public AutoTransferScheduler(AutoTransferRepository autoTransferRepository,
+      AccountService accountService) {
     this.autoTransferRepository = autoTransferRepository;
     this.accountService = accountService;
   }
@@ -29,7 +31,7 @@ public class AutoTransferScheduler {
     List<AutoTransfer> autoTransfers = autoTransferRepository.findByTransferDate(today);
 
     for (AutoTransfer transfer : autoTransfers) {
-      System.out.println(transfer);
+      log.info(transfer.toString());
       // 자동이체 실행
       accountService.executeTransfer(transfer);
     }

@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class CreateCardResponseDto {
+
   private HeaderDto Header;
   private CreateCardRecDto REC;
 }

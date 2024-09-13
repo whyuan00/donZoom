@@ -1,4 +1,4 @@
-package com.example.donzoom.dto.stockHistory.response;
+package com.example.donzoom.dto.stockhistory.response;
 
 import java.time.LocalDateTime;
 import lombok.Builder;

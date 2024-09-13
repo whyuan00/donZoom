@@ -3,7 +3,6 @@ package com.example.donzoom.controller;
 import com.example.donzoom.dto.mission.request.MissionCreateDto;
 import com.example.donzoom.dto.mission.request.MissionUpdateDto;
 import com.example.donzoom.entity.Mission;
-import com.example.donzoom.repository.MissionRepository;
 import com.example.donzoom.service.MissionService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -30,7 +28,7 @@ public class MissionController {
   public ResponseEntity<?> getAllMissions() {
     // 내 미션 전체 조회
     List<Mission> missions = missionService.getUserMissions();
-    return new ResponseEntity<>(missions,HttpStatus.OK);
+    return new ResponseEntity<>(missions, HttpStatus.OK);
   }
 
   @PostMapping
@@ -44,14 +42,15 @@ public class MissionController {
   public ResponseEntity<?> getMission(@PathVariable long missionId) {
     // 미션 단일 조회
     Mission mission = missionService.getMissionById(missionId);
-    return new ResponseEntity<>(mission,HttpStatus.OK);
+    return new ResponseEntity<>(mission, HttpStatus.OK);
   }
 
   @PatchMapping("/{missionId}")
-  public ResponseEntity<?> updateMission(@PathVariable Long missionId, @RequestBody MissionUpdateDto missionUpdateDto) {
+  public ResponseEntity<?> updateMission(@PathVariable Long missionId,
+      @RequestBody MissionUpdateDto missionUpdateDto) {
     // 미션 수정
-    Mission mission = missionService.updateMission(missionId,missionUpdateDto);
-    return new ResponseEntity<>(mission,HttpStatus.OK);
+    Mission mission = missionService.updateMission(missionId, missionUpdateDto);
+    return new ResponseEntity<>(mission, HttpStatus.OK);
   }
 
   @DeleteMapping("/{missionId}")

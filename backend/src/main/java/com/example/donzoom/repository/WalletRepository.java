@@ -1,6 +1,5 @@
 package com.example.donzoom.repository;
 
-import com.example.donzoom.entity.User;
 import com.example.donzoom.entity.Wallet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

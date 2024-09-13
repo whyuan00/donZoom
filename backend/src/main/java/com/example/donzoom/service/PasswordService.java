@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PasswordService {
 
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+  private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public String encode(String password) {
-        return bCryptPasswordEncoder.encode(password);
-    }
+  public String encode(String password) {
+    return bCryptPasswordEncoder.encode(password);
+  }
 }
