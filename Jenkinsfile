@@ -18,7 +18,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 echo 'Running SonarQube analysis...'
-                withSonarQubeEnv('SONARQUBE_ENV') {          // SonarQube 인스턴스 이름을 사용
+                withSonarQubeEnv('SonarQube'){          // SonarQube 인스턴스 이름을 사용
                     sh '''
                         cd backend
                         ./gradlew sonar
