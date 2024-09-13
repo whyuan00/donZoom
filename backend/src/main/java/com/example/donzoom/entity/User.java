@@ -20,7 +20,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User extends BaseEntity{
+public class User extends BaseEntity {
+
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY) // PK 자동 생성(생성 전략 = 데이터베이스에 의존)
@@ -56,7 +57,8 @@ public class User extends BaseEntity{
 
   @Builder
   public User(User parent, String email, String pwdHash, String name, String nickname,
-      String userKey, String role, String provider,Wallet wallet, List<AutoTransfer> autoTransfers) {
+      String userKey, String role, String provider, Wallet wallet,
+      List<AutoTransfer> autoTransfers) {
     this.parent = parent;
     this.email = email;
     this.pwdHash = pwdHash;
@@ -71,15 +73,15 @@ public class User extends BaseEntity{
     if (autoTransfers != null) {
       this.autoTransfers = autoTransfers;
     }
-    this.dailyUsageAmount=0L;
+    this.dailyUsageAmount = 0L;
   }
 
 
   //=== OAuth2 관련 ===///
-  public void OAuth2Update(User TempOAuthUser) {
-    this.role = TempOAuthUser.getRole();
-    this.name = TempOAuthUser.getName();
-    this.pwdHash = TempOAuthUser.getPwdHash();
+  public void oauth2Update(User tempOAuthUser) {
+    this.role = tempOAuthUser.getRole();
+    this.name = tempOAuthUser.getName();
+    this.pwdHash = tempOAuthUser.getPwdHash();
   }
 
   public void updateUserKey(String userKey) {
@@ -98,7 +100,7 @@ public class User extends BaseEntity{
   }
 
   // 1일결제금액 변경
-  public void updateDailyUsageAmount(Long dailyUsageAmount){
+  public void updateDailyUsageAmount(Long dailyUsageAmount) {
     this.dailyUsageAmount = dailyUsageAmount;
   }
 

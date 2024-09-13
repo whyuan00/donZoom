@@ -1,8 +1,8 @@
 package com.example.donzoom.service;
 
 import com.example.donzoom.dto.user.CustomUserDetails;
-import com.example.donzoom.dto.user.request.UserCreateDto;
 import com.example.donzoom.dto.user.request.LoginRequestDto;
+import com.example.donzoom.dto.user.request.UserCreateDto;
 import com.example.donzoom.dto.user.response.LoginResponseDto;
 import com.example.donzoom.entity.User;
 import com.example.donzoom.entity.Wallet;
@@ -10,7 +10,6 @@ import com.example.donzoom.repository.UserRepository;
 import com.example.donzoom.repository.WalletRepository;
 import com.example.donzoom.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,13 +32,9 @@ public class UserService {
     Wallet wallet = Wallet.builder().build();
     walletRepository.save(wallet);
 
-    User user = User.builder()
-        .email(userCreateDto.getEmail())
-        .pwdHash(passwordService.encode(userCreateDto.getPassword()))
-        .name(userCreateDto.getName())
-        .nickname(userCreateDto.getNickname())
-        .wallet(wallet)
-        .build();
+    User user = User.builder().email(userCreateDto.getEmail())
+        .pwdHash(passwordService.encode(userCreateDto.getPassword())).name(userCreateDto.getName())
+        .nickname(userCreateDto.getNickname()).wallet(wallet).build();
 
     userRepository.save(user);
     return user.getId();

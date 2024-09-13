@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class PayRequestDto {
+
   private final String cardNo;
   private final String cvc;
   private final String merchantId;

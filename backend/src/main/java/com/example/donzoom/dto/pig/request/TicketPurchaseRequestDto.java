@@ -8,5 +8,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class TicketPurchaseRequestDto {
+
   private Integer amount;
 }

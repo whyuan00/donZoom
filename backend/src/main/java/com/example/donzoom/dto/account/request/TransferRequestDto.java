@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class TransferRequestDto {
+
   private final String depositAccountNo;
   private final String depositTransactionSummary;
   private final Long transactionBalance;

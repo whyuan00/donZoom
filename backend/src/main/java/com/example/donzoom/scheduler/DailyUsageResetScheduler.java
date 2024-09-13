@@ -2,12 +2,11 @@ package com.example.donzoom.scheduler;
 
 import com.example.donzoom.entity.User;
 import com.example.donzoom.repository.UserRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

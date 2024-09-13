@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class PigResponseDto {
+
   private final Long pigId;
   private final String imageUrl;
   private final String pigName;

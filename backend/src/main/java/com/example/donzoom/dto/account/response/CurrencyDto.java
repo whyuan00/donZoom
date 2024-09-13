@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class CurrencyDto {
+
   private final String currency;
   private final String currencyName;
 }

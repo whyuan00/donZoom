@@ -2,7 +2,6 @@ package com.example.donzoom.repository;
 
 import com.example.donzoom.entity.StockHistory;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StockHistoryRepository extends JpaRepository<StockHistory, Long> {

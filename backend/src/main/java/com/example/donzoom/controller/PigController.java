@@ -3,12 +3,9 @@ package com.example.donzoom.controller;
 import com.example.donzoom.dto.pig.request.PigRequestDto;
 import com.example.donzoom.dto.pig.request.TicketPurchaseRequestDto;
 import com.example.donzoom.dto.pig.response.PigResponseDto;
-import com.example.donzoom.entity.Pig;
 import com.example.donzoom.service.PigService;
 import com.example.donzoom.service.WalletService;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,10 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController

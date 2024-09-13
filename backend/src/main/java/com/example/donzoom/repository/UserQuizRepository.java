@@ -6,5 +6,6 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserQuizRepository extends JpaRepository<UserQuiz, Long> {
+
   Optional<List<UserQuiz>> findAllByUserId(Long userId);
 }

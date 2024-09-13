@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Getter
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
+
   // authenticationManager에서 사용하는 UserDetails의 구현체입니다.
   private final User user;
 
@@ -19,14 +20,7 @@ public class CustomUserDetails implements UserDetails {
 
     Collection<GrantedAuthority> collection = new ArrayList<>();
 
-    collection.add(new GrantedAuthority() {
-
-      @Override
-      public String getAuthority() {
-
-        return user.getRole();
-      }
-    });
+    collection.add((GrantedAuthority) user::getRole);
 
     return collection;
   }

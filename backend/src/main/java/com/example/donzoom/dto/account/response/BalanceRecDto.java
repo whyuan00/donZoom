@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class BalanceRecDto {
+
   private final String bankCode;
   private final String accountNo;
   private final String accountCreatedDate;

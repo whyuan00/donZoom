@@ -1,7 +1,6 @@
 package com.example.donzoom.service;
 
 import com.example.donzoom.dto.pig.request.TicketPurchaseRequestDto;
-import com.example.donzoom.dto.pig.response.PigResponseDto;
 import com.example.donzoom.entity.User;
 import com.example.donzoom.entity.Wallet;
 import com.example.donzoom.repository.UserRepository;
@@ -23,10 +22,10 @@ public class WalletService {
   private int ticketPrice;
 
   //가상머니로 돼지뽑기권 구매하기
-  public void buyTicket(TicketPurchaseRequestDto ticketPurchaseRequestDto){
+  public void buyTicket(TicketPurchaseRequestDto ticketPurchaseRequestDto) {
 
     int amount = ticketPurchaseRequestDto.getAmount();
-    int totalPrice = amount*ticketPrice;
+    int totalPrice = amount * ticketPrice;
 
     // 현재 인증된 사용자 정보 가져오기
     String username = SecurityUtil.getAuthenticatedUsername();

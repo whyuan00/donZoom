@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class TransactionRecDto {
+
   private final String totalCount;
   private final List<TransactionDto> list;
 

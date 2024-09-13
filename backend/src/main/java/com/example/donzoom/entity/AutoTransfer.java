@@ -1,7 +1,5 @@
 package com.example.donzoom.entity;
 
-import com.example.donzoom.constant.MissionStatus;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,8 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,9 +17,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AutoTransfer {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name="auto_transfer_id")
+  @Column(name = "auto_transfer_id")
   private Long id;
 
   private String withdrawalAccountNo;
@@ -38,8 +35,8 @@ public class AutoTransfer {
   private User user;  // User와의 연관관계 추가
 
   @Builder
-  public AutoTransfer(String withdrawalAccountNo, String depositAccountNo, Long transactionBalance, String transferDate, String userKey
-  ,User user){
+  public AutoTransfer(String withdrawalAccountNo, String depositAccountNo, Long transactionBalance,
+      String transferDate, String userKey, User user) {
     this.withdrawalAccountNo = withdrawalAccountNo;
     this.depositAccountNo = depositAccountNo;
     this.transactionBalance = transactionBalance;

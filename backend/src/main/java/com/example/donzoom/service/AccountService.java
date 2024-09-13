@@ -19,14 +19,11 @@ import com.example.donzoom.dto.account.response.TransferResponseDto;
 import com.example.donzoom.entity.AutoTransfer;
 import com.example.donzoom.entity.User;
 import com.example.donzoom.external.BankApi;
-import com.example.donzoom.repository.UserRepository;
 import com.example.donzoom.repository.AutoTransferRepository;
+import com.example.donzoom.repository.UserRepository;
 import com.example.donzoom.util.SecurityUtil;
 import com.example.donzoom.util.StoreMappingUtil;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,7 +48,8 @@ public class AccountService {
   public BankUserResponseDto createMember() {
 
     //유저정보 가져오기
-    User user = getUser();;
+    User user = getUser();
+    ;
 
     BankUserResponseDto bankUser = bankApi.createMember(user.getEmail());
     // 코인 차감 및 티켓 추가
@@ -65,7 +63,8 @@ public class AccountService {
   //사용자 정보 조회
   public BankUserResponseDto getMember() {
     //유저정보 가져오기
-    User user = getUser();;
+    User user = getUser();
+    ;
 
     return bankApi.getMember(user.getEmail());
   }
@@ -76,14 +75,14 @@ public class AccountService {
 
     //유저정보 가져오기
     User user = getUser();
-    System.out.println(user.getUserKey());
+    log.info(user.getUserKey());
 
     //유저가 뱅크에 가입되있지 않으면 가입 후 계좌생성
-    if(user.getUserKey()==null){
+    if (user.getUserKey() == null) {
       createMember();
     }
 
-    return bankApi.createDemandDepositAccount(accountTypeUniqueNo,user.getUserKey());
+    return bankApi.createDemandDepositAccount(accountTypeUniqueNo, user.getUserKey());
   }
 
   //계좌정보조회
@@ -97,19 +96,19 @@ public class AccountService {
   public TransferResponseDto transfer(TransferRequestDto transferRequestDto) {
     //유저정보 가져오기
     User user = getUser();
-    return bankApi.transfer(transferRequestDto,user.getUserKey());
+    return bankApi.transfer(transferRequestDto, user.getUserKey());
   }
 
   public BalanceResponseDto getBalance(String accountNo) {
     //유저정보 가져오기
     User user = getUser();
-    return bankApi.getBalance(accountNo,user.getUserKey());
+    return bankApi.getBalance(accountNo, user.getUserKey());
   }
 
   public TransactionResponseDto getHistory(TransactionRequestDto transactionRequestDto) {
     //유저정보 가져오기
     User user = getUser();
-    return bankApi.getHistory(transactionRequestDto,user.getUserKey());
+    return bankApi.getHistory(transactionRequestDto, user.getUserKey());
   }
 
   // 1일 결제 한도 수정
@@ -129,10 +128,10 @@ public class AccountService {
   }
 
   //카드생성
-  public CreateCardResponseDto createCard(CreateCardRequestDto createCardRequestDto){
+  public CreateCardResponseDto createCard(CreateCardRequestDto createCardRequestDto) {
     //유저정보 가져오기
     User user = getUser();
-    return bankApi.createCard(createCardRequestDto,user.getUserKey());
+    return bankApi.createCard(createCardRequestDto, user.getUserKey());
   }
 
   public void setAutoTransfer(AutoTransferRequestDto autoTransferRequestDto) {
@@ -144,8 +143,7 @@ public class AccountService {
         .withdrawalAccountNo(autoTransferRequestDto.getWithdrawalAccountNo())
         .depositAccountNo(autoTransferRequestDto.getDepositAccountNo())
         .transactionBalance(autoTransferRequestDto.getTransactionBalance())
-        .transferDate(autoTransferRequestDto.getTransferDate())
-        .userKey(user.getUserKey())
+        .transferDate(autoTransferRequestDto.getTransferDate()).userKey(user.getUserKey())
         .user(user)  // User 객체 설정
         .build();
 
@@ -157,8 +155,7 @@ public class AccountService {
     log.info("자동이체가 설정되었습니다. 출금 계좌: {}, 입금 계좌: {}, 금액: {}, 날짜: {}",
         autoTransferRequestDto.getWithdrawalAccountNo(),
         autoTransferRequestDto.getDepositAccountNo(),
-        autoTransferRequestDto.getTransactionBalance(),
-        autoTransferRequestDto.getTransferDate());
+        autoTransferRequestDto.getTransactionBalance(), autoTransferRequestDto.getTransferDate());
   }
 
   // 자동이체 정보 수정
@@ -168,8 +165,7 @@ public class AccountService {
 
     // 입금계좌와 출금계좌로 자동이체 정보 찾기
     AutoTransfer autoTransfer = autoTransferRepository.findByWithdrawalAccountNoAndDepositAccountNo(
-            updateRequestDto.getWithdrawalAccountNo(),
-            updateRequestDto.getDepositAccountNo())
+            updateRequestDto.getWithdrawalAccountNo(), updateRequestDto.getDepositAccountNo())
         .orElseThrow(() -> new RuntimeException("AutoTransfer not found"));
 
     // 해당 자동이체가 현재 유저의 것이 맞는지 확인
@@ -190,20 +186,16 @@ public class AccountService {
 
     // 로그 남기기
     log.info("자동이체 정보가 수정되었습니다. 출금 계좌: {}, 입금 계좌: {}, 금액: {}, 날짜: {}",
-        updateRequestDto.getWithdrawalAccountNo(),
-        updateRequestDto.getDepositAccountNo(),
-        updateRequestDto.getTransactionBalance(),
-        updateRequestDto.getTransferDate());
+        updateRequestDto.getWithdrawalAccountNo(), updateRequestDto.getDepositAccountNo(),
+        updateRequestDto.getTransactionBalance(), updateRequestDto.getTransferDate());
   }
 
   public void executeTransfer(AutoTransfer autoTransfer) {
     TransferRequestDto transferRequestDto = TransferRequestDto.builder()
         .withdrawalAccountNo(autoTransfer.getWithdrawalAccountNo())
         .depositAccountNo(autoTransfer.getDepositAccountNo())
-        .transactionBalance(autoTransfer.getTransactionBalance())
-        .depositTransactionSummary("자동이체")
-        .withdrawalTransactionSummary("자동이체")
-        .build();
+        .transactionBalance(autoTransfer.getTransactionBalance()).depositTransactionSummary("자동이체")
+        .withdrawalTransactionSummary("자동이체").build();
 
     bankApi.transfer(transferRequestDto, autoTransfer.getUserKey());  // 이체 API 호출
   }
@@ -243,7 +235,7 @@ public class AccountService {
   }
 
 
-  public String getAccountNoFromCardNo(User user,PayRequestDto payRequestDto){
+  public String getAccountNoFromCardNo(User user, PayRequestDto payRequestDto) {
     //내 카드 목록 조회
     CardListResponseDto response = bankApi.getMyCards(user.getUserKey());
     List<CardListRecDto> cards = response.getREC();  // REC 리스트 추출
@@ -256,7 +248,7 @@ public class AccountService {
         .orElseThrow(() -> new IllegalArgumentException("해당 카드 번호에 해당하는 계좌가 없습니다."));  // 없으면 예외 발생
   }
 
-  public User getUser(){
+  public User getUser() {
     // 현재 인증된 사용자 정보 가져오기
     String username = SecurityUtil.getAuthenticatedUsername();
     //유저정보 가져오기

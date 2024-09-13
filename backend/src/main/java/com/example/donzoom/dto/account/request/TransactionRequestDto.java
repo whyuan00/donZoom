@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class TransactionRequestDto {
+
   private final String accountNo;
   private final String startDate;
   private final String endDate;

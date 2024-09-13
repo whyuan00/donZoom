@@ -8,8 +8,9 @@ import lombok.Getter;
 @Getter
 @Builder
 public class MissionUpdateDto {
+
   private final String contents;
-  private final LocalDateTime  dueDate;
+  private final LocalDateTime dueDate;
   private final Long reward;
   private final MissionStatus status;
 

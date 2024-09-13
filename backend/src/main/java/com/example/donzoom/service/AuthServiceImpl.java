@@ -22,7 +22,7 @@ public class AuthServiceImpl implements AuthService {
 
   private final JWTUtil jwtUtil;
   private final UserRepository userRepository;
-   private final OAuth2UserService oAuth2UserService;
+  private final OAuth2UserService oAuth2UserService;
 
   @Override
   public UserDetailDto getUserInfo(HttpServletRequest request) {
@@ -30,15 +30,10 @@ public class AuthServiceImpl implements AuthService {
     if (loginUser == null) {
       return null;
     }
+    // userDetailDto 만들어서 리턴
+    return UserDetailDto.builder().id(loginUser.getId()).role(loginUser.getRole())
+        .username(loginUser.getName()).email(loginUser.getEmail()).build();
 
-    UserDetailDto userDetailDto = UserDetailDto.builder()
-        .id(loginUser.getId())
-        .role(loginUser.getRole())
-        .username(loginUser.getName())
-        .email(loginUser.getEmail())
-        .build();
-
-    return userDetailDto;
   }
 
   @Override
@@ -53,7 +48,6 @@ public class AuthServiceImpl implements AuthService {
     if (refreshToken == null || jwtUtil.isExpired(refreshToken)) {
       return null;
     }
-
 
     String email = jwtUtil.getUsername(refreshToken);
     String role = jwtUtil.getRole(refreshToken);
@@ -113,9 +107,8 @@ public class AuthServiceImpl implements AuthService {
       return null;
     }
     String email = ((CustomUserDetails) principal).getUsername();
-    return userRepository.findByEmail(email)
-        .orElseThrow(() -> new IllegalArgumentException(
-            LoginMessage.WRONG_LOGIN_REQUEST.getValue()));
+    return userRepository.findByEmail(email).orElseThrow(
+        () -> new IllegalArgumentException(LoginMessage.WRONG_LOGIN_REQUEST.getValue()));
   }
 
   private boolean isLogin(Object principal) {

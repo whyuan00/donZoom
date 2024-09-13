@@ -1,7 +1,7 @@
 package com.example.donzoom.controller;
 
-import com.example.donzoom.dto.user.request.UserCreateDto;
 import com.example.donzoom.dto.user.request.LoginRequestDto;
+import com.example.donzoom.dto.user.request.UserCreateDto;
 import com.example.donzoom.dto.user.response.LoginResponseDto;
 import com.example.donzoom.service.UserService;
 import jakarta.servlet.http.Cookie;
@@ -30,8 +30,8 @@ public class UserController {
       // 회원가입 시도
       Long id = userService.registerUser(userCreateDto);
       return new ResponseEntity<>(HttpStatus.CREATED);
-    }catch(Exception e){
-      return new ResponseEntity<>(e,HttpStatus.BAD_REQUEST);
+    } catch (Exception e) {
+      return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -50,10 +50,10 @@ public class UserController {
       response.addCookie(refreshTokenCookie);
 
       return new ResponseEntity<>(HttpStatus.OK);
-    }catch(AuthenticationException e){
-      return new ResponseEntity<>("유효하지 않은 이메일과 비밀번호입니다.",HttpStatus.UNAUTHORIZED);
-    }catch (Exception e){
-      return new ResponseEntity<>("로그인 중 서버 오류가 발생했습니다.",HttpStatus.INTERNAL_SERVER_ERROR);
+    } catch (AuthenticationException e) {
+      return new ResponseEntity<>("유효하지 않은 이메일과 비밀번호입니다.", HttpStatus.UNAUTHORIZED);
+    } catch (Exception e) {
+      return new ResponseEntity<>("로그인 중 서버 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class TransferRecDto {
+
   private final String transactionUniqueNo;
   private final String accountNo;
   private final String transactionDate;

@@ -14,9 +14,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Pig {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name="PIG_ID")
+  @Column(name = "PIG_ID")
   private Long id;
 
   private String imageUrl;
@@ -24,7 +25,7 @@ public class Pig {
   private String pigName;
 
   @Builder
-  public Pig(String imageUrl, String pigName){
+  public Pig(String imageUrl, String pigName) {
     this.imageUrl = imageUrl;
     this.pigName = pigName;
   }

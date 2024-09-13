@@ -23,13 +23,12 @@ public class QuizService {
   private final UserRepository userRepository;
   private final UserQuizRepository userQuizRepository;
 
-  public List<Quiz> getTodayQuizzes(){
+  public List<Quiz> getTodayQuizzes() {
     // 오늘의 퀴즈 안푼것중  (랜덤 3개) 가져오기
 
     String username = SecurityUtil.getAuthenticatedUsername();
     User user = userRepository.findByEmail(username)
         .orElseThrow(() -> new RuntimeException("User not found"));
-
 
     Pageable limit = PageRequest.of(0, 3);
     return quizRepository.findUnsolvedQuizzesByUser(user.getId(), limit);
@@ -38,7 +37,7 @@ public class QuizService {
 
   public List<Quiz> getUserQuizzes() {
     // 내가 푼 퀴즈 기록들 가져오기 
-    
+
     // 현재 로그인된 사용자 정보 가져오기
     String username = SecurityUtil.getAuthenticatedUsername();
     User user = userRepository.findByEmail(username)
@@ -52,7 +51,7 @@ public class QuizService {
 
   public void submitAnswer(Long quizId, QuizAnswerDto quizAnswerDto) {
     // 정답 제출하기
-    
+
     // 현재 로그인된 사용자 정보 가져오기
     String username = SecurityUtil.getAuthenticatedUsername();
     User user = userRepository.findByEmail(username)
@@ -63,11 +62,8 @@ public class QuizService {
         .orElseThrow(() -> new RuntimeException("Quiz not found with id: " + quizId));
 
     // 유저가 제출한 답안을 UserQuiz에 저장
-    UserQuiz userQuiz = UserQuiz.builder()
-        .user(user)
-        .quiz(quiz)
-        .selectedAnswer(quizAnswerDto.getAnswer())
-        .build();
+    UserQuiz userQuiz = UserQuiz.builder().user(user).quiz(quiz)
+        .selectedAnswer(quizAnswerDto.getAnswer()).build();
 
     userQuizRepository.save(userQuiz);
   }

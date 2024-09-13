@@ -1,6 +1,10 @@
 package com.example.donzoom.service;
 
-import com.example.donzoom.dto.user.*;
+import com.example.donzoom.dto.user.CustomOAuth2User;
+import com.example.donzoom.dto.user.GoogleResponse;
+import com.example.donzoom.dto.user.KakaoResponse;
+import com.example.donzoom.dto.user.NaverResponse;
+import com.example.donzoom.dto.user.OAuth2Response;
 import com.example.donzoom.dto.user.request.UserCreateDto;
 import com.example.donzoom.entity.User;
 import com.example.donzoom.repository.UserRepository;
@@ -25,18 +29,14 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 
   // OAuth2로 유저 등록하기
   public Long saveOAuth2User(UserCreateDto userCreateDto) {
-    User findUser = userRepository.findByEmail(userCreateDto.getEmail())
-        .orElseThrow(() -> new IllegalArgumentException(
-            "찾을 수 없는 이메일입니다. " + userCreateDto.getEmail()));
+    User findUser = userRepository.findByEmail(userCreateDto.getEmail()).orElseThrow(
+        () -> new IllegalArgumentException("찾을 수 없는 이메일입니다. " + userCreateDto.getEmail()));
 
     String passhwd = passwordService.encode(userCreateDto.getPassword());
     String role = "ROLE_USER";
-    User TempOAuthUser = User.builder()
-        .pwdHash(passhwd)
-        .role(role)
-        .name(userCreateDto.getNickname())
-        .build();
-    findUser.OAuth2Update(TempOAuthUser);
+    User TempOAuthUser = User.builder().pwdHash(passhwd).role(role)
+        .name(userCreateDto.getNickname()).build();
+    findUser.oauth2Update(TempOAuthUser);
     return findUser.getId();
   }
 
@@ -59,9 +59,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
       log.info("해당 이메일로 가입된 계정이 없습니다. = {}", oAuth2Response.getEmail());
       User newUser = User.builder()
           // TODO : 추가 정보 있으면 넘기기
-          .email(oAuth2Response.getEmail())
-          .provider(provider)
-          .build();
+          .email(oAuth2Response.getEmail()).provider(provider).build();
       userRepository.save(newUser); // 이후에 가입으로 추가 업데이트 하기
       return new CustomOAuth2User(newUser);
 
@@ -78,7 +76,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
       return new NaverResponse(oAuth2User.getAttributes());
     } else if (registrationId.equals("google")) {
       return new GoogleResponse(oAuth2User.getAttributes());
-    }else if(registrationId.equals("kakao")){
+    } else if (registrationId.equals("kakao")) {
       return new KakaoResponse(oAuth2User.getAttributes());
     }
     throw new OAuth2AuthenticationException("Unsupported OAuth2 service");

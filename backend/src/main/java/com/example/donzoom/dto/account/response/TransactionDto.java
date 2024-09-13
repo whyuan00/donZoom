@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class TransactionDto {
+
   private final String transactionUniqueNo;
   private final String transactionDate;
   private final String transactionTime;

@@ -1,13 +1,12 @@
 package com.example.donzoom.dto.user;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class GoogleResponse implements OAuth2Response {
 
-  private final Map<String, Object> attribute ; // JSON 형식
+  private final Map<String, Object> attribute; // JSON 형식
 
   public GoogleResponse(final Map<String, Object> attribute) {
     log.info(attribute.toString());
@@ -26,7 +25,7 @@ public class GoogleResponse implements OAuth2Response {
 
   @Override
   public String getEmail() {
-    return (String)attribute.get("email");
+    return (String) attribute.get("email");
   }
 
   @Override

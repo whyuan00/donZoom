@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class BankUserResponseDto {
+
   private final String userId;
   private final String userName;
   private final String institutionCode;

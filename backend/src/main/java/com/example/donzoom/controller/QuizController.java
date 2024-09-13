@@ -1,6 +1,5 @@
 package com.example.donzoom.controller;
 
-import com.example.donzoom.dto.mission.request.MissionUpdateDto;
 import com.example.donzoom.dto.quiz.request.QuizAnswerDto;
 import com.example.donzoom.entity.Quiz;
 import com.example.donzoom.service.QuizService;
@@ -25,7 +24,7 @@ public class QuizController {
   @GetMapping
   public ResponseEntity<?> getQuiz() {
     // 내가 푼 퀴즈 가져오기
-    List<Quiz> myQuizzes =  quizService.getUserQuizzes();
+    List<Quiz> myQuizzes = quizService.getUserQuizzes();
     return new ResponseEntity<>(myQuizzes, HttpStatus.OK);
   }
 
@@ -33,15 +32,16 @@ public class QuizController {
   public ResponseEntity<?> getTodayQuiz() {
     // 오늘의 퀴즈 불러오기
     List<Quiz> todayQuizzes = quizService.getTodayQuizzes();
-    return new ResponseEntity<>(todayQuizzes,HttpStatus.OK);
+    return new ResponseEntity<>(todayQuizzes, HttpStatus.OK);
   }
 
   @PostMapping("/{quizId}")
-  public ResponseEntity<?> submitTodayAnswer(@PathVariable Long quizId, @RequestBody QuizAnswerDto quizAnswerDto) {
+  public ResponseEntity<?> submitTodayAnswer(@PathVariable Long quizId,
+      @RequestBody QuizAnswerDto quizAnswerDto) {
     //퀴즈 정답 제출하기
-    quizService.submitAnswer(quizId,quizAnswerDto);
+    quizService.submitAnswer(quizId, quizAnswerDto);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
-  
+
 }

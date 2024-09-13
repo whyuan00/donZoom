@@ -18,7 +18,7 @@ public class Quiz {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name="quiz_id")
+  @Column(name = "quiz_id")
   private Long id;
 
   private QuizType quizType;
@@ -34,7 +34,8 @@ public class Quiz {
 
 
   @Builder
-  public Quiz(QuizType quizType, String question, Integer answer, String option1, String option2, String option3, String option4){
+  public Quiz(QuizType quizType, String question, Integer answer, String option1, String option2,
+      String option3, String option4) {
     this.quizType = quizType;
     this.question = question;
     this.answer = answer;

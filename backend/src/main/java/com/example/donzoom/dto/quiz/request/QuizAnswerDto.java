@@ -6,5 +6,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class QuizAnswerDto {
+
   private final Integer answer;
 }

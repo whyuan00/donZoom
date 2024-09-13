@@ -1,4 +1,4 @@
-package com.example.donzoom.Filter;
+package com.example.donzoom.filter;
 
 import com.example.donzoom.dto.user.CustomUserDetails;
 import com.example.donzoom.util.JWTUtil;
@@ -39,17 +39,16 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     log.info("로그인을 시도합니다. email = {}, pwd = {}", email, password);
 
-    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-        email, password, null);
+    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(email,
+        password, null);
 
     // token에 담은 검증을 위한 AuthenticationManager로 전달
     return authenticationManager.authenticate(authToken);
   }
 
   @Override
-  protected void successfulAuthentication(HttpServletRequest request,
-      HttpServletResponse response, FilterChain chain, Authentication authentication)
-      throws IOException, ServletException {
+  protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+      FilterChain chain, Authentication authentication) throws IOException, ServletException {
 
     //UserDetails
     CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -68,7 +67,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     // refreshToken 발급하기
     String refreshToken = jwtUtil.createRefreshJwt(email, role);
     response.addCookie(createCookie("refreshToken", refreshToken));
-
 
     log.info("발급한 accessToken 입니다. = {}", accessToken);
     log.info("발급한 refreshToken 입니다. = {}", refreshToken);

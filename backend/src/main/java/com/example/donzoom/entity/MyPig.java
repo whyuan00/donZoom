@@ -18,23 +18,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MyPig {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="MY_PIG_ID")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "MY_PIG_ID")
+  private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY) // ManyToOne 관계 설정
-    @JoinColumn(name = "WALLET_ID") // 외래 키 컬럼명 설정
-    private Wallet wallet;
+  @ManyToOne(fetch = FetchType.LAZY) // ManyToOne 관계 설정
+  @JoinColumn(name = "WALLET_ID") // 외래 키 컬럼명 설정
+  private Wallet wallet;
 
 
-    @ManyToOne(fetch = FetchType.LAZY) // ManyToOne 관계 설정
-    @JoinColumn(name = "PIG_ID") // 외래 키 컬럼명 설정
-    private Pig pig;
+  @ManyToOne(fetch = FetchType.LAZY) // ManyToOne 관계 설정
+  @JoinColumn(name = "PIG_ID") // 외래 키 컬럼명 설정
+  private Pig pig;
 
-    @Builder
-    public MyPig(Wallet wallet, Pig pig) {
-        this.wallet = wallet;
-        this.pig = pig;
-    }
+  @Builder
+  public MyPig(Wallet wallet, Pig pig) {
+    this.wallet = wallet;
+    this.pig = pig;
+  }
 }

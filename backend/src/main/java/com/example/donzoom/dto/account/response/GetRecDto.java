@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class GetRecDto {
+
   private final String bankCode;
   private final String bankName;
   private final String userName;

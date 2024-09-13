@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StoreMappingUtil {
+
   // immutable map 선언 및 초기화
   private static final Map<String, String> MERCHANT_ID_TO_STORE_NAME_MAP;
 
@@ -24,6 +25,10 @@ public class StoreMappingUtil {
     // 수정 불가능한 맵으로 변환
     MERCHANT_ID_TO_STORE_NAME_MAP = Collections.unmodifiableMap(tempMap);
   }
+
+  private StoreMappingUtil() {
+  }
+
   // merchantId로 storeName을 조회하는 메서드
   public static String getStoreNameByMerchantId(String merchantId) {
     return MERCHANT_ID_TO_STORE_NAME_MAP.get(merchantId);

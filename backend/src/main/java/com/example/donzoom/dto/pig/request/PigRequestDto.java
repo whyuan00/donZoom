@@ -6,5 +6,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class PigRequestDto {
+
   private Integer amount; // 요청할 Pig의 개수
 }

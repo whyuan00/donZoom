@@ -1,7 +1,6 @@
 package com.example.donzoom.service;
 
 import com.example.donzoom.dto.pig.request.PigRequestDto;
-import com.example.donzoom.dto.pig.request.TicketPurchaseRequestDto;
 import com.example.donzoom.dto.pig.response.PigResponseDto;
 import com.example.donzoom.entity.MyPig;
 import com.example.donzoom.entity.Pig;
@@ -41,13 +40,10 @@ public class PigService {
         .orElseThrow(() -> new RuntimeException("User not found"));
     Wallet wallet = user.getWallet();
 
-    List<MyPig> myPigs = myPigRepository.findByWallet_Id(wallet.getId()); //Wallet ID를 기준으로 MyPigs 엔티티 리스트를 반환
-    return myPigs.stream()
-        .map(myPig -> PigResponseDto.builder()
-            .pigId(myPig.getPig().getId())
-            .imageUrl(myPig.getPig().getImageUrl())
-            .pigName(myPig.getPig().getPigName())
-            .build())
+    List<MyPig> myPigs = myPigRepository.findByWallet_Id(
+        wallet.getId()); //Wallet ID를 기준으로 MyPigs 엔티티 리스트를 반환
+    return myPigs.stream().map(myPig -> PigResponseDto.builder().pigId(myPig.getPig().getId())
+            .imageUrl(myPig.getPig().getImageUrl()).pigName(myPig.getPig().getPigName()).build())
         .collect(Collectors.toList());
   }
 
@@ -57,11 +53,8 @@ public class PigService {
     Pig pig = pigRepository.findById(pigId)
         .orElseThrow(() -> new IllegalArgumentException("Pig not found with id: " + pigId));
 
-    return PigResponseDto.builder()
-        .pigId(pig.getId())
-        .imageUrl(pig.getImageUrl())
-        .pigName(pig.getPigName())
-        .build();
+    return PigResponseDto.builder().pigId(pig.getId()).imageUrl(pig.getImageUrl())
+        .pigName(pig.getPigName()).build();
   }
 
   @Transactional
@@ -87,30 +80,21 @@ public class PigService {
 
     // 랜덤으로 Pig 선택
     Random random = new Random();
-    List<Pig> randomPigs = random.ints(0, allPigs.size())
-        .limit(count)
-        .mapToObj(allPigs::get)
-        .collect(Collectors.toList());
+    List<Pig> randomPigs = random.ints(0, allPigs.size()).limit(count).mapToObj(allPigs::get)
+        .toList();
 
     //티켓 쓴 만큼 차감
     wallet.updateTicket(wallet.getTicket() - count);
 
     // MyPig에 뽑은 돼지 추가
     for (Pig pig : randomPigs) {
-      MyPig myPig = MyPig.builder()
-          .wallet(wallet)
-          .pig(pig)
-          .build();
+      MyPig myPig = MyPig.builder().wallet(wallet).pig(pig).build();
       myPigRepository.save(myPig);
     }
 
     // PigResponseDto 리스트 반환
-    return randomPigs.stream()
-        .map(pig -> PigResponseDto.builder()
-            .pigId(pig.getId())
-            .imageUrl(pig.getImageUrl())
-            .pigName(pig.getPigName())
-            .build())
-        .collect(Collectors.toList());
+    return randomPigs.stream().map(
+        pig -> PigResponseDto.builder().pigId(pig.getId()).imageUrl(pig.getImageUrl())
+            .pigName(pig.getPigName()).build()).toList();
   }
 }
