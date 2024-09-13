@@ -11,8 +11,10 @@ import com.example.donzoom.repository.StockRepository;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReportService {
@@ -28,6 +30,7 @@ public class ReportService {
       Stock stock = stockRepository.findById(stockId)
           .orElseThrow(() -> new RuntimeException("Stock not found for ID: " + stockId));
       // News 엔티티 생성
+      log.info(reportDto.getCreatedAt()+"리포트 생성시간");
       Report report = Report.builder()
           .stock(stock)
           .title(reportDto.getTitle())

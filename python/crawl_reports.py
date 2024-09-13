@@ -6,6 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime, timedelta
+import pytz  # 시간대 설정을 위해 pytz 사용
 import time
 from dotenv import load_dotenv
 import os
@@ -14,6 +15,9 @@ import json
 
 # 환경 변수 로드
 load_dotenv()
+
+# 한국 시간대 설정
+KST = pytz.timezone('Asia/Seoul')
 
 # OpenAI API 키 설정
 api_key = os.getenv("OPENAI_API_KEY")  # .env 파일에서 API 키 로드
@@ -105,7 +109,7 @@ def crawl_reports(stockId):
     search_button.click()
 
     # 하루 전 날짜 가져오기
-    yesterday = (datetime.now() - timedelta(days=1)).strftime("%y.%m.%d")
+    yesterday = (datetime.now(KST) - timedelta(days=1)).strftime("%y.%m.%d")  # 한국 시간대로 맞춰줌
 
     # 리포트 목록을 담고 있는 테이블의 행 가져오기
     report_rows = driver.find_elements(By.XPATH, "//div[@class='box_type_m']//table//tr")
@@ -133,18 +137,18 @@ def crawl_reports(stockId):
             #article_content = summarize_text(article_content)
 
             # 현재 시간을 ISO 8601 형식으로 변환하여 createdAt 필드에 저장
-            created_at = datetime.now().strftime("%Y-%m-%dT%H:%M")
+            created_at = datetime.now(KST).strftime('%Y-%m-%dT%H:%M:%S')  # 한국 시간으로 설정한 현재 시간
 
             data = {
                 "title": report['title'],
                 "contents": article_content,
                 "stockId": stockId,
-                "createdAt": created_at  # 현재 시간을 추가
+                "createdAt": created_at  # 현재 시간을 추가 (ISO 8601 형식)
             }
             all_data_list.append(data)
         except Exception as e:
             print(f"오류 발생: {e}")
-
+    print(all_data_list)
     driver.quit()
     
     return all_data_list

@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class News extends BaseEntity {
+public class News {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
