@@ -184,7 +184,7 @@ now = datetime.now(KST)
 #one_minute_later =  + timedelta(minutes=1)
 
 # 뉴스 기사를 가져오고 바로 본문을 가져오도록 스케줄러 설정
-#scheduler.add_job(send_news_data, trigger=DateTrigger(run_date=now))
+scheduler.add_job(send_news_data, trigger=DateTrigger(run_date=now))
 
 # 리포트를 가져오고 바로 본문을 가져오도록 스케줄러 설정
 scheduler.add_job(send_reports_to_springboot, trigger=DateTrigger(run_date=now)) #'cron', hour=13, minute=24, timezone=KST)

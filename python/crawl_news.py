@@ -102,6 +102,10 @@ def crawl_news(stockId):
                 }
                 temp_news_list.append(data)
 
+                # 종목당 3개의 기사만 수집하도록 제한
+                if len(temp_news_list) >= 3:
+                    break
+
             except Exception as inner_e:
                 print(f"기사 처리 중 오류 발생: {inner_e}")
 
@@ -118,7 +122,8 @@ def crawl_news(stockId):
                 content = content_section.text.strip()  # 본문 텍스트 추출
 
                 # GPT API로 요약하기 (필요시 사용)
-                # content = summarize_text(content)
+                #content = summarize_text(content)
+
                 # 새로운 딕셔너리에 제목, 날짜, 본문만 추가 (링크와 소스는 제외)
                 final_data = {
                     "title": news['title'],
