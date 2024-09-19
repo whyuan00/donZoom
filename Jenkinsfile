@@ -29,7 +29,7 @@ pipeline {
             steps {
                 echo 'Renaming APK to DONZOOM.apk...'
                 sh '''
-                    cd frontend
+                    cd frontend/android
                     mv ${APK_OUTPUT_DIR}app-release.apk ${APK_OUTPUT_DIR}${APK_FINAL_NAME}  # APK 파일 이름 변경
                 '''
             }
