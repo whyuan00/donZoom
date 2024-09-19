@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         APK_OUTPUT_DIR = 'android/app/build/outputs/apk/release/'  // APK 파일 위치
-        APK_FINAL_NAME = 'DONZOOM.apk'  // apk 파일 이름
+        APK_FINAL_NAME = 'DONZOOM.apk'  // APK 파일 이름
     }
 
     stages {
@@ -11,6 +11,16 @@ pipeline {
             steps {
                 echo 'Checking out frontend SCM...'
                 checkout scm
+            }
+        }
+
+        stage('Install Node Modules') {
+            steps {
+                echo 'Installing node modules...'
+                sh '''
+                    cd frontend
+                    npm install  # 또는 yarn install
+                '''
             }
         }
 
