@@ -14,12 +14,21 @@ pipeline {
             }
         }
 
+        stage('Create local.properties') {
+            steps {
+                echo 'Creating local.properties file...'
+                sh '''
+                    echo "sdk.dir=/opt/android-sdk" > frontend/android/local.properties
+                '''
+            }
+        }
+
         stage('Install Node Modules') {
             steps {
                 echo 'Installing node modules...'
                 sh '''
                     cd frontend
-                    npm install  # 또는 yarn install
+                    npm install
                 '''
             }
         }
