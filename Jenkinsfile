@@ -2,42 +2,20 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'donzoom/backend'  // Docker 이미지 이름
+        DOCKER_IMAGE_BACKEND = 'donzoom/backend'  // 백엔드용 Docker 이미지 이름
     }
 
     stages {
         stage('Checkout SCM') {
             steps {
-                echo 'Checking out SCM...'
+                echo 'Checking out backend SCM...'
                 checkout scm
-            }
-        }
-        
-        stage('Prepare SonarQube Analysis') {
-            steps {
-                echo 'Setting executable permissions for gradlew...'
-                sh '''
-                    cd backend
-                    chmod +x gradlew  # gradlew 파일에 실행 권한 부여
-                '''
-            }
-        }
-
-        stage('SonarQube Analysis') {
-            steps {
-                echo 'Running SonarQube analysis...'
-                withSonarQubeEnv('SonarQube'){  // SonarQube 인스턴스 이름을 사용
-                    sh '''
-                        cd backend
-                        ./gradlew sonar
-                    '''
-                }
             }
         }
 
         stage('Build JAR') {
             steps {
-                echo 'Building JAR file...'
+                echo 'Building JAR file for backend...'
                 sh '''
                     cd backend
                     chmod +x gradlew  # gradlew 파일에 실행 권한 부여
@@ -48,10 +26,10 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                echo 'Building Docker image...'
+                echo 'Building Docker image for backend...'
                 script {
                     try {
-                        docker.build("${DOCKER_IMAGE}:latest", "backend")  // Spring Boot Docker 이미지 빌드
+                        docker.build("${DOCKER_IMAGE_BACKEND}:latest", "backend")
                     } catch (e) {
                         error "Failed to build Docker image. Error: ${e.message}"
                     }
@@ -59,13 +37,13 @@ pipeline {
             }
         }
 
-        stage('Deploy with Docker Compose') {
+        stage('Deploy Backend') {
             steps {
-                echo 'Deploying with Docker Compose...'
+                echo 'Deploying backend with Docker Compose...'
                 sh '''
-                    # 기존 컨테이너를 중지 및 제거 (docker-compose를 사용해 관리)
-                    docker-compose down || true
-                    docker-compose up -d  # 기존 이미지를 사용해 모든 컨테이너 실행
+                    cd backend
+                    docker-compose down || true  # 기존 컨테이너 중지
+                    docker-compose up -d  # 새로 컨테이너 시작
                 '''
             }
         }
@@ -73,13 +51,13 @@ pipeline {
 
     post {
         always {
-            echo 'Pipeline finished.'
+            echo 'Backend pipeline finished.'
         }
         success {
-            echo 'Pipeline completed successfully.'
+            echo 'Backend pipeline completed successfully.'
         }
         failure {
-            echo 'Pipeline failed.'
+            echo 'Backend pipeline failed.'
         }
     }
 }
