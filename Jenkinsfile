@@ -18,7 +18,7 @@ pipeline {
             steps {
                 echo 'Building APK for frontend...'
                 sh '''
-                    cd frontend
+                    cd frontend/android
                     chmod +x gradlew  # gradlew 파일에 실행 권한 부여
                     ./gradlew assembleRelease  # APK 생성
                 '''
