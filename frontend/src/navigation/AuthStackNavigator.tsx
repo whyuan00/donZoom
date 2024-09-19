@@ -10,6 +10,7 @@ import MissionHomeScreen from '../views/screens/mission/MissionHomeScreen';
 import MakeNewMissionScreen from '../views/screens/mission/MakeNewMissionScreen';
 import SignupScreen from '../views/screens/auth/SignupScreen';
 import CheckFamilyScreen from '@/views/screens/auth/CheckFamilyScreen';
+import AccountChildHistoryScreen from '@/views/screens/account/AccountChildHistoryScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -42,6 +43,7 @@ const AuthStackNavigator = () => {
       />
       <Stack.Screen name="Signup" component={SignupScreen} />
       <Stack.Screen name="Check" component={CheckFamilyScreen} />
+      <Stack.Screen name="AccountChildHistory" component={AccountChildHistoryScreen} />
     </Stack.Navigator>
   );
 };
