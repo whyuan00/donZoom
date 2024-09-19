@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         APK_OUTPUT_DIR = 'android/app/build/outputs/apk/release/'  // APK 파일 위치
-        APK_FINAL_NAME = 'DONZOOM.apk'  // 최종 APK 파일 이름
+        APK_FINAL_NAME = 'DONZOOM.apk'  // apk 파일 이름
     }
 
     stages {
