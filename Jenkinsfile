@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        APK_OUTPUT_DIR = '/home/ubuntu/jenkins-data/workspace/pipeline/frontend/android/app/build/outputs/apk/release/'  // APK 파일 위치를 실제 경로로 변경
+        APK_OUTPUT_DIR = '/var/jenkins_home/workspace/pipeline/frontend/android/app/build/outputs/apk/release'  // APK 파일 위치를 실제 경로로 변경
         APK_FINAL_NAME = 'DONZOOM.apk'  // APK 파일 최종 이름
     }
 
