@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE_BACKEND = 'donzoom/backend'  // 백엔드용 Docker 이미지
-        ENV_FILE_PATH = './backend/.env'          // .env 파일 경로
+        ENV_FILE_PATH = './.env'          // .env 파일 경로
     }
 
     stages {
