@@ -38,8 +38,7 @@ const KeyPad = ({ onInput, currentValue }: { onInput: (value: number) => void, c
   );
 
   return (
-    <View style={styles.container}>
-      <Text>{currentValue}</Text>
+    <View>
       <View style={styles.keypadContainer}>
         {[1, 2, 3, 4, 5, 6, 7, 8, 9, ' ', 0].map(num =>
           renderButton(num.toString()),
@@ -51,9 +50,6 @@ const KeyPad = ({ onInput, currentValue }: { onInput: (value: number) => void, c
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   keypadContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
