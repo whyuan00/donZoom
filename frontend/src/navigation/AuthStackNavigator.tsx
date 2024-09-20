@@ -11,7 +11,10 @@ import MakeNewMissionScreen from '../views/screens/mission/MakeNewMissionScreen'
 import SignupScreen from '../views/screens/auth/SignupScreen';
 import CheckFamilyScreen from '@/views/screens/auth/CheckFamilyScreen';
 import AccountChildHistoryScreen from '@/views/screens/account/AccountChildHistoryScreen';
-
+import DrawMachineScreen from '@/views/screens/draw/DrawMachineScreen';
+import DrawCollectionScreen from '@/views/screens/draw/DrawCollectionScreen';
+import CollectionButton from '@/assets/collectionButton.svg';
+import QuizHomeScreen from '@/views/screens/quiz/QuizHomeScreen';
 const Stack = createNativeStackNavigator();
 
 const AuthStackNavigator = () => {
@@ -44,6 +47,19 @@ const AuthStackNavigator = () => {
       <Stack.Screen name="Signup" component={SignupScreen} />
       <Stack.Screen name="Check" component={CheckFamilyScreen} />
       <Stack.Screen name="AccountChildHistory" component={AccountChildHistoryScreen} />
+      <Stack.Screen
+        name="돼지뽑기"
+        component={DrawMachineScreen}
+        options={({navigation}) => ({
+          headerRight: () => (
+            <TouchableOpacity onPress={() => navigation.navigate('돼지들')}>
+              <CollectionButton width={24} height={24} />
+            </TouchableOpacity>
+          ),
+        })}
+      />
+      <Stack.Screen name="돼지들" component={DrawCollectionScreen} />
+      <Stack.Screen name="퀴즈" component={QuizHomeScreen} />
     </Stack.Navigator>
   );
 };
