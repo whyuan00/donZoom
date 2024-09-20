@@ -7,8 +7,8 @@ import DrawStackNavigator from '../navigation/DrawStackNavigator';
 function App() {
   return (
     <NavigationContainer>
-      {/* <AuthStackNavigator /> */}
-      <DrawStackNavigator />
+      <AuthStackNavigator />
+      {/* <DrawStackNavigator /> */}
     </NavigationContainer>
   );
 }
