@@ -73,9 +73,9 @@ const MissionOngoingScreen = ({}) => {
 
 const styles = StyleSheet.create({
   container: {
-    margin:20,
-    marginLeft:30,
     flex: 1,
+    margin: 20,
+    alignItems: 'center',
   },
 });
 
