@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE_BACKEND = 'donzoom/backend'  // 백엔드용 Docker 이미지, 테스트
+        DOCKER_IMAGE_BACKEND = 'donzoom/backend'  // 백엔드용 Docker 이미지
+        ENV_FILE_PATH = './backend/.env'          // .env 파일 경로
     }
 
     stages {
@@ -42,8 +43,8 @@ pipeline {
                 echo 'Deploying backend with Docker Compose...'
                 sh '''
                     cd backend
-                    docker-compose down || true  # 기존 컨테이너 중지
-                    docker-compose up -d  # 새로 컨테이너 시작
+                    docker-compose --env-file ${ENV_FILE_PATH} down || true  # 기존 컨테이너 중지
+                    docker-compose --env-file ${ENV_FILE_PATH} up -d  # .env 파일을 사용하여 새로 컨테이너 시작
                 '''
             }
         }
