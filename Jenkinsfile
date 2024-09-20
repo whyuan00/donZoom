@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE_BACKEND = 'donzoom/backend'  // 백엔드용 Docker 이미지
+        DOCKER_IMAGE_BACKEND = 'donzoom/backend'  // 백엔드용 Docker 이미지, 테스트
     }
 
     stages {
