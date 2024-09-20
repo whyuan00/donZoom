@@ -24,3 +24,14 @@ services:
       - "8081:8081"
     depends_on:
       - mysql
+      - redis  # Redis 의존성 추가
+
+  redis:
+    image: redis:6.2  # Redis 이미지 지정
+    container_name: redis
+    environment:
+      TZ: Asia/Seoul
+    ports:
+      - "6379:6379"  # Redis 기본 포트
+    volumes:
+      - ./redis_data:/data  # Redis 데이터 저장소 설정
