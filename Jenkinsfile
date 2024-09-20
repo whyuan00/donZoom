@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        APK_OUTPUT_DIR = 'front/android/app/build/outputs/apk/release/'  // APK 파일 위치
+        APK_OUTPUT_DIR = 'frontend/android/app/build/outputs/apk/release/'  // APK 파일 위치
         APK_FINAL_NAME = 'DONZOOM.apk'  // APK 파일 최종 이름
     }
 
@@ -40,7 +40,7 @@ pipeline {
                 echo 'Renaming APK to DONZOOM.apk...'
                 sh '''
                     cd frontend/android
-                    mv ${APK_OUTPUT_DIR}app-release.apk ${APK_OUTPUT_DIR}${APK_FINAL_NAME}  // APK 파일 이름 변경
+                    mv ${APK_OUTPUT_DIR}app-release.apk ${APK_OUTPUT_DIR}${APK_FINAL_NAME}
                 '''
             }
         }
