@@ -22,5 +22,11 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
       </activity>
+      <meta-data
+        android:name="DEBUG_SERVER_HOST_NAME"
+        android:value="localhost"/>
+      <meta-data
+        android:name="DEBUG_SERVER_PORT"
+        android:value="3000"/>
     </application>
 </manifest>
