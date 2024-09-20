@@ -22,6 +22,18 @@ const AuthHomeScreen = ({navigation}: any) => {
           onPress={() => navigation.navigate('AccountHistory')}
         />
       </View>
+      <View>
+        <Button
+          title="돼지 뽑기 이동"
+          onPress={() => navigation.navigate('돼지뽑기')}
+        />
+      </View>
+      <View>
+        <Button
+          title="퀴즈 풀기 이동"
+          onPress={() => navigation.navigate('퀴즈')}
+        />
+      </View>
     </SafeAreaView>
   );
 };
