@@ -10,36 +10,14 @@ import MakeNewMissionScreen from '../views/screens/mission/MakeNewMissionScreen'
 import SignupScreen from '../views/screens/auth/SignupScreen';
 import CheckFamilyScreen from '@/views/screens/auth/CheckFamilyScreen';
 import NickNameScreen from '@/views/screens/auth/NickNameScreen';
+import TestScreen from '@/views/screens/auth/TestScreen';
 
 const Stack = createNativeStackNavigator();
 
 const AuthStackNavigator = ({}) => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="AuthHome" component={AuthHomeScreen} />
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Signup" component={SignupScreen} />
-      <Stack.Screen name="Check" component={CheckFamilyScreen} />
-      <Stack.Screen name="NickName" component={NickNameScreen} />
-
-      {/* 임시로 미션페이지로 가는 링크 생성함 */}
-      <Stack.Screen
-        name="MakeNewMission"
-        component={MakeNewMissionScreen}
-        options={{title: '미션 생성'}}
-      />
-      <Stack.Screen
-        name="Mission"
-        component={MissionHomeScreen}
-        options={{
-          title: '미션',
-          headerRight: () => (
-            <TouchableOpacity onPress={() => {}}>
-              <Text> 추가</Text>
-            </TouchableOpacity>
-          ),
-        }}
-      />
+      <Stack.Screen name="Test" component={TestScreen} />
     </Stack.Navigator>
   );
 };
