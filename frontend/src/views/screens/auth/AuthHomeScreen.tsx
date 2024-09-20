@@ -19,7 +19,7 @@ const AuthHomeScreen = ({navigation}: any) => {
       <View>
         <Button
           title="거래내역 이동"
-          onPress={() => navigation.navigate('AccountChildHistory')}
+          onPress={() => navigation.navigate('AccountHistory')}
         />
       </View>
     </SafeAreaView>
