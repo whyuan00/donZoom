@@ -67,8 +67,8 @@ const AuthStackNavigator = () => {
         component={MakeNewMissionCompleteScreen}
       />
 
-      <Stack.Screen name="Signup" component={SignupScreen} />
-      <Stack.Screen name="Check" component={CheckFamilyScreen} />
+      {/* <Stack.Screen name="Signup" component={SignupScreen} /> */}
+      {/* <Stack.Screen name="Check" component={CheckFamilyScreen} /> */}
       <Stack.Screen
         name="AccountChildHistory"
         component={AccountHistoryScreen}
