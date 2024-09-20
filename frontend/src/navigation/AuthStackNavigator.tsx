@@ -12,7 +12,7 @@ import SignupScreen from '../views/screens/auth/SignupScreen';
 import CheckFamilyScreen from '@/views/screens/auth/CheckFamilyScreen';
 import NickNameScreen from '@/views/screens/auth/NickNameScreen';
 
-import AccountChildHistoryScreen from '@/views/screens/account/AccountChildHistoryScreen';
+import AccountHistoryScreen from '@/views/screens/account/AccountHistoryScreen';
 import DrawMachineScreen from '@/views/screens/draw/DrawMachineScreen';
 import DrawCollectionScreen from '@/views/screens/draw/DrawCollectionScreen';
 import CollectionButton from '@/assets/collectionButton.svg';
@@ -41,9 +41,9 @@ const AuthStackNavigator = () => {
           title: '미션',
           headerRight: () => {
             return (
-              <Text onPress={() => navigation.navigate('MakeNewMission')}
-              style={{color:colors.BLUE_100}}
-              >
+              <Text
+                onPress={() => navigation.navigate('MakeNewMission')}
+                style={{color: colors.BLUE_100}}>
                 추가
               </Text>
             );
@@ -52,7 +52,10 @@ const AuthStackNavigator = () => {
       />
       <Stack.Screen name="Signup" component={SignupScreen} />
       <Stack.Screen name="Check" component={CheckFamilyScreen} />
-      <Stack.Screen name="AccountChildHistory" component={AccountChildHistoryScreen} />
+      <Stack.Screen
+        name="AccountChildHistory"
+        component={AccountHistoryScreen}
+      />
       <Stack.Screen
         name="돼지뽑기"
         component={DrawMachineScreen}
