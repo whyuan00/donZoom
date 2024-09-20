@@ -5,7 +5,7 @@ import React, {useState} from 'react';
 import {TouchableOpacity} from 'react-native';
 import {Image, StyleSheet, Text, View} from 'react-native';
 
-function CheckFamilyScreen() {
+function CheckFamilyScreen({navigation}: any) {
   const [selected, setSelected] = useState('아이');
 
   return (
@@ -48,7 +48,10 @@ function CheckFamilyScreen() {
         </TouchableOpacity>
       </View>
       <View style={styles.nextButtonContainer}>
-        <CustomButton label="다음으로" variant="auth"></CustomButton>
+        <CustomButton
+          label="다음으로"
+          variant="auth"
+          onPress={() => navigation.navigate('NickName')}></CustomButton>
       </View>
     </View>
   );

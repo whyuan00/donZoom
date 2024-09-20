@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://j11a108.p.ssafy.io',
+  baseURL: 'http://localhost:8081/api',
   withCredentials: true,
 });
 

@@ -12,7 +12,13 @@ import MakeNewMissionPayScreen from '@/views/screens/mission/MakeNewMissionPaySc
 import MakeNewMissionCompleteScreen from '@/views/screens/mission/MakeNewMIssionCompleteScreen';
 import SignupScreen from '../views/screens/auth/SignupScreen';
 import CheckFamilyScreen from '@/views/screens/auth/CheckFamilyScreen';
+import NickNameScreen from '@/views/screens/auth/NickNameScreen';
 
+import AccountHistoryScreen from '@/views/screens/account/AccountHistoryScreen';
+import DrawMachineScreen from '@/views/screens/draw/DrawMachineScreen';
+import DrawCollectionScreen from '@/views/screens/draw/DrawCollectionScreen';
+import CollectionButton from '@/assets/collectionButton.svg';
+import QuizHomeScreen from '@/views/screens/quiz/QuizHomeScreen';
 const Stack = createNativeStackNavigator();
 
 const AuthStackNavigator = () => {
@@ -20,6 +26,10 @@ const AuthStackNavigator = () => {
     <Stack.Navigator>
       <Stack.Screen name="AuthHome" component={AuthHomeScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Signup" component={SignupScreen} />
+      <Stack.Screen name="Check" component={CheckFamilyScreen} />
+      <Stack.Screen name="NickName" component={NickNameScreen} />
+
       {/* 임시로 미션페이지로 가는 링크 생성함 */}
       <Stack.Screen
         name="MakeNewMission"
@@ -59,6 +69,23 @@ const AuthStackNavigator = () => {
 
       <Stack.Screen name="Signup" component={SignupScreen} />
       <Stack.Screen name="Check" component={CheckFamilyScreen} />
+      <Stack.Screen
+        name="AccountChildHistory"
+        component={AccountHistoryScreen}
+      />
+      <Stack.Screen
+        name="돼지뽑기"
+        component={DrawMachineScreen}
+        options={({navigation}) => ({
+          headerRight: () => (
+            <TouchableOpacity onPress={() => navigation.navigate('돼지들')}>
+              <CollectionButton width={24} height={24} />
+            </TouchableOpacity>
+          ),
+        })}
+      />
+      <Stack.Screen name="돼지들" component={DrawCollectionScreen} />
+      <Stack.Screen name="퀴즈" component={QuizHomeScreen} />
     </Stack.Navigator>
   );
 };
