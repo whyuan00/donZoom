@@ -19,7 +19,7 @@ pipeline {
                 echo 'Installing node modules...'
                 sh '''
                     cd frontend
-                    npm install  // 필요한 Node 모듈 설치
+                    npm install  # 필요한 Node 모듈 설치 (여기서 Bash 주석으로 변경)
                 '''
             }
         }
@@ -29,8 +29,8 @@ pipeline {
                 echo 'Building APK for frontend...'
                 sh '''
                     cd frontend/android
-                    chmod +x gradlew  // gradlew 파일에 실행 권한 부여
-                    ./gradlew assembleRelease  // APK 빌드
+                    chmod +x gradlew  # gradlew 파일에 실행 권한 부여 (주석도 Bash 형식으로 변경)
+                    ./gradlew assembleRelease  # APK 빌드
                 '''
             }
         }
