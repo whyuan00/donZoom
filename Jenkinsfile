@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        APK_OUTPUT_DIR = 'frontend/android/app/build/outputs/apk/release/'  // APK 파일 위치
+        APK_OUTPUT_DIR = '/home/ubuntu/jenkins-data/workspace/pipeline/frontend/android/app/build/outputs/apk/release/'  // APK 파일 위치를 실제 경로로 변경
         APK_FINAL_NAME = 'DONZOOM.apk'  // APK 파일 최종 이름
     }
 
@@ -36,13 +36,18 @@ pipeline {
             }
         }
 
-        stage('Rename APK') {
+        stage('Find and Rename APK') {
             steps {
-                echo 'Renaming APK to DONZOOM.apk...'
-                sh '''
-                    cd frontend/android
-                    mv ${APK_OUTPUT_DIR}app-release.apk ${APK_OUTPUT_DIR}${APK_FINAL_NAME}
-                '''
+                echo 'Finding and renaming APK...'
+                script {
+                    def apkPath = sh(script: "find ${APK_OUTPUT_DIR} -name 'app-release.apk'", returnStdout: true).trim()
+                    if (apkPath) {
+                        echo "APK found at: ${apkPath}"
+                        sh "mv ${apkPath} ${APK_OUTPUT_DIR}${APK_FINAL_NAME}"
+                    } else {
+                        error "APK 파일을 찾을 수 없습니다."
+                    }
+                }
             }
         }
 
