@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'donzoom/backend'  // Docker Image 이름
+        DOCKER_IMAGE = 'donzoom/backend'  // Docker image 이름
     }
 
     stages {
