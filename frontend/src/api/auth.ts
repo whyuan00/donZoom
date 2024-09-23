@@ -29,6 +29,7 @@ const postSignup = async ({
     name,
     nickname,
   });
+  console.log(data);
   return data;
 };
 
@@ -42,21 +43,29 @@ type Response = {
 };
 
 const postLogin = async ({email, password}: RequestUser): Promise<Response> => {
-  const {headers} = await axiosInstance.post('/user/login', {
-    email,
-    password,
-  });
-  console.log('Authorization:', headers['authorization']);
-  return headers['authorization'];
+  try {
+    console.log('Attempting to send login request...');
+    const response = await axiosInstance.post('/user/login', {
+      email,
+      password,
+    });
+    console.log('Login request successful:', response);
+    console.log('Authorization:', response.headers['authorization']);
+    return response.headers['authorization'];
+  } catch (error) {
+    console.log(error);
+    console.error('Error during login request:', error);
+    throw error;
+  }
 };
 
 type ResponseProfile = Profile;
 
 const getProfile = async (): Promise<ResponseProfile> => {
-  console.log(
-    'axiosInstance.defaults.headers.common[Authorization]',
-    axiosInstance.defaults.headers.common['Authorization'],
-  );
+  // console.log(
+  //   'axiosInstance.defaults.headers.common[Authorization]',
+  //   axiosInstance.defaults.headers.common['Authorization'],
+  // );
   const {data} = await axiosInstance.get('/auth/userInfo');
   console.log('data', data);
   return data;
@@ -74,7 +83,7 @@ const getAccessToken = async (): Promise<ResponseToken> => {
 };
 
 const logout = async () => {
-  await axiosInstance.post('/user/logout');
+  await axiosInstance.delete('/user/logout');
 };
 
 export {postSignup, postLogin, getProfile, getAccessToken, logout};

@@ -5,11 +5,13 @@ import {useSignupStore} from '@/stores/useAuthStore';
 import {validateSignup} from '@/utils';
 import CustomButton from '@/views/components/CustomButton';
 import InputField from '@/views/components/InputField';
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {TextInput, Alert} from 'react-native';
 import {Image, StyleSheet, Text, View} from 'react-native';
 
 function SignupScreen({navigation}: any) {
+  const passwordRef = useRef<TextInput | null>(null);
+  const passwordConfirmRef = useRef<TextInput | null>(null);
   const [selected, setSelected] = useState('');
   const signup = useForm({
     initialValue: {email: '', password: '', passwordConfirm: ''},
@@ -24,7 +26,6 @@ function SignupScreen({navigation}: any) {
     setPasswordConfirm,
     validate,
   } = useSignupStore();
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
 
   const handleNext = () => {
     const validationResult = validate();
@@ -47,19 +48,28 @@ function SignupScreen({navigation}: any) {
           error={signup.errors.email}
           touched={signup.touched.email}
           inputMode="email"
-          style={[styles.input, selected === '아이디' && styles.selectedInput]}
-          onFocus={() => setSelected('아이디')}
           returnKeyType="next"
           blurOnSubmit={false}
+          onSubmitEditing={() => passwordRef.current?.focus()}
           {...signup.getTextInputProps('email')}
+          style={[styles.input, selected === '아이디' && styles.selectedInput]}
+          onFocus={() => setSelected('아이디')}
           onChangeText={text => {
             setEmail(text);
-            setErrors({...errors, email: ''});
           }}
+          value={email}
         />
-        {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
         <InputField
+          ref={passwordRef}
           placeholder="비밀번호 (영문, 숫자, 특수문자)"
+          textContentType="oneTimeCode"
+          error={signup.errors.password}
+          touched={signup.touched.password}
+          secureTextEntry
+          returnKeyType="next"
+          blurOnSubmit={false}
+          onSubmitEditing={() => passwordConfirmRef.current?.focus()}
+          {...signup.getTextInputProps('password')}
           style={[
             styles.input,
             selected === '비밀번호' && styles.selectedInput,
@@ -67,16 +77,16 @@ function SignupScreen({navigation}: any) {
           onFocus={() => setSelected('비밀번호')}
           onChangeText={text => {
             setPassword(text);
-            setErrors({...errors, password: ''});
           }}
           value={password}
-          secureTextEntry
         />
-        {errors.password && (
-          <Text style={styles.errorText}>{errors.password}</Text>
-        )}
         <InputField
+          ref={passwordConfirmRef}
           placeholder="비밀번호 확인"
+          error={signup.errors.passwordConfirm}
+          touched={signup.touched.passwordConfirm}
+          secureTextEntry
+          {...signup.getTextInputProps('passwordConfirm')}
           style={[
             styles.input,
             selected === '비밀번호 확인' && styles.selectedInput,
@@ -84,14 +94,9 @@ function SignupScreen({navigation}: any) {
           onFocus={() => setSelected('비밀번호 확인')}
           onChangeText={text => {
             setPasswordConfirm(text);
-            setErrors({...errors, passwordConfirm: ''});
           }}
           value={passwordConfirm}
-          secureTextEntry
         />
-        {errors.passwordConfirm && (
-          <Text style={styles.errorText}>{errors.passwordConfirm}</Text>
-        )}
       </View>
       <View style={styles.nextButtonContainer}>
         <CustomButton label="다음으로" variant="auth" onPress={handleNext} />

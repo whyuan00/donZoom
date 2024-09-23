@@ -13,7 +13,7 @@ import Svg, {Path} from 'react-native-svg';
 interface NickNameScreenProps {}
 
 function NickNameScreen({}: NickNameScreenProps) {
-  const {initAccountMutation} = useAuth();
+  const {initAccountMutation, loginMutation} = useAuth();
   const {email, password, passwordConfirm} = useSignupStore();
   const account = useForm({
     initialValue: {
@@ -26,8 +26,10 @@ function NickNameScreen({}: NickNameScreenProps) {
     validate: validateInit,
   });
   const handleSubmit = () => {
-    initAccountMutation.mutate(account.values);
-    console.log(account.values);
+    console.log(account);
+    initAccountMutation.mutate(account.values, {
+      onSuccess: () => loginMutation.mutate({email, password}),
+    });
   };
   return (
     <SafeAreaView style={styles.container}>

@@ -1,4 +1,4 @@
-import create from 'zustand';
+import {create} from 'zustand';
 import {validateSignup} from '@/utils/validate';
 
 interface SignupState {
