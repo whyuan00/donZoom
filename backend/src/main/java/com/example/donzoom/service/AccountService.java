@@ -144,7 +144,6 @@ public class AccountService {
         .depositAccountNo(autoTransferRequestDto.getDepositAccountNo())
         .transactionBalance(autoTransferRequestDto.getTransactionBalance())
         .transferDate(autoTransferRequestDto.getTransferDate()).userKey(user.getUserKey())
-        .user(user)  // User 객체 설정
         .build();
 
     // AutoTransfer를 저장하기 전에 User의 autoTransfers에 추가
@@ -167,12 +166,7 @@ public class AccountService {
     AutoTransfer autoTransfer = autoTransferRepository.findByWithdrawalAccountNoAndDepositAccountNo(
             updateRequestDto.getWithdrawalAccountNo(), updateRequestDto.getDepositAccountNo())
         .orElseThrow(() -> new RuntimeException("AutoTransfer not found"));
-
-    // 해당 자동이체가 현재 유저의 것이 맞는지 확인
-    if (!autoTransfer.getUser().equals(user)) {
-      throw new RuntimeException("Unauthorized to update this AutoTransfer");
-    }
-
+    
     // 자동이체 정보 수정
     if (updateRequestDto.getTransactionBalance() != null) {
       autoTransfer.updateTransactionBalance(updateRequestDto.getTransactionBalance());
