@@ -21,6 +21,7 @@ import CollectionButton from '@/assets/collectionButton.svg';
 import QuizHomeScreen from '@/views/screens/quiz/QuizHomeScreen';
 import MyInformationScreen from '@/views/screens/myPage/MyInformationScreen';
 import AlarmSettingScreen from '@/views/screens/myPage/AlarmSettingScreen';
+import SecuritySettingScreen from '@/views/screens/myPage/SecuritySettingScreen';
 const Stack = createNativeStackNavigator();
 
 const AuthStackNavigator = () => {
@@ -88,7 +89,7 @@ const AuthStackNavigator = () => {
       />
       <Stack.Screen name="돼지들" component={DrawCollectionScreen} />
       <Stack.Screen name="퀴즈" component={QuizHomeScreen} />
-      <Stack.Screen name="더보기" component={AlarmSettingScreen} />
+      <Stack.Screen name="더보기" component={SecuritySettingScreen} />
     </Stack.Navigator>
   );
 };
