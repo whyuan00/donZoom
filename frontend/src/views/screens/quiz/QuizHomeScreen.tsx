@@ -1,5 +1,6 @@
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
+import {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -7,10 +8,37 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
-import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
-import CustomCalendar from '@/views/components/CustomCalendar';
+import {Calendar, DateData, CalendarList, Agenda} from 'react-native-calendars';
+import CheckCalendar from '@/assets/CheckCalendar.svg';
+
+interface MarkedDates {
+  [key: string]: {
+    marked: boolean;
+  };
+}
 
 function QuizHomeScreen() {
+  const [quizCompletedDates, setQuizCompletedDates] = useState<MarkedDates>({
+    '2024-09-10': {marked: true},
+    '2024-09-11': {marked: true},
+    '2024-09-15': {marked: true},
+  }); // 더미데이터
+
+  useEffect(() => {
+    const fetchedQuizDates = {
+      '2024-09-18': {marked: true},
+    };
+    setQuizCompletedDates(prev => ({...prev, ...fetchedQuizDates}));
+  }, []);
+
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+
+  // 주어진 날짜에서 요일을 계산하는 함수
+  const getWeekday = (dateString: string): number => {
+    const date = new Date(dateString);
+    return date.getDay(); // 0: 일요일, 1: 월요일, ... 6: 토요일
+  };
+
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -86,7 +114,46 @@ function QuizHomeScreen() {
             </Text>
           </View>
           <View style={styles.calendar}></View>
-          <CustomCalendar></CustomCalendar>
+          <Calendar
+            current={today}
+            dayComponent={({date}: {date: DateData}) => {
+              const dateKey = `${date.year}-${String(date.month).padStart(
+                2,
+                '0',
+              )}-${String(date.day).padStart(2, '0')}`;
+              const isMarked = !!quizCompletedDates[dateKey];
+              const isToday = dateKey === today;
+              const weekday = getWeekday(dateKey);
+              const textColor =
+                weekday === 0
+                  ? styles.sundayText
+                  : weekday === 6
+                  ? styles.saturdayText
+                  : styles.defaultText;
+
+              return (
+                <TouchableOpacity style={styles.dayContainer}>
+                  <Text style={[styles.dayText, textColor, isToday && styles.todayText]}>
+                    {date.day}
+                  </Text>
+                  {isMarked && (
+                    <CheckCalendar
+                      width={30}
+                      height={30}
+                      style={styles.checkCalendar}
+                    />
+                  )}
+                </TouchableOpacity>
+              );
+            }}
+            monthFormat={'yyyy년 MM월'}
+            theme={{
+              arrowColor: colors.BLACK,
+              textDayFontFamily: fonts.MEDIUM,
+              textMonthFontFamily: fonts.BOLD,
+              textDayHeaderFontFamily: fonts.MEDIUM,
+            }}
+          />
         </View>
       </View>
     </ScrollView>
@@ -222,6 +289,38 @@ const styles = StyleSheet.create({
     color: colors.GRAY_75,
   },
   calendar: {},
+  dayContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 20,
+  },
+  dayText: {
+    color: colors.BLACK,
+    fontFamily: fonts.MEDIUM,
+  },
+  todayText: {
+    color: colors.YELLOW_100,
+  },
+  saturdayText:{
+    color: colors.BLUE_100,
+  },
+  sundayText:{
+    color: colors.RED_100,
+  },
+  defaultText: {
+    color: colors.BLACK,
+  },
+  headerText: {
+    fontSize: 20,
+    color: colors.BLACK,
+    fontFamily: fonts.BOLD,
+    textAlign: 'center',
+  },
+  checkCalendar: {
+    position: 'absolute',
+    top: -6,
+    left: -8,
+  },
 });
 
 export default QuizHomeScreen;
