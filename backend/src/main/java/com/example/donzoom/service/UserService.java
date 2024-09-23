@@ -6,6 +6,7 @@ import com.example.donzoom.dto.user.request.UserCreateDto;
 import com.example.donzoom.dto.user.response.LoginResponseDto;
 import com.example.donzoom.entity.User;
 import com.example.donzoom.entity.Wallet;
+import com.example.donzoom.exception.DuplicateEmailException;
 import com.example.donzoom.repository.UserRepository;
 import com.example.donzoom.repository.WalletRepository;
 import com.example.donzoom.util.JWTUtil;
@@ -28,6 +29,12 @@ public class UserService {
   private final WalletRepository walletRepository;
 
   public Long registerUser(UserCreateDto userCreateDto) {
+
+    //이메일 중복체크
+    if (userRepository.existsByEmail(userCreateDto.getEmail())) {
+      throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
+    }
+
     // 새로운 지갑 생성
     Wallet wallet = Wallet.builder().build();
     walletRepository.save(wallet);

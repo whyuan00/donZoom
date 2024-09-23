@@ -3,13 +3,16 @@ package com.example.donzoom.controller;
 import com.example.donzoom.dto.user.request.LoginRequestDto;
 import com.example.donzoom.dto.user.request.UserCreateDto;
 import com.example.donzoom.dto.user.response.LoginResponseDto;
+import com.example.donzoom.exception.DuplicateEmailException;
 import com.example.donzoom.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,13 +28,26 @@ public class UserController {
 
 
   @PostMapping
-  public ResponseEntity<?> register(@RequestBody UserCreateDto userCreateDto) {
+  public ResponseEntity<?> register(@Valid @RequestBody UserCreateDto userCreateDto,
+      BindingResult bindingResult) {
+
+    // 입력 데이터 유효성 검증
+    if(bindingResult.hasErrors()) {
+      StringBuilder errors = new StringBuilder();
+      bindingResult.getFieldErrors().forEach(error -> {
+        errors.append(error.getDefaultMessage()).append(" ");
+      });
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.toString().trim());
+    }
+
     try {
       // 회원가입 시도
       Long id = userService.registerUser(userCreateDto);
-      return new ResponseEntity<>(HttpStatus.CREATED);
+      return new ResponseEntity<>("회원가입 성공", HttpStatus.CREATED);
+    } catch (DuplicateEmailException e) {
+      return new ResponseEntity<>("이미 가입된 회원입니다", HttpStatus.CONFLICT);
     } catch (Exception e) {
-      return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>("회원가입 중 오류 발생", HttpStatus.BAD_REQUEST);
     }
   }
 
