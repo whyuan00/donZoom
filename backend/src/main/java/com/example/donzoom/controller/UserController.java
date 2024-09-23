@@ -39,7 +39,7 @@ public class UserController {
       });
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.toString().trim());
     }
-    
+
     try {
       // 회원가입 시도
       Long id = userService.registerUser(userCreateDto);
