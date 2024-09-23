@@ -61,6 +61,10 @@ dependencies {
 
     // WebClient 관련 의존성 추가
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // Redis 관련 의존성 추가
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 }
 
 tasks.named('test') {
