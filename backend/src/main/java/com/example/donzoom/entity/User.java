@@ -62,8 +62,9 @@ public class User extends BaseEntity {
   private Long perTransactionLimit;    // 1회 결제 한도
   private Long dailyUsageAmount;  //1일 사용금액
 
-  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<AutoTransfer> autoTransfers;  // AutoTransfer와의 연관관계 추가
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "user_id") // 단방향 관계로 JoinColumn 설정
+  private List<AutoTransfer> autoTransfers;
 
   @Builder
   public User(User parent, String email, String pwdHash, String name, String nickname,

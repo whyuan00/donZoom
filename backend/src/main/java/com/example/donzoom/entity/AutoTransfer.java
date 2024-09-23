@@ -30,19 +30,14 @@ public class AutoTransfer {
   private String userKey;
 
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id")
-  private User user;  // User와의 연관관계 추가
-
   @Builder
   public AutoTransfer(String withdrawalAccountNo, String depositAccountNo, Long transactionBalance,
-      String transferDate, String userKey, User user) {
+      String transferDate, String userKey) {
     this.withdrawalAccountNo = withdrawalAccountNo;
     this.depositAccountNo = depositAccountNo;
     this.transactionBalance = transactionBalance;
     this.transferDate = transferDate;
     this.userKey = userKey;
-    this.user = user;
   }
 
 
