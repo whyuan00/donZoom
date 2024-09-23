@@ -1,5 +1,8 @@
 package com.example.donzoom.constant;
 
+import lombok.Getter;
+
+@Getter
 public enum LoginMessage {
   WRONG_LOGIN_REQUEST("잘못된 로그인 시도입니다");
 
@@ -9,7 +12,4 @@ public enum LoginMessage {
     this.value = value;
   }
 
-  public String getValue() {
-    return value;
-  }
 }
