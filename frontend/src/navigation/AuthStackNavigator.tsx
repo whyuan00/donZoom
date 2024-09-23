@@ -8,6 +8,8 @@ import AuthHomeScreen from '../views/screens/auth/AuthHomeScreen';
 import LoginScreen from '../views/screens/auth/LoginScreen';
 import MissionHomeScreen from '../views/screens/mission/MissionHomeScreen';
 import MakeNewMissionScreen from '../views/screens/mission/MakeNewMissionScreen';
+import MakeNewMissionPayScreen from '@/views/screens/mission/MakeNewMissionPayScreen';
+import MakeNewMissionCompleteScreen from '@/views/screens/mission/MakeNewMIssionCompleteScreen';
 import SignupScreen from '../views/screens/auth/SignupScreen';
 import CheckFamilyScreen from '@/views/screens/auth/CheckFamilyScreen';
 import NickNameScreen from '@/views/screens/auth/NickNameScreen';
@@ -50,8 +52,23 @@ const AuthStackNavigator = () => {
           },
         })}
       />
-      <Stack.Screen name="Signup" component={SignupScreen} />
-      <Stack.Screen name="Check" component={CheckFamilyScreen} />
+      <Stack.Screen
+        name="MakeNewMissionPay"
+        component={MakeNewMissionPayScreen}
+        options={()=>({title:'미션 생성',
+          headerTransparent:true,
+          headerTitleAlign:'center',
+          headerStyle:{
+            backgroundColor:colors.YELLOW_25
+        }})}
+      />
+      <Stack.Screen
+        name="MakeNewMissionComplete"
+        component={MakeNewMissionCompleteScreen}
+      />
+
+      {/* <Stack.Screen name="Signup" component={SignupScreen} /> */}
+      {/* <Stack.Screen name="Check" component={CheckFamilyScreen} /> */}
       <Stack.Screen
         name="AccountChildHistory"
         component={AccountHistoryScreen}

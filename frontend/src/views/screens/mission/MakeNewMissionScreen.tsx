@@ -13,7 +13,7 @@ import InputField from '@/views/components/InputField';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import CustomCalendar from '@/views/components/CustomCalendar';
 
-const MakeNewMissionScreen = () => {
+const MakeNewMissionScreen = ({navigation}: any) => {
   const [text, setText] = useState('');
   const [textCount, setTextCount] = useState(0);
   const [showCalendar, setShowCalendar] = useState(false);
@@ -52,7 +52,7 @@ const MakeNewMissionScreen = () => {
         <TouchableOpacity
           onPress={toggleCalendar} // 캘린더 모달, 다른데 클릭하면 내려가
           style={styles.dateSettingContainer}>
-          <Icon name="edit-calendar" size={30} />
+          <Icon name="edit-calendar" size={25} />
           <Text style={styles.dateSettingText}>
             {selectedDate ? `기한: ${selectedDate}` : '기한 설정하기'}
           </Text>
@@ -79,8 +79,9 @@ const MakeNewMissionScreen = () => {
       <TouchableOpacity
         style={disabled ? styles.inAcitve : styles.Active}
         disabled={disabled}
-        // onPress={}
-        >
+        onPress={() => navigation.navigate('MakeNewMissionPay',
+          {text:text,selectedDate:selectedDate}
+        )}>
         <Text style={styles.buttonText}>다음</Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -116,14 +117,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
   },
   dateSettingContainer: {
-    marginTop: 15,
+    marginTop: 30,
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-end',
   },
   dateSettingText: {
     fontWeight: '700',
-    fontSize: 15,
+    fontSize: 13,
     marginLeft: 3,
   },
   modalOverlay: {
@@ -148,11 +149,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.BLUE_100,
     justifyContent: 'center',
   },
-  buttonText:{
-    textAlign:'center',
-    color:colors.WHITE,
-    fontSize:18,
-  }
+  buttonText: {
+    textAlign: 'center',
+    color: colors.WHITE,
+    fontSize: 18,
+  },
 });
 
 export default MakeNewMissionScreen;
