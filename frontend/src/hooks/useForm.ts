@@ -37,7 +37,7 @@ function useForm<T>({initialValue, validate}: UseFormProps<T>) {
     setErrors(newErrors);
   }, [validate, values]);
 
-  return {values, touched, errors, getTextInputProps};
+  return {values, touched, errors, getTextInputProps, setValues};
 }
 
 export default useForm;

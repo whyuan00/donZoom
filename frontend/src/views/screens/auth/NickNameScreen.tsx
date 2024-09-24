@@ -2,6 +2,7 @@ import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 import useAuth from '@/hooks/queries/useAuth';
 import useForm from '@/hooks/useForm';
+import useSignupForm from '@/hooks/useSignupForm';
 import {useSignupStore} from '@/stores/useAuthStore';
 import {validateInit, validateSignup} from '@/utils/validate';
 import CustomButton from '@/views/components/CustomButton';
@@ -13,21 +14,26 @@ import Svg, {Path} from 'react-native-svg';
 interface NickNameScreenProps {}
 
 function NickNameScreen({}: NickNameScreenProps) {
-  const {initAccountMutation} = useAuth();
-  const {email, password, passwordConfirm} = useSignupStore();
+  const {initAccountMutation, loginMutation} = useAuth();
+  const {values, errors, touched, getTextInputProps} = useSignupForm();
+  const {role} = useSignupStore();
+  const email = values.email;
+  const password = values.password;
   const account = useForm({
     initialValue: {
-      email: email,
-      password: password,
-      passwordConfirm: passwordConfirm,
+      email: values.email,
+      password: values.password,
+      passwordConfirm: values.passwordConfirm,
       name: '',
       nickname: '',
+      role: role,
     },
     validate: validateInit,
   });
   const handleSubmit = () => {
-    initAccountMutation.mutate(account.values);
-    console.log(account.values);
+    initAccountMutation.mutate(account.values, {
+      onSuccess: () => loginMutation.mutate({email, password}),
+    });
   };
   return (
     <SafeAreaView style={styles.container}>

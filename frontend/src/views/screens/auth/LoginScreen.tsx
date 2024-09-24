@@ -1,5 +1,5 @@
-import React from 'react';
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import React, {useState} from 'react';
+import {Pressable, SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import InputField from '@/views/components/InputField';
 import CustomButton from '@/views/components/CustomButton';
 import {colors} from '@/constants/colors';
@@ -8,9 +8,12 @@ import {fonts} from '@/constants/font';
 import {validateLogin} from '@/utils';
 import useForm from '@/hooks/useForm';
 import useAuth from '@/hooks/queries/useAuth';
+import {useErrorStore} from '@/stores/errorMessagesStore';
+import {useFocusEffect} from '@react-navigation/native';
 
 function LoginScreen({navigation}: any) {
   const {loginMutation} = useAuth();
+  const {errorMessage, clearErrorMessage} = useErrorStore();
   const login = useForm({
     initialValue: {
       email: '',
@@ -19,8 +22,18 @@ function LoginScreen({navigation}: any) {
     validate: validateLogin,
   });
 
+  useFocusEffect(
+    React.useCallback(() => {
+      clearErrorMessage();
+    }, [clearErrorMessage]),
+  );
+
   const handleSubmit = () => {
-    loginMutation.mutate(login.values);
+    console.log(login);
+    try {
+      loginMutation.mutate(login.values);
+      clearErrorMessage();
+    } catch {}
   };
 
   return (
@@ -54,9 +67,11 @@ function LoginScreen({navigation}: any) {
           </View>
           <InputField
             placeholder="비밀번호"
+            secureTextEntry
             {...login.getTextInputProps('password')}
           />
         </View>
+        {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
       </View>
       <CustomButton label="로그인" variant="auth" onPress={handleSubmit} />
       <View style={styles.saveIdContainer}>
@@ -212,6 +227,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
+  },
+  errorText: {
+    color: colors.RED_100,
+    fontFamily: fonts.MEDIUM,
+    fontSize: 12,
+    textAlign: 'center',
   },
 });
 
