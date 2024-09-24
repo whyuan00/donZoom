@@ -65,7 +65,7 @@ pipeline {
                 sh '''
                     # 기존 컨테이너를 중지 및 제거 (docker-compose를 사용해 관리)
                     docker-compose down || true
-                    docker-compose up --build --no-cache -d
+                    docker-compose up -d  # 기존 이미지를 사용해 모든 컨테이너 실행
                 '''
             }
         }
