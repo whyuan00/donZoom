@@ -14,4 +14,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # uvicorn을 사용하여 FastAPI 서버 실행 (포트 8082)
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8082", "--reload"]
+CMD ["python"m "-m" "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8082", "--reload"]
