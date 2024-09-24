@@ -22,6 +22,7 @@ import QuizHomeScreen from '@/views/screens/quiz/QuizHomeScreen';
 import MyInformationScreen from '@/views/screens/myPage/MyInformationScreen';
 import AlarmSettingScreen from '@/views/screens/myPage/AlarmSettingScreen';
 import SecuritySettingScreen from '@/views/screens/myPage/SecuritySettingScreen';
+import AlarmScreen from '@/views/screens/alarm/AlarmScreen';
 const Stack = createNativeStackNavigator();
 
 const AuthStackNavigator = () => {
@@ -33,63 +34,10 @@ const AuthStackNavigator = () => {
       <Stack.Screen name="Check" component={CheckFamilyScreen} />
       <Stack.Screen name="NickName" component={NickNameScreen} />
 
-      {/* 임시로 미션페이지로 가는 링크 생성함 */}
-      <Stack.Screen
-        name="MakeNewMission"
-        component={MakeNewMissionScreen}
-        options={{title: '미션 생성'}}
-      />
-      <Stack.Screen
-        name="Mission"
-        component={MissionHomeScreen}
-        options={({navigation}) => ({
-          title: '미션',
-          headerRight: () => {
-            return (
-              <Text
-                onPress={() => navigation.navigate('MakeNewMission')}
-                style={{color: colors.BLUE_100}}>
-                추가
-              </Text>
-            );
-          },
-        })}
-      />
-      <Stack.Screen
-        name="MakeNewMissionPay"
-        component={MakeNewMissionPayScreen}
-        options={()=>({title:'미션 생성',
-          headerTransparent:true,
-          headerTitleAlign:'center',
-          headerStyle:{
-            backgroundColor:colors.YELLOW_25
-        }})}
-      />
-      <Stack.Screen
-        name="MakeNewMissionComplete"
-        component={MakeNewMissionCompleteScreen}
-      />
-
-      {/* <Stack.Screen name="Signup" component={SignupScreen} /> */}
-      {/* <Stack.Screen name="Check" component={CheckFamilyScreen} /> */}
       <Stack.Screen
         name="AccountChildHistory"
         component={AccountHistoryScreen}
       />
-      <Stack.Screen
-        name="돼지뽑기"
-        component={DrawMachineScreen}
-        options={({navigation}) => ({
-          headerRight: () => (
-            <TouchableOpacity onPress={() => navigation.navigate('돼지들')}>
-              <CollectionButton width={24} height={24} />
-            </TouchableOpacity>
-          ),
-        })}
-      />
-      <Stack.Screen name="돼지들" component={DrawCollectionScreen} />
-      <Stack.Screen name="퀴즈" component={QuizHomeScreen} />
-      <Stack.Screen name="더보기" component={SecuritySettingScreen} />
     </Stack.Navigator>
   );
 };

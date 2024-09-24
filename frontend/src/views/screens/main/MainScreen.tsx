@@ -3,9 +3,9 @@ import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import useAuth from '@/hooks/queries/useAuth';
 
-interface TestScreenProps {}
+interface MainScreenProps {}
 
-function TestScreen({}: TestScreenProps) {
+function MainScreen({}: MainScreenProps) {
   const {logoutMutation} = useAuth();
 
   const handleLogout = () => {
@@ -18,7 +18,7 @@ function TestScreen({}: TestScreenProps) {
 
   return (
     <View>
-      <Text>안녕하세용</Text>
+      <Text>메인화면임.</Text>
       <CustomButton label="로그아웃" onPress={handleLogout} />
     </View>
   );
@@ -26,4 +26,4 @@ function TestScreen({}: TestScreenProps) {
 
 const styles = StyleSheet.create({});
 
-export default TestScreen;
+export default MainScreen;
