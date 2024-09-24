@@ -1,6 +1,8 @@
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 import {useEffect, useState} from 'react';
+import {useNavigation} from '@react-navigation/native';
+import {useQuizStore} from '@/stores/useQuizStore';
 import {
   View,
   Text,
@@ -8,8 +10,9 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
-import {Calendar, DateData, CalendarList, Agenda} from 'react-native-calendars';
+import {Calendar, DateData} from 'react-native-calendars';
 import CheckCalendar from '@/assets/CheckCalendar.svg';
+import CustomCalendar from '@/views/components/CustomCalendar';
 
 interface MarkedDates {
   [key: string]: {
@@ -23,6 +26,73 @@ function QuizHomeScreen() {
     '2024-09-11': {marked: true},
     '2024-09-15': {marked: true},
   }); // 더미데이터
+  const setTodaysQuizQuestions = useQuizStore(
+    state => state.setTodaysQuizQuestions,
+  );
+  const navigation = useNavigation();
+
+  // 더미 Quiz
+  const dummyQuizQuestions = [
+    {
+      question: '경제란 무엇인가?',
+      answers: [
+        '생산의 극대화',
+        '자원의 효율적 분배',
+        '사회적 불평등',
+        '기술 발전',
+      ],
+      correctAnswer: '자원의 효율적 분배',
+      explanations: [
+        '생산의 극대화는 경제의 목표 중 하나일 수 있지만, 경제의 정의와는 다릅니다.',
+        '자원의 효율적 분배는 경제의 기본적인 정의로, 한정된 자원을 가장 효율적으로 나누는 것을 의미합니다.',
+        '사회적 불평등은 경제 문제 중 하나일 수 있지만, 경제의 정의와 직접적 관련은 없습니다.',
+        '기술 발전은 경제 성장의 요소 중 하나일 수 있지만, 경제의 본질적인 정의는 아닙니다.',
+      ],
+      correctExplanation:
+        '경제란 자원의 효율적 분배로, 한정된 자원을 가장 효율적으로 나누는 것이 경제의 핵심입니다.',
+    },
+    {
+      question: '인플레이션이란 무엇인가?',
+      answers: [
+        '화폐의 가치 상승',
+        '물가의 지속적인 상승',
+        '실업률의 증가',
+        '기술 혁신으로 인한 비용 감소',
+      ],
+      correctAnswer: '물가의 지속적인 상승',
+      explanations: [
+        '화폐 가치 상승은 디플레이션이나 가치 평가절상과 관련이 있습니다.',
+        '인플레이션은 물가가 지속적으로 상승하는 현상을 말합니다.',
+        '실업률 증가와는 직접적인 관련이 없습니다.',
+        '기술 혁신으로 인한 비용 감소는 인플레이션과 반대되는 현상입니다.',
+      ],
+      correctExplanation:
+        '인플레이션이란 물가가 지속적으로 상승하는 현상으로, 이는 화폐 가치의 하락을 의미합니다.',
+    },
+    {
+      question: '수요와 공급 법칙에 따르면 가격이 상승하면?',
+      answers: [
+        '수요가 증가한다',
+        '공급이 증가한다',
+        '수요가 감소한다',
+        '공급이 감소한다',
+      ],
+      correctAnswer: '수요가 감소한다',
+      explanations: [
+        '가격이 상승하면 수요는 일반적으로 감소하는 경향이 있습니다.',
+        '가격이 상승하면 공급은 증가하는 경향이 있습니다.',
+        '수요는 가격이 상승할 때 감소합니다.',
+        '공급은 가격이 상승할 때 일반적으로 증가합니다.',
+      ],
+      correctExplanation:
+        '수요와 공급 법칙에 따르면, 가격이 상승하면 수요는 감소하고, 공급은 증가하는 경향이 있습니다.',
+    },
+  ];
+  // 더미 넘기기
+  const startTodayQuiz = () => {
+    setTodaysQuizQuestions(dummyQuizQuestions);
+    navigation.navigate('오늘의 퀴즈');
+  };
 
   useEffect(() => {
     const fetchedQuizDates = {
@@ -42,6 +112,61 @@ function QuizHomeScreen() {
   return (
     <ScrollView>
       <View style={styles.container}>
+        <View style={styles.calendarContainer}>
+          <View style={styles.calendarTextContainer}>
+            <Text style={styles.calendarTitle}>퀴즈 달력</Text>
+            <Text style={styles.calendarDescription}>
+              3일 연속 퀴즈를 풀었어요!
+            </Text>
+          </View>
+          <View style={styles.calendar}>
+            <Calendar
+              current={today}
+              dayComponent={({date}: {date: DateData}) => {
+                const dateKey = `${date.year}-${String(date.month).padStart(
+                  2,
+                  '0',
+                )}-${String(date.day).padStart(2, '0')}`;
+                const isMarked = !!quizCompletedDates[dateKey];
+                const isToday = dateKey === today;
+                const weekday = getWeekday(dateKey);
+                const textColor =
+                  weekday === 0
+                    ? styles.sundayText
+                    : weekday === 6
+                    ? styles.saturdayText
+                    : styles.defaultText;
+
+                return (
+                  <TouchableOpacity style={styles.dayContainer}>
+                    <Text
+                      style={[
+                        styles.dayText,
+                        textColor,
+                        isToday && styles.todayText,
+                      ]}>
+                      {date.day}
+                    </Text>
+                    {isMarked && (
+                      <CheckCalendar
+                        width={30}
+                        height={30}
+                        style={styles.checkCalendar}
+                      />
+                    )}
+                  </TouchableOpacity>
+                );
+              }}
+              monthFormat={'yyyy년 MM월'}
+              theme={{
+                arrowColor: colors.BLACK,
+                textDayFontFamily: fonts.MEDIUM,
+                textMonthFontFamily: fonts.BOLD,
+                textDayHeaderFontFamily: fonts.MEDIUM,
+              }}
+            />
+          </View>
+        </View>
         <View style={styles.todayContainer}>
           <View style={styles.todayTextContainer}>
             <Text style={styles.todayTitle}>오늘의 퀴즈</Text>
@@ -58,7 +183,9 @@ function QuizHomeScreen() {
                 3문제 약 3분 소요
               </Text>
             </View>
-            <TouchableOpacity style={styles.todayContentButton}>
+            <TouchableOpacity
+              style={styles.todayContentButton}
+              onPress={startTodayQuiz}>
               <Text style={styles.todayContentButtonText}>시작하기</Text>
             </TouchableOpacity>
           </View>
@@ -105,55 +232,6 @@ function QuizHomeScreen() {
               </TouchableOpacity>
             </View>
           </View>
-        </View>
-        <View style={styles.calendarContainer}>
-          <View style={styles.calendarTextContainer}>
-            <Text style={styles.calendarTitle}>퀴즈 달력</Text>
-            <Text style={styles.calendarDescription}>
-              3일 연속 퀴즈를 풀었어요!
-            </Text>
-          </View>
-          <View style={styles.calendar}></View>
-          <Calendar
-            current={today}
-            dayComponent={({date}: {date: DateData}) => {
-              const dateKey = `${date.year}-${String(date.month).padStart(
-                2,
-                '0',
-              )}-${String(date.day).padStart(2, '0')}`;
-              const isMarked = !!quizCompletedDates[dateKey];
-              const isToday = dateKey === today;
-              const weekday = getWeekday(dateKey);
-              const textColor =
-                weekday === 0
-                  ? styles.sundayText
-                  : weekday === 6
-                  ? styles.saturdayText
-                  : styles.defaultText;
-
-              return (
-                <TouchableOpacity style={styles.dayContainer}>
-                  <Text style={[styles.dayText, textColor, isToday && styles.todayText]}>
-                    {date.day}
-                  </Text>
-                  {isMarked && (
-                    <CheckCalendar
-                      width={30}
-                      height={30}
-                      style={styles.checkCalendar}
-                    />
-                  )}
-                </TouchableOpacity>
-              );
-            }}
-            monthFormat={'yyyy년 MM월'}
-            theme={{
-              arrowColor: colors.BLACK,
-              textDayFontFamily: fonts.MEDIUM,
-              textMonthFontFamily: fonts.BOLD,
-              textDayHeaderFontFamily: fonts.MEDIUM,
-            }}
-          />
         </View>
       </View>
     </ScrollView>
@@ -250,7 +328,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     elevation: 4,
   },
-  reviewContentText: {},
   reviewContentTitle: {
     fontFamily: fonts.MEDIUM,
     color: colors.BLACK,
@@ -277,18 +354,26 @@ const styles = StyleSheet.create({
   calendarContainer: {},
   calendarTextContainer: {
     marginBottom: 20,
+    flexDirection: 'row',
+    alignItems: 'baseline',
   },
   calendarTitle: {
     fontSize: 20,
     color: colors.BLACK,
     fontFamily: fonts.BOLD,
-    marginBottom: 6,
+    marginRight: 10,
   },
   calendarDescription: {
     fontFamily: fonts.MEDIUM,
     color: colors.GRAY_75,
   },
-  calendar: {},
+  calendar: {
+    borderRadius: 12,
+    borderColor: colors.GRAY_75,
+    borderWidth: 0.3,
+    marginBottom: 20,
+    padding: 10,
+  },
   dayContainer: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -301,10 +386,10 @@ const styles = StyleSheet.create({
   todayText: {
     color: colors.YELLOW_100,
   },
-  saturdayText:{
+  saturdayText: {
     color: colors.BLUE_100,
   },
-  sundayText:{
+  sundayText: {
     color: colors.RED_100,
   },
   defaultText: {
