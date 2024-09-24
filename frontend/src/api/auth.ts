@@ -1,6 +1,8 @@
 import {Profile} from '@/types/domain';
 import axiosInstance from './axios';
 import {getEncryptedStorage} from '@/utils';
+import axios, {AxiosError} from 'axios';
+import {useErrorStore} from '@/stores/errorMessagesStore';
 
 type RequestUser = {
   email: string;
@@ -13,6 +15,7 @@ type InitUser = {
   passwordConfirm: string;
   name: string;
   nickname: string;
+  role: string;
 };
 
 const postSignup = async ({
@@ -21,13 +24,23 @@ const postSignup = async ({
   passwordConfirm,
   name,
   nickname,
+  role,
 }: InitUser): Promise<void> => {
+  console.log('signup values', {
+    email,
+    password,
+    passwordConfirm,
+    name,
+    nickname,
+    role,
+  });
   const {data} = await axiosInstance.post('/user', {
     email,
     password,
     passwordConfirm,
     name,
     nickname,
+    role,
   });
   console.log(data);
   return data;
@@ -42,7 +55,13 @@ type Response = {
   authorization: string;
 };
 
+interface LoginError {
+  message: string;
+}
+
 const postLogin = async ({email, password}: RequestUser): Promise<Response> => {
+  const setErrorMessage = useErrorStore.getState().setErrorMessage;
+
   try {
     console.log('Attempting to send login request...');
     const response = await axiosInstance.post('/user/login', {
@@ -53,8 +72,22 @@ const postLogin = async ({email, password}: RequestUser): Promise<Response> => {
     console.log('Authorization:', response.headers['authorization']);
     return response.headers['authorization'];
   } catch (error) {
-    console.log(error);
     console.error('Error during login request:', error);
+
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<LoginError>;
+      if (axiosError.response?.status === 401) {
+        setErrorMessage(
+          '로그인 정보가 올바르지 않습니다.\n이메일과 비밀번호를 확인해주세요.',
+        );
+      } else {
+        setErrorMessage(
+          '로그인 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
+        );
+      }
+    } else {
+      setErrorMessage('알 수 없는 오류가 발생했습니다.');
+    }
     throw error;
   }
 };
