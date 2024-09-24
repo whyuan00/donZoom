@@ -16,22 +16,38 @@ services:
 
   springboot:
     image: backend
-    build: ./backend
+    build: ./backend  # backend 디렉토리에서 Dockerfile을 사용해 이미지 빌드
     container_name: donzoom
     environment:
       TZ: Asia/Seoul
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
     ports:
       - "8081:8081"
     depends_on:
       - mysql
-      - redis  # Redis 의존성 추가
+      - redis
 
   redis:
-    image: redis:6.2  # Redis 이미지 지정
+    image: redis:6.2
     container_name: redis
     environment:
       TZ: Asia/Seoul
     ports:
-      - "6379:6379"  # Redis 기본 포트
+      - "6379:6379"
     volumes:
-      - ./redis_data:/data  # Redis 데이터 저장소 설정
+      - ./redis_data:/data
+
+  fastapi:
+    build: ./fastapi  # fastapi 디렉토리에서 Dockerfile을 사용해 이미지 빌드
+    container_name: fastapi
+    environment:
+      TZ: Asia/Seoul
+    ports:
+      - "8082:8082"  # FastAPI 앱의 포트
+    depends_on:
+      - mysql
+      - redis  # Redis 및 MySQL이 실행된 후 FastAPI 실행
