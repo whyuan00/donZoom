@@ -1,10 +1,11 @@
 import { colors } from "@/constants/colors";
 import { fonts } from "@/constants/font";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-export default function TransferScreen({ navigation }: any) {
+export default function TransferScreen2({ navigation }: any) {
   const onPressNext = () => {
-    navigation.navigate('송금2');
+    navigation.navigate('송금3');
   }
   return (
     <View style={styles.container}>
@@ -21,13 +22,35 @@ export default function TransferScreen({ navigation }: any) {
           <Text style={styles.withdrawableAmountTextContext}>1,000,000원</Text>
         </View>
       </View>
-      <Text style={styles.menuHeaderText}>입금대상</Text>
-      <View style={styles.recipientAccountInfoContainer}>
-        <Text style={styles.recipientAccountInfoText}>받을 대상을 선택해 주세요</Text>
-      </View>
-      <Text style={styles.menuHeaderText}>보낼금액</Text>
-      <View style={styles.amountInputContainer}>
-        <Text style={styles.amountInputText}>금액을 입력해 주세요</Text>
+      <Text style={styles.menuHeaderText}>송금정보</Text>
+      <View style={styles.recipientInfoContainer}>
+        <View style={styles.recipientInfoTextContainer}>
+          <View style={styles.recipientInfoTextTopContainer}>
+            <Text style={styles.recipientNameText}>신순호</Text>
+            <Text style={styles.recipientAccountText}>우리 1005-458-953312</Text>
+          </View>
+          <View style={styles.recipientInfoTextBottomContainer}>
+            <Text style={styles.ammountInfoText}>10,000원</Text>
+          </View>
+        </View>
+        <View style={styles.recipientInfoOptionContainer}>
+          <Text>받는 통장 표기</Text>
+          <Text>신호준</Text>
+        </View>
+        <View style={styles.recipientInfoOptionContainer}>
+          <Text>내 통장 표기</Text>
+          <Text>신호준</Text>
+        </View>
+        <View style={styles.recipientInfoOptionContainer}>
+          <Text>예약 이체</Text>
+          <FontAwesome
+            name="toggle-off"
+            size={30}
+            style={styles.toggle}
+          >
+
+          </FontAwesome>
+        </View>
       </View>
       <TouchableOpacity
         style={styles.nextButtonContainer}
@@ -57,12 +80,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     alignItems: 'center',
   },
-  recipientAccountInfoContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
+  recipientInfoContainer: {
     backgroundColor: colors.WHITE,
-    height: 55,
-    borderRadius: 10,
+    height: 247,
+    borderRadius: 12,
   },
   amountInputContainer: {
     justifyContent: 'center',
@@ -118,5 +139,44 @@ const styles = StyleSheet.create({
   nextButtonText: {
     fontFamily: fonts.BOLD,
     fontSize: 18,
+  },
+  recipientInfoTextContainer: {
+    height: 120,
+  },
+  recipientInfoOptionContainer: {
+    paddingHorizontal: 24,
+    flexDirection: 'row',
+    flexGrow: 1,
+    alignItems: 'center',
+    borderTopColor: colors.GRAY_25,
+    borderTopWidth:1,
+  },
+  recipientInfoTextTopContainer: {
+    paddingHorizontal: 24,
+    flexGrow: 1,
+  },
+  recipientInfoTextBottomContainer: {
+    paddingHorizontal: 24,
+    flexDirection: 'row',
+    flexGrow: 1,
+    alignItems: 'center',
+  },
+  ammountInfoText:{
+    fontFamily:fonts.MEDIUM,
+    fontSize:20,
+    marginLeft:'auto',
+  },
+  recipientNameText:{
+    fontFamily:fonts.MEDIUM,
+    fontSize:16,
+    marginTop:20,
+  },
+  recipientAccountText:{
+    fontFamily:fonts.MEDIUM,
+    fontSize:12,
+    marginTop:6,
+  },
+  toggle:{
+    marginLeft:'auto',
   }
 });

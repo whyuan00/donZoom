@@ -1,8 +1,8 @@
 import React from 'react';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {StyleSheet, TouchableOpacity, Text} from 'react-native';
-import {colors} from '../constants/colors';
-import {useNavigation} from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { colors } from '../constants/colors';
+import { useNavigation } from '@react-navigation/native';
 
 import AuthHomeScreen from '../views/screens/auth/AuthHomeScreen';
 import LoginScreen from '../views/screens/auth/LoginScreen';
@@ -24,6 +24,10 @@ import AlarmSettingScreen from '@/views/screens/myPage/AlarmSettingScreen';
 import SecuritySettingScreen from '@/views/screens/myPage/SecuritySettingScreen';
 import AlarmScreen from '@/views/screens/alarm/AlarmScreen';
 import TransferScreen from '@/views/screens/account/TransferScreen';
+import TransferNavigator from './TransferNavigator';
+import TransferScreen2 from '@/views/screens/account/TransferScreen2';
+import TransferScreen3 from '@/views/screens/account/TransferScreen3';
+import TransferScreen4 from '@/views/screens/account/TransferScreen4';
 const Stack = createNativeStackNavigator();
 
 const AuthStackNavigator = () => {
@@ -39,18 +43,18 @@ const AuthStackNavigator = () => {
       <Stack.Screen
         name="MakeNewMission"
         component={MakeNewMissionScreen}
-        options={{title: '미션 생성'}}
+        options={{ title: '미션 생성' }}
       />
       <Stack.Screen
         name="Mission"
         component={MissionHomeScreen}
-        options={({navigation}) => ({
+        options={({ navigation }) => ({
           title: '미션',
           headerRight: () => {
             return (
               <Text
                 onPress={() => navigation.navigate('MakeNewMission')}
-                style={{color: colors.BLUE_100}}>
+                style={{ color: colors.BLUE_100 }}>
                 추가
               </Text>
             );
@@ -60,12 +64,14 @@ const AuthStackNavigator = () => {
       <Stack.Screen
         name="MakeNewMissionPay"
         component={MakeNewMissionPayScreen}
-        options={()=>({title:'미션 생성',
-          headerTransparent:true,
-          headerTitleAlign:'center',
-          headerStyle:{
-            backgroundColor:colors.YELLOW_25
-        }})}
+        options={() => ({
+          title: '미션 생성',
+          headerTransparent: true,
+          headerTitleAlign: 'center',
+          headerStyle: {
+            backgroundColor: colors.YELLOW_25
+          }
+        })}
       />
       <Stack.Screen
         name="MakeNewMissionComplete"
@@ -81,7 +87,7 @@ const AuthStackNavigator = () => {
       <Stack.Screen
         name="돼지뽑기"
         component={DrawMachineScreen}
-        options={({navigation}) => ({
+        options={({ navigation }) => ({
           headerRight: () => (
             <TouchableOpacity onPress={() => navigation.navigate('돼지들')}>
               <CollectionButton width={24} height={24} />
@@ -94,6 +100,9 @@ const AuthStackNavigator = () => {
       <Stack.Screen name="더보기" component={SecuritySettingScreen} />
       <Stack.Screen name="알람" component={AlarmScreen} />
       <Stack.Screen name="송금" component={TransferScreen} />
+      <Stack.Screen name="송금2" component={TransferScreen2} />
+      <Stack.Screen name="송금3" component={TransferScreen3} />
+      <Stack.Screen name="송금4" component={TransferScreen4} />
     </Stack.Navigator>
   );
 };
