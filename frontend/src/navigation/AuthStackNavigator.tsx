@@ -23,6 +23,7 @@ import MyInformationScreen from '@/views/screens/myPage/MyInformationScreen';
 import AlarmSettingScreen from '@/views/screens/myPage/AlarmSettingScreen';
 import SecuritySettingScreen from '@/views/screens/myPage/SecuritySettingScreen';
 import AlarmScreen from '@/views/screens/alarm/AlarmScreen';
+import TransferScreen from '@/views/screens/account/TransferScreen';
 const Stack = createNativeStackNavigator();
 
 const AuthStackNavigator = () => {
@@ -92,6 +93,7 @@ const AuthStackNavigator = () => {
       <Stack.Screen name="퀴즈" component={QuizHomeScreen} />
       <Stack.Screen name="더보기" component={SecuritySettingScreen} />
       <Stack.Screen name="알람" component={AlarmScreen} />
+      <Stack.Screen name="송금" component={TransferScreen} />
     </Stack.Navigator>
   );
 };
