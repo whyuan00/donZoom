@@ -6,4 +6,3 @@ pytz
 requests
 python-dotenv
 selenium
-webdriver-manager
