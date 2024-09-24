@@ -10,8 +10,10 @@ import com.example.donzoom.util.JWTUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +22,15 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AuthServiceImpl implements AuthService {
 
+  @Value("${jwt.refreshToken.expireTime}")
+  private Long refreshExpired;
+
+  private final String refreshTokenPrefix = "refreshToken: ";
+
   private final JWTUtil jwtUtil;
   private final UserRepository userRepository;
   private final OAuth2UserService oAuth2UserService;
+  private final RedisService redisService;
 
   @Override
   public UserDetailDto getUserInfo(HttpServletRequest request) {
@@ -52,6 +60,7 @@ public class AuthServiceImpl implements AuthService {
     String email = jwtUtil.getUsername(refreshToken);
     String role = jwtUtil.getRole(refreshToken);
     log.info("email: {}, role: {}에 해당하는 accessToken을 재발급합니다. ", email, role);
+    log.info("email: {}, role: {}에 해당하는 refreshToken을 재발급합니다. ", email, role);
     return jwtUtil.createAccessJwt(email, role);
   }
 
@@ -111,6 +120,11 @@ public class AuthServiceImpl implements AuthService {
         () -> new IllegalArgumentException(LoginMessage.WRONG_LOGIN_REQUEST.getValue()));
   }
 
+  @Override
+  public Boolean isValidAccessToken(HttpServletRequest request, HttpServletResponse response) {
+    return null;
+  }
+
   private boolean isLogin(Object principal) {
     return principal instanceof CustomUserDetails;
   }
@@ -154,6 +168,42 @@ public class AuthServiceImpl implements AuthService {
     cookie.setPath("/");
     cookie.setHttpOnly(true);
     return cookie;
+  }
+
+  @Override
+  public Map<String, String> refreshAccessToken(String refreshToken) {
+    // 요청 바디에서 받은 Refresh Token 검증
+
+    // 1. Refresh Token 유효성 검증
+    if (refreshToken == null || jwtUtil.isExpired(refreshToken)) {
+      log.info("만료되었거나 유효하지 않은 Refresh Token입니다.");
+      return null; // 재로그인 필요
+    }
+
+    // 2. Redis에서 저장된 Refresh Token 확인
+    String email = jwtUtil.getUsername(refreshToken);
+    String storedRefreshToken = redisService.getObject(refreshTokenPrefix + email, String.class);
+
+    if (!refreshToken.equals(storedRefreshToken)) {
+      log.info("Redis에 저장된 Refresh Token이 일치하지 않습니다. 재로그인 필요.");
+      return null; // 재로그인 필요
+    }
+
+    // 3. 새로운 Access Token 및 Refresh Token 발급
+    String role = jwtUtil.getRole(refreshToken);
+    String newAccessToken = jwtUtil.createAccessJwt(email, role);
+    String newRefreshToken = jwtUtil.createRefreshJwt(email, role);
+
+    // 4. Redis에 새로운 Refresh Token 갱신 (기존 것 삭제 후 재저장)
+    log.info(email);
+
+    redisService.deleteObject(refreshTokenPrefix + email);
+    redisService.saveObjectWithTTL(refreshTokenPrefix + email, newRefreshToken, refreshExpired);
+
+    log.info("email: {}, role: {}에 해당하는 새로운 Access Token과 Refresh Token을 발급합니다.", email, role);
+
+    // 새로운 Access Token과 Refresh Token 반환
+    return Map.of("accessToken", newAccessToken, "refreshToken", newRefreshToken);
   }
 
 }

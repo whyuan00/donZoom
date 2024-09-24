@@ -66,4 +66,9 @@ public class RedisService {
     }
   }
 
+  // 객체 및 리스트 지우기
+  public void deleteObject(String key) {
+    redisTemplate.delete(key);
+  }
+
 }

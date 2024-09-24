@@ -56,7 +56,7 @@ public class UserService {
     Authentication authentication = authenticationManager.authenticate(authToken);
     log.info("인증 과정을 완료했습니다.");
     CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-    log.info("커스텀 디테일을 생성했씁니다.");
+    log.info("커스텀 디테일을 생성했습니다.");
     String email = customUserDetails.getUsername();
     String role = customUserDetails.getAuthorities().iterator().next().getAuthority();
 
