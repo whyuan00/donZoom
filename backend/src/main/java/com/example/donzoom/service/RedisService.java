@@ -17,6 +17,8 @@ import java.util.List;
 @Slf4j
 public class RedisService {
 
+  private final String blackListPrefix = "blackList: ";
+
   private final RedisTemplate<String, Object> redisTemplate;
   private final ObjectMapper objectMapper;
 
@@ -69,6 +71,12 @@ public class RedisService {
   // 객체 및 리스트 지우기
   public void deleteObject(String key) {
     redisTemplate.delete(key);
+  }
+
+  // 블랙리스트 확인하기
+  public boolean isInBlackList(String accessToken) {
+    Boolean isBlackList = (Boolean) redisTemplate.opsForValue().get(blackListPrefix + accessToken);
+    return isBlackList != null && isBlackList;
   }
 
 }

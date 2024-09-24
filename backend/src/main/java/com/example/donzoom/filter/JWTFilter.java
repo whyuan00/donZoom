@@ -2,6 +2,7 @@ package com.example.donzoom.filter;
 
 import com.example.donzoom.dto.user.CustomUserDetails;
 import com.example.donzoom.entity.User;
+import com.example.donzoom.service.RedisService;
 import com.example.donzoom.util.JWTUtil;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -21,6 +22,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Slf4j
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
+
+  private final RedisService redisService;
 
   private static final List<String> EXCLUDE_PATHS = Arrays.asList(
 
@@ -76,6 +79,13 @@ public class JWTFilter extends OncePerRequestFilter {
     String token = authorization.split(" ")[1];
 
     try {
+      if (redisService.isInBlackList(token)) {
+        log.info("탈취당한 JWT 토큰입니다.");
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.getWriter().write("AccessTokenForbidden");
+        return false;
+      }
+
       if (Boolean.TRUE.equals(jwtUtil.isExpired(token))) {
         log.info("만료된 JWT 토큰입니다.");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

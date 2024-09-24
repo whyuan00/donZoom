@@ -13,15 +13,11 @@ public interface AuthService {
 
   Long saveOAuth2User(UserCreateDto userCreateDto);
 
-  String getAccessToken(HttpServletRequest request, HttpServletResponse response);
-
   void logout(HttpServletRequest request, HttpServletResponse response);
 
   void requestAccess(HttpServletRequest request, HttpServletResponse response);
 
   User getLoginUser(); // Added method
-
-  Boolean isValidAccessToken(HttpServletRequest request, HttpServletResponse response);
 
   Map<String, String> refreshAccessToken(String refreshToken);
 }
