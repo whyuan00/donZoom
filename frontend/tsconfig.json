@@ -5,6 +5,6 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "esModuleInterop": true,
+    "esModuleInterop": true
   }
 }

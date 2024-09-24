@@ -1,47 +1,45 @@
+import React from 'react';
+import {TouchableOpacity, Image, StyleSheet, Text, View} from 'react-native';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 import CustomButton from '@/views/components/CustomButton';
-import React, {useState} from 'react';
-import {TouchableOpacity} from 'react-native';
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {useSignupStore} from '@/stores/useAuthStore';
 
 function CheckFamilyScreen({navigation}: any) {
-  const [selected, setSelected] = useState('아이');
+  const {role, setRole} = useSignupStore(); // Use the Zustand store
 
   return (
     <View style={styles.container}>
       <View style={styles.imgContainer}>
-        <Image
-          source={require('@/assets/image/pig.png')}
-          style={styles.pig}></Image>
+        <Image source={require('@/assets/image/pig.png')} style={styles.pig} />
       </View>
       <View>
         <Text style={styles.signupText}>돈 줌(Zoom) 회원가입</Text>
       </View>
       <View style={styles.optionContainer}>
         <TouchableOpacity
-          style={[styles.option, selected === '아이' && styles.selectedOption]}
-          onPress={() => setSelected('아이')}>
+          style={[styles.option, role === '아이' && styles.selectedOption]}
+          onPress={() => setRole('아이')}>
           <View
             style={[
               styles.radioOuter,
-              selected === '아이' && styles.selectedRadio,
+              role === '아이' && styles.selectedRadio,
             ]}>
-            {selected === '아이' && <View style={styles.radioInner} />}
+            {role === '아이' && <View style={styles.radioInner} />}
           </View>
           <Text style={styles.childOptionText}>아이 </Text>
           <Text style={styles.optionText}>입니다.</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.option, selected === '부모' && styles.selectedOption]}
-          onPress={() => setSelected('부모')}>
+          style={[styles.option, role === '부모' && styles.selectedOption]}
+          onPress={() => setRole('부모')}>
           <View
             style={[
               styles.radioOuter,
-              selected === '부모' && styles.selectedRadio,
+              role === '부모' && styles.selectedRadio,
             ]}>
-            {selected === '부모' && <View style={styles.radioInner} />}
+            {role === '부모' && <View style={styles.radioInner} />}
           </View>
           <Text style={styles.parentOptionText}>부모 </Text>
           <Text style={styles.optionText}>입니다.</Text>
@@ -51,7 +49,8 @@ function CheckFamilyScreen({navigation}: any) {
         <CustomButton
           label="다음으로"
           variant="auth"
-          onPress={() => navigation.navigate('NickName')}></CustomButton>
+          onPress={() => navigation.navigate('NickName')}
+        />
       </View>
     </View>
   );

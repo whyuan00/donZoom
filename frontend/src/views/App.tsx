@@ -6,7 +6,7 @@ import queryClient from '@/api/queryClient';
 import RootNavigator from '@/navigation/root/RootNavigator';
 import DrawStackNavigator from '../navigation/DrawStackNavigator';
 import QuizStackNavigator from '@/navigation/QuizStackNavigator';
-
+import Footer from './components/Footer';
 
 function App() {
   return (
@@ -14,6 +14,7 @@ function App() {
       <NavigationContainer>
         <RootNavigator />
       </NavigationContainer>
+      <Footer />
     </QueryClientProvider>
   );
 }
