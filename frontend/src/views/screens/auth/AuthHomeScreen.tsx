@@ -46,6 +46,13 @@ const AuthHomeScreen = ({navigation}: any) => {
           onPress={() => navigation.navigate('알람')}
         />
       </View>
+      <View>
+        <Button
+          title="송금 페이지 이동"
+          onPress={() => navigation.navigate('송금')}
+        />
+      </View>
+      
     </SafeAreaView>
   );
 };

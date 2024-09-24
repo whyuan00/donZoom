@@ -16,7 +16,7 @@ export default function DepositAlarmScreen() {
     { date: '2024.8.23. 10시 40분 33초', marketName: '싸피슈퍼', historyType: '사용한 금액', amount: '-8000원', remainingBalance: '1,385,567원' },
   ];
   return (
-    <View style={styles.conatiner}>
+    <View style={styles.container}>
       <View style={styles.filterContainer}>
         <Text>필터</Text>
       </View>
