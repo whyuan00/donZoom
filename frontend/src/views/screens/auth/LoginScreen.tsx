@@ -5,8 +5,24 @@ import CustomButton from '@/views/components/CustomButton';
 import {colors} from '@/constants/colors';
 import Svg, {Line, Path} from 'react-native-svg';
 import {fonts} from '@/constants/font';
+import {validateLogin} from '@/utils';
+import useForm from '@/hooks/useForm';
+import useAuth from '@/hooks/queries/useAuth';
 
 function LoginScreen({navigation}: any) {
+  const {loginMutation} = useAuth();
+  const login = useForm({
+    initialValue: {
+      email: '',
+      password: '',
+    },
+    validate: validateLogin,
+  });
+
+  const handleSubmit = () => {
+    loginMutation.mutate(login.values);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.loginText}>
@@ -22,7 +38,10 @@ function LoginScreen({navigation}: any) {
               />
             </Svg>
           </View>
-          <InputField placeholder="아이디"></InputField>
+          <InputField
+            placeholder="아이디"
+            {...login.getTextInputProps('email')}
+          />
         </View>
         <View style={styles.inputIdContainer}>
           <View style={[styles.inputSvg]}>
@@ -33,10 +52,13 @@ function LoginScreen({navigation}: any) {
               />
             </Svg>
           </View>
-          <InputField placeholder="비밀번호"></InputField>
+          <InputField
+            placeholder="비밀번호"
+            {...login.getTextInputProps('password')}
+          />
         </View>
       </View>
-      <CustomButton label="로그인" variant="auth" />
+      <CustomButton label="로그인" variant="auth" onPress={handleSubmit} />
       <View style={styles.saveIdContainer}>
         <Svg
           width="15"
@@ -52,7 +74,7 @@ function LoginScreen({navigation}: any) {
         <Text style={styles.saveIdText}>로그인유지</Text>
         <View style={styles.signupContainer}>
           <Text
-            style={styles.saveIdText}
+            style={styles.signupText}
             onPress={() => navigation.navigate('Signup')}>
             회원가입
           </Text>
@@ -66,7 +88,7 @@ function LoginScreen({navigation}: any) {
               strokeWidth="2"
             />
           </Svg>
-          <Text style={styles.saveIdText}>정보찾기</Text>
+          <Text style={styles.signupText}>정보찾기</Text>
         </View>
       </View>
       <View style={styles.snsContainer}>
@@ -126,6 +148,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   saveIdText: {
+    marginTop: 3,
+    marginLeft: 4,
+    color: colors.BLACK,
+    fontFamily: fonts.LIGHT,
+    fontSize: 14,
+  },
+  signupText: {
     marginTop: 3,
     color: colors.BLACK,
     fontFamily: fonts.LIGHT,

@@ -32,4 +32,20 @@ function validateSignup(values: UserInfomation & {passwordConfirm: string}) {
   return signupErrors;
 }
 
-export {validateLogin, validateSignup};
+function validateInitAccount(
+  values: UserInfomation & {passwordConfirm: string} & {name: string} & {
+    nickname: string;
+  },
+) {
+  const errors = validateUser(values);
+  const initAccountErrors = {
+    ...errors,
+    passwordConfirm: '',
+    name: '',
+    nickname: '',
+  };
+
+  return initAccountErrors;
+}
+
+export {validateLogin, validateSignup, validateInitAccount as validateInit};

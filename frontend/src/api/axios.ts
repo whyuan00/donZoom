@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://j11a108.p.ssafy.io',
+  baseURL: 'https://j11a108.p.ssafy.io/api',
   withCredentials: true,
 });
 

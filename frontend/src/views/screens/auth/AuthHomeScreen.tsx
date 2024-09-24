@@ -34,6 +34,12 @@ const AuthHomeScreen = ({navigation}: any) => {
           onPress={() => navigation.navigate('퀴즈')}
         />
       </View>
+      <View>
+        <Button
+          title="더보기 페이지 이동"
+          onPress={() => navigation.navigate('더보기')}
+        />
+      </View>
     </SafeAreaView>
   );
 };
