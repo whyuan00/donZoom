@@ -211,3 +211,4 @@ def read_root():
 
 # 앱 실행 명령어
 # uvicorn app:app --reload --port 8082
+# uvicorn.run(app, host="0.0.0.0", port=8082, reload=true)
