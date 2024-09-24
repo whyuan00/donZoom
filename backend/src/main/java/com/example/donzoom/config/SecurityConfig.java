@@ -2,6 +2,7 @@ package com.example.donzoom.config;
 
 import com.example.donzoom.filter.JWTFilter;
 import com.example.donzoom.service.OAuth2UserService;
+import com.example.donzoom.service.RedisService;
 import com.example.donzoom.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,7 +36,7 @@ public class SecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain filterChain(HttpSecurity http, RedisService redisService) throws Exception {
 
     //
     //        http.cors((corsCustomizer -> corsCustomizer.configurationSource(
@@ -77,7 +78,7 @@ public class SecurityConfig {
         .anyRequest().permitAll());
 
     // 필터 추가
-    http.addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+    http.addFilterBefore(new JWTFilter(redisService, jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
     //세션 설정 ( JWT 를 사용해 유저 정보를 인증하기 때문에 세션은 필요 없음 )
     http.sessionManagement(
