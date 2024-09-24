@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'donzoom/backend'  // Docker Image 이름
+        DOCKER_IMAGE = 'donzoom/backend'  // Spring Boot Docker Image 이름
+        DOCKER_IMAGE_FASTAPI = 'donzoom/fastapi'  // FastAPI Docker Image 이름 추가
     }
 
     stages {
