@@ -59,6 +59,19 @@ pipeline {
             }
         }
 
+        stage('Build FastAPI Docker Image') {
+            steps {
+                echo 'Building FastAPI Docker image without cache...'
+                script {
+                    try {
+                        docker.build("${DOCKER_IMAGE_FASTAPI}:latest", "--no-cache fastapi")  // 캐시 없이 FastAPI Docker 이미지 빌드
+                    } catch (e) {
+                        error "Failed to build FastAPI Docker image. Error: ${e.message}"
+                    }
+                }
+            }
+        }
+
         stage('Deploy with Docker Compose') {
             steps {
                 echo 'Deploying with Docker Compose...'
