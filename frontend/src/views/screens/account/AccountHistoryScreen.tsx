@@ -1,11 +1,11 @@
 import { colors } from '@/constants/colors';
-import { fonts } from '@/constants/font';
-import CustomButton from '@/views/components/CustomButton';
 import React, { useState } from 'react';
-import { ScrollView, TouchableOpacity } from 'react-native';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { ScrollView } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
-function AccountChildHistoryScreen() {
+
+function AccountHistoryScreen() {
+  const isParent = true; // 임시 변수
   const [selected, setSelected] = useState('아이');
   const transactionData = [
     { date: '2024.9.2. 14시 23분 03초', marketName: '싸피문구점', historyType: '사용한 금액', amount: '-25000원', remainingBalance: '1,234,567원' },
@@ -21,35 +21,54 @@ function AccountChildHistoryScreen() {
   ];
   return (
     <View style={styles.container}>
-      <View style={styles.accountInfoContainer}>
-        <View style={styles.infoTop}>
-          <View style={styles.infoTopTop}>
-            <View style={styles.accountNumberHeaderContainer}>
-              <Text>계좌 번호</Text>
+      {isParent ? (
+        <View style={styles.accountInfoContainer}>
+          <View style={styles.parentAccountInfoContainer}>
+            <View style={styles.parentInfoTop}>
+              <Text>아이 계좌 번호</Text>
+              <Text style={styles.parentInfoTopBankInfo}>싸피은행</Text>
+              <Text>110-449-965876</Text>
+            </View>
+            <View style={styles.parentInfoMiddle}>
+              <Text style={styles.parentBalanceHeader}>남은 금액</Text>
+              <Text style={styles.parentBalanceText}>1,234,567 원</Text>
+            </View>
+            <View style={styles.parentInfoBottom}>
+              <Text>용돈 보내기</Text>
             </View>
           </View>
-          <View style={styles.infoTopBottom}>
-            <View style={styles.accountNumberContentsContainer}>
-              <View>
-                <Text>싸피은행</Text>
+        </View>
+      ) : (
+        <View style={styles.accountInfoContainer}>
+          <View style={styles.infoTop}>
+            <View style={styles.infoTopTop}>
+              <View style={styles.accountNumberHeaderContainer}>
+                <Text>계좌 번호</Text>
               </View>
-              <View style={styles.accountNumber}>
-                <Text>110-449-965876</Text>
+            </View>
+            <View style={styles.infoTopBottom}>
+              <View style={styles.accountNumberContentsContainer}>
+                <View>
+                  <Text>싸피은행</Text>
+                </View>
+                <View style={styles.accountNumber}>
+                  <Text>110-449-965876</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+          <View style={styles.infoBottom}>
+            <View style={styles.balanceContainer}>
+              <View style={styles.balanceHeaderContainer}>
+                <Text style={styles.balanceHeader}>남은 금액</Text>
+              </View>
+              <View style={styles.balanceTextContainer}>
+                <Text style={styles.balanceText}>1,234,567 원</Text>
               </View>
             </View>
           </View>
         </View>
-        <View style={styles.infoBottom}>
-          <View style={styles.balanceContainer}>
-            <View style={styles.balanceHeaderContainer}>
-              <Text style={styles.balanceHeader}>남은 금액</Text>
-            </View>
-            <View style={styles.balanceTextContainer}>
-              <Text style={styles.balanceText}>1,234,567 원</Text>
-            </View>
-          </View>
-        </View>
-      </View>
+      )}
       <View style={styles.accountHistoryContainer}>
         <View style={styles.accountHistoryHeader}>
           <Text>왼쪽아이콘</Text>
@@ -99,9 +118,58 @@ const styles = StyleSheet.create({
   },
   accountInfoContainer: {
     width: '100%',
-    height: 152,
+    height: 166,
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: colors.YELLOW_100,
     paddingHorizontal: 29,
+  },
+  parentAccountInfoContainer: {
+    width: 309,
+    height: 166,
+    backgroundColor: colors.WHITE,
+    borderRadius: 6,
+  },
+  parentInfoTop: {
+    flexDirection: 'row',
+    paddingHorizontal:22,
+    alignItems:'center',
+    width: '100%',
+    flexGrow: 1,
+  },
+  parentInfoTopBankInfo:{
+    marginLeft:'auto',
+    marginRight:7,
+  },
+  parentInfoMiddle:{
+    flexDirection:'row',
+    width:'100%',
+    flexGrow:1,
+    paddingHorizontal:15,
+    justifyContent:'flex-end',
+    alignItems:'center',
+    borderBottomColor:colors.BLACK,
+    borderBottomWidth:1,
+  },
+  parentBalanceHeader:{
+    marginTop:'auto',
+    marginBottom:16,
+    fontFamily: 'GmarketSansTTFBold',
+    fontSize: 16,
+  },
+  parentBalanceText:{
+    marginTop:'auto',
+    marginBottom:16,
+    marginLeft:10,
+    fontFamily: 'GmarketSansTTFBold',
+    fontSize: 25,
+  },
+  parentInfoBottom:{
+    flexDirection:'row',
+    width:'100%',
+    height:46,
+    alignItems:'center',
+    justifyContent:'center',
   },
   infoTop: {
     width: '100%',
@@ -158,7 +226,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
   },
   accountHistoryContainer: {
-    flex:1,
+    flex: 1,
     flexGrow: 1,
     width: '100%',
     paddingHorizontal: 20,
@@ -175,7 +243,7 @@ const styles = StyleSheet.create({
   },
   accountHistoryCard: {
     height: 115,
-    flexShrink:0,
+    flexShrink: 0,
     paddingHorizontal: 9,
     backgroundColor: colors.WHITE,
     borderBottomColor: colors.GRAY_100,
@@ -216,22 +284,22 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
 
-  bottomConatiner:{
-    height:78,
-    flexDirection:'row',
-    justifyContent:'center',
-    alignItems:'center',
+  bottomConatiner: {
+    height: 78,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  moreButtonContainer:{
-    width:102,
-    height:29,
-    backgroundColor:colors.YELLOW_100,
-    borderRadius:6,
-    flexDirection:'row',
-    alignItems:'center',
+  moreButtonContainer: {
+    width: 102,
+    height: 29,
+    backgroundColor: colors.YELLOW_100,
+    borderRadius: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 
 
 });
 
-export default AccountChildHistoryScreen;
+export default AccountHistoryScreen;
