@@ -55,7 +55,7 @@ gold_ticker = "GC=F"
 KST = pytz.timezone('Asia/Seoul')
 
 # Spring Boot 서버의 엔드포인트 URL
-spring_boot_url = os.getenv("SPRING_BOOT_URL", "http://localhost:8081")
+spring_boot_url = os.getenv("SPRING_BOOT_URL", "http://donzoom:8081")
 stock_path = os.getenv("STOCK_PATH", "/stock")
 news_path = os.getenv("NEWS_PATH", "/news")
 report_path = os.getenv("REPORT_PATH", "/report")
