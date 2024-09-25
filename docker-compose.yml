@@ -39,8 +39,6 @@ services:
     ports:
       - "6379:6379"  # 호스트와 컨테이너 간의 포트 매핑
     command: ["redis-server", "--bind", "0.0.0.0", "--protected-mode", "no"]  # 모든 IP에서 접근 허용 및 보호 모드 비활성화
-    volumes:
-      - ./redis_data:/data  # 데이터 영속성을 위한 볼륨 마운트
     restart: always  # 컨테이너가 종료되면 자동 재시작
 
   fastapi:
