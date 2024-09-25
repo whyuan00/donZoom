@@ -1,3 +1,4 @@
+import {fonts} from '@/constants/font';
 import {colors} from '@/constants/colors';
 import {
   ScrollView,
@@ -6,34 +7,56 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+
 import Icon from 'react-native-vector-icons/Octicons';
 import SettingIcon from 'react-native-vector-icons/Ionicons';
 import NextIcon from 'react-native-vector-icons/MaterialIcons';
+
 import PayIcon from '@/assets/pay.svg';
-import {fonts} from '@/constants/font';
 import DrawMachine from '@/assets/voidDrawMachine.svg';
 import Floor from '@/assets/longFloor.svg';
+import GifImage from 'react-native-gif';
+import Profile from '@/views/components/HomeProfile';
 
 function HomeScreen() {
+  const navigation = useNavigation() as any;
+
   return (
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.contentsContainer}>
-          <View style={styles.profileContainer}></View>
+          <View style={styles.profileContainer}>
+            <Profile name="사과"/>
+          </View>
           <View style={styles.mypageContainer}>
-            <Icon name="bell-fill" size={16} style={styles.icon} />
-            <Text style={styles.mypageText}>알림</Text>
-
-            <SettingIcon name="settings" size={16} style={styles.icon} />
-            <Text style={styles.mypageText}>설정</Text>
+            <TouchableOpacity
+              style={styles.mypageAlarm}
+              onPress={() => navigation.navigate('알림')}>
+              <Icon name="bell-fill" size={16} style={styles.icon} />
+              <Text style={styles.mypageText}>알림</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.mypageSetting}
+              onPress={() => navigation.navigate('설정')}>
+              <SettingIcon name="settings" size={16} style={styles.icon} />
+              <Text style={styles.mypageText}>설정</Text>
+            </TouchableOpacity>
           </View>
           <View style={styles.moneyContainer}>
             <View>
-              <Text style={styles.moneyTitleText}>이번달 남은 용돈은</Text>
+              <Text style={styles.moneyTitleText}>
+                이번달 남은 <Text style={{fontFamily: fonts.BOLD}}>용돈</Text>은
+              </Text>
               <View style={styles.moneyContentsContainer}>
                 <View style={styles.moneyAccountContainer}>
                   <Text style={styles.moneyText}>5,217원</Text>
-                  <Text style={styles.moneyAccountText}>내 계좌 관리하기</Text>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('AccountChildHistory')}>
+                    <Text style={styles.moneyAccountText}>
+                      내 계좌 관리하기
+                    </Text>
+                  </TouchableOpacity>
                 </View>
                 <View style={styles.iconContainer}>
                   <NextIcon
@@ -42,25 +65,44 @@ function HomeScreen() {
                     color={colors.BLACK}
                   />
                 </View>
-                <View style={styles.payContainer}>
-                  <PayIcon width={50} height={50} />
-                  <Text style={styles.payText}>결제</Text>
-                </View>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('QRCodeScanner')}>
+                  <View style={styles.payContainer}>
+                    <PayIcon width={50} height={50} />
+                    <Text style={styles.payText}>결제</Text>
+                  </View>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
-          <TouchableOpacity style={styles.missionContainer}>
-            <Text style={styles.missionText}>오늘의 미션 수행하러 가기</Text>
+          <TouchableOpacity
+            style={styles.missionContainer}
+            onPress={() => navigation.navigate('Mission')}>
+            <Text style={styles.missionText}>
+              오늘의 <Text style={{fontFamily: fonts.BOLD}}>미션</Text> 수행하러
+              가기
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.quizContainer}>
+          <TouchableOpacity
+            style={styles.quizContainer}
+            onPress={() => navigation.navigate('퀴즈')}>
             <Text style={styles.quizText}>금융 상식 UP! 머니 GET!</Text>
-            <Text style={styles.quizText}>오늘의 퀴즈는?</Text>
+            <Text style={styles.quizText}>
+              오늘의 <Text style={{fontFamily: fonts.BOLD}}>퀴즈</Text>는?
+            </Text>
           </TouchableOpacity>
         </View>
         <View style={styles.drawContainer}>
           <DrawMachine style={styles.machine} />
           <Floor style={styles.floor} />
-          <TouchableOpacity style={styles.goDraw}>
+          <TouchableOpacity
+            style={styles.goDraw}
+            onPress={() => navigation.navigate('돼지뽑기')}>
+            <GifImage
+              source={require('@/assets/coin.gif')}
+              style={styles.gifImage}
+              resizeMode="contain"
+            />
             <Text style={styles.drawText}>머니로</Text>
             <Text style={styles.drawText}>뽑기하러</Text>
             <Text style={styles.drawText}>가기</Text>
@@ -88,6 +130,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     marginBottom: 10,
+  },
+  mypageAlarm: {
+    flexDirection: 'row',
+  },
+  mypageSetting: {
+    flexDirection: 'row',
   },
   mypageText: {
     color: colors.BLACK,
@@ -186,7 +234,7 @@ const styles = StyleSheet.create({
   },
   drawContainer: {
     width: '100%',
-    height: 360,
+    height: 396,
   },
   machine: {
     position: 'relative',
@@ -212,6 +260,11 @@ const styles = StyleSheet.create({
     fontFamily: fonts.BOLD,
     fontSize: 18,
     margin: 2,
+  },
+  gifImage: {
+    width: 30,
+    height: 30,
+    marginBottom: 20,
   },
 });
 

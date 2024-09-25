@@ -127,7 +127,10 @@ function DrawCollectionScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    backgroundColor: colors.WHITE,
+    paddingBottom: 40,
+  },
   optionContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',

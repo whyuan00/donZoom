@@ -240,6 +240,7 @@ function QuizHomeScreen() {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
+    paddingBottom: 45,
     backgroundColor: colors.WHITE,
   },
   todayContainer: {
