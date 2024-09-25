@@ -42,6 +42,7 @@ services:
       - "6379:6379"
     volumes:
       - ./redis_data:/data
+    restart: always
 
   fastapi:
     build: ./python  # fastapi 디렉토리에서 Dockerfile을 사용해 이미지 빌드
