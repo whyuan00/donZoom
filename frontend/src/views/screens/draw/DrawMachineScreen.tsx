@@ -92,7 +92,7 @@ function DrawMachineScreen({}) {
         </View>
         <Text style={styles.tempText}>돼지를 뽑아라!</Text>
       </View>
-      <View>
+      <View style={styles.listContainer}>
         <Text style={styles.listTitle}>나의 돼지 뽑기 내역</Text>
         {pigHistory
           .slice()
@@ -222,6 +222,10 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     textAlign: 'center',
     fontFamily: 'GmarketSansTTFBold',
+  },
+  listContainer: {
+    backgroundColor: colors.WHITE,
+    paddingBottom: 56,
   },
   listTitle: {
     color: colors.BLACK,

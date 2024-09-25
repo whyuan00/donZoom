@@ -16,7 +16,7 @@ function QuizExplanationScreen() {
   const currentQuestion = todaysQuizQuestions[currentQuestionIndex];
   const navigation = useNavigation();
 
-  const handleNextQuestion = () => {
+  const handleNextQuestion = (navigation: any) => {
     if (currentQuestionIndex < todaysQuizQuestions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       navigation.navigate('오늘의 퀴즈'); // 다음 문제로 이동

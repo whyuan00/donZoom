@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import {Calendar, DateData} from 'react-native-calendars';
 import CheckCalendar from '@/assets/CheckCalendar.svg';
-import CustomCalendar from '@/views/components/CustomCalendar';
 
 interface MarkedDates {
   [key: string]: {
@@ -89,7 +88,7 @@ function QuizHomeScreen() {
     },
   ];
   // 더미 넘기기
-  const startTodayQuiz = () => {
+  const startTodayQuiz = (navigation: any) => {
     setTodaysQuizQuestions(dummyQuizQuestions);
     navigation.navigate('오늘의 퀴즈');
   };
@@ -241,6 +240,7 @@ function QuizHomeScreen() {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
+    paddingBottom: 45,
     backgroundColor: colors.WHITE,
   },
   todayContainer: {
@@ -315,6 +315,7 @@ const styles = StyleSheet.create({
     color: colors.GRAY_75,
   },
   reviewContentContainer: {},
+  reviewContentText: {},
   reviewContentsBox: {
     flexDirection: 'row',
     alignItems: 'center',
