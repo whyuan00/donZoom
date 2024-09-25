@@ -27,7 +27,7 @@ function HomeScreen() {
       <View style={styles.container}>
         <View style={styles.contentsContainer}>
           <View style={styles.profileContainer}>
-            <Profile name="사과"/>
+            <Profile name="사과" />
           </View>
           <View style={styles.mypageContainer}>
             <TouchableOpacity
@@ -52,7 +52,7 @@ function HomeScreen() {
                 <View style={styles.moneyAccountContainer}>
                   <Text style={styles.moneyText}>5,217원</Text>
                   <TouchableOpacity
-                    onPress={() => navigation.navigate('AccountChildHistory')}>
+                    onPress={() => navigation.navigate('계좌관리')}>
                     <Text style={styles.moneyAccountText}>
                       내 계좌 관리하기
                     </Text>

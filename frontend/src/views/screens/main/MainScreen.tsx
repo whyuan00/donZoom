@@ -3,9 +3,7 @@ import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import useAuth from '@/hooks/queries/useAuth';
 
-interface MainScreenProps {}
-
-function MainScreen({}: MainScreenProps) {
+function MainScreen({navigation}: any) {
   const {logoutMutation} = useAuth();
 
   const handleLogout = () => {
@@ -16,10 +14,15 @@ function MainScreen({}: MainScreenProps) {
     });
   };
 
+  const handleTransfer = () => {
+    navigation.navigate('송금');
+  };
+
   return (
     <View>
       <Text>메인화면임.</Text>
       <CustomButton label="로그아웃" onPress={handleLogout} />
+      <CustomButton label="계좌이체" onPress={handleTransfer} />
     </View>
   );
 }
