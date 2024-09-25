@@ -34,7 +34,11 @@ const HomeStackNavigator = () => {
         name="AccountChildHistory"
         component={AccountHistoryScreen}
       />
-      <Stack.Screen name="QRCodeScanner" component={QRCodeScanner} />
+      <Stack.Screen
+        name="QRCodeScanner"
+        component={QRCodeScanner}
+        options={{headerShown: false}}
+      />
       <Stack.Screen
         name="MakeNewMission"
         component={MakeNewMissionScreen}

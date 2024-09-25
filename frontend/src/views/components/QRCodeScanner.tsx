@@ -1,9 +1,19 @@
 import {useEffect, useRef, useState} from 'react';
-import {Alert, Dimensions, StyleSheet, Vibration, View} from 'react-native';
+import {
+  Alert,
+  Dimensions,
+  StyleSheet,
+  TouchableOpacity,
+  Vibration,
+  View,
+} from 'react-native';
 import {Camera, CameraType} from 'react-native-camera-kit';
+import CloseButton from '@/assets/closeButton.svg';
+import {useNavigation} from '@react-navigation/native';
 
 function QRCodeScanner() {
   const [scaned, setScaned] = useState<boolean>(true);
+  const navigation = useNavigation();
   const ref = useRef(null);
 
   useEffect(() => {
@@ -31,6 +41,11 @@ function QRCodeScanner() {
         surfaceColor="rgba(0,0,0,0)"
         onReadCode={onBarCodeRead}
       />
+      <TouchableOpacity
+        style={styles.closeButton}
+        onPress={() => navigation.goBack()}>
+        <CloseButton width={30} height={30} />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -43,6 +58,11 @@ const styles = StyleSheet.create({
   },
   scanner: {
     flex: 1,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 30,
+    right: 20,
   },
 });
 
