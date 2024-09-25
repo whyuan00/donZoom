@@ -49,7 +49,7 @@ pipeline {
                     # 기존 컨테이너를 중지 및 제거 (docker-compose를 사용해 관리)
                     docker-compose down || true
                     # 새로운 이미지를 빌드하고 모든 컨테이너 실행
-                    docker-compose up --build --no-cache -d
+                    docker-compose up -d --build --no-cache
                 '''
             }
         }
