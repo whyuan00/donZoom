@@ -35,13 +35,10 @@ public class User extends BaseEntity {
   @Column(nullable = false, unique = true)
   private String email;
 
-  @NotBlank(message = "비밀번호는 필수 입력 사항입니다.")
   private String pwdHash;
 
-  @NotBlank(message = "이름은 필수 입력 사항입니다.")
   private String name;
 
-  @NotBlank(message = "닉네임은 필수 입력 사항입니다.")
   private String nickname;
 
   private String userKey;
