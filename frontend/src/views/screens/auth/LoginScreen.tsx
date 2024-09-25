@@ -12,7 +12,7 @@ import { useErrorStore } from '@/stores/errorMessagesStore';
 import { useFocusEffect } from '@react-navigation/native';
 import { configureGoogleSignIn } from '@/config/LoginConfig';
 import { GoogleSignin, SignInResponse, statusCodes, User } from '@react-native-google-signin/google-signin';
-import axios from 'axios';
+import axiosInstance from '@/api/axios';
 
 function LoginScreen({ navigation }: any) {
   const { loginMutation } = useAuth();
@@ -43,7 +43,7 @@ function LoginScreen({ navigation }: any) {
   
         if (idToken) {
           // idToken을 백엔드로 전송하여 인증 처리
-          const response = await axios.post('http://localhost:8081/api/auth/google', 
+          const response = await axiosInstance.post('/auth/google', 
             { idToken },  // 객체로 전달
             { headers: { 'Content-Type': 'application/json' } }
           );
