@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKER_IMAGE = 'donzoom/backend'  // Spring Boot Docker Image 이름
-        DOCKER_IMAGE_FASTAPI = 'donzoom/fastapi'  // FastAPI Docker Image 이름 추가
-    }
-
     stages {
         stage('Checkout SCM') {
             steps {
@@ -47,38 +42,13 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                echo 'Building Docker image...'
-                script {
-                    try {
-                        docker.build("${DOCKER_IMAGE}:latest", "backend")  // Spring Boot Docker 이미지 빌드
-                    } catch (e) {
-                        error "Failed to build Docker image. Error: ${e.message}"
-                    }
-                }
-            }
-        }
-
-        stage('Build FastAPI Docker Image') {
-            steps {
-                echo 'Building FastAPI Docker image without cache...'
-                script {
-                    try {
-                        docker.build("${DOCKER_IMAGE_FASTAPI}:latest", "--no-cache python")  // 캐시 없이 FastAPI Docker 이미지 빌드
-                    } catch (e) {
-                        error "Failed to build FastAPI Docker image. Error: ${e.message}"
-                    }
-                }
-            }
-        }
-
         stage('Deploy with Docker Compose') {
             steps {
                 echo 'Deploying with Docker Compose...'
                 sh '''
                     # 기존 컨테이너를 중지 및 제거 (docker-compose를 사용해 관리)
                     docker-compose down || true
+                    # 새로운 이미지를 빌드하고 모든 컨테이너 실행
                     docker-compose up -d --build
                 '''
             }
