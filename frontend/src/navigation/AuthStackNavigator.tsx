@@ -1,8 +1,8 @@
 import React from 'react';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {StyleSheet, TouchableOpacity, Text} from 'react-native';
-import {colors} from '../constants/colors';
-import {useNavigation} from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { colors } from '../constants/colors';
+import { useNavigation } from '@react-navigation/native';
 
 import AuthHomeScreen from '../views/screens/auth/AuthHomeScreen';
 import LoginScreen from '../views/screens/auth/LoginScreen';
@@ -23,6 +23,11 @@ import MyInformationScreen from '@/views/screens/myPage/MyInformationScreen';
 import AlarmSettingScreen from '@/views/screens/myPage/AlarmSettingScreen';
 import SecuritySettingScreen from '@/views/screens/myPage/SecuritySettingScreen';
 import AlarmScreen from '@/views/screens/alarm/AlarmScreen';
+import TransferScreen from '@/views/screens/account/TransferScreen';
+import TransferNavigator from './TransferNavigator';
+import TransferScreen2 from '@/views/screens/account/TransferScreen2';
+import TransferScreen3 from '@/views/screens/account/TransferScreen3';
+import TransferScreen4 from '@/views/screens/account/TransferScreen4';
 const Stack = createNativeStackNavigator();
 
 const AuthStackNavigator = () => {

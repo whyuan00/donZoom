@@ -57,7 +57,7 @@ export default function StockAlarmScreen() {
     }
   };
   return (
-    <View>
+    <View style={styles.container}>
       <View style={styles.filterContainer}>
         <Text>필터</Text>
       </View>
@@ -103,6 +103,9 @@ export default function StockAlarmScreen() {
 }
 
 const styles = StyleSheet.create({
+  container:{
+    flex: 1,
+  },
   alarmCard: {
     height: 91,
     flexShrink: 0,
