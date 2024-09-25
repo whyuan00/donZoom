@@ -16,6 +16,7 @@ import AccountHistoryScreen from '@/views/screens/account/AccountHistoryScreen';
 import AlarmScreen from '@/views/screens/alarm/AlarmScreen';
 import MyInformationScreen from '@/views/screens/myPage/MyInformationScreen';
 import QRCodeScanner from '@/views/components/QRCodeScanner';
+import TransferNavigator from './TransferNavigator';
 
 const HomeStackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -28,6 +29,7 @@ const HomeStackNavigator = () => {
       />
       <Stack.Screen name="알림" component={AlarmScreen} />
       <Stack.Screen name="설정" component={MyInformationScreen} />
+      <Stack.Screen name="계좌관리" component={TransferNavigator} />
       <Stack.Screen
         name="AccountChildHistory"
         component={AccountHistoryScreen}

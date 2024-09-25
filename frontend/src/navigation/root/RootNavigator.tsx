@@ -1,13 +1,28 @@
 import useAuth from '@/hooks/queries/useAuth';
 import AuthStackNavigator from '../AuthStackNavigator';
-import MainScreen from '@/views/screens/main/MainScreen';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import Footer from '../Footer';
 
-function RootNavigator() {
+const Stack = createNativeStackNavigator();
+
+const RootNavigator = () => {
   const {isLogin} = useAuth();
 
   console.log('isLogin', isLogin);
 
-  return <>{isLogin ? <MainScreen /> : <AuthStackNavigator />}</>;
-}
+  return (
+    <Stack.Navigator>
+      {isLogin ? (
+        <Stack.Screen
+          name="Footer"
+          component={Footer}
+          options={{headerShown: false}}
+        />
+      ) : (
+        <Stack.Screen name="Auth" component={AuthStackNavigator} />
+      )}
+    </Stack.Navigator>
+  );
+};
 
 export default RootNavigator;

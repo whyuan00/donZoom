@@ -11,11 +11,6 @@ const MissionStackNavigator = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="MakeNewMission"
-        component={MakeNewMissionScreen}
-        options={{title: '미션 생성'}}
-      />
-      <Stack.Screen
         name="Mission"
         component={MissionHomeScreen}
         options={({navigation}) => ({
@@ -30,6 +25,11 @@ const MissionStackNavigator = () => {
             );
           },
         })}
+      />
+      <Stack.Screen
+        name="MakeNewMission"
+        component={MakeNewMissionScreen}
+        options={{title: '미션 생성'}}
       />
     </Stack.Navigator>
   );

@@ -6,21 +6,14 @@ import queryClient from '@/api/queryClient';
 import RootNavigator from '@/navigation/root/RootNavigator';
 import DrawStackNavigator from '../navigation/DrawStackNavigator';
 import QuizStackNavigator from '@/navigation/QuizStackNavigator';
-import Footer from './components/Footer';
-import MyInformationNavigator from '@/navigation/MyInformationNavigator';
-import HomeStackNavigator from '@/navigation/HomeStackNavigator';
+import Footer from '../navigation/Footer';
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <NavigationContainer>
-        {/* <RootNavigator /> */}
-        {/* <QuizStackNavigator /> */}
-        {/* <AuthStackNavigator /> */}
-        {/* <MyInformationNavigator /> */}
-        <HomeStackNavigator />
+        <RootNavigator />
       </NavigationContainer>
-      <Footer />
     </QueryClientProvider>
   );
 }
