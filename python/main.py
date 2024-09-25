@@ -55,10 +55,10 @@ gold_ticker = "GC=F"
 KST = pytz.timezone('Asia/Seoul')
 
 # Spring Boot 서버의 엔드포인트 URL
-spring_boot_url = os.getenv("SPRING_BOOT_URL")
-stock_path = os.getenv("STOCK_PATH")
-news_path = os.getenv("NEWS_PATH")
-report_path = os.getenv("REPORT_PATH")
+spring_boot_url = os.getenv("SPRING_BOOT_URL", "http://localhost:8080")
+stock_path = os.getenv("STOCK_PATH", "/stock")
+news_path = os.getenv("NEWS_PATH", "/news")
+report_path = os.getenv("REPORT_PATH", "/report")
 save_stock_history_url = spring_boot_url+stock_path
 
 save_news_URL = spring_boot_url+news_path
