@@ -60,6 +60,7 @@ stock_path = os.getenv("STOCK_PATH")
 news_path = os.getenv("NEWS_PATH")
 report_path = os.getenv("REPORT_PATH")
 save_stock_history_url = spring_boot_url+stock_path
+
 save_news_URL = spring_boot_url+news_path
 save_report_URL = spring_boot_url+report_path
 
