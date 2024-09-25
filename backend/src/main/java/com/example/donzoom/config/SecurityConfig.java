@@ -73,7 +73,7 @@ public class SecurityConfig {
     http.authorizeHttpRequests(auth -> auth
         //                .requestMatchers("/register").authenticated()
         .requestMatchers("/assets/**", "/favicon.ico", "/index.html").permitAll()
-        .requestMatchers("/user", "/oauth2/**", "/login/**").permitAll()
+        .requestMatchers("/user", "/oauth2/**", "/login/**","/auth/**").permitAll()
         //                .anyRequest().authenticated());
         .anyRequest().permitAll());
 
