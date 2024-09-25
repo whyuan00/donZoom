@@ -4,7 +4,7 @@ FROM python:3.9-slim
 # 작업 디렉토리 생성
 WORKDIR /app
 
-# 필요한 패키지 설치를 위해 필요한 종속성 설치
+# 필요한 패키지 설치를 위해 필요한 종속성 설치 및 Google Chrome 레포지토리 추가
 RUN apt-get update && apt-get install -y \
     wget \
     unzip \
@@ -21,13 +21,11 @@ RUN apt-get update && apt-get install -y \
     fonts-liberation \
     libappindicator3-1 \
     xdg-utils \
-    google-chrome-stable \
+    && wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list' \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable \
     && rm -rf /var/lib/apt/lists/*
-
-# ChromeDriver 설치
-RUN wget -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip \
-    && unzip /tmp/chromedriver.zip -d /usr/local/bin/ \
-    && rm /tmp/chromedriver.zip
 
 # 필요한 의존성 파일을 컨테이너에 복사
 COPY requirements.txt .
