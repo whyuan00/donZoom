@@ -27,6 +27,8 @@ services:
       SPRING_REDIS_PORT: 6379
     ports:
       - "8081:8081"
+    volumes:
+      - ./backend/src/main/resources
     depends_on:
       - mysql
       - redis
