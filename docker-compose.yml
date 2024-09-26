@@ -28,7 +28,7 @@ services:
     ports:
       - "8081:8081"
     volumes:
-      - ./backend/src/main/resources
+      - ./backend/src/main/resources:/config
     depends_on:
       - mysql
       - redis
