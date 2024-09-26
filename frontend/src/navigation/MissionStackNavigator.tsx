@@ -1,17 +1,50 @@
 import {colors} from '@/constants/colors';
 import MakeNewMissionScreen from '@/views/screens/mission/MakeNewMissionScreen';
+import MakeNewMissionPayScreen from '@/views/screens/mission/MakeNewMissionPayScreen';
+import MakeNewMissionCompleteScreen from '@/views/screens/mission/MakeNewMIssionCompleteScreen';
+
 import MissionHomeScreen from '@/views/screens/mission/MissionHomeScreen';
+
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 import {StyleSheet, Text} from 'react-native';
-
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import MissionHomeChildScreen from '@/views/screens/mission/Child/MissionHomeChildScreen';
+import { fonts } from '@/constants/font';
 const Stack = createNativeStackNavigator();
 
-const MissionStackNavigator = () => {
+const MissionStackNavigator = ({route}:any) => {
+  const initialRouteName =
+    route.name === '아이미션' ? 'MissionChild' : 'MissionParent';
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      initialRouteName={initialRouteName}
+      screenOptions={{
+        headerTitleStyle: {
+          fontFamily: fonts.MEDIUM,
+          fontWeight: '500',
+          fontSize: 20,
+        },
+        headerTitleAlign: 'center', // 헤더 제목 정렬
+      }}>
       <Stack.Screen
-        name="Mission"
+        name="MissionChild"
+        component={MissionHomeChildScreen}
+        options={({navigation}) => ({
+          title: '미션',
+          headerLeft: () => {
+            return (
+              <Icon
+                name="arrow-left"
+                size={25}
+                onPress={() => navigation.navigate('홈화면')}
+              />
+            );
+          },
+        })}
+      />
+      <Stack.Screen
+        name="MissionParent"
         component={MissionHomeScreen}
         options={({navigation}) => ({
           title: '미션',
@@ -24,12 +57,34 @@ const MissionStackNavigator = () => {
               </Text>
             );
           },
+          headerLeft: () => {
+            return (
+              <Icon
+                name="arrow-left"
+                size={25}
+                onPress={() => navigation.navigate('홈화면')}
+              />
+            );
+          },
         })}
       />
       <Stack.Screen
         name="MakeNewMission"
         component={MakeNewMissionScreen}
         options={{title: '미션 생성'}}
+      />
+      <Stack.Screen
+        name="MakeNewMissionPay"
+        component={MakeNewMissionPayScreen}
+        options={{
+          title: '미션 생성',
+          headerStyle: {backgroundColor: colors.YELLOW_25},
+        }}
+      />
+      <Stack.Screen
+        name="MakeNewMissionComplete"
+        component={MakeNewMissionCompleteScreen}
+        options={{headerShown: false}}
       />
     </Stack.Navigator>
   );

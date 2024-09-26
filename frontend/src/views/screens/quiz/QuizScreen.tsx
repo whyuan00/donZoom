@@ -8,7 +8,7 @@ import {fonts} from '@/constants/font';
 import Correct from '@/assets/correct.svg';
 import NotCorrect from '@/assets/notCorrect.svg';
 
-function QuizScreen() {
+function QuizScreen({navigation}: any) {
   const {
     todaysQuizQuestions,
     currentQuestionIndex,
@@ -16,7 +16,6 @@ function QuizScreen() {
     setSelectedAnswer,
   } = useQuizStore();
   const currentQuestion = todaysQuizQuestions[currentQuestionIndex];
-  const navigation = useNavigation() as any;
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
@@ -31,7 +30,7 @@ function QuizScreen() {
     setModalVisible(true);
   };
 
-  const handleViewComment = () => {
+  const handleViewComment = (navigation: any) => {
     setModalVisible(false);
     setSelectedAnswer(null);
     navigation.navigate('해설');

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback,useState} from 'react';
 import {
   SafeAreaView,
   Text,
@@ -8,29 +8,46 @@ import {
 } from 'react-native';
 import {colors} from '@/constants/colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import axiosInstance from '@/api/axios';
 
 const MakeNewMissionCompleteScreen = ({navigation, route}: any) => {
   const {text, selectedDate, pay} = route.params;
+  const [childId, setChildId] = useState<number>(0); //TODO: childId zustand에 저장한다음에 불러와야함
+
+  const sendMissionInfo= async(text:String,pay:number,selectedDate:string) =>{
+    try{
+      await axiosInstance.post(`/mission&childId=${childId}`,{
+        contents:text,
+        due_date:selectedDate,
+        reward:pay
+      })
+      console.log('새로운 미션 생성')
+    }
+    catch(error){
+      console.log(error)
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* 아이콘 */}
       <Icon name="clipboard-text-outline" size={135} />
       <Text style={{margin:12,fontSize: 25, fontWeight: '500', color: colors.BLACK}}>
         미션 생성 완료
       </Text>
       <View style={styles.missionbox}>
         <Text style={styles.missionText}>{text}</Text>
-        <Text style={styles.payText}>{pay} 원</Text>
+        <Text style={styles.payText}>{pay.toLocaleString()} 원</Text>
         <Text style={styles.missionText}>
-          <Text style={{color: colors.BLUE_100}}>{selectedDate}</Text> 까지
+          <Text style={{color: colors.BLUE_100}}>{selectedDate.replaceAll('-','.')}</Text> 까지
           미션을 완료해주세요!
         </Text>
       </View>
       <TouchableOpacity
         style={styles.confirmButton}
         onPress={() => {
-          navigation.navigate('Mission');
+          console.log('Button pressed');
+          sendMissionInfo(text, pay, selectedDate)
+          navigation.navigate('Mission', {screen: '진행중'});
         }}>
         <Text style={{color:colors.BLACK,fontSize:18,fontWeight:'500',textAlign:'center',padding:10,}}>확인</Text>
       </TouchableOpacity>
@@ -67,7 +84,7 @@ const styles = StyleSheet.create({
   },
   confirmButton: {
     position: 'absolute',
-    bottom:35,
+    bottom: 80,
     width: 300,
     height: 50,
     backgroundColor: colors.WHITE,
