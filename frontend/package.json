@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "react-native start --port 3000",
+    "start": "react-native start",
     "android": "react-native run-android --port 3000",
     "ios": "react-native run-ios --port 3000",
     "test": "jest"
