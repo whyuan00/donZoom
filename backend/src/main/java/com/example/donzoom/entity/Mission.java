@@ -4,6 +4,8 @@ import com.example.donzoom.constant.MissionStatus;
 import com.example.donzoom.dto.mission.request.MissionUpdateDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,6 +33,8 @@ public class Mission {
 
   private String contents;
   private Long reward;
+
+  @Enumerated(EnumType.STRING)
   private MissionStatus status;
   private LocalDateTime dueDate;
 

@@ -24,17 +24,21 @@ public class MissionService {
   private final MissionRepository missionRepository;
   private final UserRepository userRepository;
 
-  public List<MissionResponseDto> getUserMissions() {
+  public List<MissionResponseDto> getUserMissions(Long userId, MissionStatus status) {
     // 현재 사용자의 미션 가져오기
 
     // 현재 인증된 사용자 정보 가져오기
     String username = SecurityUtil.getAuthenticatedUsername();
 
-    // 사용자 정보 (예: PK) 가져오기
-    User user = userRepository.findByEmail(username)
+    // 사용자 정보 (예: PK) 가져오기, 로그인 되어 있는지 확인
+    User loginUser = userRepository.findByEmail(username)
         .orElseThrow(() -> new RuntimeException("User not found"));
 
-    List<MissionResponseDto> list = missionRepository.findAllMissionByUserId(user.getId()).stream()
+    // 미션을 조회하려는 유저를 검증
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new RuntimeException("User not found"));
+
+    List<MissionResponseDto> list = missionRepository.findByUserIdAndStatus(userId, status).stream()
         .map(mission -> MissionResponseDto.builder()
             .missionId(mission.getId())
             .contents(mission.getContents())
