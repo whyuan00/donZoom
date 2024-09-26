@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {TouchableOpacity, Image, StyleSheet, Text, View} from 'react-native';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
@@ -6,7 +6,7 @@ import CustomButton from '@/views/components/CustomButton';
 import {useSignupStore} from '@/stores/useAuthStore';
 
 function CheckFamilyScreen({navigation}: any) {
-  const {role, setRole} = useSignupStore(); // Use the Zustand store
+  const {role, setRole} = useSignupStore();
 
   return (
     <View style={styles.container}>
@@ -49,7 +49,7 @@ function CheckFamilyScreen({navigation}: any) {
         <CustomButton
           label="다음으로"
           variant="auth"
-          onPress={() => navigation.navigate('NickName')}
+          onPress={() => navigation.navigate('닉네임 설정')}
         />
       </View>
     </View>

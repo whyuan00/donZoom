@@ -5,7 +5,6 @@ import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import DrawStackNavigator from './DrawStackNavigator';
-import MainNavigator from './MainNavigator';
 import MissionStackNavigator from './MissionStackNavigator';
 import QuizStackNavigator from './QuizStackNavigator';
 import HomeScreen from '@/views/screens/HomeScreen';

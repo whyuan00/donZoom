@@ -1,20 +1,71 @@
-import { colors } from "@/constants/colors";
-import { fonts } from "@/constants/font";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {colors} from '@/constants/colors';
+import {fonts} from '@/constants/font';
+import KeyPad from '@/views/components/KeyPad';
+import KeypadModal from '@/views/components/KeyPadModal';
+import TransferRecipientModal from '@/views/components/TransferModal';
+import {useState} from 'react';
+import {
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
-export default function TransferScreen({ navigation }: any) {
+interface Bank {
+  id: string;
+  name: string;
+}
+
+interface Recipient {
+  bank: Bank;
+  accountNumber: string;
+}
+
+export default function TransferScreen({navigation}: any) {
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [keypadModalVisible, setKeypadModalVisible] = useState<boolean>(false);
+  const [selectedRecipient, setSelectedRecipient] = useState<Recipient | null>(
+    null,
+  );
+  const [amount, setAmount] = useState<string>('0');
+
+  const handleOpenModal = () => {
+    setModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalVisible(false);
+  };
+
+  const handleSelectRecipient = (recipient: Recipient) => {
+    setSelectedRecipient(recipient);
+    setModalVisible(false);
+  };
+
+  const handleOpenKeypadModal = () => {
+    setKeypadModalVisible(true);
+  };
+
+  const handleCloseKeypadModal = () => {
+    setKeypadModalVisible(false);
+  };
+
+  const handleAmountChange = (newAmount: string) => {
+    setAmount(newAmount);
+  };
+
   const onPressNext = () => {
     navigation.navigate('송금2');
-  }
+  };
   return (
     <View style={styles.container}>
-      <Text style={styles.menuHeaderText}>
-        출금계좌
-      </Text>
+      <Text style={styles.menuHeaderText}>출금계좌</Text>
       <View style={styles.myAccountInfoContainer}>
         <View style={styles.myAccountTextContainer}>
           <Text style={styles.myAccountTextHeader}>내 계좌</Text>
-          <Text style={styles.myAccountTextContext}>우리  1005-458-953312</Text>
+          <Text style={styles.myAccountTextContext}>우리 1005-458-953312</Text>
         </View>
         <View style={styles.myAccountTextContainer}>
           <Text style={styles.withdrawableAmountTextHeader}>출금가능금액</Text>
@@ -22,20 +73,48 @@ export default function TransferScreen({ navigation }: any) {
         </View>
       </View>
       <Text style={styles.menuHeaderText}>입금대상</Text>
-      <View style={styles.recipientAccountInfoContainer}>
-        <Text style={styles.recipientAccountInfoText}>받을 대상을 선택해 주세요</Text>
-      </View>
+      <Pressable
+        style={styles.recipientAccountInfoContainer}
+        onPress={handleOpenModal}>
+        <Text style={styles.recipientAccountInfoText}>
+          {selectedRecipient
+            ? `${selectedRecipient.bank.name} ${selectedRecipient.accountNumber}`
+            : '받을 대상을 선택해 주세요'}
+        </Text>
+      </Pressable>
+
+      <TransferRecipientModal
+        visible={modalVisible}
+        onClose={handleCloseModal}
+        onSelectRecipient={handleSelectRecipient}
+      />
+
       <Text style={styles.menuHeaderText}>보낼금액</Text>
-      <View style={styles.amountInputContainer}>
-        <Text style={styles.amountInputText}>금액을 입력해 주세요</Text>
-      </View>
+      <Pressable
+        style={styles.amountInputContainer}
+        onPress={handleOpenKeypadModal}>
+        <Text style={styles.amountInputText}>
+          {' '}
+          {amount === '0'
+            ? '보낼 금액을 입력해 주세요'
+            : `${parseInt(amount).toLocaleString()}원`}
+        </Text>
+      </Pressable>
+
+      <KeypadModal
+        visible={keypadModalVisible}
+        onClose={handleCloseKeypadModal}
+        onInput={handleAmountChange}
+        currentValue={parseInt(amount)}
+      />
+
       <TouchableOpacity
         style={styles.nextButtonContainer}
         onPress={onPressNext}>
         <Text style={styles.nextButtonText}>다음</Text>
       </TouchableOpacity>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -118,5 +197,5 @@ const styles = StyleSheet.create({
   nextButtonText: {
     fontFamily: fonts.BOLD,
     fontSize: 18,
-  }
+  },
 });

@@ -49,4 +49,13 @@ function validateInitAccount(
   return initAccountErrors;
 }
 
-export {validateLogin, validateSignup, validateInitAccount as validateInit};
+function validateAccount() {
+  return '';
+}
+
+export {
+  validateLogin,
+  validateSignup,
+  validateInitAccount as validateInit,
+  validateAccount,
+};

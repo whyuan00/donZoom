@@ -19,7 +19,7 @@ interface MarkedDates {
   };
 }
 
-function QuizHomeScreen() {
+function QuizHomeScreen({navigation}: any) {
   const [quizCompletedDates, setQuizCompletedDates] = useState<MarkedDates>({
     '2024-09-10': {marked: true},
     '2024-09-11': {marked: true},
@@ -28,8 +28,6 @@ function QuizHomeScreen() {
   const setTodaysQuizQuestions = useQuizStore(
     state => state.setTodaysQuizQuestions,
   );
-  const navigation = useNavigation() as any;
-
   // 더미 Quiz
   const dummyQuizQuestions = [
     {
