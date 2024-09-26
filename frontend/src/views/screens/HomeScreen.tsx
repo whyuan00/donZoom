@@ -3,117 +3,21 @@ import {colors} from '@/constants/colors';
 import {
   ScrollView,
   StyleSheet,
-  Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
 
-import Icon from 'react-native-vector-icons/Octicons';
-import SettingIcon from 'react-native-vector-icons/Ionicons';
-import NextIcon from 'react-native-vector-icons/MaterialIcons';
-import PayIcon from '@/assets/pay.svg';
-import DrawMachine from '@/assets/voidDrawMachine.svg';
-import Floor from '@/assets/longFloor.svg';
-import GifImage from 'react-native-gif';
-import Profile from '@/views/components/HomeProfile';
 import {useSignupStore} from '@/stores/useAuthStore';
+import ParentsMainScreen from './main/ParentsMainScreen';
+import ChildrenMainScreen from './main/ChildrenMainScreen';
 
 function HomeScreen() {
-  const navigation = useNavigation() as any;
   const role = useSignupStore(state => state.role);
 
   return (
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.contentsContainer}>
-          <View style={styles.profileContainer}>
-            <Profile name="사과" />
-          </View>
-          <View style={styles.mypageContainer}>
-            <TouchableOpacity
-              style={styles.mypageAlarm}
-              onPress={() => navigation.navigate('알림')}>
-              <Icon name="bell-fill" size={16} style={styles.icon} />
-              <Text style={styles.mypageText}>알림</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.mypageSetting}
-              onPress={() => navigation.navigate('설정')}>
-              <SettingIcon name="settings" size={16} style={styles.icon} />
-              <Text style={styles.mypageText}>설정</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.moneyContainer}>
-            <View>
-              <Text style={styles.moneyTitleText}>
-                이번달 남은 <Text style={{fontFamily: fonts.BOLD}}>용돈</Text>은
-              </Text>
-              <View style={styles.moneyContentsContainer}>
-                <View style={styles.moneyAccountContainer}>
-                  <Text style={styles.moneyText}>5,217원</Text>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate('계좌관리')}>
-                    <Text style={styles.moneyAccountText}>
-                      내 계좌 관리하기
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.iconContainer}>
-                  <NextIcon
-                    name="navigate-next"
-                    size={40}
-                    color={colors.BLACK}
-                  />
-                </View>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('QRCodeScanner')}>
-                  <View style={styles.payContainer}>
-                    <PayIcon width={50} height={50} />
-                    <Text style={styles.payText}>결제</Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-
-          <TouchableOpacity
-            style={styles.missionContainer}
-            onPress={() => {
-              console.log(role);
-              navigation.navigate(role === '아이' ? '아이미션' : '부모미션');
-            }}>
-            <Text style={styles.missionText}>
-              오늘의 <Text style={{fontFamily: fonts.BOLD}}>미션</Text> 수행하러
-              가기
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.quizContainer}
-            onPress={() => navigation.navigate('퀴즈')}>
-            <Text style={styles.quizText}>금융 상식 UP! 머니 GET!</Text>
-            <Text style={styles.quizText}>
-              오늘의 <Text style={{fontFamily: fonts.BOLD}}>퀴즈</Text>는?
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.drawContainer}>
-          <DrawMachine style={styles.machine} />
-          <Floor style={styles.floor} />
-          <TouchableOpacity
-            style={styles.goDraw}
-            onPress={() => navigation.navigate('돼지뽑기')}>
-            <GifImage
-              source={require('@/assets/coin.gif')}
-              style={styles.gifImage}
-              resizeMode="contain"
-            />
-            <Text style={styles.drawText}>머니로</Text>
-            <Text style={styles.drawText}>뽑기하러</Text>
-            <Text style={styles.drawText}>가기</Text>
-            <Text style={styles.drawText}>{'>>>'}</Text>
-          </TouchableOpacity>
+          {role === '부모' ? <ParentsMainScreen /> : <ChildrenMainScreen />}
         </View>
       </View>
     </ScrollView>
