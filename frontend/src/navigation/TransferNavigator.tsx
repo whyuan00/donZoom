@@ -10,7 +10,7 @@ const TransferNavigator = () => {
   return (
     <Stack.Navigator screenOptions={{headerTitleAlign: 'center'}}>
       <Stack.Screen
-        name="계좌관리홈"
+        name="거래내역 조회"
         component={AccountHistoryScreen}
         options={{headerShown: false}}
       />

@@ -145,7 +145,7 @@ function ParentsMainScreen() {
                   <View style={styles.accountText}>
                     <TouchableOpacity
                       onPress={() =>
-                        navigation.navigate('AccountChildHistory')
+                        navigation.navigate('거래내역 조회')
                       }>
                       <Text style={styles.moneyAccountText}>
                         우리 아이 소비 내역 조회
@@ -186,7 +186,7 @@ function ParentsMainScreen() {
             </TouchableOpacity>
           </View>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.childSituation}>
+            <TouchableOpacity style={styles.childSituation} onPress={()=>navigation.navigate('퀴즈')}>
               <Text style={styles.childSituationText}>
                 <Text style={{fontFamily: fonts.BOLD, fontSize: 24}}>
                   {profileOrder[0].name}

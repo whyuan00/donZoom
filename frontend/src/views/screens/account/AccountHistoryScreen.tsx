@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   },
   accountInfoContainer: {
     width: '100%',
-    height: 166,
+    height: 220,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.YELLOW_100,
