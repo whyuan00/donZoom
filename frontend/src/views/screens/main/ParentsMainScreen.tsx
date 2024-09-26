@@ -114,6 +114,7 @@ function ParentsMainScreen() {
                 </TouchableOpacity>
               );
             })}
+
           </View>
           <View style={styles.moneyContainer}>
             <View style={styles.mypageContainer}>
