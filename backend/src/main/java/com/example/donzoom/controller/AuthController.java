@@ -6,8 +6,9 @@ import com.example.donzoom.dto.user.response.UserDetailDto;
 import com.example.donzoom.entity.User;
 import com.example.donzoom.repository.UserRepository;
 import com.example.donzoom.service.AuthService;
-import com.example.donzoom.service.RedisService;
 import com.example.donzoom.util.JWTUtil;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
@@ -21,7 +22,9 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +32,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @RestController
@@ -39,9 +45,16 @@ public class AuthController {
   private final AuthService authService;
   private final UserRepository userRepository;
   private final JWTUtil jwtUtil;
+  private final RestTemplate restTemplate = new RestTemplate();
 
   @Value("${google.client.id}")
   private String googleClintId;
+
+  @Value("${spring.security.oauth2.client.provider.naver.user-info-uri}")
+  private String naverUserInfoUri;
+
+  @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}")
+  private String kakaoUserInfoUri;
 
   @PostMapping("/google")
   public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> payload) {
@@ -49,8 +62,8 @@ public class AuthController {
     log.info(payload.toString());
     String idTokenString = payload.get("idToken");
 
-    GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
-        .setAudience(Collections.singletonList(googleClintId)) // 웹 클라이언트 ID 사용
+    GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(),
+        new JacksonFactory()).setAudience(Collections.singletonList(googleClintId)) // 웹 클라이언트 ID 사용
         .build();
     log.info("google verifier 생성");
 
@@ -66,7 +79,7 @@ public class AuthController {
         String email = tokenPayload.getEmail();
         String name = (String) tokenPayload.get("name");
 
-        log.info("email"+email);
+        log.info("email" + email);
 
         // 데이터베이스에서 사용자 존재 여부 확인
         Optional<User> optionalUser = userRepository.findByEmail(email);
@@ -78,10 +91,7 @@ public class AuthController {
         } else {
           // 사용자 미존재 - 회원가입 처리
           log.info("회원가입 처리");
-          user = User.builder()
-              .email(email)
-              .name(name)
-              .build();
+          user = User.builder().email(email).name(name).build();
           userRepository.save(user);
         }
 
@@ -98,7 +108,84 @@ public class AuthController {
     } catch (Exception e) {
       log.info(e.getMessage());
       e.printStackTrace();
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Token verification failed");
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body("Token verification failed");
+    }
+  }
+
+  @PostMapping("/naver")
+  public ResponseEntity<?> naverLogin(@RequestBody Map<String, String> payload) {
+    String accessToken = payload.get("accessToken");
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setBearerAuth(accessToken);
+
+    HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+    ResponseEntity<String> responseEntity = restTemplate.exchange(naverUserInfoUri, HttpMethod.GET, requestEntity, String.class);
+
+    try {
+      ObjectMapper objectMapper = new ObjectMapper();
+      JsonNode responseNode = objectMapper.readTree(responseEntity.getBody()).path("response");
+
+      if (responseNode.isMissingNode()) {
+        return ResponseEntity.status(401).body("네이버 사용자 정보 조회 실패");
+      }
+
+      String email = responseNode.path("email").asText();
+      String name = responseNode.path("name").asText();
+
+      Optional<User> optionalUser = userRepository.findByEmail(email);
+      User user;
+      if (optionalUser.isPresent()) {
+        user = optionalUser.get();
+      } else {
+        user = User.builder().email(email).name(name).build();
+        userRepository.save(user);
+      }
+
+      String accessTokenJwt = jwtUtil.createAccessJwt(user.getEmail(), user.getRole());
+      String refreshTokenJwt = jwtUtil.createRefreshJwt(user.getEmail(), user.getRole());
+
+      return ResponseEntity.ok(Map.of("accessToken", accessTokenJwt, "refreshToken", refreshTokenJwt));
+    } catch (Exception e) {
+      log.error("네이버 로그인 실패", e);
+      return ResponseEntity.status(500).body("네이버 로그인 처리 중 오류 발생");
+    }
+  }
+
+  @PostMapping("/kakao")
+  public ResponseEntity<?> kakaoLogin(@RequestBody Map<String, String> payload) {
+    String accessToken = payload.get("accessToken");
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setBearerAuth(accessToken);
+
+    HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+    ResponseEntity<String> responseEntity = restTemplate.exchange(kakaoUserInfoUri, HttpMethod.GET, requestEntity, String.class);
+
+    try {
+      ObjectMapper objectMapper = new ObjectMapper();
+      JsonNode responseNode = objectMapper.readTree(responseEntity.getBody());
+
+      String email = responseNode.path("kakao_account").path("email").asText();
+      String name = responseNode.path("properties").path("nickname").asText();
+
+      Optional<User> optionalUser = userRepository.findByEmail(email);
+      User user;
+      if (optionalUser.isPresent()) {
+        user = optionalUser.get();
+      } else {
+        user = User.builder().email(email).name(name).build();
+        userRepository.save(user);
+      }
+
+      String accessTokenJwt = jwtUtil.createAccessJwt(user.getEmail(), user.getRole());
+      String refreshTokenJwt = jwtUtil.createRefreshJwt(user.getEmail(), user.getRole());
+
+      return ResponseEntity.ok(Map.of("accessToken", accessTokenJwt, "refreshToken", refreshTokenJwt));
+    } catch (Exception e) {
+      log.error("카카오 로그인 실패", e);
+      return ResponseEntity.status(500).body("카카오 로그인 처리 중 오류 발생");
     }
   }
 
@@ -118,8 +205,8 @@ public class AuthController {
   }
 
   @PostMapping("/refresh")
-  public ResponseEntity<?> refreshAccessToken(HttpServletRequest request, HttpServletResponse response, @RequestBody
-      TokenRequestDto tokenRequestDto) {
+  public ResponseEntity<?> refreshAccessToken(HttpServletRequest request,
+      HttpServletResponse response, @RequestBody TokenRequestDto tokenRequestDto) {
     // 클라이언트가 바디로 보내준 Refresh Token을 추출
     String refreshToken = tokenRequestDto.getRefreshToken();
 
@@ -131,7 +218,8 @@ public class AuthController {
     Map<String, String> tokens = authService.refreshAccessToken(refreshToken);
 
     if (tokens.get("refreshToken") == null) {
-      return new ResponseEntity<>("Invalid or expired refresh token. 재로그인 필요.", HttpStatus.UNAUTHORIZED);
+      return new ResponseEntity<>("Invalid or expired refresh token. 재로그인 필요.",
+          HttpStatus.UNAUTHORIZED);
     }
 
     // Access Token과 Refresh Token을 함께 응답
