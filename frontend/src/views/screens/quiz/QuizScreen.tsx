@@ -16,7 +16,7 @@ function QuizScreen() {
     setSelectedAnswer,
   } = useQuizStore();
   const currentQuestion = todaysQuizQuestions[currentQuestionIndex];
-  const navigation = useNavigation();
+  const navigation = useNavigation() as any;
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
@@ -31,7 +31,7 @@ function QuizScreen() {
     setModalVisible(true);
   };
 
-  const handleViewComment = (navigation: any) => {
+  const handleViewComment = () => {
     setModalVisible(false);
     setSelectedAnswer(null);
     navigation.navigate('해설');

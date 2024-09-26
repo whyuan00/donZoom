@@ -1,7 +1,6 @@
 import React from 'react';
 import {Image, Text, View, StyleSheet} from 'react-native';
 import {colors} from '../../constants/colors';
-import { fonts } from '@/constants/font';
 
 interface Props {
   name: string;
@@ -16,7 +15,7 @@ const HomeProfile = ({name}: Props) => {
           style={styles.image}
         />
         <Text style={styles.text}>
-          <Text style={styles.textName}>{name}</Text>님 어서오세요!
+          <Text style={styles.textName}>{name}</Text>님
         </Text>
       </View>
     </View>
@@ -27,30 +26,28 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
   },
-  profileContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
+  profileContainer: {},
   image: {
     width: 80,
     height: 80,
     borderWidth: 2,
-    borderColor: '#FFE37F',
+    borderColor: colors.BLUE_100,
     borderRadius: 50,
   },
   text: {
-    marginLeft: 20,
-    textAlign: 'center',
-    fontSize: 20,
+    fontSize: 12,
     color: colors.BLACK,
-    fontFamily: fonts.MEDIUM
+    fontWeight: '700',
+    width: 80,
+    justifyContent: 'center',
+    alignItems:'center',
+    textAlign: 'center',
   },
   textName: {
-    width: 80,
     textAlign: 'center',
-    fontSize: 32,
+    fontSize: 16,
     color: colors.BLUE_100,
-    fontFamily: fonts.BOLD,
+    fontWeight: '700',
   },
 });
 
