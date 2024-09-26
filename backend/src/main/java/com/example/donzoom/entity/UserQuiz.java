@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserQuiz {
+public class UserQuiz extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,9 +23,11 @@ public class UserQuiz {
   private Long id;
 
   @ManyToOne
+  @JoinColumn(name = "user_id")
   private User user;
 
   @ManyToOne
+  @JoinColumn(name = "quiz_id")
   private Quiz quiz;
 
   private Integer selectedAnswer;
