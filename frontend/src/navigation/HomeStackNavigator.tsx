@@ -19,6 +19,7 @@ import QRCodeScanner from '@/views/components/QRCodeScanner';
 import TransferNavigator from './TransferNavigator';
 import AccountInitScreen from '@/views/screens/account/AccountInitScreen';
 import MissionStackNavigator from './MissionStackNavigator';
+import MyInformationNavigator from './MyInformationNavigator';
 
 const HomeStackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -30,7 +31,11 @@ const HomeStackNavigator = () => {
         options={{headerShown: false}}
       />
       <Stack.Screen name="알림" component={AlarmScreen} />
-      <Stack.Screen name="설정" component={MyInformationScreen} />
+      <Stack.Screen
+        name="설정"
+        component={MyInformationNavigator}
+        options={{headerShown: false}}
+      />
       <Stack.Screen name="계좌관리" component={TransferNavigator} />
       <Stack.Screen name="계좌개설" component={AccountInitScreen} />
       <Stack.Screen

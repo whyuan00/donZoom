@@ -114,6 +114,7 @@ function ParentsMainScreen() {
                 </TouchableOpacity>
               );
             })}
+
           </View>
           <View style={styles.moneyContainer}>
             <View style={styles.mypageContainer}>
@@ -184,7 +185,7 @@ function ParentsMainScreen() {
             </TouchableOpacity>
           </View>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.childSituation}>
+            <TouchableOpacity style={styles.childSituation} onPress={()=>navigation.navigate('퀴즈')}>
               <Text style={styles.childSituationText}>
                 <Text style={{fontFamily: fonts.BOLD, fontSize: 24}}>
                   {profileOrder[0].name}
