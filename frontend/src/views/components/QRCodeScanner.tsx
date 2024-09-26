@@ -3,6 +3,7 @@ import {
   Alert,
   Dimensions,
   StyleSheet,
+  Text,
   TouchableOpacity,
   Vibration,
   View,
@@ -18,12 +19,13 @@ function QRCodeScanner() {
 
   useEffect(() => {
     setScaned(true);
-  });
+  }, []);
 
   const onBarCodeRead = (event: any) => {
+    console.log('Scanned event: ', event);
     if (!scaned) return;
     setScaned(false);
-    Vibration.vibrate();
+    Vibration.vibrate(100);
     Alert.alert('QR Code', event.nativeEvent.codeStringValue, [
       {text: 'OK', onPress: () => setScaned(true)},
     ]);

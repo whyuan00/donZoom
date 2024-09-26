@@ -28,7 +28,7 @@ function QuizHomeScreen() {
   const setTodaysQuizQuestions = useQuizStore(
     state => state.setTodaysQuizQuestions,
   );
-  const navigation = useNavigation();
+  const navigation = useNavigation() as any;
 
   // 더미 Quiz
   const dummyQuizQuestions = [
@@ -88,7 +88,7 @@ function QuizHomeScreen() {
     },
   ];
   // 더미 넘기기
-  const startTodayQuiz = (navigation: any) => {
+  const startTodayQuiz = () => {
     setTodaysQuizQuestions(dummyQuizQuestions);
     navigation.navigate('오늘의 퀴즈');
   };
