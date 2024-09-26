@@ -1,22 +1,38 @@
-import React, { useEffect, useState } from 'react';
-import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {
+  Keyboard,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import InputField from '@/views/components/InputField';
 import CustomButton from '@/views/components/CustomButton';
-import { colors } from '@/constants/colors';
-import Svg, { Line, Path } from 'react-native-svg';
-import { fonts } from '@/constants/font';
-import { validateLogin } from '@/utils';
+import {colors} from '@/constants/colors';
+import Svg, {Line, Path} from 'react-native-svg';
+import {fonts} from '@/constants/font';
+import {validateLogin} from '@/utils';
 import useForm from '@/hooks/useForm';
 import useAuth from '@/hooks/queries/useAuth';
-import { useErrorStore } from '@/stores/errorMessagesStore';
-import { useFocusEffect } from '@react-navigation/native';
-import { configureGoogleSignIn } from '@/config/LoginConfig';
-import { GoogleSignin, SignInResponse, statusCodes, User } from '@react-native-google-signin/google-signin';
+import {useErrorStore} from '@/stores/errorMessagesStore';
+import {useFocusEffect} from '@react-navigation/native';
+import {configureGoogleSignIn} from '@/config/LoginConfig';
+import {
+  GoogleSignin,
+  SignInResponse,
+  statusCodes,
+  User,
+} from '@react-native-google-signin/google-signin';
 import axiosInstance from '@/api/axios';
 
-function LoginScreen({ navigation }: any) {
-  const { loginMutation } = useAuth();
-  const { errorMessage, clearErrorMessage } = useErrorStore();
+function LoginScreen({navigation}: any) {
+  const passwordRef = useRef<TextInput | null>(null);
+  const {loginMutation} = useAuth();
+  const [selected, setSelected] = useState('');
+  const {errorMessage, clearErrorMessage} = useErrorStore();
   const login = useForm({
     initialValue: {
       email: '',
@@ -33,21 +49,22 @@ function LoginScreen({ navigation }: any) {
     }, [clearErrorMessage]),
   );
   const signInGoogle = async () => {
-    console.log("GOOGLE LOGIN BUTTON");
+    console.log('GOOGLE LOGIN BUTTON');
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo: SignInResponse = await GoogleSignin.signIn();
-  
+
       if (userInfo.type === 'success') {
         const idToken = userInfo.data.idToken;
-  
+
         if (idToken) {
           // idToken을 백엔드로 전송하여 인증 처리
-          const response = await axiosInstance.post('/auth/google', 
-            { idToken },  // 객체로 전달
-            { headers: { 'Content-Type': 'application/json' } }
+          const response = await axiosInstance.post(
+            '/auth/google',
+            {idToken}, // 객체로 전달
+            {headers: {'Content-Type': 'application/json'}},
           );
-  
+
           if (response.status === 200) {
             // 로그인 성공 처리
             const data = response.data;
@@ -87,16 +104,23 @@ function LoginScreen({ navigation }: any) {
     try {
       loginMutation.mutate(login.values);
       clearErrorMessage();
-    } catch { }
+    } catch {}
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <TouchableOpacity
+      activeOpacity={1}
+      style={styles.container}
+      onPress={Keyboard.dismiss}>
       <View style={styles.loginText}>
         <Text style={styles.text}>돈 줌(Zoom) 로그인</Text>
       </View>
       <View style={styles.inputContainer}>
-        <View style={styles.inputIdContainer}>
+        <View
+          style={[
+            styles.inputIdContainer,
+            selected === '아이디' && styles.selected,
+          ]}>
           <View style={[styles.inputSvg]}>
             <Svg width="19" height="16" viewBox="0 0 19 16" fill="none">
               <Path
@@ -108,9 +132,18 @@ function LoginScreen({ navigation }: any) {
           <InputField
             placeholder="아이디"
             {...login.getTextInputProps('email')}
+            style={styles.input}
+            keyboardType="email-address"
+            returnKeyType="next"
+            onSubmitEditing={() => passwordRef.current?.focus()}
+            onFocus={() => setSelected('아이디')}
           />
         </View>
-        <View style={styles.inputIdContainer}>
+        <View
+          style={[
+            styles.inputIdContainer,
+            selected === '비밀번호' && styles.selected,
+          ]}>
           <View style={[styles.inputSvg]}>
             <Svg width="15" height="17" viewBox="0 0 15 17" fill="none">
               <Path
@@ -120,9 +153,12 @@ function LoginScreen({ navigation }: any) {
             </Svg>
           </View>
           <InputField
+            ref={passwordRef}
             placeholder="비밀번호"
             secureTextEntry
             {...login.getTextInputProps('password')}
+            style={styles.input}
+            onFocus={() => setSelected('비밀번호')}
           />
         </View>
         {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
@@ -144,7 +180,7 @@ function LoginScreen({ navigation }: any) {
         <View style={styles.signupContainer}>
           <Text
             style={styles.signupText}
-            onPress={() => navigation.navigate('Signup')}>
+            onPress={() => navigation.navigate('회원가입')}>
             회원가입
           </Text>
           <Svg height="13" width="1" style={styles.verticalLine}>
@@ -170,12 +206,12 @@ function LoginScreen({ navigation }: any) {
         </Svg>
       </View>
       <View style={styles.snsButton}>
-        <CustomButton label="G" variant="sns" onPress={signInGoogle}/>
+        <CustomButton label="G" variant="sns" onPress={signInGoogle} />
         <CustomButton label="F" variant="sns" />
         <CustomButton label="K" variant="sns" />
         <CustomButton label="N" variant="sns" />
       </View>
-    </SafeAreaView>
+    </TouchableOpacity>
   );
 }
 
@@ -190,7 +226,7 @@ const styles = StyleSheet.create({
   },
   loginText: {
     fontFamily: fonts.LIGHT,
-    marginTop: 100,
+    marginTop: 140,
     justifyContent: 'center',
     gap: 20,
     marginBottom: 26,
@@ -201,6 +237,34 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 13,
     marginBottom: 33,
+  },
+  inputIdContainer: {
+    position: 'relative',
+    width: 250,
+    height: 40,
+    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.GRAY_75,
+    borderRadius: 5,
+  },
+  inputSvg: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    width: 15,
+    alignItems: 'center',
+  },
+  input: {
+    width: 180,
+    textAlign: 'center',
+    fontFamily: fonts.LIGHT,
+    fontSize: 14,
+    color: colors.BLACK,
+  },
+  selected: {
+    borderColor: colors.YELLOW_100,
   },
   text: {
     fontSize: 18,
@@ -236,13 +300,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     alignItems: 'center',
   },
-  inputSvg: {
-    position: 'absolute',
-    top: 10,
-    left: 10,
-    width: 15,
-    alignItems: 'center',
-  },
   svg: {
     width: 15,
     alignItems: 'center',
@@ -251,17 +308,6 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  inputIdContainer: {
-    position: 'relative',
-    width: 250,
-    height: 40,
-    justifyContent: 'center',
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.GRAY_75,
-    borderRadius: 5,
   },
   snsContainer: {
     marginTop: 74,

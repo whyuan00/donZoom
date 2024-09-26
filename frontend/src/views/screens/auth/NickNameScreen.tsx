@@ -8,13 +8,20 @@ import {validateInit, validateSignup} from '@/utils/validate';
 import CustomButton from '@/views/components/CustomButton';
 import InputField from '@/views/components/InputField';
 import React, {useEffect} from 'react';
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import {
+  Keyboard,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Svg, {Path} from 'react-native-svg';
 
 interface NickNameScreenProps {}
 
 function NickNameScreen({}: NickNameScreenProps) {
-  const {initAccountMutation, loginMutation} = useAuth();
+  const {signupMutation, loginMutation} = useAuth();
   const {values, errors, touched, getTextInputProps} = useSignupForm();
   const {role} = useSignupStore();
   const email = values.email;
@@ -31,12 +38,15 @@ function NickNameScreen({}: NickNameScreenProps) {
     validate: validateInit,
   });
   const handleSubmit = () => {
-    initAccountMutation.mutate(account.values, {
+    signupMutation.mutate(account.values, {
       onSuccess: () => loginMutation.mutate({email, password}),
     });
   };
   return (
-    <SafeAreaView style={styles.container}>
+    <TouchableOpacity
+      activeOpacity={1}
+      style={styles.container}
+      onPress={Keyboard.dismiss}>
       <View style={styles.textContainer}>
         <Text style={styles.text}>정보를 입력해주세요.</Text>
       </View>
@@ -66,7 +76,7 @@ function NickNameScreen({}: NickNameScreenProps) {
         />
       </View>
       <CustomButton label="시작하기" onPress={handleSubmit} />
-    </SafeAreaView>
+    </TouchableOpacity>
   );
 }
 

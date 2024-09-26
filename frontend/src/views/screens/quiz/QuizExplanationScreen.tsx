@@ -10,11 +10,10 @@ import {useNavigation} from '@react-navigation/native';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 
-function QuizExplanationScreen() {
+function QuizExplanationScreen({navigation}: any) {
   const {todaysQuizQuestions, currentQuestionIndex, setCurrentQuestionIndex} =
     useQuizStore();
   const currentQuestion = todaysQuizQuestions[currentQuestionIndex];
-  const navigation = useNavigation() as any;
 
   const handleNextQuestion = () => {
     if (currentQuestionIndex < todaysQuizQuestions.length - 1) {

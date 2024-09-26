@@ -19,13 +19,6 @@ function useSignup(mutationOptions?: UseMutationCustomOptions) {
   });
 }
 
-function useInitAccount(mutationOptions?: UseMutationCustomOptions) {
-  return useMutation({
-    mutationFn: postSignup,
-    ...mutationOptions,
-  });
-}
-
 function useLogin(mutationOptions?: UseMutationCustomOptions) {
   return useMutation({
     mutationFn: postLogin,
@@ -70,7 +63,6 @@ function useLogout(mutationOptions?: UseMutationCustomOptions) {
 
 function useAuth() {
   const signupMutation = useSignup();
-  const initAccountMutation = useInitAccount();
   const getProfileQuery = useGetProfile();
   const isLogin = getProfileQuery.isSuccess;
   const loginMutation = useLogin();
@@ -78,7 +70,6 @@ function useAuth() {
 
   return {
     signupMutation,
-    initAccountMutation,
     getProfileQuery,
     isLogin,
     loginMutation,

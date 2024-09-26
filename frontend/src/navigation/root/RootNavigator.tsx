@@ -19,7 +19,11 @@ const RootNavigator = () => {
           options={{headerShown: false}}
         />
       ) : (
-        <Stack.Screen name="Auth" component={AuthStackNavigator} />
+        <Stack.Screen
+          name="Auth"
+          component={AuthStackNavigator}
+          options={{headerShown: false}}
+        />
       )}
     </Stack.Navigator>
   );

@@ -1,9 +1,5 @@
 import {colors} from '@/constants/colors';
-import {
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {ScrollView, StyleSheet, View} from 'react-native';
 
 import {useState} from 'react';
 import ChildrenMainScreen from './main/ChildrenMainScreen';

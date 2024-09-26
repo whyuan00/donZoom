@@ -29,7 +29,9 @@ function SignupScreen({navigation}: any) {
   const {values, errors, touched, getTextInputProps} = useSignupForm();
 
   const handleNext = () => {
-    navigation.navigate('Check');
+    if (!errors.email && !errors.password && !errors.passwordConfirm) {
+      navigation.navigate('부모/아이 설정');
+    }
   };
 
   return (
@@ -123,6 +125,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 0,
     margin: 0,
+    flexGrow: 1,
   },
   imgContainer: {
     flexDirection: 'row',

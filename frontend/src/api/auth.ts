@@ -4,12 +4,12 @@ import {getEncryptedStorage} from '@/utils';
 import axios, {AxiosError} from 'axios';
 import {useErrorStore} from '@/stores/errorMessagesStore';
 
-type RequestUser = {
+type User = {
   email: string;
   password: string;
 };
 
-type InitUser = {
+type RequestSignup = {
   email: string;
   password: string;
   passwordConfirm: string;
@@ -18,6 +18,21 @@ type InitUser = {
   role: string;
 };
 
+type ResponseToken = {
+  accessToken: string;
+  refreshToken: string;
+};
+
+type Response = {
+  authorization: string;
+};
+
+type LoginError = {
+  message: string;
+};
+
+type ResponseProfile = Profile;
+
 const postSignup = async ({
   email,
   password,
@@ -25,7 +40,7 @@ const postSignup = async ({
   name,
   nickname,
   role,
-}: InitUser): Promise<void> => {
+}: RequestSignup): Promise<void> => {
   console.log('signup values', {
     email,
     password,
@@ -46,20 +61,7 @@ const postSignup = async ({
   return data;
 };
 
-type ResponseToken = {
-  accessToken: string;
-  refreshToken: string;
-};
-
-type Response = {
-  authorization: string;
-};
-
-interface LoginError {
-  message: string;
-}
-
-const postLogin = async ({email, password}: RequestUser): Promise<Response> => {
+const postLogin = async ({email, password}: User): Promise<Response> => {
   const setErrorMessage = useErrorStore.getState().setErrorMessage;
 
   try {
@@ -92,13 +94,11 @@ const postLogin = async ({email, password}: RequestUser): Promise<Response> => {
   }
 };
 
-type ResponseProfile = Profile;
-
 const getProfile = async (): Promise<ResponseProfile> => {
-  // console.log(
-  //   'axiosInstance.defaults.headers.common[Authorization]',
-  //   axiosInstance.defaults.headers.common['Authorization'],
-  // );
+  console.log(
+    'axiosInstance.defaults.headers.common[Authorization]',
+    axiosInstance.defaults.headers.common['Authorization'],
+  );
   const {data} = await axiosInstance.get('/auth/userInfo');
   console.log('data', data);
   return data;
@@ -120,4 +120,4 @@ const logout = async () => {
 };
 
 export {postSignup, postLogin, getProfile, getAccessToken, logout};
-export type {RequestUser, ResponseToken, ResponseProfile};
+export type {User as RequestUser, ResponseToken, ResponseProfile};
