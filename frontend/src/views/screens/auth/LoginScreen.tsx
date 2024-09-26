@@ -21,11 +21,8 @@ import { useErrorStore } from '@/stores/errorMessagesStore';
 import { useFocusEffect } from '@react-navigation/native';
 import { configureSocialLogins } from '@/config/LoginConfig';
 import { login as KakaoLogin } from '@react-native-seoul/kakao-login';
-import { configureSocialLogins } from '@/config/LoginConfig';
-import { login as KakaoLogin } from '@react-native-seoul/kakao-login';
 import { GoogleSignin, SignInResponse, statusCodes, User } from '@react-native-google-signin/google-signin';
 import axiosInstance from '@/api/axios';
-import NaverLogin from '@react-native-seoul/naver-login';
 import NaverLogin from '@react-native-seoul/naver-login';
 
 function LoginScreen({navigation}: any) {
@@ -137,45 +134,6 @@ function LoginScreen({navigation}: any) {
       console.error('Kakao login failed', error);
     }
   };
-
-  const signInNaver = async () => {
-    console.log("NaverButton");
-    try {
-      const result = await NaverLogin.login();
-      console.log("result");
-      if (result.isSuccess) {
-        const accessToken = result.successResponse?.accessToken;
-        console.log("AT: ",accessToken);
-        if (accessToken) {
-          // accessToken을 서버로 전송하여 인증 처리
-          const response = await axiosInstance.post('/auth/naver', { accessToken });
-          console.log('Login successful', response.data);
-        }
-      } else {
-        console.error('Naver login failed:', result.failureResponse);
-      }
-    } catch (error) {
-      console.error('Naver login failed', error);
-    }
-  };
-
-  const signInKakao = async () => {
-    try {
-      console.log("카카오 로그인 버튼")
-      const tokenResponse = await KakaoLogin();  // 카카오 로그인 실행
-      if (tokenResponse?.accessToken) {
-        const accessToken = tokenResponse.accessToken;
-        console.log('Kakao Access Token:', accessToken);
-
-        // accessToken을 서버로 전송하여 인증 처리
-        const response = await axiosInstance.post('/auth/kakao', { accessToken });
-        console.log('Kakao login successful', response.data);
-      }
-    } catch (error) {
-      console.error('Kakao login failed', error);
-    }
-  };
-
   const handleSubmit = () => {
     console.log(login);
     try {
