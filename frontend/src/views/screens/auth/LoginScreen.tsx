@@ -1,19 +1,22 @@
-import React, {useState} from 'react';
-import {Pressable, SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import InputField from '@/views/components/InputField';
 import CustomButton from '@/views/components/CustomButton';
-import {colors} from '@/constants/colors';
-import Svg, {Line, Path} from 'react-native-svg';
-import {fonts} from '@/constants/font';
-import {validateLogin} from '@/utils';
+import { colors } from '@/constants/colors';
+import Svg, { Line, Path } from 'react-native-svg';
+import { fonts } from '@/constants/font';
+import { validateLogin } from '@/utils';
 import useForm from '@/hooks/useForm';
 import useAuth from '@/hooks/queries/useAuth';
-import {useErrorStore} from '@/stores/errorMessagesStore';
-import {useFocusEffect} from '@react-navigation/native';
+import { useErrorStore } from '@/stores/errorMessagesStore';
+import { useFocusEffect } from '@react-navigation/native';
+import { configureGoogleSignIn } from '@/config/LoginConfig';
+import { GoogleSignin, SignInResponse, statusCodes, User } from '@react-native-google-signin/google-signin';
+import axiosInstance from '@/api/axios';
 
-function LoginScreen({navigation}: any) {
-  const {loginMutation} = useAuth();
-  const {errorMessage, clearErrorMessage} = useErrorStore();
+function LoginScreen({ navigation }: any) {
+  const { loginMutation } = useAuth();
+  const { errorMessage, clearErrorMessage } = useErrorStore();
   const login = useForm({
     initialValue: {
       email: '',
@@ -21,19 +24,70 @@ function LoginScreen({navigation}: any) {
     },
     validate: validateLogin,
   });
-
+  useEffect(() => {
+    configureGoogleSignIn();
+  }, []);
   useFocusEffect(
     React.useCallback(() => {
       clearErrorMessage();
     }, [clearErrorMessage]),
   );
-
+  const signInGoogle = async () => {
+    console.log("GOOGLE LOGIN BUTTON");
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo: SignInResponse = await GoogleSignin.signIn();
+  
+      if (userInfo.type === 'success') {
+        const idToken = userInfo.data.idToken;
+  
+        if (idToken) {
+          // idToken을 백엔드로 전송하여 인증 처리
+          const response = await axiosInstance.post('/auth/google', 
+            { idToken },  // 객체로 전달
+            { headers: { 'Content-Type': 'application/json' } }
+          );
+  
+          if (response.status === 200) {
+            // 로그인 성공 처리
+            const data = response.data;
+            console.log('Login successful', data);
+            // 필요한 경우 추가 작업 수행
+          } else {
+            // 로그인 실패 처리
+            console.log(response);
+            console.error('Login failed');
+          }
+        } else {
+          // idToken이 없는 경우 처리
+          console.error('No idToken found');
+        }
+      } else {
+        // 로그인 취소 또는 실패 처리
+        console.log('User cancelled the login');
+      }
+    } catch (error: any) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        // 로그인 취소 시 처리
+        console.log('User cancelled the login');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        // 로그인 진행 중일 때 처리
+        console.log('Sign in is in progress');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        // Play Services 불가 시 처리
+        console.log('Play services not available');
+      } else {
+        // 기타 에러 처리
+        console.error(error);
+      }
+    }
+  };
   const handleSubmit = () => {
     console.log(login);
     try {
       loginMutation.mutate(login.values);
       clearErrorMessage();
-    } catch {}
+    } catch { }
   };
 
   return (
@@ -116,7 +170,7 @@ function LoginScreen({navigation}: any) {
         </Svg>
       </View>
       <View style={styles.snsButton}>
-        <CustomButton label="G" variant="sns" />
+        <CustomButton label="G" variant="sns" onPress={signInGoogle}/>
         <CustomButton label="F" variant="sns" />
         <CustomButton label="K" variant="sns" />
         <CustomButton label="N" variant="sns" />

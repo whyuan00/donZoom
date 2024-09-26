@@ -1,4 +1,4 @@
-package com.frontend
+package com.ssafy.donzoom
 
 import com.facebook.react.ReactActivity
 import android.os.Bundle;
