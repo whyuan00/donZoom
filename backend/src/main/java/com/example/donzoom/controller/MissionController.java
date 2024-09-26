@@ -1,5 +1,6 @@
 package com.example.donzoom.controller;
 
+import com.example.donzoom.constant.MissionStatus;
 import com.example.donzoom.dto.mission.request.MissionCreateDto;
 import com.example.donzoom.dto.mission.request.MissionUpdateDto;
 import com.example.donzoom.dto.mission.response.MissionResponseDto;
@@ -27,9 +28,9 @@ public class MissionController {
   private final MissionService missionService;
 
   @GetMapping
-  public ResponseEntity<?> getAllMissions() {
+  public ResponseEntity<?> getAllMissions(@PathVariable Long userId, @PathVariable MissionStatus status) {
     // 내 미션 전체 조회
-    List<MissionResponseDto> userMissions = missionService.getUserMissions();
+    List<MissionResponseDto> userMissions = missionService.getUserMissions(userId, status);
     return new ResponseEntity<>(Map.of("missions", userMissions), HttpStatus.OK);
   }
 
