@@ -39,13 +39,12 @@ type ReauestDailyLimit = {
 
 const postinitAccount = async (): Promise<void> => {
   const response = await axiosInstance.post('/account');
-  console.log('asdf');
   console.log(response);
 };
 
-const getAccount = async (): Promise<Response> => {
+const getAccount = async (): Promise<ResponseBalance> => {
   const {data} = await axiosInstance.get('/account');
-  console.log(data);
+  // console.log(data);
   return data;
 };
 
@@ -75,6 +74,47 @@ const postTransfer = async ({
     withdrawalAccountNo,
     withdrawalTransactionSummary,
   });
+};
+
+type Account = {
+  accountNo: string;
+};
+
+type ResponseBalance = {
+  header: {
+    responseCode: string;
+    responseMessage: string;
+    apiName: string;
+    transmissionDate: string;
+    transmissionTime: string;
+    institutionCode: string;
+  };
+  rec: Array<{
+    bankCode: string;
+    bankName: string;
+    userName: string;
+    accountNo: string;
+    accountName: string;
+    accountTypeCode: string;
+    accountTypeName: string;
+    accountCreatedDate: string;
+    accountExpiryDate: string;
+    dailyTransferLimit: string;
+    oneTimeTransferLimit: string;
+    accountBalance: string;
+    lastTransactionDate: string;
+    currency: string;
+  }>;
+};
+
+const getBalance = async ({accountNo}: Account): Promise<ResponseBalance> => {
+  const {data} = await axiosInstance.get('/account', {
+    params: {
+      accountNo: accountNo,
+    },
+  });
+  // console.log(data);
+  return data;
 };
 
 const getAccountHistory = async (): Promise<ResponseAccountHistory> => {
@@ -148,6 +188,7 @@ export {
   getAccount,
   postCard,
   postTransfer,
+  getBalance,
   getAccountHistory,
   patchAccountLimit,
   putDailyLimit,

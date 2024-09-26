@@ -1,6 +1,7 @@
 import {
   getAccount,
   getAccountHistory,
+  getBalance,
   patchAccountAuto,
   patchAccountLimit,
   postAccountAuto,
@@ -20,11 +21,10 @@ function useInitAccount(mutationOptions?: UseMutationCustomOptions) {
   });
 }
 
-function useGetAccount(queryOptions?: UseQueryCustomOptions<any>) {
-  return useQuery({
-    queryKey: ['account'],
-    queryFn: getAccount,
-    ...queryOptions,
+function useGetAccount(mutationOptions?: UseMutationCustomOptions) {
+  return useMutation({
+    mutationFn: getAccount,
+    ...mutationOptions,
   });
 }
 
@@ -38,6 +38,13 @@ function usePostCard(mutationOptions?: UseMutationCustomOptions) {
 function usePostTransfer(mutationOptions?: UseMutationCustomOptions) {
   return useMutation({
     mutationFn: postTransfer,
+    ...mutationOptions,
+  });
+}
+
+function useGetBalance(mutationOptions?: UseMutationCustomOptions) {
+  return useMutation({
+    mutationFn: getBalance,
     ...mutationOptions,
   });
 }
@@ -90,6 +97,7 @@ function useAccount() {
   const getAccount = useGetAccount();
   const cardMutation = usePostCard();
   const transferMutation = usePostTransfer();
+  const getBalance = useGetBalance();
   const getAccountHistory = useGetAccountHistory();
   const accountLimitMutation = usePatchAccountLimit();
   const dailyLimitMutation = usePutDailyLimit();
@@ -101,6 +109,7 @@ function useAccount() {
     getAccount,
     cardMutation,
     transferMutation,
+    getBalance,
     getAccountHistory,
     accountLimitMutation,
     dailyLimitMutation,
