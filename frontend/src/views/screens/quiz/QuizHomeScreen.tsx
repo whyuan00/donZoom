@@ -86,7 +86,7 @@ function QuizHomeScreen({navigation}: any) {
     },
   ];
   // 더미 넘기기
-  const startTodayQuiz = () => {
+  const startTodayQuiz = (navigation: any) => {
     setTodaysQuizQuestions(dummyQuizQuestions);
     navigation.navigate('오늘의 퀴즈');
   };

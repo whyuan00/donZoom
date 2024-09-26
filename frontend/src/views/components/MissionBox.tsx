@@ -1,13 +1,17 @@
 import React, {useRef, useEffect} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Animated} from 'react-native';
 import {colors} from '../../constants/colors';
-
+//TODO: 필요할경우 미션박스 컴포넌트 React.memo로 리팩토링
 interface MissionProps {
   missionTitle: string;
   missionPay: number;
   missionDate: string;
   onPress: () => void;
   isSelected: boolean;
+  buttonOne: string;
+  buttonTwo: string;
+  onPressButtonOne: () => void;
+  onPressButtonTwo: () => void;
 }
 
 const MissionBox = ({
@@ -16,6 +20,10 @@ const MissionBox = ({
   missionDate,
   onPress,
   isSelected,
+  buttonOne,
+  buttonTwo,
+  onPressButtonOne,
+  onPressButtonTwo,
 }: MissionProps) => {
   const animatedWidth = useRef(new Animated.Value(1)).current;
   const animatedButtonWidth = useRef(new Animated.Value(0)).current;
@@ -48,10 +56,12 @@ const MissionBox = ({
               }),
             },
           ]}>
-            {/* 박스 크기 조정하*/}
-          <Text style={styles.largetext}>    {missionTitle} </Text>
-          <Text style={styles.largetext}>    {missionPay}원 </Text>
-          <Text style={styles.smalltext}>    {missionDate}까지 </Text>
+          {/* 박스 크기 조정하*/}
+          <Text style={styles.largetext}> {missionTitle} </Text>
+          <Text style={styles.largetext}>{missionPay.toLocaleString()}원</Text>
+          <Text style={styles.smalltext}>
+            {missionDate && missionDate.replaceAll('-', '.')}까지
+          </Text>
         </Animated.View>
       </TouchableOpacity>
 
@@ -61,16 +71,20 @@ const MissionBox = ({
           {
             width: animatedButtonWidth.interpolate({
               inputRange: [0, 1],
-              outputRange: [0, 100], //글자 길이도 이거보다 짧아야함 
+              outputRange: [0, 100], //글자 길이도 이거보다 짧아야함
             }),
             opacity: animatedButtonWidth,
           },
         ]}>
-        <TouchableOpacity style={styles.modifyButton} onPress={() => {}}>
-          <Text style={styles.buttonText}>수정</Text>
+        <TouchableOpacity
+          style={styles.modifyButton}
+          onPress={onPressButtonOne}>
+          <Text style={styles.buttonOneText}>{buttonOne}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.cancelButton} onPress={() => {}}>
-          <Text style={styles.buttonText}>삭제</Text>
+        <TouchableOpacity
+          style={styles.cancelButton}
+          onPress={onPressButtonTwo}>
+          <Text style={styles.buttonTwoText}>{buttonTwo}</Text>
         </TouchableOpacity>
       </Animated.View>
     </View>
@@ -91,26 +105,33 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 40,
     marginLeft: 20,
-    marginBottom:5,
-    borderColor:colors.BLACK,
+    marginBottom: 5,
+    borderColor: colors.BLACK,
     borderRadius: 10,
     backgroundColor: colors.BLUE_100,
+    borderWidth: 1,
   },
   cancelButton: {
     justifyContent: 'center',
     alignItems: 'center',
     height: 40,
     marginLeft: 20,
-    marginBottom:5,
-    borderColor:colors.BLACK,
+    marginBottom: 5,
+    borderColor: colors.BLACK,
     borderRadius: 10,
     backgroundColor: colors.WHITE,
+    borderWidth: 1,
   },
-  buttonText: {
+  buttonOneText: {
+    fontSize: 15,
+    color: colors.WHITE,
+  },
+  buttonTwoText: {
     fontSize: 15,
     color: colors.BLACK,
   },
-  boxContainer: { // 미션 박스 스타일 
+  boxContainer: {
+    // 미션 박스 스타일
     height: 130,
     padding: 20,
     borderColor: colors.BLACK,
@@ -132,6 +153,5 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
 });
-
 
 export default MissionBox;

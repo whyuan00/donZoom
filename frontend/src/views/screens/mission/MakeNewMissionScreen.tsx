@@ -35,62 +35,69 @@ const MakeNewMissionScreen = ({navigation}: any) => {
   };
   // 버튼 diabled: 글자안썼거나 날짜선택안하면 true
   const disabled = textCount === 0 || selectedDate === null;
-
+  const selectedDateString = (selectedDate || '').replaceAll('-', '.');
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.text}>어떤 미션을 요청할까요?</Text>
-      <View style={styles.missionBox}>
-        <View style={styles.input}>
-          <InputField
-            style={{color: colors.BLACK}}
-            placeholder="미션 내용을 입력하세요"
-            onChangeText={onChangeText}
-            value={text}
-          />
-          <Text>{textCount}/20</Text>
+    <SafeAreaView style={{flex:1, backgroundColor:colors.WHITE}}>
+      <View style={styles.container}>
+        <Text style={styles.text}>어떤 미션을 요청할까요?</Text>
+        <View style={styles.missionBox}>
+          <View style={styles.input}>
+            <InputField
+              autoFocus
+              inputMode="text"
+              style={{color: colors.BLACK}}
+              placeholder="미션 내용을 입력하세요"
+              onChangeText={onChangeText}
+              value={text}
+            />
+            <Text>{textCount}/20</Text>
+          </View>
+          <TouchableOpacity
+            onPress={toggleCalendar} // 캘린더 모달, 다른데 클릭하면 내려가
+            style={styles.dateSettingContainer}>
+            <Icon name="edit-calendar" size={25} />
+            <Text style={styles.dateSettingText}>
+              {selectedDate
+                ? `기한: ${selectedDateString} 까지`
+                : '기한 설정하기'}
+            </Text>
+          </TouchableOpacity>
         </View>
+        <Modal
+          transparent={true}
+          visible={showCalendar}
+          onRequestClose={toggleCalendar}>
+          <TouchableWithoutFeedback onPress={toggleCalendar}>
+            <View style={styles.modalOverlay}>
+              <TouchableWithoutFeedback>
+                <CustomCalendar
+                  selectedDate={selectedDate}
+                  onDateSelect={handleDateSelect}
+                />
+              </TouchableWithoutFeedback>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
+
         <TouchableOpacity
-          onPress={toggleCalendar} // 캘린더 모달, 다른데 클릭하면 내려가
-          style={styles.dateSettingContainer}>
-          <Icon name="edit-calendar" size={25} />
-          <Text style={styles.dateSettingText}>
-            {selectedDate ? `기한: ${selectedDate}` : '기한 설정하기'}
-          </Text>
+          style={disabled ? styles.inAcitve : styles.Active}
+          disabled={disabled}
+          onPress={() =>
+            navigation.navigate('MakeNewMissionPay', {
+              text: text,
+              selectedDate: selectedDate,
+            })
+          }>
+          <Text style={styles.buttonText}>다음</Text>
         </TouchableOpacity>
       </View>
-      {/* 달력모달 */}
-      <Modal
-        transparent={true}
-        visible={showCalendar}
-        onRequestClose={toggleCalendar}>
-        <TouchableWithoutFeedback onPress={toggleCalendar}>
-          <View style={styles.modalOverlay}>
-            <TouchableWithoutFeedback>
-              <CustomCalendar
-                // props 넘기기
-                selectedDate={selectedDate}
-                onDateSelect={handleDateSelect}
-              />
-            </TouchableWithoutFeedback>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
-
-      <TouchableOpacity
-        style={disabled ? styles.inAcitve : styles.Active}
-        disabled={disabled}
-        onPress={() => navigation.navigate('MakeNewMissionPay',
-          {text:text,selectedDate:selectedDate}
-        )}>
-        <Text style={styles.buttonText}>다음</Text>
-      </TouchableOpacity>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     marginTop: 20,
     alignItems: 'center',
   },

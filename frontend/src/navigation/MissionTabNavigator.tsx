@@ -11,7 +11,7 @@ const Tab = createMaterialTopTabNavigator();
 export default function MissionTabNavigator() {
   return (
       <Tab.Navigator
-        initialRouteName="MissionOngoingScreen" //시작하는 페이지
+        initialRouteName="진행중" 
         screenOptions={{
           tabBarActiveTintColor: colors.BLUE_100,
           tabBarInactiveTintColor: colors.BLACK,
