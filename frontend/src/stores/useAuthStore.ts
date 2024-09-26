@@ -17,7 +17,7 @@ export const useSignupStore = create<SignupState>((set, get) => ({
   email: '',
   password: '',
   passwordConfirm: '',
-  role: '',
+  role: '부모',
   setEmail: email => set({email}),
   setPassword: password => set({password}),
   setPasswordConfirm: passwordConfirm => set({passwordConfirm}),
