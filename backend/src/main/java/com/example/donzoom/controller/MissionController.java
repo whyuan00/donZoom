@@ -2,9 +2,11 @@ package com.example.donzoom.controller;
 
 import com.example.donzoom.dto.mission.request.MissionCreateDto;
 import com.example.donzoom.dto.mission.request.MissionUpdateDto;
+import com.example.donzoom.dto.mission.response.MissionResponseDto;
 import com.example.donzoom.entity.Mission;
 import com.example.donzoom.service.MissionService;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +29,8 @@ public class MissionController {
   @GetMapping
   public ResponseEntity<?> getAllMissions() {
     // 내 미션 전체 조회
-    List<Mission> missions = missionService.getUserMissions();
-    return new ResponseEntity<>(missions, HttpStatus.OK);
+    List<MissionResponseDto> userMissions = missionService.getUserMissions();
+    return new ResponseEntity<>(Map.of("missions", userMissions), HttpStatus.OK);
   }
 
   @PostMapping

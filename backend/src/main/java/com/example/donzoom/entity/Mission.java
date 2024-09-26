@@ -4,6 +4,7 @@ import com.example.donzoom.constant.MissionStatus;
 import com.example.donzoom.dto.mission.request.MissionUpdateDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,7 +26,7 @@ public class Mission {
   @Column(name = "mission_id")
   private Long id;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   private User user;
 
   private String contents;

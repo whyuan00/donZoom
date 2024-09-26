@@ -1,5 +1,6 @@
 package com.example.donzoom.dto.mission.request;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,8 +9,9 @@ import lombok.Getter;
 @Builder
 public class MissionCreateDto {
 
+  private final Long childId;
   private final String contents;
-  private final LocalDateTime dueDate;
+  private final LocalDate dueDate;
   private final Long reward;
 
 }
