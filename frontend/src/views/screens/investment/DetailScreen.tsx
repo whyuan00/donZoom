@@ -1,8 +1,16 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Modal, Button } from 'react-native';
-import RealAssetScreen from './RealAssetDetailScreen';
-import RiskAssetScreen from './RiskAssetDetailScreen';
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Modal,
+  Button,
+} from 'react-native';
+import RiskAssetScreen from './UnsafeAssetDetailScreen';
 import Icon from 'react-native-vector-icons/AntDesign';
+import UnsafeAssetDetailScreen from './UnsafeAssetDetailScreen';
 
 export default function DetailScreen() {
   const [selectedAsset, setSelectedAsset] = useState<string>('위험자산'); // 기본 자산 선택
@@ -19,13 +27,16 @@ export default function DetailScreen() {
     let description = '';
     switch (asset) {
       case '안전자산':
-        description = '안전자산이란 위험이 없는 금융 자산으로, 채무불이행 위험이 없어 "무위험자산"이라고도 합니다.';
+        description =
+          '안전자산이란 위험이 없는 금융 자산으로, 채무불이행 위험이 없어 "무위험자산"이라고도 합니다.';
         break;
       case '실물자산':
-        description = '실물자산은 금, 부동산 등 실물로 존재하는 자산을 의미하며, 경제 변동에 강한 자산으로 간주됩니다.';
+        description =
+          '실물자산은 금, 부동산 등 실물로 존재하는 자산을 의미하며, 경제 변동에 강한 자산으로 간주됩니다.';
         break;
       case '위험자산':
-        description = '위험자산은 주식이나 선물과 같이 수익률 변동성이 높은 자산을 의미합니다.';
+        description =
+          '위험자산은 주식이나 선물과 같이 수익률 변동성이 높은 자산을 의미합니다.';
         break;
       default:
         description = '설명할 자산이 선택되지 않았습니다.';
@@ -45,7 +56,7 @@ export default function DetailScreen() {
   const renderSelectedAssetScreen = () => {
     switch (selectedAsset) {
       case '실물자산':
-        return <RealAssetScreen />;
+        return <UnsafeAssetDetailScreen />;
       case '위험자산':
         return <RiskAssetScreen />;
       default:
@@ -58,28 +69,49 @@ export default function DetailScreen() {
       {/* 상단 자산 선택 버튼 */}
       <View style={styles.assetButtonContainer}>
         <TouchableOpacity
-          style={[styles.assetButton, selectedAsset === '안전자산' && styles.selectedButton]}
-          onPress={() => handleAssetChange('안전자산')}
-        >
-          <Text style={selectedAsset === '안전자산' ? styles.selectedText : styles.unselectedText}>
+          style={[
+            styles.assetButton,
+            selectedAsset === '안전자산' && styles.selectedButton,
+          ]}
+          onPress={() => handleAssetChange('안전자산')}>
+          <Text
+            style={
+              selectedAsset === '안전자산'
+                ? styles.selectedText
+                : styles.unselectedText
+            }>
             안전자산
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.assetButton, selectedAsset === '실물자산' && styles.selectedButton]}
-          onPress={() => handleAssetChange('실물자산')}
-        >
-          <Text style={selectedAsset === '실물자산' ? styles.selectedText : styles.unselectedText}>
+          style={[
+            styles.assetButton,
+            selectedAsset === '실물자산' && styles.selectedButton,
+          ]}
+          onPress={() => handleAssetChange('실물자산')}>
+          <Text
+            style={
+              selectedAsset === '실물자산'
+                ? styles.selectedText
+                : styles.unselectedText
+            }>
             실물자산
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.assetButton, selectedAsset === '위험자산' && styles.selectedButton]}
-          onPress={() => handleAssetChange('위험자산')}
-        >
-          <Text style={selectedAsset === '위험자산' ? styles.selectedText : styles.unselectedText}>
+          style={[
+            styles.assetButton,
+            selectedAsset === '위험자산' && styles.selectedButton,
+          ]}
+          onPress={() => handleAssetChange('위험자산')}>
+          <Text
+            style={
+              selectedAsset === '위험자산'
+                ? styles.selectedText
+                : styles.unselectedText
+            }>
             위험자산
           </Text>
         </TouchableOpacity>
@@ -93,7 +125,9 @@ export default function DetailScreen() {
       </View>
 
       {/* 선택된 자산에 따른 페이지 렌더링 */}
-      <View style={styles.assetDetailContainer}>{renderSelectedAssetScreen()}</View>
+      <View style={styles.assetDetailContainer}>
+        {renderSelectedAssetScreen()}
+      </View>
 
       {/* 설명 모달 */}
       <Modal visible={isModalVisible} transparent={true} animationType="fade">
@@ -168,7 +202,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
-  infoIcon:{
+  infoIcon: {
     paddingVertical: 10,
   },
 });

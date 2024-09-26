@@ -34,10 +34,6 @@ const HomeStackNavigator = () => {
       <Stack.Screen name="계좌관리" component={TransferNavigator} />
       <Stack.Screen name="계좌개설" component={AccountInitScreen} />
       <Stack.Screen
-        name="거래내역 조회"
-        component={AccountHistoryScreen}
-      />
-      <Stack.Screen
         name="QRCodeScanner"
         component={QRCodeScanner}
         options={{headerShown: false}}

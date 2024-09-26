@@ -52,7 +52,7 @@ function ChildrenMainScreen() {
                 <View style={styles.moneyAccountContainer}>
                   <Text style={styles.moneyText}>5,217원</Text>
                   <TouchableOpacity
-                    onPress={() => navigation.navigate('거래내역 조회')}>
+                    onPress={() => navigation.navigate('계좌관리')}>
                     <Text style={styles.moneyAccountText}>
                       내 계좌 관리하기
                     </Text>
