@@ -3,6 +3,8 @@ package com.example.donzoom.entity;
 import com.example.donzoom.constant.QuizType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -21,21 +23,25 @@ public class Quiz {
   @Column(name = "quiz_id")
   private Long id;
 
+  @Enumerated(EnumType.STRING)
   private QuizType quizType;
 
   private String question;
 
-  private Integer answer;
+  private String answer;
 
   private String option1;
   private String option2;
   private String option3;
   private String option4;
 
+  private String explanations;
+  private String answerExplanation;
+
 
   @Builder
-  public Quiz(QuizType quizType, String question, Integer answer, String option1, String option2,
-      String option3, String option4) {
+  public Quiz(QuizType quizType, String question, String answer, String option1, String option2,
+      String option3, String option4,  String explanations, String answerExplanation) {
     this.quizType = quizType;
     this.question = question;
     this.answer = answer;
@@ -43,6 +49,8 @@ public class Quiz {
     this.option2 = option2;
     this.option3 = option3;
     this.option4 = option4;
+    this.explanations = explanations;
+    this.answerExplanation = answerExplanation;
   }
 
 }
