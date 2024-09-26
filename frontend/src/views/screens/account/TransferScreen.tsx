@@ -1,5 +1,6 @@
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
+import useAccountBalance from '@/hooks/useAccountInfo';
 import KeyPad from '@/views/components/KeyPad';
 import KeypadModal from '@/views/components/KeyPadModal';
 import TransferRecipientModal from '@/views/components/TransferModal';
@@ -13,13 +14,7 @@ import {
   View,
 } from 'react-native';
 
-interface Bank {
-  id: string;
-  name: string;
-}
-
 interface Recipient {
-  bank: Bank;
   accountNumber: string;
 }
 
@@ -30,6 +25,7 @@ export default function TransferScreen({navigation}: any) {
     null,
   );
   const [amount, setAmount] = useState<string>('0');
+  const {account, balance, isLoading, error, refetch} = useAccountBalance();
 
   const handleOpenModal = () => {
     setModalVisible(true);
@@ -65,11 +61,11 @@ export default function TransferScreen({navigation}: any) {
       <View style={styles.myAccountInfoContainer}>
         <View style={styles.myAccountTextContainer}>
           <Text style={styles.myAccountTextHeader}>내 계좌</Text>
-          <Text style={styles.myAccountTextContext}>우리 1005-458-953312</Text>
+          <Text style={styles.myAccountTextContext}>{account}</Text>
         </View>
         <View style={styles.myAccountTextContainer}>
           <Text style={styles.withdrawableAmountTextHeader}>출금가능금액</Text>
-          <Text style={styles.withdrawableAmountTextContext}>1,000,000원</Text>
+          <Text style={styles.withdrawableAmountTextContext}>{balance}</Text>
         </View>
       </View>
       <Text style={styles.menuHeaderText}>입금대상</Text>
@@ -78,7 +74,7 @@ export default function TransferScreen({navigation}: any) {
         onPress={handleOpenModal}>
         <Text style={styles.recipientAccountInfoText}>
           {selectedRecipient
-            ? `${selectedRecipient.bank.name} ${selectedRecipient.accountNumber}`
+            ? `${selectedRecipient.accountNumber}`
             : '받을 대상을 선택해 주세요'}
         </Text>
       </Pressable>

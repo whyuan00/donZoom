@@ -1,4 +1,5 @@
 import {colors} from '@/constants/colors';
+import useAccountBalance from '@/hooks/useAccountInfo';
 import React, {useState} from 'react';
 import {Pressable, ScrollView} from 'react-native';
 import {StyleSheet, Text, View} from 'react-native';
@@ -6,6 +7,7 @@ import {StyleSheet, Text, View} from 'react-native';
 function AccountHistoryScreen({navigation}: any) {
   const isParent = true; // 임시 변수
   const [selected, setSelected] = useState('아이');
+  const {account, balance, isLoading, error, refetch} = useAccountBalance();
   const transactionData = [
     {
       date: '2024.9.2. 14시 23분 03초',
@@ -86,11 +88,11 @@ function AccountHistoryScreen({navigation}: any) {
             <View style={styles.parentInfoTop}>
               <Text>아이 계좌 번호</Text>
               <Text style={styles.parentInfoTopBankInfo}>싸피은행</Text>
-              <Text>110-449-965876</Text>
+              <Text>{account}</Text>
             </View>
             <View style={styles.parentInfoMiddle}>
               <Text style={styles.parentBalanceHeader}>남은 금액</Text>
-              <Text style={styles.parentBalanceText}>1,234,567 원</Text>
+              <Text style={styles.parentBalanceText}>{balance}원</Text>
             </View>
             <Pressable
               style={styles.parentInfoBottom}

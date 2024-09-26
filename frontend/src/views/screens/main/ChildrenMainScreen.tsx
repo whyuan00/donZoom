@@ -18,9 +18,13 @@ import DrawMachine from '@/assets/voidDrawMachine.svg';
 import Floor from '@/assets/longFloor.svg';
 import GifImage from 'react-native-gif';
 import Profile from '@/views/components/HomeProfile';
+import useAccount from '@/hooks/queries/useAccount';
+import {useState, useEffect} from 'react';
+import useAccountBalance from '@/hooks/useAccountInfo';
 
 function ChildrenMainScreen() {
   const navigation = useNavigation() as any;
+  const {account, balance, isLoading, error, refetch} = useAccountBalance();
 
   return (
     <ScrollView>
@@ -50,12 +54,16 @@ function ChildrenMainScreen() {
               </Text>
               <View style={styles.moneyContentsContainer}>
                 <View style={styles.moneyAccountContainer}>
-                  <Text style={styles.moneyText}>5,217원</Text>
+                  <Text style={styles.moneyText}>{`${balance}원`}</Text>
                   <TouchableOpacity
                     onPress={() => navigation.navigate('계좌관리')}>
                     <Text style={styles.moneyAccountText}>
                       내 계좌 관리하기
                     </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('계좌개설')}>
+                    <Text style={styles.moneyAccountText}>계좌 개설하기</Text>
                   </TouchableOpacity>
                 </View>
                 <View style={styles.iconContainer}>
