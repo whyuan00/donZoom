@@ -17,16 +17,13 @@ import {fonts} from '@/constants/font';
 import {validateLogin} from '@/utils';
 import useForm from '@/hooks/useForm';
 import useAuth from '@/hooks/queries/useAuth';
-import {useErrorStore} from '@/stores/errorMessagesStore';
-import {useFocusEffect} from '@react-navigation/native';
-import {configureGoogleSignIn} from '@/config/LoginConfig';
-import {
-  GoogleSignin,
-  SignInResponse,
-  statusCodes,
-  User,
-} from '@react-native-google-signin/google-signin';
+import { useErrorStore } from '@/stores/errorMessagesStore';
+import { useFocusEffect } from '@react-navigation/native';
+import { configureSocialLogins } from '@/config/LoginConfig';
+import { login as KakaoLogin } from '@react-native-seoul/kakao-login';
+import { GoogleSignin, SignInResponse, statusCodes, User } from '@react-native-google-signin/google-signin';
 import axiosInstance from '@/api/axios';
+import NaverLogin from '@react-native-seoul/naver-login';
 
 function LoginScreen({navigation}: any) {
   const passwordRef = useRef<TextInput | null>(null);
@@ -41,7 +38,8 @@ function LoginScreen({navigation}: any) {
     validate: validateLogin,
   });
   useEffect(() => {
-    configureGoogleSignIn();
+    configureSocialLogins();
+    configureSocialLogins();
   }, []);
   useFocusEffect(
     React.useCallback(() => {
@@ -56,7 +54,7 @@ function LoginScreen({navigation}: any) {
 
       if (userInfo.type === 'success') {
         const idToken = userInfo.data.idToken;
-
+        console.log(idToken);
         if (idToken) {
           // idToken을 백엔드로 전송하여 인증 처리
           const response = await axiosInstance.post(
@@ -97,6 +95,43 @@ function LoginScreen({navigation}: any) {
         // 기타 에러 처리
         console.error(error);
       }
+    }
+  };
+  const signInNaver = async () => {
+    console.log("NaverButton");
+    try {
+      const result = await NaverLogin.login();
+      console.log("result");
+      if (result.isSuccess) {
+        const accessToken = result.successResponse?.accessToken;
+        console.log("AT: ",accessToken);
+        if (accessToken) {
+          // accessToken을 서버로 전송하여 인증 처리
+          const response = await axiosInstance.post('/auth/naver', { accessToken });
+          console.log('Login successful', response.data);
+        }
+      } else {
+        console.error('Naver login failed:', result.failureResponse);
+      }
+    } catch (error) {
+      console.error('Naver login failed', error);
+    }
+  };
+
+  const signInKakao = async () => {
+    try {
+      console.log("카카오 로그인 버튼")
+      const tokenResponse = await KakaoLogin();  // 카카오 로그인 실행
+      if (tokenResponse?.accessToken) {
+        const accessToken = tokenResponse.accessToken;
+        console.log('Kakao Access Token:', accessToken);
+
+        // accessToken을 서버로 전송하여 인증 처리
+        const response = await axiosInstance.post('/auth/kakao', { accessToken });
+        console.log('Kakao login successful', response.data);
+      }
+    } catch (error) {
+      console.error('Kakao login failed', error);
     }
   };
   const handleSubmit = () => {
@@ -208,8 +243,8 @@ function LoginScreen({navigation}: any) {
       <View style={styles.snsButton}>
         <CustomButton label="G" variant="sns" onPress={signInGoogle} />
         <CustomButton label="F" variant="sns" />
-        <CustomButton label="K" variant="sns" />
-        <CustomButton label="N" variant="sns" />
+        <CustomButton label="K" variant="sns" onPress={signInKakao}/>
+        <CustomButton label="N" variant="sns" onPress={signInNaver} />
       </View>
     </TouchableOpacity>
   );
