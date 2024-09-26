@@ -3,11 +3,13 @@ package com.example.donzoom.service;
 import com.example.donzoom.constant.MissionStatus;
 import com.example.donzoom.dto.mission.request.MissionCreateDto;
 import com.example.donzoom.dto.mission.request.MissionUpdateDto;
+import com.example.donzoom.dto.mission.response.MissionResponseDto;
 import com.example.donzoom.entity.Mission;
 import com.example.donzoom.entity.User;
 import com.example.donzoom.repository.MissionRepository;
 import com.example.donzoom.repository.UserRepository;
 import com.example.donzoom.util.SecurityUtil;
+import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -22,16 +24,26 @@ public class MissionService {
   private final MissionRepository missionRepository;
   private final UserRepository userRepository;
 
-  public List<Mission> getUserMissions() {
+  public List<MissionResponseDto> getUserMissions() {
     // 현재 사용자의 미션 가져오기
 
     // 현재 인증된 사용자 정보 가져오기
     String username = SecurityUtil.getAuthenticatedUsername();
+
     // 사용자 정보 (예: PK) 가져오기
     User user = userRepository.findByEmail(username)
         .orElseThrow(() -> new RuntimeException("User not found"));
 
-    return missionRepository.findAllMissionByUserId(user.getId());
+    List<MissionResponseDto> list = missionRepository.findAllMissionByUserId(user.getId()).stream()
+        .map(mission -> MissionResponseDto.builder()
+            .missionId(mission.getId())
+            .contents(mission.getContents())
+            .reward(mission.getReward())
+            .status(mission.getStatus())
+            .dueDate(mission.getDueDate().toLocalDate())
+            .build()).toList();
+
+    return list;
   }
 
   public Mission getMissionById(Long missionId) {
@@ -50,8 +62,12 @@ public class MissionService {
     User user = userRepository.findByEmail(username)
         .orElseThrow(() -> new RuntimeException("User not found"));
 
-    Mission mission = Mission.builder().user(user).contents(missionCreateDto.getContents())
-        .reward(missionCreateDto.getReward()).dueDate(missionCreateDto.getDueDate())
+    User child = userRepository.findById(missionCreateDto.getChildId()).orElseThrow(() -> new RuntimeException("Child not found"));
+
+    Mission mission = Mission.builder().user(child).contents(missionCreateDto.getContents())
+        .reward(missionCreateDto.getReward()).dueDate(missionCreateDto.getDueDate().atTime(
+            LocalTime.MAX)
+        )
         .status(MissionStatus.CREATED).build();
     missionRepository.save(mission);
     return mission;
