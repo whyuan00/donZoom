@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import { useFocusEffect } from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 import {
   SafeAreaView,
   StyleSheet,
@@ -19,7 +19,7 @@ interface Mission {
   reward: number;
 }
 
-const MissionPastScreen = () => {
+const MissionPastChildScreen = () => {
   const [childId, setChildId] = useState<number>(0); //TODO: childId zustand에 저장한다음에 불러와야함
   const [isLoading, setIsLoading] = useState(true);
   const [selectedMissionBox, setSelectedMissionBox] = useState<number | null>(
@@ -29,20 +29,22 @@ const MissionPastScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-    const getData = async (childId:number) => {
-      try {
-        const response = await axiosInstance.get(`/mission?status=accepted&childId=${childId}`);
-        const {missions} = response.data;
-        setMissionPastData(missions);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    getData(childId);
-  },[]));
-
+      const getData = async (childId: number) => {
+        try {
+          const response = await axiosInstance.get(
+            `/mission?status=accepted&childId=${childId}`,
+          );
+          const {missions} = response.data;
+          setMissionPastData(missions);
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      getData(childId);
+    }, []),
+  );
 
   const handleMissionPress = useCallback((missionId: number) => {
     setSelectedMissionBox(missionId === selectedMissionBox ? null : missionId);
@@ -159,4 +161,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MissionPastScreen;
+export default MissionPastChildScreen;

@@ -2,7 +2,6 @@ import useAuth from '@/hooks/queries/useAuth';
 import AuthStackNavigator from '../AuthStackNavigator';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Footer from '../Footer';
-
 const Stack = createNativeStackNavigator();
 
 const RootNavigator = () => {

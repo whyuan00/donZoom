@@ -18,6 +18,7 @@ import MyInformationScreen from '@/views/screens/myPage/MyInformationScreen';
 import QRCodeScanner from '@/views/components/QRCodeScanner';
 import TransferNavigator from './TransferNavigator';
 import AccountInitScreen from '@/views/screens/account/AccountInitScreen';
+import MissionStackNavigator from './MissionStackNavigator';
 
 const HomeStackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -42,25 +43,14 @@ const HomeStackNavigator = () => {
         options={{headerShown: false}}
       />
       <Stack.Screen
-        name="MakeNewMission"
-        component={MakeNewMissionScreen}
-        options={{title: '미션 생성'}}
+        name="부모미션"
+        component={MissionStackNavigator}
+        options={{headerShown: false}}
       />
       <Stack.Screen
-        name="Mission"
-        component={MissionHomeScreen}
-        options={({navigation}) => ({
-          title: '미션',
-          headerRight: () => {
-            return (
-              <Text
-                onPress={() => navigation.navigate('MakeNewMission')}
-                style={{color: colors.BLUE_100}}>
-                추가
-              </Text>
-            );
-          },
-        })}
+        name="아이미션"
+        component={MissionStackNavigator}
+        options={{headerShown: false}}
       />
       <Stack.Screen name="퀴즈" component={QuizHomeScreen} />
       <Stack.Screen name="오늘의 퀴즈" component={QuizScreen} />

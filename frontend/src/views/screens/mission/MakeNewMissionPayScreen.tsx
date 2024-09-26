@@ -69,13 +69,13 @@ const MakeNewMissionPayScreen = ({navigation, route}: any) => {
           <Text style={{color: colors.BLACK, fontWeight:'500'}}>+ 만원</Text>
         </TouchableOpacity>
       </View>
-      <Text style={{marginTop: 10, marginBottom:30, fontSize: 13, color: colors.GRAY_100}}>
+      <Text style={{marginTop: 10, fontSize: 13, color: colors.GRAY_100}}>
         {alertText}
       </Text>
       <KeyPad onInput={updateValue} currentValue = {value}/>
 
       <TouchableOpacity style={styles.makeButton} onPress={()=>{navigation.navigate('MakeNewMissionComplete',
-          {text:text,selectedDate:selectedDate,pay:valueString})}}>
+          {text:text,selectedDate:selectedDate,pay:value})}}>
           <Text style={{marginVertical:10, fontSize:18,color:colors.BLACK,fontWeight:'500',textAlign:'center'}}>미션 생성하기</Text>
       </TouchableOpacity>
       <Text>
@@ -88,7 +88,7 @@ export default MakeNewMissionPayScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 70,
+    paddingTop: 30,
     backgroundColor: colors.YELLOW_25,
     alignItems: 'center',
   },
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   makeButton: {
     // marginTop: 18,
     position: 'absolute',
-    bottom: 35,
+    bottom: 80,
     width: 300,
     height: 50,
     backgroundColor: colors.WHITE,
