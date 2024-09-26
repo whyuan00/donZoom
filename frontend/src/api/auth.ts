@@ -1,8 +1,8 @@
-import {Profile} from '@/types/domain';
+import { Profile } from '@/types/domain';
 import axiosInstance from './axios';
-import {getEncryptedStorage} from '@/utils';
-import axios, {AxiosError} from 'axios';
-import {useErrorStore} from '@/stores/errorMessagesStore';
+import { getEncryptedStorage } from '@/utils';
+import axios, { AxiosError } from 'axios';
+import { useErrorStore } from '@/stores/errorMessagesStore';
 
 type User = {
   email: string;
@@ -49,7 +49,7 @@ const postSignup = async ({
     nickname,
     role,
   });
-  const {data} = await axiosInstance.post('/user', {
+  const { data } = await axiosInstance.post('/user', {
     email,
     password,
     passwordConfirm,
@@ -61,6 +61,20 @@ const postSignup = async ({
   return data;
 };
 
+type ResponseToken = {
+  accessToken: string;
+  refreshToken: string;
+};
+
+type Response = {
+  authorization: string;
+};
+
+interface LoginError {
+  message: string;
+}
+
+const postLogin = async ({ email, password }: RequestUser): Promise<Response> => {
 const postLogin = async ({email, password}: User): Promise<Response> => {
   const setErrorMessage = useErrorStore.getState().setErrorMessage;
 
@@ -106,7 +120,7 @@ const getProfile = async (): Promise<ResponseProfile> => {
 
 const getAccessToken = async (): Promise<ResponseToken> => {
   const refreshToken = await getEncryptedStorage('refreshToken');
-  const {data} = await axiosInstance.get('/auth/refresh', {
+  const { data } = await axiosInstance.get('/auth/refresh', {
     headers: {
       Authorization: `Bearer ${refreshToken}`,
     },

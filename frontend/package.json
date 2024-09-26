@@ -13,6 +13,7 @@
     "@react-native-google-signin/google-signin": "^13.1.0",
     "@react-native-picker/picker": "^2.8.1",
     "@react-native-seoul/kakao-login": "^5.4.1",
+    "@react-native-seoul/naver-login": "^4.0.1",
     "@react-native/gradle-plugin": "^0.75.3",
     "@react-navigation/bottom-tabs": "^6.6.1",
     "@react-navigation/drawer": "^6.7.2",
