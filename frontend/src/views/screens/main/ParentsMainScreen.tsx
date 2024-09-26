@@ -144,9 +144,7 @@ function ParentsMainScreen() {
                   </View>
                   <View style={styles.accountText}>
                     <TouchableOpacity
-                      onPress={() =>
-                        navigation.navigate('AccountChildHistory')
-                      }>
+                      onPress={() => navigation.navigate('계좌관리')}>
                       <Text style={styles.moneyAccountText}>
                         우리 아이 소비 내역 조회
                       </Text>

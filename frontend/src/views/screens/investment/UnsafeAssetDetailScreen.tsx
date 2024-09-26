@@ -1,8 +1,16 @@
-import { colors } from '@/constants/colors';
-import { fonts } from '@/constants/font';
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import {colors} from '@/constants/colors';
+import {fonts} from '@/constants/font';
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  SafeAreaView,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
+import DetailScreen from './DetailScreen';
 
 export default function UnsafeAssetDetailScreen() {
   const [selectedPeriod, setSelectedPeriod] = useState<string>('1일'); // 기본 기간 선택
@@ -49,10 +57,17 @@ export default function UnsafeAssetDetailScreen() {
 
         {/* 우측 상단 종목 선택 버튼 */}
         <View style={styles.dropdownWrapper}>
-          <TouchableOpacity style={styles.dropdownButton} onPress={toggleDropdown}>
+          <TouchableOpacity
+            style={styles.dropdownButton}
+            onPress={toggleDropdown}>
             <View style={styles.dropdownButtonContainer}>
               <Text style={styles.dropdownButtonText}>{selectedStock}</Text>
-              <Icon name={isDropdownVisible ? "up" : "down"} size={15} color="#6B7280" style={styles.dropdownIcon} />
+              <Icon
+                name={isDropdownVisible ? 'up' : 'down'}
+                size={15}
+                color="#6B7280"
+                style={styles.dropdownIcon}
+              />
             </View>
           </TouchableOpacity>
 
@@ -61,24 +76,34 @@ export default function UnsafeAssetDetailScreen() {
             <View style={styles.dropdownContainer}>
               <Text style={styles.dropdownSectionTitle}>국내주식</Text>
               <View style={styles.leftBorder}></View>
-              {domesticStocks.map((option) => (
+              {domesticStocks.map(option => (
                 <TouchableOpacity
                   key={option}
                   style={styles.dropdownOption}
-                  onPress={() => handleStockChange(option)}
-                >
-                  <Text style={[styles.dropdownText, selectedStock === option && styles.selectedText]}>{option}</Text>
+                  onPress={() => handleStockChange(option)}>
+                  <Text
+                    style={[
+                      styles.dropdownText,
+                      selectedStock === option && styles.selectedText,
+                    ]}>
+                    {option}
+                  </Text>
                 </TouchableOpacity>
               ))}
               <Text style={styles.dropdownSectionTitle}>해외주식</Text>
               <View style={styles.leftBorder}></View>
-              {foreignStocks.map((option) => (
+              {foreignStocks.map(option => (
                 <TouchableOpacity
                   key={option}
                   style={styles.dropdownOption}
-                  onPress={() => handleStockChange(option)}
-                >
-                  <Text style={[styles.dropdownText, selectedStock === option && styles.selectedText]}>{option}</Text>
+                  onPress={() => handleStockChange(option)}>
+                  <Text
+                    style={[
+                      styles.dropdownText,
+                      selectedStock === option && styles.selectedText,
+                    ]}>
+                    {option}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -88,20 +113,20 @@ export default function UnsafeAssetDetailScreen() {
 
       {/* 기간 선택 */}
       <View style={styles.periodButtonContainer}>
-        {['1일', '1주', '3달', '1년', '5년', '전체'].map((period) => (
+        {['1일', '1주', '3달', '1년', '5년', '전체'].map(period => (
           <TouchableOpacity
             key={period}
             style={[
               styles.periodButton,
               selectedPeriod === period && styles.selectedPeriodButton,
             ]}
-            onPress={() => handlePeriodChange(period)}
-          >
+            onPress={() => handlePeriodChange(period)}>
             <Text
               style={
-                selectedPeriod === period ? styles.selectedPeriodText : styles.unselectedPeriodText
-              }
-            >
+                selectedPeriod === period
+                  ? styles.selectedPeriodText
+                  : styles.unselectedPeriodText
+              }>
               {period}
             </Text>
           </TouchableOpacity>
@@ -109,9 +134,7 @@ export default function UnsafeAssetDetailScreen() {
       </View>
 
       {/* 선택된 종목과 기간에 따른 데이터 렌더링 */}
-      <View style={styles.stockDataContainer}>
-        {renderStockData()}
-      </View>
+      <View style={styles.stockDataContainer}>{renderStockData()}</View>
 
       {/* 추가 UI 예시 */}
       <View style={styles.actionButtonContainer}>
@@ -141,8 +164,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  dropdownWrapper: {
-  },
+  dropdownWrapper: {},
   dropdownButton: {
     paddingBottom: 5,
   },
@@ -159,8 +181,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 10,
     paddingLeft: 0,
-    width:91,
-    height:193,
+    width: 91,
+    height: 193,
     zIndex: 9999, // 드롭다운이 다른 모든 요소들보다 위에 나타나도록 zIndex를 크게 설정
   },
   dropdownOption: {},
@@ -246,6 +268,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#6B7280',
     width: '75%', // 상단 경계선의 길이를 75%로 설정
-    alignSelf: 'left', // 왼쪽 정렬
+    // alignSelf: 'left', // 왼쪽 정렬
   },
 });
