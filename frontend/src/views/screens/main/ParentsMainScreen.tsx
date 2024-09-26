@@ -180,7 +180,7 @@ function ParentsMainScreen() {
             </View>
             <TouchableOpacity
               style={styles.nextButton}
-              onPress={() => navigation.navigate('Mission')}>
+              onPress={() => navigation.navigate('부모미션')}>
               <Text style={styles.detailMission}>자세히 보기</Text>
               <NextIcon name="navigate-next" size={20} color={colors.BLACK} />
             </TouchableOpacity>
@@ -216,7 +216,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.WHITE,
     alignItems: 'center',
-    paddingBottom: 80,
   },
   contentsContainer: {
     padding: 20,

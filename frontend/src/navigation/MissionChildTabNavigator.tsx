@@ -1,8 +1,8 @@
 import React from 'react';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import MissionPastChildScreen from '../views/screens/mission/Child/MissionPastChildScreen';
-import MissionOngoingChildScreen from '../views/screens/mission/Child/MissionOngoingChildScreen';
-import MissionCompleteChildScreen from '../views/screens/mission/Child/MissionCompleteChildScreen';
+import MissionPastChildScreen from '../views/screens/mission/child/MissionPastChildScreen';
+import MissionOngoingChildScreen from '../views/screens/mission/child/MissionOngoingChildScreen';
+import MissionCompleteChildScreen from '../views/screens/mission/child/MissionCompleteChildScreen';
 
 import {colors} from '../constants/colors';
 

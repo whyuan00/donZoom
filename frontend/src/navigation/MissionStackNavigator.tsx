@@ -9,7 +9,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 import {StyleSheet, Text} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import MissionHomeChildScreen from '@/views/screens/mission/Child/MissionHomeChildScreen';
+import MissionHomeChildScreen from '@/views/screens/mission/child/MissionHomeChildScreen';
 import { fonts } from '@/constants/font';
 const Stack = createNativeStackNavigator();
 
