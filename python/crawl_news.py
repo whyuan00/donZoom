@@ -7,17 +7,20 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime
 from dateutil import parser  # 문자열 날짜 파싱을 위한 라이브러리
+from gpt_summarize import summarize_text
 
 # ChromeDriver 설정
 chrome_options = Options()
-chrome_options.add_argument("--headless")  # 헤드리스 모드 활성화
+chrome_options.add_argument("--headless=old")  # 헤드리스 모드 활성화
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 
 # 종목과 stockId 매핑 (key-value 형태)
 stock_mapping = {
     1: "005930",  # 삼성전자
-    2: "001210"   # 금호전기
+    2: "066570",   # 금호전기
+    3: "035420",   # 네이버
+    4: "035720"   # 카카오
 }
 
 # 뉴스 기사 크롤링 함수 (특정 stockId를 받아 해당 뉴스만 크롤링)
@@ -122,7 +125,7 @@ def crawl_news(stockId):
                 content = content_section.text.strip()  # 본문 텍스트 추출
 
                 # GPT API로 요약하기 (필요시 사용)
-                #content = summarize_text(content)
+                content = summarize_text(content)
 
                 # 새로운 딕셔너리에 제목, 날짜, 본문만 추가 (링크와 소스는 제외)
                 final_data = {

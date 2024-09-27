@@ -5,6 +5,7 @@ import com.example.donzoom.dto.account.request.CreateMemberDto;
 import com.example.donzoom.dto.account.request.TransactionRequestDto;
 import com.example.donzoom.dto.account.request.TransferRequestDto;
 import com.example.donzoom.dto.account.response.AccountCreateResponseDto;
+import com.example.donzoom.dto.account.response.AccountHolderResponseDto;
 import com.example.donzoom.dto.account.response.AccountResponseDto;
 import com.example.donzoom.dto.account.response.BalanceResponseDto;
 import com.example.donzoom.dto.account.response.BankUserResponseDto;
@@ -52,6 +53,8 @@ public class BankApi {
   private String getCardListUrl;
   @Value("${fin.update-demand-deposit-account-withdrawal-url}")
   private String withdrawalUrl;
+  @Value("${fin.inquire-demand-deposit-account-holder-url}")
+  private String getUserNameUrl;
 
   public BankApi() {
     this.webClient = WebClient.builder()
@@ -105,6 +108,21 @@ public class BankApi {
     return webClient.post().uri(userInfoUrl).bodyValue(member).retrieve()
         .bodyToMono(BankUserResponseDto.class).block();
   }
+
+//  //계좌번호로 계좌정보와 예금주 조회
+//  public AccountHolderResponseDto getUserAccountData(GetUserDataRequestDto dto, String userKey) {
+//    // 요청 본문 구성
+//    log.info(dto.getAccountNo());
+//    Map<String, Object> requestBody = Map.of("Header",
+//        Map.of("apiName", "inquireDemandDepositAccountHolderName", "transmissionDate", getDate(),
+//            "transmissionTime", getTime(), "institutionCode", "00100", "fintechAppNo", "001",
+//            "apiServiceCode", "inquireDemandDepositAccountHolderName", "institutionTransactionUniqueNo",
+//            generateUniqueNumber(), "apiKey", apiKey, "userKey", userKey)
+//        , "accountNo", dto.getAccountNo()
+//    );
+//    return webClient.post().uri(getUserNameUrl).bodyValue(requestBody).retrieve()
+//        .bodyToMono(AccountHolderResponseDto.class).block();
+//  }
 
   //계좌 생성
   public AccountCreateResponseDto createDemandDepositAccount(String accountTypeUniqueNo,

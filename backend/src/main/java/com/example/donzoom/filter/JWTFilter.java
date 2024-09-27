@@ -41,7 +41,13 @@ public class JWTFilter extends OncePerRequestFilter {
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
     String path = request.getServletPath();
-    if (path.matches("^/stock/\\d+$")) {
+    if (path.matches("^/api/stock/\\d+$")) {
+      return true;  // 이 경로는 JWT 검사를 제외
+    }
+    if (path.matches("^/api/news/\\d+$")) {
+      return true;  // 이 경로는 JWT 검사를 제외
+    }
+    if (path.matches("^/api/report/\\d+$")) {
       return true;  // 이 경로는 JWT 검사를 제외
     }
     if (path.matches("^/fcm/")) {

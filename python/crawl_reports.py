@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 import os
 import requests
 import json
+from gpt_summarize import summarize_text
 
 # 환경 변수 로드
 load_dotenv()
@@ -56,15 +57,18 @@ def summarize_text(text):
 # Selenium 크롤링 함수 정의
 def crawl_reports(stockId):
     # 종목과 stockId 매핑
-    stock_mapping_report = {
-        1: "005930 삼성전자"
+    stock_mapping_report= {
+        1: "005930 삼성전자",
+        2: "066570 LG전자",   # 금호전기
+        3: "035420 NAVER",   # 네이버
+        4: "035720 카카오"   # 카카오
     }
 
     # ChromeDriver 설정
     options = Options()
+    options.add_argument("--headless=old")   # 백그라운드 모드
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
-    options.add_argument('--headless')  # 백그라운드 모드
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     # 네이버 금융 리서치 페이지로 이동
