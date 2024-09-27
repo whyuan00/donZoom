@@ -14,6 +14,7 @@ import com.example.donzoom.dto.account.response.BankUserResponseDto;
 import com.example.donzoom.dto.account.response.CardListRecDto;
 import com.example.donzoom.dto.account.response.CardListResponseDto;
 import com.example.donzoom.dto.account.response.CreateCardResponseDto;
+import com.example.donzoom.dto.account.response.GetUserByAccountNoResponseDto;
 import com.example.donzoom.dto.account.response.TransactionResponseDto;
 import com.example.donzoom.dto.account.response.TransferResponseDto;
 import com.example.donzoom.entity.AutoTransfer;
@@ -35,13 +36,15 @@ public class AccountService {
   private final BankApi bankApi;
   private final UserRepository userRepository;
   private final AutoTransferRepository autoTransferRepository;
+  private final UserService userService;
 
   @Autowired
   public AccountService(BankApi bankApi, UserRepository userRepository,
-      AutoTransferRepository autoTransferRepository) {
+      AutoTransferRepository autoTransferRepository, UserService userService) {
     this.bankApi = bankApi;
     this.userRepository = userRepository;
     this.autoTransferRepository = autoTransferRepository;
+    this.userService = userService;
   }
 
   //뱅크사용자 가입
@@ -64,7 +67,6 @@ public class AccountService {
   public BankUserResponseDto getMember() {
     //유저정보 가져오기
     User user = getUser();
-    ;
 
     return bankApi.getMember(user.getEmail());
   }
@@ -82,7 +84,14 @@ public class AccountService {
       createMember();
     }
 
-    return bankApi.createDemandDepositAccount(accountTypeUniqueNo, user.getUserKey());
+    AccountCreateResponseDto accountCreateResponseDto =  bankApi.createDemandDepositAccount(accountTypeUniqueNo, user.getUserKey());
+
+    //user에 계좌번호 저장
+    user.updateAccountNo(accountCreateResponseDto.getREC().getAccountNo());
+    // 변경된 계좌정보를 저장
+    userRepository.save(user);
+
+    return accountCreateResponseDto;
   }
 
   //계좌정보조회
@@ -132,6 +141,18 @@ public class AccountService {
     //유저정보 가져오기
     User user = getUser();
     return bankApi.createCard(createCardRequestDto, user.getUserKey());
+  }
+
+  //계좌번호로 유저정보 가져오기
+  public GetUserByAccountNoResponseDto getUserByAccountNumber(String accountNo) {
+    //유저정보 가져오기
+    User selectedUser = userService.findUserByAccountNo(accountNo);
+
+    return GetUserByAccountNoResponseDto.builder()
+        .name(selectedUser.getName())
+        .nickName(selectedUser.getNickname())
+        .accountNo(selectedUser.getAccountNo())
+        .build();
   }
 
   public void setAutoTransfer(AutoTransferRequestDto autoTransferRequestDto) {
@@ -250,4 +271,6 @@ public class AccountService {
         .orElseThrow(() -> new RuntimeException("User not found"));
     return user;
   }
+
+
 }
