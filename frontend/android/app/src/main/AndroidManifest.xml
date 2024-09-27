@@ -8,6 +8,9 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+    <!-- Android 13(API 33) 이상에서 알림을 보내기 위해 권한 필요 -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    
 
     <application
         android:name=".MainApplication"
