@@ -4,30 +4,22 @@ import PasswordPad from '@/views/components/PasswordPad';
 import {useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
-function InputPassWordScreen({navigation}: any) {
-  const [password, setPassword] = useState<string>('');
-  const [error, setError] = useState<string>('');
-
-  // 초기 비밀번호 더미
-  const correctPassword = '000000';
+function NewPassWordScreen({navigation}: any) {
+  const [newPassword, setNewPassword] = useState<string>(''); // 새 비밀번호
 
   const updateValue = (newValue: string) => {
     if (newValue.length <= 6) {
-      setPassword(newValue);
+      setNewPassword(newValue); // 새 비밀번호를 설정
     }
     if (newValue.length === 6) {
-      if (newValue === correctPassword) {
-        setError('');
-        navigation.navigate('NewPassWordScreen');
-      } else {
-        setError('비밀번호가 일치하지 않습니다.');
-        setPassword('');
-      }
+      // newValue를 바로 넘겨줌 (setState 비동기 동작을 고려)
+      navigation.navigate('ConfirmPassWordScreen', {newPassword: newValue}); 
     }
   };
+
   const renderPasswordCircles = () => {
     const circles = [];
-    const passwordLength = password.length;
+    const passwordLength = newPassword.length;
 
     for (let i = 0; i < 6; i++) {
       circles.push(
@@ -43,12 +35,11 @@ function InputPassWordScreen({navigation}: any) {
   return (
     <View style={styles.container}>
       <View style={styles.textContainer}>
-        <Text style={styles.inputText}>비밀번호를 입력해주세요</Text>
+        <Text style={styles.inputText}>새 비밀번호를 입력해주세요</Text>
         <View style={styles.passwordContainer}>{renderPasswordCircles()}</View>
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
       </View>
       <View style={styles.padContainer}>
-        <PasswordPad onInput={updateValue} currentValue={password} />
+        <PasswordPad onInput={updateValue} currentValue={newPassword} />
       </View>
     </View>
   );
@@ -86,12 +77,6 @@ const styles = StyleSheet.create({
   filledCircle: {
     backgroundColor: colors.BLACK,
   },
-  errorText: {
-    color: colors.RED_100,
-    fontSize: 14,
-    fontFamily: fonts.MEDIUM,
-    marginTop: 10,
-  },
   padContainer: {
     backgroundColor: colors.YELLOW_25,
     justifyContent: 'center',
@@ -99,4 +84,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default InputPassWordScreen;
+export default NewPassWordScreen;

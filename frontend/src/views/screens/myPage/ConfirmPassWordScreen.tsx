@@ -2,29 +2,41 @@ import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 import PasswordPad from '@/views/components/PasswordPad';
 import {useState} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {Alert, StyleSheet, Text, View} from 'react-native';
+import {useRoute, RouteProp} from '@react-navigation/native';
 
-function InputPassWordScreen({navigation}: any) {
-  const [password, setPassword] = useState<string>('');
-  const [error, setError] = useState<string>('');
+// Route props 타입 정의
+type RouteParams = {
+  params: {
+    newPassword: string;
+  };
+};
 
-  // 초기 비밀번호 더미
-  const correctPassword = '000000';
+function ConfirmPassWordScreen({navigation}: any) {
+  const [password, setPassword] = useState<string>(''); // 입력되는 비밀번호
+  const [error, setError] = useState<string>(''); // 오류 메시지 상태
+
+  // useRoute 훅을 통해 newPassword를 안전하게 받아옴
+  const route = useRoute<RouteProp<RouteParams>>();
+  const newPassword = route.params?.newPassword; // NewPassWordScreen.tsx에서 전달된 새 비밀번호
 
   const updateValue = (newValue: string) => {
     if (newValue.length <= 6) {
       setPassword(newValue);
     }
+
     if (newValue.length === 6) {
-      if (newValue === correctPassword) {
-        setError('');
-        navigation.navigate('NewPassWordScreen');
+      if (newValue === newPassword) {
+        setError(''); // 오류 메시지 초기화
+        navigation.navigate('보안 설정');
+        Alert.alert('비밀번호 변경이 완료되었습니다.');
       } else {
         setError('비밀번호가 일치하지 않습니다.');
-        setPassword('');
+        setPassword(''); // 비밀번호를 틀리면 입력 초기화
       }
     }
   };
+
   const renderPasswordCircles = () => {
     const circles = [];
     const passwordLength = password.length;
@@ -43,7 +55,7 @@ function InputPassWordScreen({navigation}: any) {
   return (
     <View style={styles.container}>
       <View style={styles.textContainer}>
-        <Text style={styles.inputText}>비밀번호를 입력해주세요</Text>
+        <Text style={styles.inputText}>비밀번호를 다시 입력해주세요</Text>
         <View style={styles.passwordContainer}>{renderPasswordCircles()}</View>
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
       </View>
@@ -75,7 +87,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: 240,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   circle: {
     width: 16,
@@ -99,4 +111,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default InputPassWordScreen;
+export default ConfirmPassWordScreen;

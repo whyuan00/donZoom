@@ -5,6 +5,8 @@ import AlarmSettingScreen from '@/views/screens/myPage/AlarmSettingScreen';
 import SecuritySettingScreen from '@/views/screens/myPage/SecuritySettingScreen';
 import LoginScreen from '@/views/screens/auth/LoginScreen';
 import InputPassWordScreen from '@/views/screens/myPage/InputPassWordScreen';
+import NewPassWordScreen from '@/views/screens/myPage/NewPassWordScreen';
+import ConfirmPassWordScreen from '@/views/screens/myPage/ConfirmPassWordScreen';
 
 const MyInformationNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -15,6 +17,16 @@ const MyInformationNavigator = () => {
       <Stack.Screen
         name="비밀번호 설정"
         component={InputPassWordScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="NewPassWordScreen"
+        component={NewPassWordScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="ConfirmPassWordScreen"
+        component={ConfirmPassWordScreen}
         options={{headerShown: false}}
       />
       <Stack.Screen name="알림 설정" component={AlarmSettingScreen} />
