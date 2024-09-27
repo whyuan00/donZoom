@@ -1,19 +1,19 @@
-import React, { useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { QueryClientProvider } from '@tanstack/react-query';
+import React, {useEffect} from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import {QueryClientProvider} from '@tanstack/react-query';
 import messaging from '@react-native-firebase/messaging';
-import notifee, { AndroidImportance } from '@notifee/react-native';
+import notifee, {AndroidImportance} from '@notifee/react-native';
 import firebase from '@react-native-firebase/app';
 import queryClient from '@/api/queryClient';
 import RootNavigator from '@/navigation/root/RootNavigator';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDSUTJysXrGAo2kxrgyEAVNiiVcr4Xfj40",
-  authDomain: "donzoom.firebaseapp.com",
-  projectId: "donzoom",
-  storageBucket: "donzoom.appspot.com",
-  messagingSenderId: "1005190129327",
-  appId: "1:1005190129327:android:5f3155457bc18b39c7965a",
+  apiKey: 'AIzaSyDSUTJysXrGAo2kxrgyEAVNiiVcr4Xfj40',
+  authDomain: 'donzoom.firebaseapp.com',
+  projectId: 'donzoom',
+  storageBucket: 'donzoom.appspot.com',
+  messagingSenderId: '1005190129327',
+  appId: '1:1005190129327:android:5f3155457bc18b39c7965a',
 };
 
 if (!firebase.apps.length) {
@@ -23,6 +23,16 @@ if (!firebase.apps.length) {
 }
 
 function App() {
+  const getToken = async () => {
+    try {
+      const token = await messaging().getToken();
+      console.log('FCM Token:', token);
+    } catch (error) {
+      console.log('Error getting FCM token:', error);
+    }
+  };
+
+  getToken(); // 앱이 시작될 때 토큰 확인
   useEffect(() => {
     // 알림 채널 생성 (앱이 시작될 때)
     const createNotificationChannel = async () => {

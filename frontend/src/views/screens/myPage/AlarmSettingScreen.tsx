@@ -6,16 +6,23 @@ import {
   StyleSheet,
   ScrollView,
   Text,
-  Image,
   TouchableOpacity,
 } from 'react-native';
 import {useState} from 'react';
 
 function AlarmSettingScreen() {
-  const [isOn, setIsOn] = useState(false);
+  const [isServiceOn, setIsServiceOn] = useState(false);
+  const [isInvestOn, setIsInvestOn] = useState(false);
+  const [isEventOn, setIsEventOn] = useState(false);
 
-  const toggleSwitch = () => {
-    setIsOn(previousState => !previousState);
+  const toggleServiceSwitch = () => {
+    setIsServiceOn(previousState => !previousState);
+  };
+  const toggleInvestSwitch = () => {
+    setIsInvestOn(previousState => !previousState);
+  };
+  const toggleEventSwitch = () => {
+    setIsEventOn(previousState => !previousState);
   };
   return (
     <ScrollView>
@@ -28,11 +35,11 @@ function AlarmSettingScreen() {
             </Text>
           </View>
           <View style={styles.toggleContainer}>
-            <TouchableOpacity onPress={toggleSwitch}>
+            <TouchableOpacity onPress={toggleServiceSwitch}>
               <FontAwesome
-                name={isOn ? 'toggle-on' : 'toggle-off'}
+                name={isServiceOn ? 'toggle-on' : 'toggle-off'}
                 size={30}
-                color={isOn ? colors.BLUE_100 : '#B0BEC5'} // 'on'일 때 초록색, 'off'일 때 회색
+                color={isServiceOn ? colors.BLUE_100 : '#B0BEC5'}
               />
             </TouchableOpacity>
           </View>
@@ -45,11 +52,11 @@ function AlarmSettingScreen() {
             </Text>
           </View>
           <View style={styles.toggleContainer}>
-            <TouchableOpacity onPress={toggleSwitch}>
+            <TouchableOpacity onPress={toggleInvestSwitch}>
               <FontAwesome
-                name={isOn ? 'toggle-on' : 'toggle-off'}
+                name={isInvestOn ? 'toggle-on' : 'toggle-off'}
                 size={30}
-                color={isOn ? colors.BLUE_100 : '#B0BEC5'} // 'on'일 때 초록색, 'off'일 때 회색
+                color={isInvestOn ? colors.BLUE_100 : '#B0BEC5'}
               />
             </TouchableOpacity>
           </View>
@@ -62,11 +69,11 @@ function AlarmSettingScreen() {
             </Text>
           </View>
           <View style={styles.toggleContainer}>
-            <TouchableOpacity onPress={toggleSwitch}>
+            <TouchableOpacity onPress={toggleEventSwitch}>
               <FontAwesome
-                name={isOn ? 'toggle-on' : 'toggle-off'}
+                name={isEventOn ? 'toggle-on' : 'toggle-off'}
                 size={30}
-                color={isOn ? colors.BLUE_100 : '#B0BEC5'} // 'on'일 때 초록색, 'off'일 때 회색
+                color={isEventOn ? colors.BLUE_100 : '#B0BEC5'}
               />
             </TouchableOpacity>
           </View>
