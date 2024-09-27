@@ -14,4 +14,6 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
   @Query("SELECT q FROM Quiz q WHERE q.id NOT IN "
       + "(SELECT uq.quiz.id FROM UserQuiz uq WHERE uq.user.id = :userId) " + "ORDER BY RAND()")
   List<Quiz> findUnsolvedQuizzesByUser(@Param("userId") Long userId, Pageable pageable);
+
+  List<Quiz> findByIdIn(List<Long> ids);
 }
