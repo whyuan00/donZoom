@@ -1,19 +1,17 @@
 import {useState, useEffect} from 'react';
-import useAccount from './queries/useAccount';
+import useAccount from '../queries/useAccount';
 
-interface AccountBalanceHook {
+interface AccountInfoHook {
   account: string;
   balance: string;
-  name: string;
   isLoading: boolean;
   error: Error | null;
   refetch: () => void;
 }
 
-function useAccountBalance(): AccountBalanceHook {
+function useAccountInfo(): AccountInfoHook {
   const [account, setAccount] = useState('');
   const [balance, setBalance] = useState('0');
-  const [accountName, setAccountName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const {getAccount, getBalance} = useAccount();
@@ -24,7 +22,6 @@ function useAccountBalance(): AccountBalanceHook {
       onSuccess: data => {
         setAccount(data.rec[0].accountNo);
         fetchBalance(data.rec[0].accountNo);
-        setAccountName(data.rec[0].userName);
       },
       onError: err => {
         setError(err as Error);
@@ -57,7 +54,7 @@ function useAccountBalance(): AccountBalanceHook {
     fetchAccount();
   }, []);
 
-  return {account, balance, name: accountName, isLoading, error, refetch};
+  return {account, balance, isLoading, error, refetch};
 }
 
-export default useAccountBalance;
+export default useAccountInfo;

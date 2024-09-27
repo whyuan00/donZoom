@@ -1,14 +1,51 @@
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
+import useAccount from '@/hooks/queries/useAccount';
 import useAccountBalance from '@/hooks/useAccountInfo';
+import {useSignupStore} from '@/stores/useAuthStore';
+import useTransferStore from '@/stores/useTransferStore';
+import {useFocusEffect} from '@react-navigation/native';
+import {useCallback, useEffect} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 export default function TransferScreen2({navigation}: any) {
-  const {account, balance, isLoading, error, refetch} = useAccountBalance();
+  const {
+    account,
+    balance,
+    name: accountName,
+    isLoading,
+    error,
+    refetch,
+  } = useAccountBalance();
+  const {
+    accountNo,
+    amount,
+    name: holderName,
+    setName: setHolderName,
+  } = useTransferStore();
+  const {getAccountHolder} = useAccount();
+  const {name} = useSignupStore();
+
   const onPressNext = () => {
     navigation.navigate('송금3');
   };
+
+  const getAccountName = () => {
+    getAccountHolder.mutate(accountNo, {
+      onSuccess: data => {
+        setHolderName(data.name);
+      },
+    });
+    getAccountHolder('123123');
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      getAccountName();
+    }, []),
+  );
+
   return (
     <View style={styles.container}>
       <Text style={styles.menuHeaderText}>출금계좌</Text>
@@ -19,29 +56,31 @@ export default function TransferScreen2({navigation}: any) {
         </View>
         <View style={styles.myAccountTextContainer}>
           <Text style={styles.withdrawableAmountTextHeader}>출금가능금액</Text>
-          <Text style={styles.withdrawableAmountTextContext}>{balance}원</Text>
+          <Text style={styles.withdrawableAmountTextContext}>
+            {parseInt(balance).toLocaleString()}원
+          </Text>
         </View>
       </View>
       <Text style={styles.menuHeaderText}>송금정보</Text>
       <View style={styles.recipientInfoContainer}>
         <View style={styles.recipientInfoTextContainer}>
           <View style={styles.recipientInfoTextTopContainer}>
-            <Text style={styles.recipientNameText}>신순호</Text>
-            <Text style={styles.recipientAccountText}>
-              우리 1005-458-953312
-            </Text>
+            <Text style={styles.recipientNameText}>{holderName}</Text>
+            <Text style={styles.recipientAccountText}>{accountNo}</Text>
           </View>
           <View style={styles.recipientInfoTextBottomContainer}>
-            <Text style={styles.ammountInfoText}>10,000원</Text>
+            <Text style={styles.ammountInfoText}>
+              {parseInt(amount).toLocaleString()}원
+            </Text>
           </View>
         </View>
         <View style={styles.recipientInfoOptionContainer}>
-          <Text>받는 통장 표기</Text>
-          <Text>신호준</Text>
+          <Text>받는 통장 표기 : </Text>
+          <Text>{name}</Text>
         </View>
         <View style={styles.recipientInfoOptionContainer}>
-          <Text>내 통장 표기</Text>
-          <Text>신호준</Text>
+          <Text>내 통장 표기 : </Text>
+          <Text>{holderName}</Text>
         </View>
         <View style={styles.recipientInfoOptionContainer}>
           <Text>예약 이체</Text>

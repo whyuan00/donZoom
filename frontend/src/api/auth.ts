@@ -1,8 +1,8 @@
-import { Profile } from '@/types/domain';
+import {Profile} from '@/types/domain';
 import axiosInstance from './axios';
-import { getEncryptedStorage } from '@/utils';
-import axios, { AxiosError } from 'axios';
-import { useErrorStore } from '@/stores/errorMessagesStore';
+import {getEncryptedStorage} from '@/utils';
+import axios, {AxiosError} from 'axios';
+import {useErrorStore} from '@/stores/errorMessagesStore';
 
 type User = {
   email: string;
@@ -49,7 +49,7 @@ const postSignup = async ({
     nickname,
     role,
   });
-  const { data } = await axiosInstance.post('/user', {
+  const {data} = await axiosInstance.post('/user', {
     email,
     password,
     passwordConfirm,
@@ -70,8 +70,8 @@ const postLogin = async ({email, password}: User): Promise<Response> => {
       email,
       password,
     });
-    console.log('Login request successful:', response);
-    console.log('Authorization:', response.headers['authorization']);
+    // console.log('Login request successful:', response);
+    // console.log('Authorization:', response.headers['authorization']);
     return response.headers['authorization'];
   } catch (error) {
     console.error('Error during login request:', error);
@@ -95,23 +95,7 @@ const postLogin = async ({email, password}: User): Promise<Response> => {
 };
 
 const getProfile = async (): Promise<ResponseProfile> => {
-  console.log(
-    'axiosInstance.defaults.headers.common[Authorization]',
-    axiosInstance.defaults.headers.common['Authorization'],
-  );
   const {data} = await axiosInstance.get('/auth/userInfo');
-  console.log('data', data);
-  return data;
-};
-
-const getAccessToken = async (): Promise<ResponseToken> => {
-  const refreshToken = await getEncryptedStorage('refreshToken');
-  const { data } = await axiosInstance.get('/auth/refresh', {
-    headers: {
-      Authorization: `Bearer ${refreshToken}`,
-    },
-  });
-
   return data;
 };
 
@@ -119,5 +103,5 @@ const logout = async () => {
   await axiosInstance.delete('/user/logout');
 };
 
-export {postSignup, postLogin, getProfile, getAccessToken, logout};
+export {postSignup, postLogin, getProfile, logout};
 export type {User as RequestUser, ResponseToken, ResponseProfile};

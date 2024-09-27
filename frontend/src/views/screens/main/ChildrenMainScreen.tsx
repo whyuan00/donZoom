@@ -54,7 +54,9 @@ function ChildrenMainScreen() {
               </Text>
               <View style={styles.moneyContentsContainer}>
                 <View style={styles.moneyAccountContainer}>
-                  <Text style={styles.moneyText}>{`${balance}원`}</Text>
+                  <Text style={styles.moneyText}>{`${parseInt(
+                    balance,
+                  ).toLocaleString()}원`}</Text>
                   <TouchableOpacity
                     onPress={() => navigation.navigate('계좌관리')}>
                     <Text style={styles.moneyAccountText}>

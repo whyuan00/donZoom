@@ -24,24 +24,23 @@ function useLogin(mutationOptions?: UseMutationCustomOptions) {
     mutationFn: postLogin,
     onSuccess: authorization => {
       setEncryptStorage(storageKeys.REFRESH_TOKEN, authorization);
-      console.log(authorization);
       setHeader('Authorization', `${authorization}`);
     },
     onSettled: () => {
       queryClient.refetchQueries({
-        queryKey: [queryKeys.AUTH, queryKeys.GET_ACCESS_TOKEN],
+        queryKey: [queryKeys.AUTH, queryKeys.AUTH.GET_ACCESS_TOKEN],
       });
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.AUTH, queryKeys.GET_PROFILE],
+        queryKey: [queryKeys.AUTH, queryKeys.AUTH.GET_PROFILE],
       });
     },
     ...mutationOptions,
   });
 }
 
-function useGetProfile(queryOptions?: UseQueryCustomOptions<ResponseProfile>) {
+function useGetProfile(queryOptions?: UseQueryCustomOptions) {
   return useQuery({
-    queryKey: [queryKeys.AUTH, queryKeys.GET_PROFILE],
+    queryKey: [queryKeys.AUTH, queryKeys.AUTH.GET_PROFILE],
     queryFn: getProfile,
     ...queryOptions,
   });

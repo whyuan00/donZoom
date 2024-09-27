@@ -183,6 +183,24 @@ const patchAccountAuto = async ({
   });
 };
 
+type RequestAccountHolder = {
+  accountNo: string;
+  name: string;
+  nickName: string;
+};
+
+const getAccountHolder = async (
+  accountNo: string,
+): Promise<RequestAccountHolder> => {
+  const {data} = await axiosInstance.get('/account/holder', {
+    params: {
+      accountNo: accountNo,
+    },
+  });
+  console.log(data);
+  return data;
+};
+
 export {
   postinitAccount,
   getAccount,
@@ -195,4 +213,5 @@ export {
   putPerTransactionLimit,
   postAccountAuto,
   patchAccountAuto,
+  getAccountHolder,
 };

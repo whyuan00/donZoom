@@ -92,7 +92,9 @@ function AccountHistoryScreen({navigation}: any) {
             </View>
             <View style={styles.parentInfoMiddle}>
               <Text style={styles.parentBalanceHeader}>남은 금액</Text>
-              <Text style={styles.parentBalanceText}>{balance}원</Text>
+              <Text style={styles.parentBalanceText}>
+                {parseInt(balance).toLocaleString()}원
+              </Text>
             </View>
             <Pressable
               style={styles.parentInfoBottom}

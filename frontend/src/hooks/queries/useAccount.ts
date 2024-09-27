@@ -1,6 +1,7 @@
 import {
   getAccount,
   getAccountHistory,
+  getAccountHolder,
   getBalance,
   patchAccountAuto,
   patchAccountLimit,
@@ -11,6 +12,7 @@ import {
   putDailyLimit,
   putPerTransactionLimit,
 } from '@/api/account';
+import {queryKeys} from '@/constants/keys';
 import {UseMutationCustomOptions, UseQueryCustomOptions} from '@/types/common';
 import {useMutation, useQuery} from '@tanstack/react-query';
 
@@ -21,10 +23,11 @@ function useInitAccount(mutationOptions?: UseMutationCustomOptions) {
   });
 }
 
-function useGetAccount(mutationOptions?: UseMutationCustomOptions) {
-  return useMutation({
-    mutationFn: getAccount,
-    ...mutationOptions,
+function useGetAccount(queryOptions?: UseQueryCustomOptions) {
+  return useQuery({
+    queryKey: [queryKeys.ACCOUNT],
+    queryFn: getAccount,
+    ...queryOptions,
   });
 }
 
@@ -42,16 +45,17 @@ function usePostTransfer(mutationOptions?: UseMutationCustomOptions) {
   });
 }
 
-function useGetBalance(mutationOptions?: UseMutationCustomOptions) {
-  return useMutation({
-    mutationFn: getBalance,
-    ...mutationOptions,
+function useGetBalance(queryOptions?: UseQueryCustomOptions) {
+  return useQuery({
+    queryKey: [queryKeys.ACCOUNT],
+    queryFn: getBalance,
+    ...queryOptions,
   });
 }
 
 function useGetAccountHistory(queryOptions?: UseQueryCustomOptions<any>) {
   return useQuery({
-    queryKey: ['account'],
+    queryKey: [queryKeys.ACCOUNT],
     queryFn: getAccountHistory,
     ...queryOptions,
   });
@@ -92,6 +96,14 @@ function usePatchAccountAuto(mutationOptions?: UseMutationCustomOptions) {
   });
 }
 
+function useGetAccountHolder(queryOptions?: UseQueryCustomOptions<any>) {
+  return useQuery({
+    queryKey: [queryKeys.ACCOUNT, queryKeys.ACCOUNT.ACCOUNTNO],
+    queryFn: getAccountHolder,
+    ...queryOptions,
+  });
+}
+
 function useAccount() {
   const initAccountMutation = useInitAccount();
   const getAccount = useGetAccount();
@@ -104,6 +116,7 @@ function useAccount() {
   const perTransactionLimitMutation = usePutPerTransactionLimit();
   const accountAutoMutation = usePostAccountAuto();
   const patchAccountAutoMutation = usePatchAccountAuto();
+  const getAccountHolder = useGetAccountHolder();
   return {
     initAccountMutation,
     getAccount,
@@ -116,6 +129,7 @@ function useAccount() {
     perTransactionLimitMutation,
     accountAutoMutation,
     patchAccountAutoMutation,
+    getAccountHolder,
   };
 }
 

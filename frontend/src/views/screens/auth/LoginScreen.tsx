@@ -17,19 +17,26 @@ import {fonts} from '@/constants/font';
 import {validateLogin} from '@/utils';
 import useForm from '@/hooks/useForm';
 import useAuth from '@/hooks/queries/useAuth';
-import { useErrorStore } from '@/stores/errorMessagesStore';
-import { useFocusEffect } from '@react-navigation/native';
-import { configureSocialLogins } from '@/config/LoginConfig';
-import { login as KakaoLogin } from '@react-native-seoul/kakao-login';
-import { GoogleSignin, SignInResponse, statusCodes, User } from '@react-native-google-signin/google-signin';
+import {useErrorStore} from '@/stores/errorMessagesStore';
+import {useFocusEffect} from '@react-navigation/native';
+import {configureSocialLogins} from '@/config/LoginConfig';
+import {login as KakaoLogin} from '@react-native-seoul/kakao-login';
+import {
+  GoogleSignin,
+  SignInResponse,
+  statusCodes,
+  User,
+} from '@react-native-google-signin/google-signin';
 import axiosInstance from '@/api/axios';
 import NaverLogin from '@react-native-seoul/naver-login';
+import {useSignupStore} from '@/stores/useAuthStore';
 
 function LoginScreen({navigation}: any) {
   const passwordRef = useRef<TextInput | null>(null);
-  const {loginMutation} = useAuth();
+  const {loginMutation, getProfileQuery, isLogin} = useAuth();
   const [selected, setSelected] = useState('');
   const {errorMessage, clearErrorMessage} = useErrorStore();
+  const {setName, setNickname} = useSignupStore();
   const login = useForm({
     initialValue: {
       email: '',
@@ -98,16 +105,18 @@ function LoginScreen({navigation}: any) {
     }
   };
   const signInNaver = async () => {
-    console.log("NaverButton");
+    console.log('NaverButton');
     try {
       const result = await NaverLogin.login();
-      console.log("result");
+      console.log('result');
       if (result.isSuccess) {
         const accessToken = result.successResponse?.accessToken;
-        console.log("AT: ",accessToken);
+        console.log('AT: ', accessToken);
         if (accessToken) {
           // accessToken을 서버로 전송하여 인증 처리
-          const response = await axiosInstance.post('/auth/naver', { accessToken });
+          const response = await axiosInstance.post('/auth/naver', {
+            accessToken,
+          });
           console.log('Login successful', response.data);
         }
       } else {
@@ -120,14 +129,14 @@ function LoginScreen({navigation}: any) {
 
   const signInKakao = async () => {
     try {
-      console.log("카카오 로그인 버튼")
-      const tokenResponse = await KakaoLogin();  // 카카오 로그인 실행
+      console.log('카카오 로그인 버튼');
+      const tokenResponse = await KakaoLogin(); // 카카오 로그인 실행
       if (tokenResponse?.accessToken) {
         const accessToken = tokenResponse.accessToken;
         console.log('Kakao Access Token:', accessToken);
 
         // accessToken을 서버로 전송하여 인증 처리
-        const response = await axiosInstance.post('/auth/kakao', { accessToken });
+        const response = await axiosInstance.post('/auth/kakao', {accessToken});
         console.log('Kakao login successful', response.data);
       }
     } catch (error) {
@@ -135,9 +144,13 @@ function LoginScreen({navigation}: any) {
     }
   };
   const handleSubmit = () => {
-    console.log(login);
     try {
-      loginMutation.mutate(login.values);
+      loginMutation.mutate(login.values, {
+        onSuccess: () => {
+          setName(getProfileQuery.data ? getProfileQuery.data.username : '');
+          console.log(getProfileQuery.data);
+        },
+      });
       clearErrorMessage();
     } catch {}
   };
@@ -243,7 +256,7 @@ function LoginScreen({navigation}: any) {
       <View style={styles.snsButton}>
         <CustomButton label="G" variant="sns" onPress={signInGoogle} />
         <CustomButton label="F" variant="sns" />
-        <CustomButton label="K" variant="sns" onPress={signInKakao}/>
+        <CustomButton label="K" variant="sns" onPress={signInKakao} />
         <CustomButton label="N" variant="sns" onPress={signInNaver} />
       </View>
     </TouchableOpacity>
