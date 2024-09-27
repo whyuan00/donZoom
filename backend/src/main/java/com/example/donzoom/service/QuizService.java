@@ -11,6 +11,7 @@ import com.example.donzoom.util.SecurityUtil;
 import com.example.donzoom.util.TimeUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,15 +48,15 @@ public class QuizService {
         || redisService.getList(todayQuizPrefix + username, new TypeReference<List<Long>>() {
     }).isEmpty()) {
       unsolvedQuizzes = quizRepository.findUnsolvedQuizzesByUser(user.getId(), limit);
-      log.info("redis에 저장할 list :" + unsolvedQuizzes.stream().map(Quiz::getId).toList().toString());
       redisService.saveListWithTTL(todayQuizPrefix + username, unsolvedQuizzes.stream().map(
           Quiz::getId).toList(), timeUtil.getSecondsUntilEndOfDay());
     } else {
       List<Long> list = redisService.getList(todayQuizPrefix + username,
           new TypeReference<List<Long>>() {
           });
-      log.info("redis로부터 조회한 list :" + list);
-      unsolvedQuizzes = quizRepository.findByIdIn(list);
+
+      List<Long> solvedQuizzes = userQuizRepository.findAllByUserId(user.getId()).orElseThrow().stream().map(UserQuiz::getId).toList();
+      unsolvedQuizzes = quizRepository.findByIdIn(list).stream().filter(quiz -> !solvedQuizzes.contains(quiz.getId())).toList();
     }
 
     return unsolvedQuizzes;
