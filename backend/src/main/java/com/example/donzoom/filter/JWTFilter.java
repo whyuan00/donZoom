@@ -31,6 +31,7 @@ public class JWTFilter extends OncePerRequestFilter {
       "/user", "/api/user", "/user/login", "/api/user/login", "login/oauth2/code/kakao",
       "/api/auth/google", "/auth/google",
       "api/auth/google", "auth/google",
+      "/api/fcm/send","/fcm/send",
       "/api/login/oauth2/code/kakao", "/login/oauth2/code/kakao", "login/oauth2/code/naver",
       "/api/login/oauth2/code/naver", "/login/oauth2/code/naver", "login/oauth2/code/google",
       "/api/login/oauth2/code/google", "/login/oauth2/code/google", "/app/**",
@@ -41,6 +42,12 @@ public class JWTFilter extends OncePerRequestFilter {
   protected boolean shouldNotFilter(HttpServletRequest request) {
     String path = request.getServletPath();
     if (path.matches("^/stock/\\d+$")) {
+      return true;  // 이 경로는 JWT 검사를 제외
+    }
+    if (path.matches("^/fcm/")) {
+      return true;  // 이 경로는 JWT 검사를 제외
+    }
+    if (path.matches("^/api/fcm/")) {
       return true;  // 이 경로는 JWT 검사를 제외
     }
     return EXCLUDE_PATHS.contains(path);
