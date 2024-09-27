@@ -86,11 +86,8 @@ public class AuthController {
         response.setHeader(accessTokenHeader,
             accessTokenPrefix + loginResponseDto.getAccessToken());
 
-        // Refresh Token을 바디에 설정
-        Map<String, String> refreshToken = Map.of("refreshToken",
-            loginResponseDto.getRefreshToken());
         response.setHeader("accessToken", loginResponseDto.getAccessToken());
-        return ResponseEntity.ok(refreshToken);
+        return ResponseEntity.ok(loginResponseDto);
       } else {
         log.info("INVALID ID TOKEN");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid ID token");
@@ -129,10 +126,8 @@ public class AuthController {
       LoginResponseDto loginResponseDto = authService.authUser(email);
       response.setHeader(accessTokenHeader, accessTokenPrefix + loginResponseDto.getAccessToken());
 
-      // Refresh Token을 바디에 설정
-      Map<String, String> refreshToken = Map.of("refreshToken", loginResponseDto.getRefreshToken());
       response.setHeader("accessToken", loginResponseDto.getAccessToken());
-      return ResponseEntity.ok(refreshToken);
+      return ResponseEntity.ok(loginResponseDto);
     } catch (Exception e) {
       log.error("네이버 로그인 실패", e);
       return ResponseEntity.status(500).body("네이버 로그인 처리 중 오류 발생");

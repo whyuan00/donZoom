@@ -8,17 +8,25 @@ import com.example.donzoom.repository.QuizRepository;
 import com.example.donzoom.repository.UserQuizRepository;
 import com.example.donzoom.repository.UserRepository;
 import com.example.donzoom.util.SecurityUtil;
+import com.example.donzoom.util.TimeUtil;
+import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class QuizService {
 
+  private final String todayQuizPrefix = "TodayQuiz: ";
+
+  private final TimeUtil timeUtil;
+  private final RedisService redisService;
   private final QuizRepository quizRepository;
   private final UserRepository userRepository;
   private final UserQuizRepository userQuizRepository;
@@ -30,8 +38,27 @@ public class QuizService {
     User user = userRepository.findByEmail(username)
         .orElseThrow(() -> new RuntimeException("User not found"));
 
+    List<Quiz> unsolvedQuizzes;
     Pageable limit = PageRequest.of(0, 3);
-    return quizRepository.findUnsolvedQuizzesByUser(user.getId(), limit);
+
+    // 비어 있다면
+    if (redisService.getList(todayQuizPrefix + username, new TypeReference<List<Long>>() {
+    }) == null
+        || redisService.getList(todayQuizPrefix + username, new TypeReference<List<Long>>() {
+    }).isEmpty()) {
+      unsolvedQuizzes = quizRepository.findUnsolvedQuizzesByUser(user.getId(), limit);
+      log.info("redis에 저장할 list :" + unsolvedQuizzes.stream().map(Quiz::getId).toList().toString());
+      redisService.saveListWithTTL(todayQuizPrefix + username, unsolvedQuizzes.stream().map(
+          Quiz::getId).toList(), timeUtil.getSecondsUntilEndOfDay());
+    } else {
+      List<Long> list = redisService.getList(todayQuizPrefix + username,
+          new TypeReference<List<Long>>() {
+          });
+      log.info("redis로부터 조회한 list :" + list);
+      unsolvedQuizzes = quizRepository.findByIdIn(list);
+    }
+
+    return unsolvedQuizzes;
   }
 
 
