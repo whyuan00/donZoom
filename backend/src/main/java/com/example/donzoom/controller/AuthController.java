@@ -167,7 +167,7 @@ public class AuthController {
   }
 
   @GetMapping("/userInfo")
-  public ResponseEntity<?> getUserInfo(HttpServletRequest request, HttpServletResponse response) {
+  public ResponseEntity<?> getUserInfo(HttpServletRequest request) {
     UserDetailDto userDetailDto = authService.getUserInfo(request);
     if (userDetailDto != null) {
       return new ResponseEntity<>(userDetailDto, HttpStatus.OK);

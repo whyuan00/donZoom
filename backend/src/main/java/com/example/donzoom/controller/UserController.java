@@ -2,8 +2,12 @@ package com.example.donzoom.controller;
 
 import com.example.donzoom.dto.user.request.LoginRequestDto;
 import com.example.donzoom.dto.user.request.UserCreateDto;
+import com.example.donzoom.dto.user.request.UserUpdateRequestDto;
 import com.example.donzoom.dto.user.response.LoginResponseDto;
+import com.example.donzoom.dto.user.response.UserInfoResponseDto;
+import com.example.donzoom.entity.User;
 import com.example.donzoom.exception.DuplicateEmailException;
+import com.example.donzoom.repository.UserRepository;
 import com.example.donzoom.service.AuthService;
 import com.example.donzoom.service.RedisService;
 import com.example.donzoom.service.UserService;
@@ -13,16 +17,21 @@ import jakarta.validation.Valid;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,6 +42,7 @@ public class UserController {
   private final String accessTokenHeader = "Authorization";
   private final String accessTokenPrefix = "Bearer ";
   private final String refreshTokenPrefix = "refreshToken: ";
+  private final UserRepository userRepository;
 
   @Value("${jwt.refreshToken.expireTime}")
   private Long refreshExpired;
@@ -41,13 +51,26 @@ public class UserController {
   private final RedisService redisService;
   private final AuthService authService;
 
+  @GetMapping
+  public ResponseEntity<?> getCurrentUserInfo(){
+    User loginUser = userService.findCurrentUser();
+    UserInfoResponseDto userInfoResponseDto = UserInfoResponseDto.builder()
+        .id(loginUser.getId())
+        .email(loginUser.getEmail())
+        .name(loginUser.getName())
+        .nickname(loginUser.getNickname())
+        .isParent(loginUser.getIsParent())
+        .profileImage(loginUser.getProfileImage())
+        .build();
+    return ResponseEntity.ok(userInfoResponseDto);
+  }
 
   @PostMapping
   public ResponseEntity<?> register(@Valid @RequestBody UserCreateDto userCreateDto,
       BindingResult bindingResult) {
 
     // 입력 데이터 유효성 검증
-    if(bindingResult.hasErrors()) {
+    if (bindingResult.hasErrors()) {
       StringBuilder errors = new StringBuilder();
       bindingResult.getFieldErrors().forEach(error -> {
         errors.append(error.getDefaultMessage()).append(" ");
@@ -80,7 +103,8 @@ public class UserController {
       Map<String, String> refreshToken = Map.of("refreshToken", loginResponseDto.getRefreshToken());
 
       // Redis에 사용자의 RefreshToken을 저장
-      redisService.saveObjectWithTTL(refreshTokenPrefix + loginRequestDto.getEmail(), loginResponseDto.getRefreshToken(), refreshExpired);
+      redisService.saveObjectWithTTL(refreshTokenPrefix + loginRequestDto.getEmail(),
+          loginResponseDto.getRefreshToken(), refreshExpired);
 
       return ResponseEntity.ok(loginResponseDto);
     } catch (AuthenticationException e) {
@@ -100,5 +124,16 @@ public class UserController {
 
     // 응답 상태 200 OK 반환
     return new ResponseEntity<>(HttpStatus.OK);
+  }
+
+  @PostMapping("/update")
+  public ResponseEntity<?> update(@RequestPart("file") MultipartFile file,
+      @ModelAttribute UserUpdateRequestDto userUpdateRequestDto) {
+    try {
+      userService.updateUser(file, userUpdateRequestDto);
+    }catch(Exception e) {
+      log.error(e.getMessage());
+    }
+    return ResponseEntity.ok().build();
   }
 }
