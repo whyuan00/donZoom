@@ -82,7 +82,7 @@ public class UserController {
       // Redis에 사용자의 RefreshToken을 저장
       redisService.saveObjectWithTTL(refreshTokenPrefix + loginRequestDto.getEmail(), loginResponseDto.getRefreshToken(), refreshExpired);
 
-      return ResponseEntity.ok(refreshToken);
+      return ResponseEntity.ok(loginResponseDto);
     } catch (AuthenticationException e) {
       return new ResponseEntity<>("유효하지 않은 이메일과 비밀번호입니다.", HttpStatus.UNAUTHORIZED);
     } catch (Exception e) {
