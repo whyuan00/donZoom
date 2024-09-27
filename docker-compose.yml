@@ -28,7 +28,7 @@ services:
     ports:
       - "8081:8081"
     volumes:
-    - /home/ubuntu/jenkins-data/workspace/pipeline/backend/src/main/resources:/config
+    - /home/ubuntu/jenkins-data/workspace/pipeline/backend/src/main/resources/application.properties:/config/application.properties
 
     depends_on:
       - mysql
