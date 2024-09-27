@@ -111,6 +111,9 @@ android {
 }
 
 dependencies {
+    implementation platform('com.google.firebase:firebase-bom:33.3.0')
+    implementation 'com.google.firebase:firebase-analytics'
+
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
     implementation 'com.google.android.gms:play-services-auth:20.5.0'
@@ -120,3 +123,5 @@ dependencies {
         implementation jscFlavor
     }
 }
+
+apply plugin: 'com.google.gms.google-services' // Firebase 플러그인 추가
