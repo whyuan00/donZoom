@@ -63,6 +63,8 @@ public class User extends BaseEntity {
   @JoinColumn(name = "user_id") // 단방향 관계로 JoinColumn 설정
   private List<AutoTransfer> autoTransfers;
 
+  private String accountNo;
+
   @Builder
   public User(User parent, String email, String pwdHash, String name, String nickname,
       String userKey, String role, String provider, Wallet wallet,
@@ -82,6 +84,7 @@ public class User extends BaseEntity {
       this.autoTransfers = autoTransfers;
     }
     this.dailyUsageAmount = 0L;
+    this.accountNo = null;
   }
 
 
@@ -110,6 +113,11 @@ public class User extends BaseEntity {
   // 1일결제금액 변경
   public void updateDailyUsageAmount(Long dailyUsageAmount) {
     this.dailyUsageAmount = dailyUsageAmount;
+  }
+
+  // 계좌번호 저장
+  public void updateAccountNo(String accountNo) {
+    this.accountNo = accountNo;
   }
 
 }

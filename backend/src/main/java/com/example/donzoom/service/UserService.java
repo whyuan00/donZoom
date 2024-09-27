@@ -80,4 +80,8 @@ public class UserService {
     return userRepository.findByEmail(email)
         .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 유저를 찾을 수 없습니다."));
   }
+  public User findUserByAccountNo(String accountNo) {
+    return userRepository.findByAccountNo(accountNo)
+        .orElseThrow(() -> new IllegalArgumentException("해당 계좌번호의 유저를 찾을 수 없습니다."));
+  }
 }

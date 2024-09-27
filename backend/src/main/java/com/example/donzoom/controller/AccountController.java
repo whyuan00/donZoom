@@ -12,6 +12,7 @@ import com.example.donzoom.dto.account.response.AccountResponseDto;
 import com.example.donzoom.dto.account.response.BalanceResponseDto;
 import com.example.donzoom.dto.account.response.BankUserResponseDto;
 import com.example.donzoom.dto.account.response.CreateCardResponseDto;
+import com.example.donzoom.dto.account.response.GetUserByAccountNoResponseDto;
 import com.example.donzoom.dto.account.response.TransactionResponseDto;
 import com.example.donzoom.dto.account.response.TransferResponseDto;
 import com.example.donzoom.service.AccountService;
@@ -52,6 +53,15 @@ public class AccountController {
   public ResponseEntity<TransferResponseDto> transfer(
       @RequestBody TransferRequestDto transferRequestDto) {
     TransferResponseDto response = accountService.transfer(transferRequestDto);
+    return ResponseEntity.ok(response);
+  }
+
+  //거래내역조회
+  @GetMapping(value = "/holder")
+  public ResponseEntity<GetUserByAccountNoResponseDto> getUserByAccountNumber(
+      @RequestParam("accountNo") String accountNo) {
+    log.info(accountNo);
+    GetUserByAccountNoResponseDto response = accountService.getUserByAccountNumber(accountNo);
     return ResponseEntity.ok(response);
   }
 
