@@ -11,8 +11,10 @@ import com.example.donzoom.repository.PigRepository;
 import com.example.donzoom.repository.UserRepository;
 import com.example.donzoom.repository.WalletRepository;
 import com.example.donzoom.util.SecurityUtil;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +42,7 @@ public class PigService {
         .orElseThrow(() -> new RuntimeException("User not found"));
     Wallet wallet = user.getWallet();
 
-    List<MyPig> myPigs = myPigRepository.findByWallet_Id(
+    List<MyPig> myPigs = myPigRepository.findByWalletId(
         wallet.getId()); //Wallet ID를 기준으로 MyPigs 엔티티 리스트를 반환
     return myPigs.stream().map(myPig -> PigResponseDto.builder().pigId(myPig.getPig().getId())
             .imageUrl(myPig.getPig().getImageUrl()).pigName(myPig.getPig().getPigName()).build())
@@ -58,11 +60,11 @@ public class PigService {
   }
 
   @Transactional
-  public List<PigResponseDto> getRandomPigsAndAddToWallet(PigRequestDto pigRequestDto) {
-    Integer count = pigRequestDto.getAmount();
+  public List<PigResponseDto> getRandomPigsAndAddToWallet(String amount) {
+    Integer count = Integer.parseInt(amount);
     // 현재 인증된 사용자 정보 가져오기
     String username = SecurityUtil.getAuthenticatedUsername();
-    // user에서  지갑 가져오기
+    // user에서 지갑 가져오기
     User user = userRepository.findByEmail(username)
         .orElseThrow(() -> new RuntimeException("User not found"));
     Long walletId = user.getWallet().getId();
@@ -78,23 +80,57 @@ public class PigService {
 
     List<Pig> allPigs = pigRepository.findAll(); // 모든 Pig 조회
 
-    // 랜덤으로 Pig 선택
-    Random random = new Random();
-    List<Pig> randomPigs = random.ints(0, allPigs.size()).limit(count).mapToObj(allPigs::get)
-        .toList();
+    // 지갑에 이미 저장된 돼지 목록 조회
+    List<MyPig> existingPigsInWallet = myPigRepository.findByWalletId(walletId);
 
-    //티켓 쓴 만큼 차감
+    // 이미 지갑에 있는 돼지 ID를 추출
+    Set<Long> existingPigIds = existingPigsInWallet.stream()
+        .map(myPig -> myPig.getPig().getId())
+        .collect(Collectors.toSet());
+
+    // 확률 기반으로 랜덤하게 돼지를 선택하는 로직
+    List<Pig> selectedPigs = new ArrayList<>();
+    List<Pig> newPigsToSave = new ArrayList<>(); // 새로 저장할 돼지 목록
+
+    for (int i = 0; i < count; i++) {
+      Pig selectedPig = getRandomPigByProbability(allPigs);  // 확률에 따른 Pig 선택
+      selectedPigs.add(selectedPig); // 선택된 돼지는 리스트에 추가
+
+      // 중복되지 않은 돼지만 저장 목록에 추가
+      if (!existingPigIds.contains(selectedPig.getId())) {
+        newPigsToSave.add(selectedPig);
+        existingPigIds.add(selectedPig.getId());  // 저장된 돼지 목록에 추가하여 중복 방지
+      }
+    }
+
+    // 티켓 쓴 만큼 차감
     wallet.updateTicket(wallet.getTicket() - count);
 
-    // MyPig에 뽑은 돼지 추가
-    for (Pig pig : randomPigs) {
+    // 중복되지 않은 돼지만 MyPig에 저장
+    for (Pig pig : newPigsToSave) {
       MyPig myPig = MyPig.builder().wallet(wallet).pig(pig).build();
       myPigRepository.save(myPig);
     }
 
-    // PigResponseDto 리스트 반환
-    return randomPigs.stream().map(
+    // PigResponseDto 리스트 반환 (선택된 돼지들을 반환)
+    return selectedPigs.stream().map(
         pig -> PigResponseDto.builder().pigId(pig.getId()).imageUrl(pig.getImageUrl())
             .pigName(pig.getPigName()).build()).toList();
+  }
+
+  private Pig getRandomPigByProbability(List<Pig> pigs) {
+    double totalProbability = pigs.stream().mapToDouble(Pig::getProbability).sum();  // 전체 확률의 합 계산
+
+    // 0부터 totalProbability 사이의 랜덤 값 생성
+    double randomValue = Math.random() * totalProbability;
+
+    double cumulativeProbability = 0.0;
+    for (Pig pig : pigs) {
+      cumulativeProbability += pig.getProbability();
+      if (randomValue <= cumulativeProbability) {
+        return pig;  // 누적 확률 범위에 해당하는 Pig 선택
+      }
+    }
+    return pigs.get(pigs.size() - 1); // 혹시 확률 범위에 해당하지 않으면 마지막 Pig 반환
   }
 }

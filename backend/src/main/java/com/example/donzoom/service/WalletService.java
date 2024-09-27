@@ -22,9 +22,9 @@ public class WalletService {
   private int ticketPrice;
 
   //가상머니로 돼지뽑기권 구매하기
-  public void buyTicket(TicketPurchaseRequestDto ticketPurchaseRequestDto) {
+  public void buyTicket(String count) {
 
-    int amount = ticketPurchaseRequestDto.getAmount();
+    int amount = Integer.parseInt(count);
     int totalPrice = amount * ticketPrice;
 
     // 현재 인증된 사용자 정보 가져오기
