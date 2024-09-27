@@ -33,6 +33,7 @@ function App() {
   };
 
   getToken(); // 앱이 시작될 때 토큰 확인
+  
   useEffect(() => {
     // 알림 채널 생성 (앱이 시작될 때)
     const createNotificationChannel = async () => {
