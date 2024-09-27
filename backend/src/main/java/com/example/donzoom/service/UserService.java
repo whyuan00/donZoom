@@ -66,9 +66,9 @@ public class UserService {
 
     //RefreshToken 발급 및 저장
     String refreshToken = jwtUtil.createRefreshJwt(email, role);
-
+    User user = findUserByEmail(email);
     log.info("토큰 발급 후입니다.");
-    return LoginResponseDto.builder().accessToken(accessToken).refreshToken(refreshToken).build();
+    return LoginResponseDto.builder().accessToken(accessToken).refreshToken(refreshToken).name(user.getName()).build();
   }
 
   public User findUserById(Long userId) {
