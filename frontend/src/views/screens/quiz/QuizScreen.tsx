@@ -30,7 +30,7 @@ function QuizScreen({navigation}: any) {
     setModalVisible(true);
   };
 
-  const handleViewComment = (navigation: any) => {
+  const handleViewComment = () => {
     setModalVisible(false);
     setSelectedAnswer(null);
     navigation.navigate('해설');

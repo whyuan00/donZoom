@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 
@@ -15,7 +14,7 @@ function QuizExplanationScreen({navigation}: any) {
     useQuizStore();
   const currentQuestion = todaysQuizQuestions[currentQuestionIndex];
 
-  const handleNextQuestion = (navigation: any) => {
+  const handleNextQuestion = () => {
     if (currentQuestionIndex < todaysQuizQuestions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       navigation.navigate('오늘의 퀴즈'); // 다음 문제로 이동
