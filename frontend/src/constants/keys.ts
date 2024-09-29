@@ -6,7 +6,8 @@ const queryKeys = {
   },
   ACCOUNT: {
     '': 'account',
-    ACCOUNTNO: 'getAccountNo',
+    ACCOUNTNO: 'accountNo',
+    ACCOUNTHOLDER: 'accountHolder',
   },
 } as const;
 

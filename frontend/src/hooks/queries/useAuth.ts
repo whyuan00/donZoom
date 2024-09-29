@@ -38,7 +38,7 @@ function useLogin(mutationOptions?: UseMutationCustomOptions) {
   });
 }
 
-function useGetProfile(queryOptions?: UseQueryCustomOptions) {
+function useGetProfile(queryOptions?: UseQueryCustomOptions<ResponseProfile>) {
   return useQuery({
     queryKey: [queryKeys.AUTH, queryKeys.AUTH.GET_PROFILE],
     queryFn: getProfile,

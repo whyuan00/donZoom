@@ -1,4 +1,7 @@
 import {
+  Account,
+  RequestAccountHolder,
+  ResponseBalance,
   getAccount,
   getAccountHistory,
   getAccountHolder,
@@ -23,7 +26,7 @@ function useInitAccount(mutationOptions?: UseMutationCustomOptions) {
   });
 }
 
-function useGetAccount(queryOptions?: UseQueryCustomOptions) {
+function useGetAccount(queryOptions?: UseQueryCustomOptions<ResponseBalance>) {
   return useQuery({
     queryKey: [queryKeys.ACCOUNT],
     queryFn: getAccount,
@@ -45,10 +48,13 @@ function usePostTransfer(mutationOptions?: UseMutationCustomOptions) {
   });
 }
 
-function useGetBalance(queryOptions?: UseQueryCustomOptions) {
+function useGetBalance(
+  accountNo: string,
+  queryOptions?: UseQueryCustomOptions<ResponseBalance>,
+) {
   return useQuery({
-    queryKey: [queryKeys.ACCOUNT],
-    queryFn: getBalance,
+    queryKey: [queryKeys.ACCOUNT, queryKeys.ACCOUNT.ACCOUNTNO, accountNo],
+    queryFn: () => getBalance(accountNo),
     ...queryOptions,
   });
 }
@@ -96,10 +102,13 @@ function usePatchAccountAuto(mutationOptions?: UseMutationCustomOptions) {
   });
 }
 
-function useGetAccountHolder(queryOptions?: UseQueryCustomOptions<any>) {
+function useGetAccountHolder(
+  accountNo: string,
+  queryOptions?: UseQueryCustomOptions<RequestAccountHolder>,
+) {
   return useQuery({
-    queryKey: [queryKeys.ACCOUNT, queryKeys.ACCOUNT.ACCOUNTNO],
-    queryFn: getAccountHolder,
+    queryKey: [queryKeys.ACCOUNT, queryKeys.ACCOUNT.ACCOUNTHOLDER, accountNo],
+    queryFn: () => getAccountHolder(accountNo),
     ...queryOptions,
   });
 }
@@ -109,27 +118,25 @@ function useAccount() {
   const getAccount = useGetAccount();
   const cardMutation = usePostCard();
   const transferMutation = usePostTransfer();
-  const getBalance = useGetBalance();
   const getAccountHistory = useGetAccountHistory();
   const accountLimitMutation = usePatchAccountLimit();
   const dailyLimitMutation = usePutDailyLimit();
   const perTransactionLimitMutation = usePutPerTransactionLimit();
   const accountAutoMutation = usePostAccountAuto();
   const patchAccountAutoMutation = usePatchAccountAuto();
-  const getAccountHolder = useGetAccountHolder();
   return {
     initAccountMutation,
     getAccount,
     cardMutation,
     transferMutation,
-    getBalance,
+    useGetBalance,
     getAccountHistory,
     accountLimitMutation,
     dailyLimitMutation,
     perTransactionLimitMutation,
     accountAutoMutation,
     patchAccountAutoMutation,
-    getAccountHolder,
+    useGetAccountHolder,
   };
 }
 

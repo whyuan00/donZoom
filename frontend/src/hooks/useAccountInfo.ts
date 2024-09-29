@@ -20,33 +20,14 @@ function useAccountBalance(): AccountBalanceHook {
 
   const fetchAccount = () => {
     setIsLoading(true);
-    getAccount.mutate(null, {
-      onSuccess: data => {
-        setAccount(data.rec[0].accountNo);
-        fetchBalance(data.rec[0].accountNo);
-        setAccountName(data.rec[0].userName);
-      },
-      onError: err => {
-        setError(err as Error);
-        setIsLoading(false);
-      },
-    });
+    setAccount(getAccount.data ? getAccount.data.rec[0].accountNo : '');
+    fetchBalance(getAccount.data ? getAccount.data.rec[0].accountNo : '');
+    setAccountName(getAccount.data ? getAccount.data.rec[0].userName : '');
   };
 
   const fetchBalance = (accountNo: string) => {
-    getBalance.mutate(
-      {accountNo},
-      {
-        onSuccess: data => {
-          setBalance(data.rec[0].accountBalance);
-          setIsLoading(false);
-        },
-        onError: err => {
-          setError(err as Error);
-          setIsLoading(false);
-        },
-      },
-    );
+    setBalance(getAccount.data ? getAccount.data.rec[0].accountBalance : '');
+    setIsLoading(false);
   };
 
   const refetch = () => {

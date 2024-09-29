@@ -107,7 +107,7 @@ type ResponseBalance = {
   }>;
 };
 
-const getBalance = async ({accountNo}: Account): Promise<ResponseBalance> => {
+const getBalance = async (accountNo: string): Promise<ResponseBalance> => {
   const {data} = await axiosInstance.get('/account', {
     params: {
       accountNo: accountNo,
@@ -192,6 +192,8 @@ type RequestAccountHolder = {
 const getAccountHolder = async (
   accountNo: string,
 ): Promise<RequestAccountHolder> => {
+  console.log('getAccountHolder 호출');
+  console.log('accountNo:', accountNo);
   const {data} = await axiosInstance.get('/account/holder', {
     params: {
       accountNo: accountNo,
@@ -214,4 +216,16 @@ export {
   postAccountAuto,
   patchAccountAuto,
   getAccountHolder,
+};
+
+export type {
+  RequestCard,
+  RequestTransfer,
+  ResponseAccountHistory,
+  RequestAccountLimit,
+  RequestDailyLimit,
+  ReauestDailyLimit,
+  Account,
+  ResponseBalance,
+  RequestAccountHolder,
 };
