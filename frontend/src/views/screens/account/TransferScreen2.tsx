@@ -24,27 +24,30 @@ export default function TransferScreen2({navigation}: any) {
     name: holderName,
     setName: setHolderName,
   } = useTransferStore();
-  const {getAccountHolder} = useAccount();
+  const {useGetAccountHolder} = useAccount();
   const {name} = useSignupStore();
+  console.log('name:', name);
+  const {
+    data: accountHolderData,
+    isLoading: accountHolderLoading,
+    error: accountHolderError,
+  } = useGetAccountHolder(accountNo);
 
   const onPressNext = () => {
     navigation.navigate('송금3');
   };
 
-  const getAccountName = () => {
-    getAccountHolder.mutate(accountNo, {
-      onSuccess: data => {
-        setHolderName(data.name);
-      },
-    });
-    getAccountHolder('123123');
-  };
+  useEffect(() => {
+    if (accountHolderData) {
+      setHolderName(accountHolderData.name);
+    }
+  }, [accountHolderData, setHolderName]);
 
-  useFocusEffect(
-    useCallback(() => {
-      getAccountName();
-    }, []),
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     getAccountName();
+  //   }, []),
+  // );
 
   return (
     <View style={styles.container}>
