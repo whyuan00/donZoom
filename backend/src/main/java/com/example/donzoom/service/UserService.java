@@ -105,6 +105,7 @@ public class UserService {
   }
 
 
+
   public User findUserByEmail(String email) {
     return userRepository.findByEmail(email)
         .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 유저를 찾을 수 없습니다."));
