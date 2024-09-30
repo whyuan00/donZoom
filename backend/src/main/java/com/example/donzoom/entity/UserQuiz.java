@@ -30,10 +30,10 @@ public class UserQuiz extends BaseEntity {
   @JoinColumn(name = "quiz_id")
   private Quiz quiz;
 
-  private Integer selectedAnswer;
+  private String selectedAnswer;
 
   @Builder
-  public UserQuiz(User user, Quiz quiz, Integer selectedAnswer) {
+  public UserQuiz(User user, Quiz quiz, String selectedAnswer) {
     this.user = user;
     this.quiz = quiz;
     this.selectedAnswer = selectedAnswer;
