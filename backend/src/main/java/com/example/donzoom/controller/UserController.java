@@ -124,4 +124,16 @@ public class UserController {
     // 응답 상태 200 OK 반환
     return new ResponseEntity<>(HttpStatus.OK);
   }
+
+  @PostMapping("/update")
+  public ResponseEntity<?> update(@RequestPart("file") MultipartFile file,
+      @ModelAttribute UserUpdateRequestDto userUpdateRequestDto) {
+    log.info("GET : /api/user/update");
+    try {
+      userService.updateUser(file, userUpdateRequestDto);
+    }catch(Exception e) {
+      log.error(e.getMessage());
+    }
+    return ResponseEntity.ok().build();
+  }
 }
