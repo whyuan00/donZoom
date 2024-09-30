@@ -78,9 +78,7 @@ public class UserService {
 
   public void updateUser(MultipartFile file, UserUpdateRequestDto userUpdateRequestDto)
       throws Exception {
-    log.info("updateUser SErvice");
     String username = SecurityUtil.getAuthenticatedUsername();
-    log.info(username);
     User user = userRepository.findByEmail(username)
         .orElseThrow(() -> new RuntimeException("User not found"));
     // 파일을 로컬/서버에 저장
@@ -93,9 +91,7 @@ public class UserService {
   }
 
   public User findCurrentUser(){
-    log.info("findCurrent User");
     String username = SecurityUtil.getAuthenticatedUsername();
-    log.info(username);
     return userRepository.findByEmail(username).orElseThrow(()->new IllegalArgumentException("현재 로그인 된 유저를 찾을 수 없습니다."));
   }
 
@@ -103,8 +99,6 @@ public class UserService {
     return userRepository.findById(userId)
         .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 유저를 찾을 수 없습니다."));
   }
-
-
 
   public User findUserByEmail(String email) {
     return userRepository.findByEmail(email)
@@ -114,5 +108,10 @@ public class UserService {
   public User findUserByAccountNo(String accountNo) {
     return userRepository.findByAccountNo(accountNo)
         .orElseThrow(() -> new IllegalArgumentException("해당 계좌번호의 유저를 찾을 수 없습니다."));
+  }
+
+  public void updatePaymentPassword(String paymentPassword){
+    User user = findCurrentUser();
+    user.updatePaymentPassword(paymentPassword);
   }
 }

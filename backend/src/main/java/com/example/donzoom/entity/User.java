@@ -69,6 +69,8 @@ public class User extends BaseEntity {
 
   private String accountNo;
 
+  private String paymentPwdHash;
+
   @Builder
   public User(User parent, String email, String pwdHash, String name, String nickname, String profileImage,
       String userKey, Boolean isParent, String role, String provider, Wallet wallet,
@@ -91,6 +93,7 @@ public class User extends BaseEntity {
     }
     this.dailyUsageAmount = 0L;
     this.accountNo = null;
+    this.paymentPwdHash = null;
   }
 
 
@@ -129,11 +132,17 @@ public class User extends BaseEntity {
   // 유저 프로필이미지 업데이트
   public void updateProfileImage(String profileImage) {this.profileImage = profileImage;}
 
+  // 유저 추가정보 입력
   public void updateAdditionalInfo(String name, String nickname, String profileImage, Boolean isParent) {
     this.name = name;
     this.nickname = nickname;
     this.profileImage = profileImage;
     this.isParent = isParent;
+  }
+
+  // 유저 결제 비밀번호 입력
+  public void updatePaymentPassword(String hashedPaymentPassword){
+    this.paymentPwdHash = hashedPaymentPassword;
   }
 
 }

@@ -13,15 +13,19 @@ import com.example.donzoom.dto.account.response.CardListResponseDto;
 import com.example.donzoom.dto.account.response.CreateCardResponseDto;
 import com.example.donzoom.dto.account.response.TransactionResponseDto;
 import com.example.donzoom.dto.account.response.TransferResponseDto;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Random;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Slf4j
 @Component
@@ -99,8 +103,38 @@ public class BankApi {
   //회원생성
   public BankUserResponseDto createMember(String userId) {
     CreateMemberDto member = CreateMemberDto.builder().apiKey(apiKey).userId(userId).build();
-    return webClient.post().uri(createMemberUrl).bodyValue(member).retrieve()
-        .bodyToMono(BankUserResponseDto.class).block();
+
+    try {
+      // 회원 생성 시도
+      return webClient.post().uri(createMemberUrl).bodyValue(member).retrieve()
+          .bodyToMono(BankUserResponseDto.class)
+          .block();  // 동기식으로 블록 처리
+
+    } catch (WebClientResponseException e) {
+      // 서버에서 HTTP 상태 코드 4xx 또는 5xx로 응답한 경우 처리
+      if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
+        // 에러 메시지를 파싱하여 이미 존재하는 회원일 경우 처리
+        try {
+          ObjectMapper objectMapper = new ObjectMapper();
+          JsonNode errorJson = objectMapper.readTree(e.getResponseBodyAsString());
+          String responseCode = errorJson.get("responseCode").asText();
+
+          if ("E4002".equals(responseCode)) {
+            // 이미 존재하는 회원일 때 getMember를 호출하여 처리
+            return getMember(userId);
+          }
+        } catch (Exception parseException) {
+          throw new RuntimeException("에러 메시지 파싱 중 오류가 발생했습니다.", parseException);
+        }
+      }
+
+      // 그 외의 경우는 일반 예외 처리
+      throw new RuntimeException("회원 생성 중 오류가 발생했습니다.", e);
+
+    } catch (Exception e) {
+      // 그 외의 모든 예외 처리
+      throw new RuntimeException("회원 생성 중 서버 오류가 발생했습니다.", e);
+    }
   }
 
   public BankUserResponseDto getMember(String userId) {

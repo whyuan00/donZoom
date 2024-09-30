@@ -5,15 +5,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 
-@Builder
 @Getter
-public class ValidatePaymentPasswordRequestDto {
+@Builder
+public class CreateAccountRequestDto {
 
   private final String paymentPassword;
 
   @JsonCreator
-  public ValidatePaymentPasswordRequestDto(
-      @JsonProperty("paymentPassword") String paymentPassword) {
+  public CreateAccountRequestDto(@JsonProperty("paymentPassword") String paymentPassword) {
     this.paymentPassword = paymentPassword;
   }
 }

@@ -2,12 +2,13 @@ package com.example.donzoom.controller;
 
 import com.example.donzoom.dto.account.request.AutoTransferRequestDto;
 import com.example.donzoom.dto.account.request.AutoTransferUpdateRequestDto;
+import com.example.donzoom.dto.account.request.CreateAccountRequestDto;
 import com.example.donzoom.dto.account.request.CreateCardRequestDto;
 import com.example.donzoom.dto.account.request.PayRequestDto;
 import com.example.donzoom.dto.account.request.TransactionRequestDto;
 import com.example.donzoom.dto.account.request.TransferRequestDto;
 import com.example.donzoom.dto.account.request.UpdateLimitRequestDto;
-import com.example.donzoom.dto.account.response.AccountCreateResponseDto;
+import com.example.donzoom.dto.account.request.ValidatePaymentPasswordRequestDto;
 import com.example.donzoom.dto.account.response.AccountResponseDto;
 import com.example.donzoom.dto.account.response.BalanceResponseDto;
 import com.example.donzoom.dto.account.response.BankUserResponseDto;
@@ -16,8 +17,10 @@ import com.example.donzoom.dto.account.response.GetUserByAccountNoResponseDto;
 import com.example.donzoom.dto.account.response.TransactionResponseDto;
 import com.example.donzoom.dto.account.response.TransferResponseDto;
 import com.example.donzoom.service.AccountService;
+import com.example.donzoom.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -39,8 +42,10 @@ public class AccountController {
   private final AccountService accountService;
 
   @PostMapping
-  public AccountCreateResponseDto createAccount() {
-    return accountService.createDemandDepositAccount();
+  public ResponseEntity<?>  createAccount(
+      @RequestBody CreateAccountRequestDto createAccountRequestDto) {
+    accountService.createDemandDepositAccount(createAccountRequestDto);
+    return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
   @GetMapping
@@ -136,5 +141,15 @@ public class AccountController {
   @GetMapping("/member")
   public BankUserResponseDto getMember() {
     return accountService.getMember();
+  }
+
+  @PostMapping("/check")
+  public ResponseEntity<?> validate(
+      @RequestBody ValidatePaymentPasswordRequestDto validatePaymentPasswordRequestDto) {
+    if (accountService.validatePassword(validatePaymentPasswordRequestDto)) {
+      return ResponseEntity.ok().build();
+    } else {
+      return new ResponseEntity<>("결제 비밀번호가 틀렸습니다.",HttpStatus.UNAUTHORIZED);
+    }
   }
 }
