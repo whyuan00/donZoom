@@ -16,6 +16,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -58,6 +61,7 @@ public class SecurityConfig {
     //                        return configuration;
     //                    }
     //                })));
+
     http.cors(AbstractHttpConfigurer::disable);
 
     // csrf 설정 ( PUT DELETE POST 막는거 끄끼 RESTFUL 어플리케이션이면 비활성화 )
@@ -74,6 +78,8 @@ public class SecurityConfig {
         //                .requestMatchers("/register").authenticated()
         .requestMatchers("/assets/**", "/favicon.ico", "/index.html").permitAll()
         .requestMatchers("/user/**", "/oauth2/**", "/login/**","/auth/**").permitAll()
+        .requestMatchers("/websocket/**").permitAll()
+//        .requestMatchers("/api/websocket/**").permitAll()
         //                .anyRequest().authenticated());
         .anyRequest().permitAll());
 
@@ -91,5 +97,6 @@ public class SecurityConfig {
 
     return http.build();
   }
+
 }
 

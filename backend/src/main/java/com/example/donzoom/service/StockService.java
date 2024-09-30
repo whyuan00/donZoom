@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class StockService {
 
   private final UserService userService;
+  private final SimpMessagingTemplate messagingTemplate;
 
   private final NewsRepository newsRepository;
   private final StockWalletRepository stockWalletRepository;
@@ -150,8 +152,13 @@ public class StockService {
   public StockTransactionHistoryResponseDto buyStocks(Long stockId, Integer amount) {
     String email = SecurityUtil.getAuthenticatedUsername();
     User user = userService.findUserByEmail(email);
-    //    Long walletId = walletService.getWalletId(user.getId());
-    Long walletId = user.getId(); // TODO: 1:1이라 이렇게 해도 상관없긴 하겠다
+
+    Long walletId;
+    if(user.getWallet() == null) {
+      throw new NoSuchElementException("No such wallet");
+    } else {
+      walletId = user.getWallet().getId();
+    }
 
     // 내 지갑 찾아오기
     Wallet myWallet = walletRepository.findById(walletId)
@@ -229,8 +236,13 @@ public class StockService {
   public StockTransactionHistoryResponseDto sellStocks(Long stockId, Integer amount) {
     String email = SecurityUtil.getAuthenticatedUsername();
     User user = userService.findUserByEmail(email);
-    //    Long walletId = walletService.getWalletId(user.getId());
-    Long walletId = user.getId(); // TODO: 1:1이라 이렇게 해도 상관없긴 하겠다
+
+    Long walletId;
+    if(user.getWallet() == null) {
+      throw new NoSuchElementException("No such wallet");
+    } else {
+      walletId = user.getWallet().getId();
+    }
 
     // 내 지갑 찾아오기
     Wallet myWallet = walletRepository.findById(walletId)
@@ -304,6 +316,9 @@ public class StockService {
         .orElseThrow(() -> new NoSuchElementException("Stock not found"));
     StockHistory stockHistory = StockHistory.builder().stock(stock)
         .price(stockRequestDto.getPrice()).createdAt(stockRequestDto.getCreatedAt()).build();
+
+    // 여기서 WebSocket 전송
+    messagingTemplate.convertAndSend("/topic/stock/" + stockId, stockHistory);
 
     stockHistoryRepository.save(stockHistory);
     return stockHistory.getId();

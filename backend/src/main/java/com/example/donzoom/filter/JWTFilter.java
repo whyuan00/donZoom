@@ -34,7 +34,7 @@ public class JWTFilter extends OncePerRequestFilter {
       "/api/login/oauth2/code/kakao", "/login/oauth2/code/kakao",
       "/api/login/oauth2/code/naver", "/login/oauth2/code/naver",
       "/api/login/oauth2/code/google", "/login/oauth2/code/google", "/app/**",
-      "/archive-websocket/**");
+      "/api/websocket/info");
   private final JWTUtil jwtUtil;
 
   @Override
@@ -46,6 +46,10 @@ public class JWTFilter extends OncePerRequestFilter {
     if (path.matches("^/api/stock/\\d+$")) {
       return true;  // 이 경로는 JWT 검사를 제외
     }
+    if (path.startsWith("/api/websocket/")) {
+      return true;
+    }
+
     // POST 요청인 경우 회원가입은 필터 제외
     if (path.equals("/api/user") && method.equals("POST")) {
       return true;  // 회원가입은 JWT 검증 제외
