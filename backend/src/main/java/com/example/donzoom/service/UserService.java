@@ -3,19 +3,23 @@ package com.example.donzoom.service;
 import com.example.donzoom.dto.user.CustomUserDetails;
 import com.example.donzoom.dto.user.request.LoginRequestDto;
 import com.example.donzoom.dto.user.request.UserCreateDto;
+import com.example.donzoom.dto.user.request.UserUpdateRequestDto;
 import com.example.donzoom.dto.user.response.LoginResponseDto;
 import com.example.donzoom.entity.User;
 import com.example.donzoom.entity.Wallet;
 import com.example.donzoom.exception.DuplicateEmailException;
 import com.example.donzoom.repository.UserRepository;
 import com.example.donzoom.repository.WalletRepository;
+import com.example.donzoom.util.FileUploadUtil;
 import com.example.donzoom.util.JWTUtil;
+import com.example.donzoom.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -23,10 +27,11 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
   private final AuthenticationManager authenticationManager;
-  private final UserRepository userRepository;
   private final PasswordService passwordService;
-  private final JWTUtil jwtUtil;
+  private final UserRepository userRepository;
   private final WalletRepository walletRepository;
+  private final JWTUtil jwtUtil;
+  private final FileUploadUtil fileUploadUtil;
 
   public Long registerUser(UserCreateDto userCreateDto) {
 
@@ -47,8 +52,7 @@ public class UserService {
     return user.getId();
   }
 
-  public LoginResponseDto login(LoginRequestDto loginRequestDto) {
-    log.info("로그인 요청입니다.");
+  public LoginResponseDto login(LoginRequestDto loginRequestDto) {log.info("로그인 요청입니다.");
     // 인증 객체 생성 및 검증
     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
         loginRequestDto.getEmail(), loginRequestDto.getPassword());
@@ -68,7 +72,31 @@ public class UserService {
     String refreshToken = jwtUtil.createRefreshJwt(email, role);
     User user = findUserByEmail(email);
     log.info("토큰 발급 후입니다.");
-    return LoginResponseDto.builder().accessToken(accessToken).refreshToken(refreshToken).name(user.getName()).build();
+    return LoginResponseDto.builder().accessToken(accessToken).refreshToken(refreshToken)
+        .name(user.getName()).build();
+  }
+
+  public void updateUser(MultipartFile file, UserUpdateRequestDto userUpdateRequestDto)
+      throws Exception {
+    log.info("updateUser SErvice");
+    String username = SecurityUtil.getAuthenticatedUsername();
+    log.info(username);
+    User user = userRepository.findByEmail(username)
+        .orElseThrow(() -> new RuntimeException("User not found"));
+    // 파일을 로컬/서버에 저장
+    String fileUri = fileUploadUtil.saveFile(file);
+
+    // 프로필 이미지 경로를 DB에 업데이트
+    user.updateAdditionalInfo(userUpdateRequestDto.getName(), userUpdateRequestDto.getNickname(),
+        fileUri, userUpdateRequestDto.getIsParent());
+    userRepository.save(user);
+  }
+
+  public User findCurrentUser(){
+    log.info("findCurrent User");
+    String username = SecurityUtil.getAuthenticatedUsername();
+    log.info(username);
+    return userRepository.findByEmail(username).orElseThrow(()->new IllegalArgumentException("현재 로그인 된 유저를 찾을 수 없습니다."));
   }
 
   public User findUserById(Long userId) {
@@ -76,10 +104,13 @@ public class UserService {
         .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 유저를 찾을 수 없습니다."));
   }
 
+
+
   public User findUserByEmail(String email) {
     return userRepository.findByEmail(email)
         .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 유저를 찾을 수 없습니다."));
   }
+
   public User findUserByAccountNo(String accountNo) {
     return userRepository.findByAccountNo(accountNo)
         .orElseThrow(() -> new IllegalArgumentException("해당 계좌번호의 유저를 찾을 수 없습니다."));
