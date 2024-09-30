@@ -87,7 +87,7 @@ public class JWTFilter extends OncePerRequestFilter {
       } else {
         // auth 정보가 없는 경우
         log.info("유효한 Authorization 헤더가 없습니다.");
-        return;
+//        return;
       }
       filterChain.doFilter(request, response);
     } catch (JwtException e) {
