@@ -17,6 +17,12 @@ public class FileUploadUtil {
   @Value("${file.upload-dir}")
   private String uploadDir;
 
+  @Value("${backend.uri}")
+  private String serverUrl;
+
+  @Value("${server.servlet.context-path}")
+  private String contextPath;
+
   public String saveFile(MultipartFile file) throws IOException {
     // 원래 파일 이름 가져오기
     String originalFileName = file.getOriginalFilename();
@@ -32,7 +38,8 @@ public class FileUploadUtil {
     Files.createDirectories(filePath.getParent());
     Files.copy(file.getInputStream(), filePath);
 
-    return uniqueFileName;  // 저장된 파일 이름 리턴
+    // 저장된 파일의 전체 URL을 반환 (서버 URL + 파일 경로)
+    return serverUrl +contextPath+ "/uploads/" + uniqueFileName;
   }
 
   // 파일 확장자 가져오기

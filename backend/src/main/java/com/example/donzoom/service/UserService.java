@@ -78,10 +78,11 @@ public class UserService {
 
   public void updateUser(MultipartFile file, UserUpdateRequestDto userUpdateRequestDto)
       throws Exception {
+    log.info("updateUser SErvice");
     String username = SecurityUtil.getAuthenticatedUsername();
+    log.info(username);
     User user = userRepository.findByEmail(username)
         .orElseThrow(() -> new RuntimeException("User not found"));
-    log.info(username);
     // 파일을 로컬/서버에 저장
     String fileUri = fileUploadUtil.saveFile(file);
 
@@ -92,6 +93,7 @@ public class UserService {
   }
 
   public User findCurrentUser(){
+    log.info("findCurrent User");
     String username = SecurityUtil.getAuthenticatedUsername();
     log.info(username);
     return userRepository.findByEmail(username).orElseThrow(()->new IllegalArgumentException("현재 로그인 된 유저를 찾을 수 없습니다."));

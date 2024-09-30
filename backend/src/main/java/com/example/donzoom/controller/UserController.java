@@ -53,6 +53,7 @@ public class UserController {
 
   @GetMapping
   public ResponseEntity<?> getCurrentUserInfo(){
+    log.info("GET : /api/user");
     User loginUser = userService.findCurrentUser();
     UserInfoResponseDto userInfoResponseDto = UserInfoResponseDto.builder()
         .id(loginUser.getId())
@@ -129,6 +130,7 @@ public class UserController {
   @PostMapping("/update")
   public ResponseEntity<?> update(@RequestPart("file") MultipartFile file,
       @ModelAttribute UserUpdateRequestDto userUpdateRequestDto) {
+    log.info("GET : /api/user/update");
     try {
       userService.updateUser(file, userUpdateRequestDto);
     }catch(Exception e) {

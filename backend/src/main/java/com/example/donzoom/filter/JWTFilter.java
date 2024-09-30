@@ -28,29 +28,36 @@ public class JWTFilter extends OncePerRequestFilter {
   private static final List<String> EXCLUDE_PATHS = Arrays.asList(
 
       "/users/check-email", "/auth/login", "/auth/logout", "/auth/token", "/auth/refresh", "/login",
-      "/user", "/api/user", "/user/login", "/api/user/login", "login/oauth2/code/kakao",
+      "/user/login", "/api/user/login",
       "/api/auth/google", "/auth/google",
-      "api/auth/google", "auth/google",
       "/api/fcm/send","/fcm/send",
-      "/api/login/oauth2/code/kakao", "/login/oauth2/code/kakao", "login/oauth2/code/naver",
-      "/api/login/oauth2/code/naver", "/login/oauth2/code/naver", "login/oauth2/code/google",
+      "/api/login/oauth2/code/kakao", "/login/oauth2/code/kakao",
+      "/api/login/oauth2/code/naver", "/login/oauth2/code/naver",
       "/api/login/oauth2/code/google", "/login/oauth2/code/google", "/app/**",
       "/archive-websocket/**");
   private final JWTUtil jwtUtil;
 
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
-    String path = request.getServletPath();
+    String path = request.getRequestURI();
+    String method = request.getMethod();
+    log.info(path);
+    log.info(method);
     if (path.matches("^/api/stock/\\d+$")) {
       return true;  // 이 경로는 JWT 검사를 제외
+    }
+    // POST 요청인 경우 회원가입은 필터 제외
+    if (path.equals("/api/user") && method.equals("POST")) {
+      return true;  // 회원가입은 JWT 검증 제외
     }
     if (path.matches("^/api/news/\\d+$")) {
       return true;  // 이 경로는 JWT 검사를 제외
     }
-    if (path.matches("^/api/report/\\d+$")) {
-      return true;  // 이 경로는 JWT 검사를 제외
+    // /api/uploads/{파일명} 경로는 JWT 검증 제외
+    if (path.matches("^/api/uploads/.*$")) {
+      return true;  // 이 경로는 JWT 검증 제외
     }
-    if (path.matches("^/fcm/")) {
+    if (path.matches("^/api/report/\\d+$")) {
       return true;  // 이 경로는 JWT 검사를 제외
     }
     if (path.matches("^/api/fcm/")) {
@@ -72,12 +79,15 @@ public class JWTFilter extends OncePerRequestFilter {
 
     try {
       if (authorization != null && authorization.startsWith("Bearer ")) {
+        // auth정보가 있고, 토큰 이름이 Bearer로 시작하는 경우
         log.info("Access 토큰 인증을 시작합니다.");
         if (!handleAccessToken(authorization, response)) {
           return; // 토큰 처리 중 오류 발생 시 필터 체인 중단
         }
       } else {
+        // auth 정보가 없는 경우
         log.info("유효한 Authorization 헤더가 없습니다.");
+        return;
       }
       filterChain.doFilter(request, response);
     } catch (JwtException e) {
