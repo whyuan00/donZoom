@@ -1,5 +1,7 @@
 package com.example.donzoom.dto.quiz.request;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -7,5 +9,10 @@ import lombok.Getter;
 @Builder
 public class QuizAnswerDto {
 
-  private final Integer answer;
+  private final String answer;
+
+  @JsonCreator
+  public QuizAnswerDto(@JsonProperty("answer") String answer) {
+    this.answer = answer;
+  }
 }
