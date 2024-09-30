@@ -30,6 +30,7 @@ import {
 import axiosInstance from '@/api/axios';
 import NaverLogin from '@react-native-seoul/naver-login';
 import {useSignupStore} from '@/stores/useAuthStore';
+import useAccountBalance from '@/hooks/useAccountInfo';
 
 function LoginScreen({navigation}: any) {
   const passwordRef = useRef<TextInput | null>(null);
@@ -37,6 +38,7 @@ function LoginScreen({navigation}: any) {
   const [selected, setSelected] = useState('');
   const {errorMessage, clearErrorMessage} = useErrorStore();
   const {setName, setNickname} = useSignupStore();
+  const {refetch} = useAccountBalance();
   const login = useForm({
     initialValue: {
       email: '',
@@ -143,16 +145,22 @@ function LoginScreen({navigation}: any) {
       console.error('Kakao login failed', error);
     }
   };
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     try {
-      loginMutation.mutate(login.values, {
-        onSuccess: () => {
-          setName(getProfileQuery.data ? getProfileQuery.data.username : '');
-          console.log(getProfileQuery.data);
-        },
-      });
+      await loginMutation.mutateAsync(login.values);
+      const profileData = await getProfileQuery.refetch();
+      if (profileData.data) {
+        setName(profileData.data.name || 'asdf');
+        // console.log('profile:', profileData.data);
+        console.log(isLogin);
+      } else {
+        console.log('Profile data is not available');
+      }
+
       clearErrorMessage();
-    } catch {}
+    } catch (error) {
+      console.error('Login or profile fetch error:', error);
+    }
   };
 
   return (

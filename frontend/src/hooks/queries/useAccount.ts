@@ -1,5 +1,6 @@
 import {
   Account,
+  AccountResult,
   RequestAccountHolder,
   ResponseBalance,
   getAccount,

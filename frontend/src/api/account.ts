@@ -1,3 +1,4 @@
+import axios, {AxiosError} from 'axios';
 import axiosInstance from './axios';
 
 type RequestCard = {
@@ -42,10 +43,29 @@ const postinitAccount = async (): Promise<void> => {
   console.log(response);
 };
 
+interface AccountResult {
+  success: boolean;
+  data?: ResponseBalance;
+  error?: {
+    message: string;
+    status: number;
+  };
+}
+
 const getAccount = async (): Promise<ResponseBalance> => {
-  const {data} = await axiosInstance.get('/account');
-  // console.log(data);
-  return data;
+  try {
+    const {data} = await axiosInstance.get<ResponseBalance>('/account');
+    return data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError;
+      console.error('Error fetching account:', axiosError.response?.data);
+      throw error; // 에러를 다시 throw하여 React Query가 처리하도록 합니다.
+    } else {
+      console.error('Unexpected error:', error);
+      throw new Error('An unexpected error occurred');
+    }
+  }
 };
 
 const postCard = async ({
@@ -228,4 +248,5 @@ export type {
   Account,
   ResponseBalance,
   RequestAccountHolder,
+  AccountResult,
 };

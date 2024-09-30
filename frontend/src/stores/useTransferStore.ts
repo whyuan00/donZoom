@@ -7,15 +7,21 @@ interface AccountState {
   setAccountNo: (accountNo: string) => void;
   setAmount: (amount: string) => void;
   setName: (name: string) => void;
+  reset: () => void;
 }
 
-const useTransferStore = create<AccountState>(set => ({
+const initialState = {
   accountNo: '',
   amount: '0',
   name: '',
+};
+
+const useTransferStore = create<AccountState>(set => ({
+  ...initialState,
   setAccountNo: accountNo => set({accountNo}),
   setAmount: amount => set({amount}),
   setName: name => set({name}),
+  reset: () => set(initialState),
 }));
 
 export default useTransferStore;

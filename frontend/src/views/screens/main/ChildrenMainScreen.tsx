@@ -21,17 +21,23 @@ import Profile from '@/views/components/HomeProfile';
 import useAccount from '@/hooks/queries/useAccount';
 import {useState, useEffect} from 'react';
 import useAccountBalance from '@/hooks/useAccountInfo';
+import {useSignupStore} from '@/stores/useAuthStore';
 
 function ChildrenMainScreen() {
   const navigation = useNavigation() as any;
   const {account, balance, isLoading, error, refetch} = useAccountBalance();
+  const {name} = useSignupStore();
+
+  useEffect(() => {
+    refetch();
+  }, [name]);
 
   return (
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.contentsContainer}>
           <View style={styles.profileContainer}>
-            <Profile name="사과" />
+            <Profile name={name} />
           </View>
           <View style={styles.mypageContainer}>
             <TouchableOpacity
@@ -48,42 +54,48 @@ function ChildrenMainScreen() {
             </TouchableOpacity>
           </View>
           <View style={styles.moneyContainer}>
-            <View>
-              <Text style={styles.moneyTitleText}>
-                이번달 남은 <Text style={{fontFamily: fonts.BOLD}}>용돈</Text>은
-              </Text>
-              <View style={styles.moneyContentsContainer}>
-                <View style={styles.moneyAccountContainer}>
-                  <Text style={styles.moneyText}>{`${parseInt(
-                    balance,
-                  ).toLocaleString()}원`}</Text>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate('계좌관리')}>
-                    <Text style={styles.moneyAccountText}>
-                      내 계좌 관리하기
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate('계좌개설')}>
-                    <Text style={styles.moneyAccountText}>계좌 개설하기</Text>
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.iconContainer}>
-                  <NextIcon
-                    name="navigate-next"
-                    size={40}
-                    color={colors.BLACK}
-                  />
-                </View>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('QRCodeScanner')}>
-                  <View style={styles.payContainer}>
-                    <PayIcon width={50} height={50} />
-                    <Text style={styles.payText}>결제</Text>
+            {account !== '' ? (
+              <View>
+                <Text style={styles.moneyTitleText}>
+                  이번달 남은 <Text style={{fontFamily: fonts.BOLD}}>용돈</Text>
+                  은
+                </Text>
+                <View style={styles.moneyContentsContainer}>
+                  <View style={styles.moneyAccountContainer}>
+                    <Text style={styles.moneyText}>{`${parseInt(
+                      balance,
+                    ).toLocaleString()}원`}</Text>
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('계좌관리')}>
+                      <Text style={styles.moneyAccountText}>
+                        내 계좌 관리하기
+                      </Text>
+                    </TouchableOpacity>
                   </View>
+                  <View style={styles.iconContainer}>
+                    <NextIcon
+                      name="navigate-next"
+                      size={40}
+                      color={colors.BLACK}
+                    />
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('QRCodeScanner')}>
+                    <View style={styles.payContainer}>
+                      <PayIcon width={50} height={50} />
+                      <Text style={styles.payText}>결제</Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ) : (
+              <View>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('계좌개설')}>
+                  <Text style={styles.moneyAccountText}>계좌 개설하기</Text>
                 </TouchableOpacity>
               </View>
-            </View>
+            )}
           </View>
           <TouchableOpacity
             style={styles.missionContainer}

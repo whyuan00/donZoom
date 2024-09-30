@@ -16,17 +16,28 @@ function useAccountBalance(): AccountBalanceHook {
   const [accountName, setAccountName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const {getAccount, getBalance} = useAccount();
+  const {getAccount} = useAccount();
 
-  const fetchAccount = () => {
+  const fetchAccount = async () => {
     setIsLoading(true);
-    setAccount(getAccount.data ? getAccount.data.rec[0].accountNo : '');
-    fetchBalance(getAccount.data ? getAccount.data.rec[0].accountNo : '');
-    setAccountName(getAccount.data ? getAccount.data.rec[0].userName : '');
+    const accountData = await getAccount.refetch();
+    // console.log('accountData:', accountData.data);
+    if (accountData.isSuccess) {
+      console.log('success:', accountData);
+      setAccount(accountData.data ? accountData.data.rec[0].accountNo : '');
+      fetchBalance(accountData.data ? accountData.data.rec[0].accountNo : '');
+      setAccountName(accountData.data ? accountData.data.rec[0].userName : '');
+    } else {
+      console.log('failed:', accountData);
+      setAccount('');
+      fetchBalance('0');
+      setAccountName('');
+    }
   };
 
-  const fetchBalance = (accountNo: string) => {
-    setBalance(getAccount.data ? getAccount.data.rec[0].accountBalance : '');
+  const fetchBalance = async (accountNo: string) => {
+    const accountData = await getAccount.refetch();
+    setBalance(accountData.data ? accountData.data.rec[0].accountBalance : '');
     setIsLoading(false);
   };
 

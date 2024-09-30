@@ -35,7 +35,7 @@ export default function TransferScreen3({navigation}: any) {
   };
 
   const onPressNext = () => {
-    // navigation.navigate('송금4');
+    navigation.navigate('송금4');
     transferMutation.mutate(transfer, {
       onSuccess: () => {
         console.log('success');

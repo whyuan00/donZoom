@@ -95,7 +95,8 @@ const postLogin = async ({email, password}: User): Promise<Response> => {
 };
 
 const getProfile = async (): Promise<ResponseProfile> => {
-  const {data} = await axiosInstance.get('/auth/userInfo');
+  const {data} = await axiosInstance.get('/user');
+  // console.log('data:', data);
   return data;
 };
 

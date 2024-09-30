@@ -15,15 +15,20 @@ interface SignupState {
   setName: (name: string) => void;
   setNickname: (nickname: string) => void;
   validate: () => {email: string; password: string; passwordConfirm: string};
+  reset: () => void;
 }
 
-export const useSignupStore = create<SignupState>((set, get) => ({
+const initialState = {
   email: '',
   password: '',
   passwordConfirm: '',
   role: '부모',
   name: '',
   nickname: '',
+};
+
+export const useSignupStore = create<SignupState>((set, get) => ({
+  ...initialState,
   setEmail: email => set({email}),
   setPassword: password => set({password}),
   setPasswordConfirm: passwordConfirm => set({passwordConfirm}),
@@ -34,4 +39,5 @@ export const useSignupStore = create<SignupState>((set, get) => ({
     const {email, password, passwordConfirm} = get();
     return validateSignup({email, password, passwordConfirm});
   },
+  reset: () => set(initialState),
 }));
