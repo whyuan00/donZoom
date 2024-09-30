@@ -130,6 +130,18 @@ def fetch_and_send_data(ticker, stockId):
     }
     
     print(f"전송할 데이터: {data}")
+     # Spring Boot 서버로 데이터 전송
+    stockId = ticker_to_id_map.get(ticker)
+    try:
+        response = requests.post(save_stock_history_url+"/"+str(stockId), json=data)
+        print(data)
+        if response.status_code == 200:
+            print(f"데이터 전송 성공: {data}")
+        else:
+            print(f"데이터 전송 실패: {response.status_code}")
+    except requests.exceptions.RequestException as e:
+        print(f"요청 실패: {e}")
+
     return data
 
 # 모든 종목 데이터를 가져오고 전송하는 함수
@@ -211,11 +223,11 @@ def send_reports_to_springboot():
 now = datetime.now(KST)
 
 # 1분마다 모든 종목에 대해 데이터를 가져오고 전송하는 스케줄러 설정
-#scheduler.add_job(fetch_and_send_data_all, 'interval', minutes=1)
+scheduler.add_job(fetch_and_send_data_all, 'interval', minutes=1)
 # 뉴스 기사를 가져오고 바로 본문을 가져오도록 스케줄러 설정
-#scheduler.add_job(send_news_data, trigger=DateTrigger(run_date=now))
+scheduler.add_job(send_news_data, trigger=DateTrigger(run_date=now))
 # 리포트를 가져오고 바로 본문을 가져오도록 스케줄러 설정
-#scheduler.add_job(send_reports_to_springboot, trigger=DateTrigger(run_date=now)) #'cron', hour=13, minute=24, timezone=KST)
+scheduler.add_job(send_reports_to_springboot, trigger=DateTrigger(run_date=now)) #'cron', hour=13, minute=24, timezone=KST)
 
 scheduler.add_job(send_worldNews_data, trigger=DateTrigger(run_date=now))
 
