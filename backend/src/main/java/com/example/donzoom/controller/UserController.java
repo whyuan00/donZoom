@@ -53,7 +53,6 @@ public class UserController {
 
   @GetMapping
   public ResponseEntity<?> getCurrentUserInfo(){
-    log.info("GET : /api/user");
     User loginUser = userService.findCurrentUser();
     UserInfoResponseDto userInfoResponseDto = UserInfoResponseDto.builder()
         .id(loginUser.getId())
@@ -112,7 +111,6 @@ public class UserController {
       return new ResponseEntity<>("유효하지 않은 이메일과 비밀번호입니다.", HttpStatus.UNAUTHORIZED);
     } catch (Exception e) {
       log.info(e.getMessage());
-      e.printStackTrace();
       return new ResponseEntity<>("로그인 중 서버 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

@@ -1,12 +1,15 @@
 package com.example.donzoom.service;
 
+import com.example.donzoom.config.PasswordConfig;
 import com.example.donzoom.dto.account.request.AutoTransferRequestDto;
 import com.example.donzoom.dto.account.request.AutoTransferUpdateRequestDto;
+import com.example.donzoom.dto.account.request.CreateAccountRequestDto;
 import com.example.donzoom.dto.account.request.CreateCardRequestDto;
 import com.example.donzoom.dto.account.request.PayRequestDto;
 import com.example.donzoom.dto.account.request.TransactionRequestDto;
 import com.example.donzoom.dto.account.request.TransferRequestDto;
 import com.example.donzoom.dto.account.request.UpdateLimitRequestDto;
+import com.example.donzoom.dto.account.request.ValidatePaymentPasswordRequestDto;
 import com.example.donzoom.dto.account.response.AccountCreateResponseDto;
 import com.example.donzoom.dto.account.response.AccountResponseDto;
 import com.example.donzoom.dto.account.response.BalanceResponseDto;
@@ -37,23 +40,25 @@ public class AccountService {
   private final UserRepository userRepository;
   private final AutoTransferRepository autoTransferRepository;
   private final UserService userService;
+  private final PasswordService passwordService;
 
   @Autowired
   public AccountService(BankApi bankApi, UserRepository userRepository,
-      AutoTransferRepository autoTransferRepository, UserService userService) {
+      AutoTransferRepository autoTransferRepository, UserService userService, PasswordService passwordService) {
     this.bankApi = bankApi;
     this.userRepository = userRepository;
     this.autoTransferRepository = autoTransferRepository;
     this.userService = userService;
+    this.passwordService = passwordService;
   }
 
   //뱅크사용자 가입
   public BankUserResponseDto createMember() {
-
+    log.info("CREATE MEMBER");
     //유저정보 가져오기
-    User user = getUser();
-    ;
-
+    User user = userService.findCurrentUser();
+    log.info("USER : "+ user.toString());
+    bankApi.getMember(user.getEmail());
     BankUserResponseDto bankUser = bankApi.createMember(user.getEmail());
     // 코인 차감 및 티켓 추가
     user.updateUserKey(bankUser.getUserKey());
@@ -66,23 +71,25 @@ public class AccountService {
   //사용자 정보 조회
   public BankUserResponseDto getMember() {
     //유저정보 가져오기
-    User user = getUser();
+    User user = userService.findCurrentUser();
 
     return bankApi.getMember(user.getEmail());
   }
 
   //계좌 생성
-  public AccountCreateResponseDto createDemandDepositAccount() {
+  public AccountCreateResponseDto createDemandDepositAccount(CreateAccountRequestDto createAccountRequestDto) {
     String accountTypeUniqueNo = "001-1-ffa4253081d540"; //우리가 생성해야함.
 
     //유저정보 가져오기
-    User user = getUser();
-    log.info(user.getUserKey());
+    User user = userService.findCurrentUser();
 
     //유저가 뱅크에 가입되있지 않으면 가입 후 계좌생성
     if (user.getUserKey() == null) {
       createMember();
     }
+    log.info(user.toString());
+    // 계좌 비밀번호 설정
+    user.updatePaymentPassword(passwordService.encode(createAccountRequestDto.getPaymentPassword()));
 
     AccountCreateResponseDto accountCreateResponseDto =  bankApi.createDemandDepositAccount(accountTypeUniqueNo, user.getUserKey());
 
@@ -98,25 +105,25 @@ public class AccountService {
   public AccountResponseDto getAccountInfo() {
 
     //유저정보 가져오기
-    User user = getUser();
+    User user = userService.findCurrentUser();
     return bankApi.getAccountInfo(user.getUserKey());
   }
 
   public TransferResponseDto transfer(TransferRequestDto transferRequestDto) {
     //유저정보 가져오기
-    User user = getUser();
+    User user = userService.findCurrentUser();
     return bankApi.transfer(transferRequestDto, user.getUserKey());
   }
 
   public BalanceResponseDto getBalance(String accountNo) {
     //유저정보 가져오기
-    User user = getUser();
+    User user = userService.findCurrentUser();
     return bankApi.getBalance(accountNo, user.getUserKey());
   }
 
   public TransactionResponseDto getHistory(TransactionRequestDto transactionRequestDto) {
     //유저정보 가져오기
-    User user = getUser();
+    User user = userService.findCurrentUser();
     return bankApi.getHistory(transactionRequestDto, user.getUserKey());
   }
 
@@ -139,7 +146,7 @@ public class AccountService {
   //카드생성
   public CreateCardResponseDto createCard(CreateCardRequestDto createCardRequestDto) {
     //유저정보 가져오기
-    User user = getUser();
+    User user = userService.findCurrentUser();
     return bankApi.createCard(createCardRequestDto, user.getUserKey());
   }
 
@@ -157,7 +164,7 @@ public class AccountService {
 
   public void setAutoTransfer(AutoTransferRequestDto autoTransferRequestDto) {
     // 현재 유저 정보 가져오기
-    User user = getUser();
+    User user = userService.findCurrentUser();
 
     // 자동이체 정보를 DB에 저장
     AutoTransfer autoTransfer = AutoTransfer.builder()
@@ -181,7 +188,7 @@ public class AccountService {
   // 자동이체 정보 수정
   public void updateAutoTransfer(AutoTransferUpdateRequestDto updateRequestDto) {
     // 현재 유저 정보 가져오기
-    User user = getUser();
+    User user = userService.findCurrentUser();
 
     // 입금계좌와 출금계좌로 자동이체 정보 찾기
     AutoTransfer autoTransfer = autoTransferRepository.findByWithdrawalAccountNoAndDepositAccountNo(
@@ -217,7 +224,7 @@ public class AccountService {
 
   public void pay(PayRequestDto payRequestDto) {
     // 유저정보 가져오기
-    User user = getUser();
+    User user = userService.findCurrentUser();
 
     // 결제 금액
     Long paymentBalance = payRequestDto.getPaymentBalance();
@@ -263,14 +270,8 @@ public class AccountService {
         .orElseThrow(() -> new IllegalArgumentException("해당 카드 번호에 해당하는 계좌가 없습니다."));  // 없으면 예외 발생
   }
 
-  public User getUser() {
-    // 현재 인증된 사용자 정보 가져오기
-    String username = SecurityUtil.getAuthenticatedUsername();
-    //유저정보 가져오기
-    User user = userRepository.findByEmail(username)
-        .orElseThrow(() -> new RuntimeException("User not found"));
-    return user;
+  public boolean validatePassword(ValidatePaymentPasswordRequestDto validatePaymentPasswordRequestDto){
+    User user = userService.findCurrentUser();
+    return passwordService.matches(validatePaymentPasswordRequestDto.getPaymentPassword(),user.getPaymentPwdHash());
   }
-
-
 }
