@@ -182,20 +182,23 @@ const styles = StyleSheet.create({
   infoTop: {
     width: '100%',
     flexGrow: 1,
+    backgroundColor: 'red',
   },
   infoTopTop: {
     width: '100%',
     flexGrow: 1,
     justifyContent: 'center',
+    backgroundColor: 'red',
   },
   accountNumberHeaderContainer: {
     width: 66,
     height: 22,
-    backgroundColor: colors.YELLOW_50,
+    // backgroundColor: colors.YELLOW_50,
     borderRadius: 6,
     marginTop: 'auto',
     textAlign: 'center',
     alignItems: 'center',
+    backgroundColor: 'red',
   },
   infoTopBottom: {
     width: '100%',

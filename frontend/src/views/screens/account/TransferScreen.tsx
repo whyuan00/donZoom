@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   myAccountInfoContainer: {
     backgroundColor: colors.WHITE,
     height: 73,
-    borderRadius: 10,
+    borderRadius: 12,
   },
   myAccountTextContainer: {
     flexDirection: 'row',
@@ -136,17 +136,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.WHITE,
     height: 55,
-    borderRadius: 10,
+    borderRadius: 12,
   },
   amountInputContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.WHITE,
     height: 55,
-    borderRadius: 10,
+    borderRadius: 12,
   },
   menuHeaderText: {
     fontFamily: fonts.BOLD,
+    color: colors.BLACK,
     fontSize: 12,
     paddingTop: 23,
     paddingBottom: 8,
@@ -187,7 +188,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.WHITE,
     height: 55,
-    borderRadius: 10,
+    borderRadius: 12,
   },
   nextButtonText: {
     fontFamily: fonts.BOLD,

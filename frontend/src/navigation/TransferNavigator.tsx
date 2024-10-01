@@ -4,13 +4,29 @@ import TransferScreen3 from '@/views/screens/account/TransferScreen3';
 import TransferScreen4 from '@/views/screens/account/TransferScreen4';
 import TransferScreen from '@/views/screens/account/TransferScreen';
 import AccountHistoryScreen from '@/views/screens/account/AccountHistoryScreen';
+import {colors} from '@/constants/colors';
+import {fonts} from '@/constants/font';
 
 const TransferNavigator = () => {
   const Stack = createNativeStackNavigator();
   return (
     <Stack.Navigator screenOptions={{headerTitleAlign: 'center'}}>
       <Stack.Screen name="거래내역" component={AccountHistoryScreen} />
-      <Stack.Screen name="송금" component={TransferScreen} />
+      <Stack.Screen
+        name="송금"
+        component={TransferScreen}
+        options={{
+          title: '아이에게 송금하기',
+          headerStyle: {
+            backgroundColor: colors.YELLOW_25,
+          },
+          headerTintColor: colors.BLACK,
+          headerTitleStyle: {
+            fontFamily: fonts.MEDIUM,
+          },
+          headerShadowVisible: false,
+        }}
+      />
       <Stack.Screen name="송금2" component={TransferScreen2} />
       <Stack.Screen name="송금3" component={TransferScreen3} />
       <Stack.Screen name="송금4" component={TransferScreen4} />
