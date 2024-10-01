@@ -22,6 +22,7 @@ import com.example.donzoom.dto.account.response.TransactionResponseDto;
 import com.example.donzoom.dto.account.response.TransferResponseDto;
 import com.example.donzoom.entity.AutoTransfer;
 import com.example.donzoom.entity.User;
+import com.example.donzoom.exception.NoUserKeyException;
 import com.example.donzoom.external.BankApi;
 import com.example.donzoom.repository.AutoTransferRepository;
 import com.example.donzoom.repository.UserRepository;
@@ -54,10 +55,8 @@ public class AccountService {
 
   //뱅크사용자 가입
   public BankUserResponseDto createMember() {
-    log.info("CREATE MEMBER");
     //유저정보 가져오기
     User user = userService.findCurrentUser();
-    log.info("USER : "+ user.toString());
     bankApi.getMember(user.getEmail());
     BankUserResponseDto bankUser = bankApi.createMember(user.getEmail());
     // 코인 차감 및 티켓 추가
@@ -103,28 +102,27 @@ public class AccountService {
 
   //계좌정보조회
   public AccountResponseDto getAccountInfo() {
-
-    //유저정보 가져오기
-    User user = userService.findCurrentUser();
-    return bankApi.getAccountInfo(user.getUserKey());
+    // 현재 유저 키
+    String userKey = getCurrentUserKey();
+    return bankApi.getAccountInfo(userKey);
   }
 
   public TransferResponseDto transfer(TransferRequestDto transferRequestDto) {
     //유저정보 가져오기
-    User user = userService.findCurrentUser();
-    return bankApi.transfer(transferRequestDto, user.getUserKey());
+    String userKey = getCurrentUserKey();
+    return bankApi.transfer(transferRequestDto, userKey);
   }
 
   public BalanceResponseDto getBalance(String accountNo) {
-    //유저정보 가져오기
-    User user = userService.findCurrentUser();
-    return bankApi.getBalance(accountNo, user.getUserKey());
+    //현재 유저 키 가져오기
+    String userKey = getCurrentUserKey();
+    return bankApi.getBalance(accountNo, userKey);
   }
 
   public TransactionResponseDto getHistory(TransactionRequestDto transactionRequestDto) {
-    //유저정보 가져오기
-    User user = userService.findCurrentUser();
-    return bankApi.getHistory(transactionRequestDto, user.getUserKey());
+    //현재 유저 키 가져오기
+    String userKey = getCurrentUserKey();
+    return bankApi.getHistory(transactionRequestDto, userKey);
   }
 
   // 1일 결제 한도 수정
@@ -145,9 +143,9 @@ public class AccountService {
 
   //카드생성
   public CreateCardResponseDto createCard(CreateCardRequestDto createCardRequestDto) {
-    //유저정보 가져오기
-    User user = userService.findCurrentUser();
-    return bankApi.createCard(createCardRequestDto, user.getUserKey());
+    //현재 유저 키 가져오기
+    String userKey = getCurrentUserKey();
+    return bankApi.createCard(createCardRequestDto, userKey);
   }
 
   //계좌번호로 유저정보 가져오기
@@ -273,5 +271,13 @@ public class AccountService {
   public boolean validatePassword(ValidatePaymentPasswordRequestDto validatePaymentPasswordRequestDto){
     User user = userService.findCurrentUser();
     return passwordService.matches(validatePaymentPasswordRequestDto.getPaymentPassword(),user.getPaymentPwdHash());
+  }
+
+  private String getCurrentUserKey(){
+    User user = userService.findCurrentUser();
+    if(user.getUserKey()==null){
+      throw new NoUserKeyException("은행(싸피)에 가입하지 않은 유저입니다. 은행 서비스 이용 전 가입을 먼저 해주세요");
+    }
+    return user.getUserKey();
   }
 }
