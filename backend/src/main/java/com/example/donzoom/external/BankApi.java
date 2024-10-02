@@ -103,6 +103,7 @@ public class BankApi {
   //회원생성
   public BankUserResponseDto createMember(String userId) {
     log.info("싸피은행에 멤버를 생성하는 CREATEMEMBER");
+    log.info(userId+"userid");
     CreateMemberDto member = CreateMemberDto.builder().apiKey(apiKey).userId(userId).build();
 
     try {
@@ -141,9 +142,35 @@ public class BankApi {
   }
 
   public BankUserResponseDto getMember(String userId) {
+    log.info(userId+"eeeeeeee");
     CreateMemberDto member = CreateMemberDto.builder().apiKey(apiKey).userId(userId).build();
-    return webClient.post().uri(userInfoUrl).bodyValue(member).retrieve()
-        .bodyToMono(BankUserResponseDto.class).block();
+    try {
+      // 회원 생성 시도
+      log.info("회원 가입 시도");
+      return webClient.post().uri(userInfoUrl).bodyValue(member).retrieve()
+          .bodyToMono(BankUserResponseDto.class).block();  // 동기식으로 블록 처리
+
+    } catch (WebClientResponseException e) {
+      // 서버에서 HTTP 상태 코드 4xx 또는 5xx로 응답한 경우 처리
+      if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
+        // 에러 메시지를 파싱
+        try{
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode errorJson = objectMapper.readTree(e.getResponseBodyAsString());
+        String responseCode = errorJson.get("responseCode").asText();
+        log.error(responseCode);
+          }catch(Exception ne){
+            log.error(ne.getMessage());
+        }
+      }
+
+      // 그 외의 경우는 일반 예외 처리
+      throw new RuntimeException("회원 생성 중 오류가 발생했습니다.", e);
+
+    } catch (Exception e) {
+      // 그 외의 모든 예외 처리
+      throw new RuntimeException("회원 생성 중 서버 오류가 발생했습니다.", e);
+    }
   }
 
 //  //계좌번호로 계좌정보와 예금주 조회

@@ -80,7 +80,7 @@ public class AccountService {
 
     //유저정보 가져오기
     User user = userService.findCurrentUser();
-
+    log.info(user.getEmail());
     //유저가 뱅크에 가입되있지 않으면 가입 후 계좌생성
     if (user.getUserKey() == null) {
       log.info("싸피은행에 가입되지 않았습니다.");
