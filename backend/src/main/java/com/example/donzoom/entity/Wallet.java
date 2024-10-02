@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+//@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Wallet {
 
   @Id
@@ -32,12 +32,11 @@ public class Wallet {
   private Integer ticket;
 
   @Builder
-  public Wallet(Integer coin, Integer ticket, List<MyPig> mypigs) {
-    this.coin = coin;
-    this.ticket = ticket;
-    if (mypigs != null) {
-      this.mypigs = mypigs;
-    }
+  public Wallet() {
+    this.coin = 0;
+    this.ticket = 0;
+    this.mypigs = new ArrayList<>();
+
   }
 
   public void updateCoin(Integer coin) {

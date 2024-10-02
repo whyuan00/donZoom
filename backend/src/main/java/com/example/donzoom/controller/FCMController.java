@@ -1,19 +1,25 @@
-package com.example.donzoom.temp;
+package com.example.donzoom.controller;
 
+import com.example.donzoom.service.FCMService;
 import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.Notification;
-import com.google.firebase.messaging.FirebaseMessaging;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/fcm")
 public class FCMController {
+
+  private final FCMService fcmService;
+
+  // FCMService 의존성 주입
+  public FCMController(FCMService fcmService) {
+    this.fcmService = fcmService;
+  }
 
   @PostMapping("/send")
   public ResponseEntity<String> sendNotification(
@@ -22,20 +28,11 @@ public class FCMController {
       @RequestParam String body) {
 
     try {
-      // FCM 메시지 빌드
-      Message message = Message.builder()
-          .setToken(token)  // FCM 토큰
-          .setNotification(Notification.builder()
-              .setTitle(title)  // 알림 제목
-              .setBody(body)    // 알림 내용
-              .build())
-          .build();
-
-      // 메시지 전송
-      String response = FirebaseMessaging.getInstance().send(message);
+      // FCM 서비스 호출
+      String response = fcmService.sendNotification(token, title, body);
       return ResponseEntity.ok("알림 전송 성공: " + response);
     } catch (FirebaseMessagingException e) {
-      e.printStackTrace();
+      log.error(e.getMessage());
       return ResponseEntity.status(500).body("알림 전송 실패");
     }
   }
