@@ -99,7 +99,7 @@ const getProfile = async (): Promise<ResponseProfile> => {
     'axiosInstance.defaults.headers.common[Authorization]',
     axiosInstance.defaults.headers.common['Authorization'],
   );
-  const {data} = await axiosInstance.get('/auth/userInfo');
+  const {data} = await axiosInstance.get('/user');
   console.log('data', data);
   return data;
 };

@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import {Calendar, DateData} from 'react-native-calendars';
 import CheckCalendar from '@/assets/CheckCalendar.svg';
-import {getTodayQuiz} from '@/api/quiz';
 import useQuiz from '@/hooks/queries/useQuiz';
 
 interface MarkedDates {
@@ -22,18 +21,15 @@ interface MarkedDates {
 
 function QuizHomeScreen({navigation}: any) {
   const [quizData, setQuizData] = useState<any[]>([]);
-  const [quizCompletedDates, setQuizCompletedDates] = useState<MarkedDates>({
-    '2024-09-10': {marked: true},
-    '2024-09-11': {marked: true},
-    '2024-09-15': {marked: true},
-  }); // 더미데이터
+  const [quizCompletedDates, setQuizCompletedDates] = useState<MarkedDates>({});
   const setTodaysQuizQuestions = useQuizStore(
     state => state.setTodaysQuizQuestions,
   );
-  const {todayQuizMutation} = useQuiz();
+  const {todayQuizMutation, solvedQuizMutation} = useQuiz();
 
   const transformQuizData = (quizes: any[]) => {
     return quizes.map(quiz => ({
+      quizId: quiz.id,
       question: quiz.question,
       answers: [quiz.option1, quiz.option2, quiz.option3, quiz.option4],
       correctAnswer: quiz.answer,
@@ -43,11 +39,26 @@ function QuizHomeScreen({navigation}: any) {
   };
 
   useEffect(() => {
+    if (solvedQuizMutation.data) {
+      const solvedQuizDates = solvedQuizMutation.data;
+
+      const makredDates = solvedQuizDates.reduce(
+        (acc: MarkedDates, date: string) => {
+          acc[date] = {marked: true};
+          return acc;
+        },
+        {} as MarkedDates,
+      );
+      setQuizCompletedDates(makredDates);
+    }
+  }, [solvedQuizMutation.data]);
+
+  useEffect(() => {
     if (todayQuizMutation.data) {
       const quizes = todayQuizMutation.data;
       const transformedQuizes = transformQuizData(quizes);
       setQuizData(transformedQuizes);
-      setTodaysQuizQuestions(transformedQuizes);
+      setTodaysQuizQuestions(transformedQuizes, quizes[0].quiz_id);
     }
   }, [todayQuizMutation.data]);
 
@@ -56,13 +67,6 @@ function QuizHomeScreen({navigation}: any) {
       navigation.navigate('오늘의 퀴즈');
     }
   };
-
-  useEffect(() => {
-    const fetchedQuizDates = {
-      '2024-09-18': {marked: true},
-    };
-    setQuizCompletedDates(prev => ({...prev, ...fetchedQuizDates}));
-  }, []);
 
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
