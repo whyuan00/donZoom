@@ -38,9 +38,9 @@ public class WalletService {
   }
 
   //가상머니로 돼지뽑기권 구매하기
-  public void buyTicket(TicketPurchaseRequestDto ticketPurchaseRequestDto) {
+  public void buyTicket(String count) {
 
-    int amount = ticketPurchaseRequestDto.getAmount();
+    int amount = Integer.parseInt(count);
     int totalPrice = amount * ticketPrice;
 
     // user에서  지갑 가져오기

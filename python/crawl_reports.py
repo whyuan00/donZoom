@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 import os
 import requests
 import json
-from gpt_summarize import summarize_text
+from gpt_summarize import summarize_report
 
 # 환경 변수 로드
 load_dotenv()
@@ -23,46 +23,16 @@ KST = pytz.timezone('Asia/Seoul')
 # OpenAI API 키 설정
 api_key = os.getenv("OPENAI_API_KEY")  # .env 파일에서 API 키 로드
 
-# 종목과 stockId 매핑 (key-value 형태)
-stock_mapping= {
+# 종목과 stockId 매핑
+stock_mapping_report= {
     1: "005930 삼성전자",
-    2: "001210 금호전기"   # 금호전기
+    2: "066570 LG전자",   # 금호전기
+    3: "035420 NAVER",   # 네이버
+    4: "035720 카카오"   # 카카오
 }
 
-# GPT 요약 함수 (필요시 사용)
-def summarize_text(text):
-    url = "https://api.openai.com/v1/chat/completions"
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {api_key}"
-    }
-    payload = {
-        "model": "gpt-4",
-        "messages": [
-            {"role": "system", "content": "너는 종목분석 리포트 요약글을 아이들이 이해할 수 있도록 잘 설명해줄거야"},
-            {"role": "user", "content": f"이 종목분석 리포트 요약글을 설명해줘: {text}"}
-        ]
-    }
-
-    try:
-        response = requests.post(url, headers=headers, data=json.dumps(payload))
-        response.raise_for_status()  # HTTPError 발생 시 예외 발생
-        data = response.json()
-        summary = data['choices'][0]['message']['content'].strip()
-        return summary
-    except requests.exceptions.RequestException as e:
-        print(f"GPT API 요청 실패: {e}")
-        return text  # 요약 실패 시 원본 텍스트 반환
-    
 # Selenium 크롤링 함수 정의
 def crawl_reports(stockId):
-    # 종목과 stockId 매핑
-    stock_mapping_report= {
-        1: "005930 삼성전자",
-        2: "066570 LG전자",   # 금호전기
-        3: "035420 NAVER",   # 네이버
-        4: "035720 카카오"   # 카카오
-    }
 
     # ChromeDriver 설정
     options = Options()
@@ -138,7 +108,7 @@ def crawl_reports(stockId):
             article_content = driver.find_element(By.CSS_SELECTOR, '.view_cnt').text
             
             # GPT API로 요약하기 (필요시 사용)
-            #article_content = summarize_text(article_content)
+            #article_content = summarize_report(article_content)
 
             # 현재 시간을 ISO 8601 형식으로 변환하여 createdAt 필드에 저장
             created_at = datetime.now(KST).strftime('%Y-%m-%dT%H:%M:%S')  # 한국 시간으로 설정한 현재 시간
@@ -146,7 +116,6 @@ def crawl_reports(stockId):
             data = {
                 "title": report['title'],
                 "contents": article_content,
-                "stockId": stockId,
                 "createdAt": created_at  # 현재 시간을 추가 (ISO 8601 형식)
             }
             all_data_list.append(data)
