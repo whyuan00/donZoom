@@ -7,7 +7,7 @@ import {StyleSheet, Text, View} from 'react-native';
 function AccountHistoryScreen({navigation}: any) {
   const isParent = true; // 임시 변수
   const [selected, setSelected] = useState('아이');
-  const {account, balance, isLoading, error, refetch} = useAccountBalance();
+  const {account, balance, error, refetch} = useAccountBalance();
   const transactionData = [
     {
       date: '2024.9.2. 14시 23분 03초',

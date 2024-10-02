@@ -38,7 +38,6 @@ function LoginScreen({navigation}: any) {
   const [selected, setSelected] = useState('');
   const {errorMessage, clearErrorMessage} = useErrorStore();
   const {setName, setNickname} = useSignupStore();
-  const {refetch} = useAccountBalance();
   const login = useForm({
     initialValue: {
       email: '',

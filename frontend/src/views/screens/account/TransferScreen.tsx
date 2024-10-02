@@ -23,7 +23,7 @@ export default function TransferScreen({navigation}: any) {
   const [selectedRecipient, setSelectedRecipient] = useState<Recipient | null>(
     null,
   );
-  const {account, balance, isLoading, error, refetch} = useAccountBalance();
+  const {account, balance, error, refetch} = useAccountBalance();
   const {accountNo, amount, setAccountNo, setAmount} = useTransferStore();
 
   const handleOpenModal = () => {
