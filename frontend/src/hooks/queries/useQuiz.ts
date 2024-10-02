@@ -1,18 +1,35 @@
-import { getTodayQuiz } from '@/api/quiz';
-import {UseQueryCustomOptions} from '@/types/common';
-import {useQuery} from '@tanstack/react-query';
+import {getTodayQuiz, submitQuizAnswer, getSolvedQuiz} from '@/api/quiz';
+import {UseMutationCustomOptions, UseQueryCustomOptions} from '@/types/common';
+import {useMutation, useQuery} from '@tanstack/react-query';
 
 function useGetTodayQuiz(queryOptions?: UseQueryCustomOptions<any>) {
   return useQuery({
-    queryKey: ['account'],
+    queryKey: ['getTodayQuiz'],
     queryFn: getTodayQuiz,
     ...queryOptions,
   });
 }
 
-function useQuiz() {
-  const todayQuizMutation = useGetTodayQuiz();
-  return {todayQuizMutation};
+function useGetSolvedQuiz(queryOptions?: UseQueryCustomOptions<any>) {
+  return useQuery({
+    queryKey: ['getSolvedQuiz'],
+    queryFn: getSolvedQuiz,
+    ...queryOptions,
+  });
 }
 
+function usePostSubmitQuizAnswer(mutationOptions?: UseMutationCustomOptions) {
+  return useMutation({
+    mutationFn: submitQuizAnswer,
+    ...mutationOptions,
+  });
+}
+
+function useQuiz() {
+  const todayQuizMutation = useGetTodayQuiz();
+  const solvedQuizMutation = useGetSolvedQuiz();
+  const submitQuizAnswerMutation = usePostSubmitQuizAnswer();
+
+  return {todayQuizMutation, submitQuizAnswerMutation, solvedQuizMutation};
+}
 export default useQuiz;
