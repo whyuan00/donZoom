@@ -9,9 +9,9 @@ const initialState = {
   password: '',
 };
 
-const useAccountStore = create<AccountState>(set => ({
+const usePasswordStore = create<AccountState>(set => ({
   ...initialState,
   setPassword: password => set({password}),
 }));
 
-export default useAccountStore;
+export default usePasswordStore;

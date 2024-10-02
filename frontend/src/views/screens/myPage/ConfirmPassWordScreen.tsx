@@ -4,6 +4,7 @@ import PasswordPad from '@/views/components/PasswordPad';
 import {useState} from 'react';
 import {Alert, StyleSheet, Text, View} from 'react-native';
 import {useRoute, RouteProp} from '@react-navigation/native';
+import usePasswordStore from '@/stores/usePasswordStore';
 
 // Route props 타입 정의
 type RouteParams = {
@@ -13,7 +14,7 @@ type RouteParams = {
 };
 
 function ConfirmPassWordScreen({navigation}: any) {
-  const [password, setPassword] = useState<string>(''); // 입력되는 비밀번호
+  const {password, setPassword} = usePasswordStore();
   const [error, setError] = useState<string>(''); // 오류 메시지 상태
 
   // useRoute 훅을 통해 newPassword를 안전하게 받아옴
@@ -28,7 +29,7 @@ function ConfirmPassWordScreen({navigation}: any) {
     if (newValue.length === 6) {
       if (newValue === newPassword) {
         setError(''); // 오류 메시지 초기화
-        navigation.navigate('보안 설정');
+        navigation.navigate('계좌개설');
         Alert.alert('비밀번호 변경이 완료되었습니다.');
       } else {
         setError('비밀번호가 일치하지 않습니다.');
@@ -73,7 +74,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.WHITE,
   },
   textContainer: {
-    height: 500,
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },

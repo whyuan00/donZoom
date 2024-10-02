@@ -20,6 +20,7 @@ import TransferNavigator from './TransferNavigator';
 import AccountInitScreen from '@/views/screens/account/AccountInitScreen';
 import MissionStackNavigator from './MissionStackNavigator';
 import MyInformationNavigator from './MyInformationNavigator';
+import AccountInitNavigator from './AccountInitNavigator';
 import TransferScreen from '@/views/screens/account/TransferScreen';
 import {fonts} from '@/constants/font';
 import TransferScreen2 from '@/views/screens/account/TransferScreen2';
@@ -46,7 +47,11 @@ const HomeStackNavigator = () => {
         component={TransferNavigator}
         options={{headerShown: false}}
       />
-      <Stack.Screen name="계좌개설" component={AccountInitScreen} />
+      <Stack.Screen
+        name="계좌개설"
+        component={AccountInitNavigator}
+        options={{headerShown: false}}
+      />
       <Stack.Screen
         name="QRCodeScanner"
         component={QRCodeScanner}

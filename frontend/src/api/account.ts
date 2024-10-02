@@ -38,9 +38,14 @@ type ReauestDailyLimit = {
   transferDate: string;
 };
 
-const postinitAccount = async (): Promise<void> => {
-  const response = await axiosInstance.post('/account');
-  console.log(response);
+const postinitAccount = async (paymentPassword: string): Promise<void> => {
+  try {
+    console.log(paymentPassword);
+    const response = await axiosInstance.post('/account', {paymentPassword});
+    console.log(response);
+  } catch (error) {
+    console.error('Error:', error);
+  }
 };
 
 interface AccountResult {
@@ -60,7 +65,7 @@ const getAccount = async (): Promise<ResponseBalance> => {
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError;
       console.error('Error fetching account:', axiosError.response?.data);
-      throw error; // 에러를 다시 throw하여 React Query가 처리하도록 합니다.
+      throw error;
     } else {
       console.error('Unexpected error:', error);
       throw new Error('An unexpected error occurred');
