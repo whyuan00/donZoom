@@ -6,7 +6,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
-import time
+from gpt_summarize import summarize_news
 import re
 
 # 종목과 stockId 매핑 (key-value 형태)
@@ -152,21 +152,26 @@ def crawl_world_news(stockId):
 
             print(f"변환된 날짜: {news_date.strftime('%Y-%m-%dT%H:%M:%S')}")  # 변환된 날짜 디버깅
             
-            # GPT API로 요약하기 (필요시 사용)
-            #content = summarize_report(content)
+            # 출처(meta 정보에서 'twitter:creator'의 content 속성)
+            meta_source = driver.find_element(By.CSS_SELECTOR, 'meta[name="twitter:creator"]')
+            source = meta_source.get_attribute("content")
             
-            # 데이터를 final_data 형식으로 저장
+             # GPT API로 요약하기 (필요시 사용)
+            content = summarize_news(content)
+            
+            # 최종 데이터 생성
             final_data = {
-                "title": title,  # 뉴스 제목
-                "createdAt": news_date.strftime('%Y-%m-%dT%H:%M:%S'),  # 변환된 날짜 정보
-                "contents": content  # 뉴스 본문
+                "title": title,
+                "createdAt": news_date.strftime('%Y-%m-%dT%H:%M:%S'),
+                "source": source,  # source 추가
+                "contents": content
             }
 
-            # 결과를 리스트에 추가
+            # 결과 리스트에 추가
             final_data_list.append(final_data)
 
         except Exception as e:
-            print(f"에러 발생: {e}")
+            print(f"본문을 가져오는 중 오류 발생: {e}")
             continue
     
     # 수집한 뉴스 데이터 출력
@@ -175,5 +180,4 @@ def crawl_world_news(stockId):
     # 드라이버 종료
     driver.quit()
     
-    # 수집된 뉴스 데이터를 반환
     return final_data_list

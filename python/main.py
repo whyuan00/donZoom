@@ -22,6 +22,7 @@ from crawl_world_news import crawl_world_news
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.date import DateTrigger
 from datetime import datetime, timedelta
+from apscheduler.triggers.cron import CronTrigger
 import pytz
 
 
@@ -81,6 +82,8 @@ save_stock_history_url = spring_boot_url + stock_path
 save_news_URL = spring_boot_url + news_path
 save_report_URL = spring_boot_url + report_path
 
+print(save_report_URL)
+
 # 스케줄러 설정
 scheduler = BackgroundScheduler()
 
@@ -120,7 +123,10 @@ def fetch_and_send_data(ticker, stockId):
     new_data.index = new_data.index.tz_convert(KST)
     
     # 가장 최신 데이터 가져오기
-    latest_timestamp = new_data.index[-1] + timedelta(minutes=10)
+    if ticker in ["AAPL", "GOOGL", "TSLA","GC=F"]:
+        latest_timestamp = new_data.index[-1] + timedelta(minutes=10)
+    else:
+         latest_timestamp = new_data.index[-1] + timedelta(minutes=20)
     latest_data = new_data.iloc[-1]
     
     # 데이터를 전송할 준비
@@ -177,7 +183,6 @@ def send_news_data():
 def send_worldNews_data():
     for stockId in world_stock_mapping.keys():
         all_world_news = crawl_world_news(stockId)
-
         if not all_world_news:
             print(f"stockId {stockId}에 대한 월드 뉴스가 없습니다.")
             continue
@@ -224,12 +229,12 @@ now = datetime.now(KST)
 
 # 1분마다 모든 종목에 대해 데이터를 가져오고 전송하는 스케줄러 설정
 scheduler.add_job(fetch_and_send_data_all, 'interval', minutes=1)
-# 뉴스 기사를 가져오고 바로 본문을 가져오도록 스케줄러 설정
-scheduler.add_job(send_news_data, trigger=DateTrigger(run_date=now))
+# 국내주식 뉴스 기사를 가져오고 바로 본문을 가져오도록 스케줄러 설정
+scheduler.add_job(send_news_data,  trigger=CronTrigger(hour=13, minute=50))
 # 리포트를 가져오고 바로 본문을 가져오도록 스케줄러 설정
-scheduler.add_job(send_reports_to_springboot, trigger=DateTrigger(run_date=now)) #'cron', hour=13, minute=24, timezone=KST)
-
-scheduler.add_job(send_worldNews_data, trigger=DateTrigger(run_date=now))
+scheduler.add_job(send_reports_to_springboot,  trigger=CronTrigger(hour=13, minute=50)) #'cron', hour=13, minute=24, timezone=KST)
+# 해외주식 뉴스기사를 가져오고 바로 본문을 가져오도록 스케줄러 설정
+scheduler.add_job(send_worldNews_data,  trigger=CronTrigger(hour=13, minute=50))
 
 # Lifespan 이벤트 핸들러 사용
 @asynccontextmanager

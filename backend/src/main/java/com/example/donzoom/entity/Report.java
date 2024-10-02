@@ -35,11 +35,14 @@ public class Report{
 
   private LocalDateTime createdAt;
 
+  private String source;
+
   @Builder
-  public Report(Stock stock, String title, String contents, LocalDateTime createdAt) {
+  public Report(Stock stock, String title, String contents, LocalDateTime createdAt,String source) {
     this.stock = stock;
     this.title = title;
     this.contents = contents;
     this.createdAt = createdAt;
+    this.source = source;
   }
 }
