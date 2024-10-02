@@ -22,9 +22,18 @@ public class WalletService {
   @Value("${ticketPrice}")
   private int ticketPrice;
 
-  public void updateCoin(Integer amount){
+  public Wallet findCurrentWallet() {
     User user = userService.findCurrentUser();
-    Wallet wallet = walletRepository.findById(user.getWallet().getId()).orElseThrow(()->new IllegalArgumentException("해당 지갑 아이디의 지갑이 없습니다."));
+    return user.getWallet();
+  }
+
+  public Integer getCurrentUserCoin(){
+    Wallet wallet = findCurrentWallet();
+    return wallet.getCoin();
+  }
+
+  public void updateCoin(Integer amount){
+    Wallet wallet = findCurrentWallet();
     wallet.updateCoin(wallet.getCoin()+amount);
   }
 

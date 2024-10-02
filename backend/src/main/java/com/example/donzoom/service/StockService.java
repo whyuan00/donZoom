@@ -48,7 +48,7 @@ public class StockService {
   private final StockHistoryRepository stockHistoryRepository;
   private final StockRepository stockRepository;
   private final TransactionHistoryRepository transactionHistoryRepository;
-  private final WalletRepository walletRepository;
+  private final WalletService walletService;
 
   // 주식 전종목 조회
   @Transactional(readOnly = true)
@@ -89,10 +89,7 @@ public class StockService {
   // 내 주식 조회
   @Transactional(readOnly = true)
   public StockWalletSimpleResponseDto getAllMyStock() {
-    String email = SecurityUtil.getAuthenticatedUsername();
-    User user = userService.findUserByEmail(email);
-    //    Long walletId = walletService.getWalletId(user.getId());
-    Long walletId = user.getId(); // TODO: 1:1이라 이렇게 해도 상관없긴 하겠다
+    Long walletId = walletService.findCurrentWallet().getId();
 
     List<StockWalletResponseDto> stockWalletDtos = stockWalletRepository.findByWalletId(walletId)
         .stream()
@@ -105,10 +102,7 @@ public class StockService {
   // 모든 주식 거래내역 조회
   @Transactional(readOnly = true)
   public StockTransactionHistorySimpleResponseDto getAllTransaction() {
-    String email = SecurityUtil.getAuthenticatedUsername();
-    User user = userService.findUserByEmail(email);
-    //    Long walletId = walletService.getWalletId(user.getId());
-    Long walletId = user.getId(); // TODO: 1:1이라 이렇게 해도 상관없긴 하겠다
+    Long walletId = walletService.findCurrentWallet().getId();
 
     List<StockTransactionHistoryResponseDto> transactionHistoryDtos = transactionHistoryRepository.findByWalletId(
         walletId).stream().map(transactionHistory -> StockTransactionHistoryResponseDto.builder()
@@ -127,10 +121,7 @@ public class StockService {
   // 주식 종목별 거래내역 조회
   @Transactional(readOnly = true)
   public StockTransactionHistorySimpleResponseDto getTransaction(Long stockId) {
-    String email = SecurityUtil.getAuthenticatedUsername();
-    User user = userService.findUserByEmail(email);
-    //    Long walletId = walletService.getWalletId(user.getId());
-    Long walletId = user.getId(); // TODO: 1:1이라 이렇게 해도 상관없긴 하겠다
+    Long walletId = walletService.findCurrentWallet().getId();
 
     List<StockTransactionHistoryResponseDto> transactionHistoryDtos = transactionHistoryRepository.findByWalletIdAndStockId(
         walletId, stockId).stream().map(
@@ -150,19 +141,10 @@ public class StockService {
   // TODO : 매수하기
   @Transactional
   public StockTransactionHistoryResponseDto buyStocks(Long stockId, Integer amount) {
-    String email = SecurityUtil.getAuthenticatedUsername();
-    User user = userService.findUserByEmail(email);
-
-    Long walletId;
-    if(user.getWallet() == null) {
-      throw new NoSuchElementException("No such wallet");
-    } else {
-      walletId = user.getWallet().getId();
-    }
+    Long walletId = walletService.findCurrentWallet().getId();
 
     // 내 지갑 찾아오기
-    Wallet myWallet = walletRepository.findById(walletId)
-        .orElseThrow(() -> new NoSuchElementException("Wallet not found"));
+    Wallet myWallet = walletService.findCurrentWallet();
 
     // 주식 들고오기
     Stock stock = stockRepository.findById(stockId)
@@ -174,12 +156,12 @@ public class StockService {
 
     // 지갑 내 유동자산 비교
     Float requiredPrice = recentPrice.getPrice() * amount;
-    if (myWallet.getCoin() < requiredPrice) {
+    if (walletService.getCurrentUserCoin() < requiredPrice) {
       throw new RuntimeException("Not enough money");
     }
 
     // 매수에 따른 코인 차감
-    myWallet.updateCoin((int) (myWallet.getCoin() - requiredPrice));
+    walletService.updateCoin((int)(requiredPrice*-1));
 
     // 이미 보유한 주식인지 확인
     List<Long> myStockId = stockWalletRepository.findByWalletId(walletId).stream()
@@ -234,19 +216,11 @@ public class StockService {
   // 매도하기
   @Transactional
   public StockTransactionHistoryResponseDto sellStocks(Long stockId, Integer amount) {
-    String email = SecurityUtil.getAuthenticatedUsername();
-    User user = userService.findUserByEmail(email);
-
-    Long walletId;
-    if(user.getWallet() == null) {
-      throw new NoSuchElementException("No such wallet");
-    } else {
-      walletId = user.getWallet().getId();
-    }
 
     // 내 지갑 찾아오기
-    Wallet myWallet = walletRepository.findById(walletId)
-        .orElseThrow(() -> new NoSuchElementException("Wallet not found"));
+    Wallet myWallet = walletService.findCurrentWallet();
+    Long walletId = myWallet.getId();
+
 
     // 주식 들고오기
     Stock stock = stockRepository.findById(stockId)
@@ -269,7 +243,7 @@ public class StockService {
     Float realizedProfit = (recentPrice.getPrice() - preStock.getAveragePrice()) * amount;
 
     // 지갑에 실현된 금액 추가
-    myWallet.updateCoin((int) (myWallet.getCoin() + recentPrice.getPrice() * amount));
+    walletService.updateCoin((int)(recentPrice.getPrice()*amount));
 
     if (preStock.getAmount().equals(amount)) {
       // 모든 주식을 매도한 경우 삭제
