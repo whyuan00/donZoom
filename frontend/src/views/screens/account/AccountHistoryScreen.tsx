@@ -1,4 +1,5 @@
 import {colors} from '@/constants/colors';
+import useAccount from '@/hooks/queries/useAccount';
 import useAccountBalance from '@/hooks/useAccountInfo';
 import React, {useState} from 'react';
 import {Pressable, ScrollView} from 'react-native';
@@ -8,6 +9,8 @@ function AccountHistoryScreen({navigation}: any) {
   const isParent = true; // 임시 변수
   const [selected, setSelected] = useState('아이');
   const {account, balance, error, refetch} = useAccountBalance();
+  const {getAccountHistory} = useAccount();
+  console.log(getAccountHistory);
   const transactionData = [
     {
       date: '2024.9.2. 14시 23분 03초',
