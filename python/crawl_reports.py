@@ -110,7 +110,7 @@ def crawl_reports(stockId):
             article_content = driver.find_element(By.CSS_SELECTOR, '.view_cnt').text
             
             # GPT API로 요약하기 (필요시 사용)
-            #article_content = summarize_report(article_content)
+            article_content = summarize_report(article_content)
 
             # 현재 시간을 ISO 8601 형식으로 변환하여 createdAt 필드에 저장
             created_at = datetime.now(KST).strftime('%Y-%m-%dT%H:%M:%S')  # 한국 시간으로 설정한 현재 시간
