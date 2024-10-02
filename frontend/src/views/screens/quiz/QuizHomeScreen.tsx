@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Modal,
 } from 'react-native';
 import {Calendar, DateData} from 'react-native-calendars';
 import CheckCalendar from '@/assets/CheckCalendar.svg';
@@ -22,6 +23,7 @@ interface MarkedDates {
 function QuizHomeScreen({navigation}: any) {
   const [quizData, setQuizData] = useState<any[]>([]);
   const [quizCompletedDates, setQuizCompletedDates] = useState<MarkedDates>({});
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const setTodaysQuizQuestions = useQuizStore(
     state => state.setTodaysQuizQuestions,
   );
@@ -65,6 +67,8 @@ function QuizHomeScreen({navigation}: any) {
   const startTodayQuiz = () => {
     if (quizData.length > 0) {
       navigation.navigate('오늘의 퀴즈');
+    } else {
+      setIsModalVisible(true);
     }
   };
 
@@ -157,6 +161,24 @@ function QuizHomeScreen({navigation}: any) {
             </TouchableOpacity>
           </View>
         </View>
+        <Modal
+          visible={isModalVisible}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setIsModalVisible(false)}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>
+                오늘의 퀴즈를 다 풀었습니다!
+              </Text>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setIsModalVisible(false)}>
+                <Text>닫기</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
         <View style={styles.reviewContainer}>
           <View style={styles.reviewTextContainer}>
             <Text style={styles.reviewTitle}>퀴즈 다시풀기</Text>
@@ -264,6 +286,35 @@ const styles = StyleSheet.create({
     color: colors.WHITE,
     fontFamily: fonts.MEDIUM,
     fontSize: 15,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    backgroundColor: colors.WHITE,
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontFamily: fonts.BOLD,
+    marginBottom: 20,
+  },
+  closeButton: {
+    backgroundColor: colors.YELLOW_100,
+    padding: 10,
+    borderRadius: 5,
+    width: '50%',
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    color: colors.WHITE,
+    fontFamily: fonts.MEDIUM,
   },
   reviewContainer: {
     marginTop: 10,
