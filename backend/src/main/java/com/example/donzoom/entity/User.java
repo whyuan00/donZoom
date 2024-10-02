@@ -71,7 +71,7 @@ public class User extends BaseEntity {
 
   private String paymentPwdHash;
 
-  private String FCMToken;
+  private String deviceToken;
 
   @Builder
   public User(User parent, String email, String pwdHash, String name, String nickname, String profileImage,
@@ -96,7 +96,7 @@ public class User extends BaseEntity {
     this.dailyUsageAmount = 0L;
     this.accountNo = null;
     this.paymentPwdHash = null;
-    this.FCMToken = null;
+    this.deviceToken = null;
   }
 
 
@@ -111,6 +111,9 @@ public class User extends BaseEntity {
     this.userKey = userKey;
   }
 
+  public void updateDeviceToken(String deviceToken) {
+    this.deviceToken = deviceToken;
+  }
 
   // 1일결제한도 변경
   public void updateDailyLimit(Long newLimit) {
