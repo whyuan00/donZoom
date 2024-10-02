@@ -1,31 +1,23 @@
-import {RequestTransfer} from '@/api/account';
+import {RequestTransfer, getAccount} from '@/api/account';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 import useAccount from '@/hooks/queries/useAccount';
 import useAccountBalance from '@/hooks/useAccountInfo';
 import {useSignupStore} from '@/stores/useAuthStore';
 import useTransferStore from '@/stores/useTransferStore';
-import {useEffect} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 export default function TransferScreen3({navigation}: any) {
   const {
     account,
     balance,
     name: accountName,
-    isLoading,
     error,
     refetch,
   } = useAccountBalance();
   const {accountNo, amount, name: holderName, setName} = useTransferStore();
   const {transferMutation, useGetAccountHolder} = useAccount();
   const {name} = useSignupStore();
-  const {
-    data: accountHolderData,
-    isLoading: accountHolderLoading,
-    error: accountHolderError,
-  } = useGetAccountHolder(accountNo);
   const transfer: RequestTransfer = {
     depositAccountNo: accountNo,
     depositTransactionSummary: name,
@@ -39,6 +31,7 @@ export default function TransferScreen3({navigation}: any) {
     transferMutation.mutate(transfer, {
       onSuccess: () => {
         console.log('success');
+        refetch();
       },
     });
   };
