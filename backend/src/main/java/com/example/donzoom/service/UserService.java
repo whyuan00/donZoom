@@ -64,13 +64,15 @@ public class UserService {
     String email = customUserDetails.getUsername();
     String role = customUserDetails.getAuthorities().iterator().next().getAuthority();
 
+    User user = findCurrentUser();
+    user.updateDeviceToken(loginRequestDto.getDeviceToken());
+
     log.info("토큰 발급 전입니다.");
     // AccessToken 발급
     String accessToken = jwtUtil.createAccessJwt(email, role);
 
     //RefreshToken 발급 및 저장
     String refreshToken = jwtUtil.createRefreshJwt(email, role);
-    User user = findUserByEmail(email);
     log.info("토큰 발급 후입니다.");
     return LoginResponseDto.builder().accessToken(accessToken).refreshToken(refreshToken)
         .name(user.getName()).build();

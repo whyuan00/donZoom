@@ -57,7 +57,6 @@ public class AccountService {
   public BankUserResponseDto createMember() {
     //유저정보 가져오기
     User user = userService.findCurrentUser();
-    bankApi.getMember(user.getEmail());
     BankUserResponseDto bankUser = bankApi.createMember(user.getEmail());
     // 코인 차감 및 티켓 추가
     user.updateUserKey(bankUser.getUserKey());
