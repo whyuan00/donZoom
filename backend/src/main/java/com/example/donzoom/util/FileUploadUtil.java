@@ -23,6 +23,22 @@ public class FileUploadUtil {
   @Value("${server.servlet.context-path}")
   private String contextPath;
 
+  public String saveFile(MultipartFile file, String fileName) throws IOException {
+    // 파일 확장자 추가
+    String fileExtension = getFileExtension(file.getOriginalFilename());
+    String fullFileName = fileName + "." + fileExtension;
+
+    // 파일 경로 설정
+    Path filePath = Paths.get(uploadDir, fullFileName);
+
+    // 디렉터리 생성 및 파일 저장
+    Files.createDirectories(filePath.getParent());
+    Files.copy(file.getInputStream(), filePath);
+
+    // 저장된 파일의 전체 URL을 반환
+    return serverUrl + contextPath + "/uploads/" + fullFileName;
+  }
+
   public String saveFile(MultipartFile file) throws IOException {
     // 원래 파일 이름 가져오기
     String originalFileName = file.getOriginalFilename();

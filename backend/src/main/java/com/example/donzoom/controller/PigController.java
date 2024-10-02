@@ -3,8 +3,12 @@ package com.example.donzoom.controller;
 import com.example.donzoom.dto.pig.request.PigRequestDto;
 import com.example.donzoom.dto.pig.request.TicketPurchaseRequestDto;
 import com.example.donzoom.dto.pig.response.PigResponseDto;
+import com.example.donzoom.entity.Pig;
+import com.example.donzoom.repository.PigRepository;
 import com.example.donzoom.service.PigService;
 import com.example.donzoom.service.WalletService;
+import com.example.donzoom.util.FileUploadUtil;
+import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -26,10 +31,20 @@ public class PigController {
 
   private final PigService pigService;
   private final WalletService walletService;
+  private final FileUploadUtil fileUploadUtil;
+  private final PigRepository pigRepository;
+
+  // 사용자가 소유한 돼지 목록 조회
+  @GetMapping("/owned")
+  public ResponseEntity<List<PigResponseDto>> getOwnedPigs() {
+    List<PigResponseDto> ownedPigs = pigService.findOwnedPigs();
+    return ResponseEntity.ok(ownedPigs);
+  }
 
   @GetMapping
   public ResponseEntity<List<PigResponseDto>> getPigs() {
     try {
+      log.info("eeeeeeeeeee");
       List<PigResponseDto> pigs = pigService.findPigs();
       return new ResponseEntity<>(pigs, HttpStatus.OK); // 성공 상태 코드와 데이터 반환
     } catch (Exception e) {
@@ -63,5 +78,24 @@ public class PigController {
   public List<PigResponseDto> getRandomPigsAndAddToWallet(
       @RequestParam String amount) {
     return pigService.getRandomPigsAndAddToWallet(amount);
+  }
+
+  // 파일 업로드 및 Pig 데이터 저장 API
+  @PostMapping("/upload")
+  public ResponseEntity<String> uploadFileAndSavePig(
+      @RequestParam("imageFile") MultipartFile imageFile,
+      @RequestParam("silhouetteFile") MultipartFile silhouetteFile,
+      @RequestParam("name") String name,
+      @RequestParam("probability") double probability,
+      @RequestParam("description") String description) {
+    try {
+      // PigService를 사용하여 이미지 저장 및 Pig 데이터 저장
+      String responseMessage = pigService.uploadPigAndSave(imageFile, silhouetteFile, name, probability,description);
+
+      return ResponseEntity.ok("돼지 저장 성공! " + responseMessage);
+
+    } catch (IOException e) {
+      return ResponseEntity.status(500).body("파일 업로드 중 오류 발생: " + e.getMessage());
+    }
   }
 }
