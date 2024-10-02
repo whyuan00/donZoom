@@ -49,9 +49,16 @@ function useSignupForm() {
     };
   };
 
+  const reset = () => {
+    setEmail('');
+    setPassword('');
+    setPasswordConfirm('');
+  };
+
   return {
     ...form,
     getTextInputProps,
+    reset,
   };
 }
 
