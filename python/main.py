@@ -228,13 +228,16 @@ def send_reports_to_springboot():
 now = datetime.now(KST)
 
 # 1분마다 모든 종목에 대해 데이터를 가져오고 전송하는 스케줄러 설정
-scheduler.add_job(fetch_and_send_data_all, 'interval', minutes=1)
+#scheduler.add_job(fetch_and_send_data_all, 'interval', minutes=1)
 # 국내주식 뉴스 기사를 가져오고 바로 본문을 가져오도록 스케줄러 설정
-scheduler.add_job(send_news_data,  trigger=CronTrigger(hour=13, minute=50))
+# scheduler.add_job(send_news_data,  trigger=CronTrigger(hour=13, minute=53))
+scheduler.add_job(send_news_data, trigger=DateTrigger(run_date=now))
+
 # 리포트를 가져오고 바로 본문을 가져오도록 스케줄러 설정
-scheduler.add_job(send_reports_to_springboot,  trigger=CronTrigger(hour=13, minute=50)) #'cron', hour=13, minute=24, timezone=KST)
+#scheduler.add_job(send_reports_to_springboot,  trigger=CronTrigger(hour=13, minute=50)) #'cron', hour=13, minute=24, timezone=KST)
+scheduler.add_job(send_reports_to_springboot, trigger=DateTrigger(run_date=now))
 # 해외주식 뉴스기사를 가져오고 바로 본문을 가져오도록 스케줄러 설정
-scheduler.add_job(send_worldNews_data,  trigger=CronTrigger(hour=13, minute=50))
+scheduler.add_job(send_worldNews_data,  trigger=CronTrigger(hour=13, minute=53))
 
 # Lifespan 이벤트 핸들러 사용
 @asynccontextmanager
