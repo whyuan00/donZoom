@@ -10,6 +10,7 @@ public class NewsResponseDto {
 
   private final String title;
   private final String contents;
+  private final String source;
   private final LocalDateTime createdAt;
 
 }

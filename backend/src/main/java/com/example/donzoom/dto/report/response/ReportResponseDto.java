@@ -10,5 +10,6 @@ public class ReportResponseDto {
   private final String title;
   private final String contents;
   private final LocalDateTime createdAt;
+  private final String source;
 
 }

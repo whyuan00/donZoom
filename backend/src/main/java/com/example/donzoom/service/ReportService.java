@@ -36,6 +36,7 @@ public class ReportService {
           .title(reportDto.getTitle())
           .contents(reportDto.getContents())
           .createdAt(reportDto.getCreatedAt())
+          .source(reportDto.getSource())
           .build();
       // 생성된 News 엔티티를 리스트에 추가
       newsList.add(report);

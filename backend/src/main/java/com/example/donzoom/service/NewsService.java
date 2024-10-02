@@ -31,6 +31,7 @@ public class NewsService {
           .title(newsDto.getTitle())
           .contents(newsDto.getContents())
           .createdAt(newsDto.getCreatedAt())
+          .source(newsDto.getSource())
           .build();
       // 생성된 News 엔티티를 리스트에 추가
       newsList.add(news);

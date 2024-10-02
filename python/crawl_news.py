@@ -89,6 +89,10 @@ def crawl_news(stockId):
                 date_element = article.find_element(By.CLASS_NAME, 'date')
                 date_str = date_element.text.strip()
 
+                # 출처 추출 (info 클래스에 해당하는 태그)
+                source_element = article.find_element(By.CLASS_NAME, 'info')
+                source = source_element.text.strip()  # 출처 정보 추출
+                
                 # 문자열을 datetime 객체로 변환 (예: "2024.09.13 12:00" 형식에서 변환)
                 try:
                     parsed_date = parser.parse(date_str)  # 문자열을 datetime 객체로 변환
@@ -101,6 +105,7 @@ def crawl_news(stockId):
                 data = {
                     "title": title,
                     "link": link,
+                    "source": source,  # 출처 저장
                     "createdAt": formatted_date,  # 원하는 형식으로 변환된 날짜
                 }
                 temp_news_list.append(data)
@@ -132,6 +137,7 @@ def crawl_news(stockId):
                     "title": news['title'],
                     "createdAt": news['createdAt'],  # 원하는 형식으로 변환된 날짜
                     "stockId": stockId,
+                    "source": news['source'],
                     "contents": content
                 }
 
