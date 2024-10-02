@@ -29,6 +29,7 @@ public class QuizService {
 
   private final TimeUtil timeUtil;
   private final RedisService redisService;
+  private final WalletService walletService;
   private final QuizRepository quizRepository;
   private final UserRepository userRepository;
   private final UserQuizRepository userQuizRepository;
@@ -105,10 +106,16 @@ public class QuizService {
     Quiz quiz = quizRepository.findById(quizId)
         .orElseThrow(() -> new RuntimeException("Quiz not found with id: " + quizId));
 
+    boolean isCorrect = quiz.getAnswer().equals(quizAnswerDto.getAnswer().trim());
     // 유저가 제출한 답안을 UserQuiz에 저장
     UserQuiz userQuiz = UserQuiz.builder().user(user).quiz(quiz)
-        .selectedAnswer(quizAnswerDto.getAnswer()).build();
-    
+        .selectedAnswer(quizAnswerDto.getAnswer())
+        .isCorrect(isCorrect)
+        .build();
+
+    if(isCorrect){
+      walletService.updateCoin(1);
+    }
 
     userQuizRepository.save(userQuiz);
   }

@@ -18,8 +18,15 @@ public class WalletService {
 
   private final WalletRepository walletRepository;
   private final UserRepository userRepository;
+  private final UserService userService;
   @Value("${ticketPrice}")
   private int ticketPrice;
+
+  public void updateCoin(Integer amount){
+    User user = userService.findCurrentUser();
+    Wallet wallet = walletRepository.findById(user.getWallet().getId()).orElseThrow(()->new IllegalArgumentException("해당 지갑 아이디의 지갑이 없습니다."));
+    wallet.updateCoin(wallet.getCoin()+amount);
+  }
 
   //가상머니로 돼지뽑기권 구매하기
   public void buyTicket(TicketPurchaseRequestDto ticketPurchaseRequestDto) {
@@ -27,11 +34,8 @@ public class WalletService {
     int amount = ticketPurchaseRequestDto.getAmount();
     int totalPrice = amount * ticketPrice;
 
-    // 현재 인증된 사용자 정보 가져오기
-    String username = SecurityUtil.getAuthenticatedUsername();
     // user에서  지갑 가져오기
-    User user = userRepository.findByEmail(username)
-        .orElseThrow(() -> new RuntimeException("User not found"));
+    User user = userService.findCurrentUser();
     Long walletId = user.getWallet().getId();
 
     // 지갑을 ID로 조회
