@@ -24,14 +24,11 @@ import com.example.donzoom.repository.StockHistoryRepository;
 import com.example.donzoom.repository.StockRepository;
 import com.example.donzoom.repository.StockWalletRepository;
 import com.example.donzoom.repository.TransactionHistoryRepository;
-import com.example.donzoom.repository.WalletRepository;
-import com.example.donzoom.util.SecurityUtil;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,9 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class StockService {
-
-  private final UserService userService;
-  private final SimpMessagingTemplate messagingTemplate;
 
   private final NewsRepository newsRepository;
   private final StockWalletRepository stockWalletRepository;
@@ -138,7 +132,7 @@ public class StockService {
         .build();
   }
 
-  // TODO : 매수하기
+  // 매수
   @Transactional
   public StockTransactionHistoryResponseDto buyStocks(Long stockId, Integer amount) {
     Long walletId = walletService.findCurrentWallet().getId();
@@ -212,8 +206,7 @@ public class StockService {
 
   }
 
-  // TODO
-  // 매도하기
+  // 매도
   @Transactional
   public StockTransactionHistoryResponseDto sellStocks(Long stockId, Integer amount) {
 
@@ -259,13 +252,6 @@ public class StockService {
 
     }
 
-    log.info("Amount: {}", amount);
-    log.info("Price: {}", recentPrice.getPrice());
-    log.info("Profit: {}", realizedProfit);
-    log.info("Stock ID: {}", stock.getId());
-    log.info("Wallet ID: {}", myWallet.getId());
-    log.info("Transaction Type: {}", TransactionType.SELL);
-
     // 거래 내역 기록
     Long transactionHistoryId = createTransactionHistory(myWallet, stock, recentPrice.getPrice(),
         amount, recentPrice.getPrice() * amount, realizedProfit, TransactionType.SELL);
@@ -290,9 +276,6 @@ public class StockService {
         .orElseThrow(() -> new NoSuchElementException("Stock not found"));
     StockHistory stockHistory = StockHistory.builder().stock(stock)
         .price(stockRequestDto.getPrice()).createdAt(stockRequestDto.getCreatedAt()).build();
-
-    // 여기서 WebSocket 전송
-    messagingTemplate.convertAndSend("/topic/stock/" + stockId, stockHistory);
 
     stockHistoryRepository.save(stockHistory);
     return stockHistory.getId();
