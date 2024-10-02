@@ -1,10 +1,6 @@
 import {fonts} from '@/constants/font';
 import {colors} from '@/constants/colors';
-import {
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {ScrollView, StyleSheet, View} from 'react-native';
 
 import {useSignupStore} from '@/stores/useAuthStore';
 import ParentsMainScreen from './main/ParentsMainScreen';
@@ -17,7 +13,8 @@ function HomeScreen() {
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.contentsContainer}>
-          {role === '부모' ? <ParentsMainScreen /> : <ChildrenMainScreen />}
+          {/* {role === '부모' ? <ParentsMainScreen /> : <ChildrenMainScreen />} */}
+          <ChildrenMainScreen />
         </View>
       </View>
     </ScrollView>

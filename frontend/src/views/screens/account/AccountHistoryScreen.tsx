@@ -1,4 +1,5 @@
 import {colors} from '@/constants/colors';
+import useAccountBalance from '@/hooks/useAccountInfo';
 import React, {useState} from 'react';
 import {Pressable, ScrollView} from 'react-native';
 import {StyleSheet, Text, View} from 'react-native';
@@ -6,6 +7,7 @@ import {StyleSheet, Text, View} from 'react-native';
 function AccountHistoryScreen({navigation}: any) {
   const isParent = true; // 임시 변수
   const [selected, setSelected] = useState('아이');
+  const {account, balance, isLoading, error, refetch} = useAccountBalance();
   const transactionData = [
     {
       date: '2024.9.2. 14시 23분 03초',
@@ -13,69 +15,6 @@ function AccountHistoryScreen({navigation}: any) {
       historyType: '사용한 금액',
       amount: '-25000원',
       remainingBalance: '1,234,567원',
-    },
-    {
-      date: '2024.9.1. 10시 10분 45초',
-      marketName: '싸피커피',
-      historyType: '사용한 금액',
-      amount: '-4500원',
-      remainingBalance: '1,209,567원',
-    },
-    {
-      date: '2024.8.30. 09시 05분 12초',
-      marketName: '싸피마트',
-      historyType: '사용한 금액',
-      amount: '-12000원',
-      remainingBalance: '1,197,567원',
-    },
-    {
-      date: '2024.8.29. 17시 45분 55초',
-      marketName: '싸피서점',
-      historyType: '사용한 금액',
-      amount: '-32000원',
-      remainingBalance: '1,165,567원',
-    },
-    {
-      date: '2024.8.28. 12시 22분 10초',
-      marketName: '싸피식당',
-      historyType: '사용한 금액',
-      amount: '-15000원',
-      remainingBalance: '1,150,567원',
-    },
-    {
-      date: '2024.8.27. 16시 33분 44초',
-      marketName: '급여 입금',
-      historyType: '입금',
-      amount: '+200000원',
-      remainingBalance: '1,350,567원',
-    },
-    {
-      date: '2024.8.26. 14시 11분 19초',
-      marketName: '싸피옷가게',
-      historyType: '사용한 금액',
-      amount: '-45000원',
-      remainingBalance: '1,305,567원',
-    },
-    {
-      date: '2024.8.25. 18시 00분 00초',
-      marketName: '싸피영화관',
-      historyType: '사용한 금액',
-      amount: '-12000원',
-      remainingBalance: '1,293,567원',
-    },
-    {
-      date: '2024.8.24. 13시 55분 27초',
-      marketName: '보너스 지급',
-      historyType: '입금',
-      amount: '+100000원',
-      remainingBalance: '1,393,567원',
-    },
-    {
-      date: '2024.8.23. 10시 40분 33초',
-      marketName: '싸피슈퍼',
-      historyType: '사용한 금액',
-      amount: '-8000원',
-      remainingBalance: '1,385,567원',
     },
   ];
   return (
@@ -86,11 +25,13 @@ function AccountHistoryScreen({navigation}: any) {
             <View style={styles.parentInfoTop}>
               <Text>아이 계좌 번호</Text>
               <Text style={styles.parentInfoTopBankInfo}>싸피은행</Text>
-              <Text>110-449-965876</Text>
+              <Text>{account}</Text>
             </View>
             <View style={styles.parentInfoMiddle}>
               <Text style={styles.parentBalanceHeader}>남은 금액</Text>
-              <Text style={styles.parentBalanceText}>1,234,567 원</Text>
+              <Text style={styles.parentBalanceText}>
+                {parseInt(balance).toLocaleString()}원
+              </Text>
             </View>
             <Pressable
               style={styles.parentInfoBottom}
@@ -241,20 +182,23 @@ const styles = StyleSheet.create({
   infoTop: {
     width: '100%',
     flexGrow: 1,
+    backgroundColor: 'red',
   },
   infoTopTop: {
     width: '100%',
     flexGrow: 1,
     justifyContent: 'center',
+    backgroundColor: 'red',
   },
   accountNumberHeaderContainer: {
     width: 66,
     height: 22,
-    backgroundColor: colors.YELLOW_50,
+    // backgroundColor: colors.YELLOW_50,
     borderRadius: 6,
     marginTop: 'auto',
     textAlign: 'center',
     alignItems: 'center',
+    backgroundColor: 'red',
   },
   infoTopBottom: {
     width: '100%',

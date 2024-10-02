@@ -1,8 +1,14 @@
 const queryKeys = {
-  AUTH: 'auth',
-  GET_ACCESS_TOKEN: 'getAccessToken',
-  GET_PROFILE: 'getProfile',
-  ACCOUNT: 'account',
+  AUTH: {
+    '': 'auth',
+    GET_ACCESS_TOKEN: 'getAccessToken',
+    GET_PROFILE: 'getProfile',
+  },
+  ACCOUNT: {
+    '': 'account',
+    ACCOUNTNO: 'accountNo',
+    ACCOUNTHOLDER: 'accountHolder',
+  },
 } as const;
 
 const storageKeys = {

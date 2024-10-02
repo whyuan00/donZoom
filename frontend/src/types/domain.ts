@@ -4,11 +4,10 @@ interface ImageUri {
 }
 
 interface Profile {
-  id: number;
-  role: null;
   email: string;
-  username: string;
-  deletedAt: null;
+  id: number;
+  isParent: null;
+  name: string;
 }
 
 export type {ImageUri, Profile};

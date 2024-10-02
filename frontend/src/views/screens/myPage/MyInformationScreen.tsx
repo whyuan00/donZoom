@@ -1,7 +1,8 @@
-import { logout } from '@/api/auth';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 import useAuth from '@/hooks/queries/useAuth';
+import useLogout from '@/stores/useLogout';
+import {useNavigation} from '@react-navigation/native';
 import {useState} from 'react';
 import {
   View,
@@ -13,9 +14,12 @@ import {
 } from 'react-native';
 import NextIcon from 'react-native-vector-icons/MaterialIcons';
 
-function MyInformationScreen({navigation}: any) {
+function MyInformationScreen() {
+  const navigation = useNavigation() as any;
   const [isParents] = useState(true);
+  const logout = useLogout();
   const {logoutMutation} = useAuth();
+
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -99,7 +103,11 @@ function MyInformationScreen({navigation}: any) {
           <View style={styles.securityHeaderContainer}>
             <Text style={styles.cardTitle}>로그아웃</Text>
           </View>
-          <TouchableOpacity style={styles.alarmMenuTextContainer} onPress={()=>{logoutMutation.mutate(null); navigation.navigate('Login')}}>
+          <TouchableOpacity
+            style={styles.alarmMenuTextContainer}
+            onPress={() => logoutMutation.mutate(null)}
+            // onPress={logout}
+          >
             <Text style={styles.alarmMenuText}>로그아웃</Text>
           </TouchableOpacity>
         </View>

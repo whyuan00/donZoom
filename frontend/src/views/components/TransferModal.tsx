@@ -16,7 +16,6 @@ interface Bank {
 }
 
 interface Recipient {
-  bank: Bank;
   accountNumber: string;
 }
 
@@ -26,28 +25,16 @@ interface TransferRecipientModalProps {
   onSelectRecipient: (recipient: Recipient) => void;
 }
 
-const banks: Bank[] = [
-  {id: '1', name: '신한은행'},
-  {id: '2', name: '국민은행'},
-  {id: '3', name: '우리은행'},
-  // 다른 은행들 추가
-];
-
 const TransferRecipientModal: React.FC<TransferRecipientModalProps> = ({
   visible,
   onClose,
   onSelectRecipient,
 }) => {
-  const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
   const [accountNumber, setAccountNumber] = useState<string>('');
 
-  const handleSelectBank = (bank: Bank) => {
-    setSelectedBank(bank);
-  };
-
   const handleConfirm = () => {
-    if (selectedBank && accountNumber) {
-      onSelectRecipient({bank: selectedBank, accountNumber});
+    if (accountNumber) {
+      onSelectRecipient({accountNumber});
       onClose();
     } else {
       Alert.alert('입력 오류', '은행과 계좌번호를 모두 입력해주세요.', [
@@ -61,23 +48,6 @@ const TransferRecipientModal: React.FC<TransferRecipientModalProps> = ({
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>이체 대상 선택</Text>
-
-          <Text style={styles.label}>은행 선택</Text>
-          <FlatList
-            data={banks}
-            renderItem={({item}) => (
-              <TouchableOpacity
-                style={[
-                  styles.bankItem,
-                  selectedBank?.id === item.id && styles.selectedBankItem,
-                ]}
-                onPress={() => handleSelectBank(item)}>
-                <Text>{item.name}</Text>
-              </TouchableOpacity>
-            )}
-            keyExtractor={item => item.id}
-            horizontal
-          />
 
           <Text style={styles.label}>계좌번호</Text>
           <TextInput

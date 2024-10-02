@@ -6,22 +6,22 @@ import {colors} from '@/constants/colors';
 interface KeypadModalProps {
   visible: boolean;
   onClose: () => void;
-  onInput: (amount: string) => void;
+  onInput: (amount: number) => void;
   currentValue: number;
 }
 
-const KeypadModal: React.FC<KeypadModalProps> = ({
+const KeypadModal = ({
   visible,
   onClose,
   onInput,
   currentValue,
-}) => {
+}: KeypadModalProps) => {
   const handleConfirm = () => {
     onClose();
   };
 
   const handleKeypadInput = (newValue: number) => {
-    onInput(newValue.toString());
+    onInput(newValue);
   };
 
   return (

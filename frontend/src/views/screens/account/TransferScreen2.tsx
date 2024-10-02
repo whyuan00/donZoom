@@ -1,55 +1,96 @@
-import { colors } from "@/constants/colors";
-import { fonts } from "@/constants/font";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {colors} from '@/constants/colors';
+import {fonts} from '@/constants/font';
+import useAccount from '@/hooks/queries/useAccount';
+import useAccountBalance from '@/hooks/useAccountInfo';
+import {useSignupStore} from '@/stores/useAuthStore';
+import useTransferStore from '@/stores/useTransferStore';
+import {useFocusEffect} from '@react-navigation/native';
+import {useCallback, useEffect} from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-export default function TransferScreen2({ navigation }: any) {
+export default function TransferScreen2({navigation}: any) {
+  const {
+    account,
+    balance,
+    name: accountName,
+    isLoading,
+    error,
+    refetch,
+  } = useAccountBalance();
+  const {
+    accountNo,
+    amount,
+    name: holderName,
+    setName: setHolderName,
+  } = useTransferStore();
+  const {useGetAccountHolder} = useAccount();
+  const {name} = useSignupStore();
+  console.log('name:', name);
+  const {
+    data: accountHolderData,
+    isLoading: accountHolderLoading,
+    error: accountHolderError,
+  } = useGetAccountHolder(accountNo);
+
   const onPressNext = () => {
     navigation.navigate('송금3');
-  }
+  };
+
+  useEffect(() => {
+    if (accountHolderData) {
+      setHolderName(accountHolderData.name);
+    }
+  }, [accountHolderData, setHolderName]);
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     getAccountName();
+  //   }, []),
+  // );
+
   return (
     <View style={styles.container}>
-      <Text style={styles.menuHeaderText}>
-        출금계좌
-      </Text>
+      <Text style={styles.menuHeaderText}>출금계좌</Text>
       <View style={styles.myAccountInfoContainer}>
         <View style={styles.myAccountTextContainer}>
           <Text style={styles.myAccountTextHeader}>내 계좌</Text>
-          <Text style={styles.myAccountTextContext}>우리  1005-458-953312</Text>
+          <Text style={styles.myAccountTextContext}>{account}</Text>
         </View>
         <View style={styles.myAccountTextContainer}>
           <Text style={styles.withdrawableAmountTextHeader}>출금가능금액</Text>
-          <Text style={styles.withdrawableAmountTextContext}>1,000,000원</Text>
+          <Text style={styles.withdrawableAmountTextContext}>
+            {parseInt(balance).toLocaleString()}원
+          </Text>
         </View>
       </View>
       <Text style={styles.menuHeaderText}>송금정보</Text>
       <View style={styles.recipientInfoContainer}>
         <View style={styles.recipientInfoTextContainer}>
           <View style={styles.recipientInfoTextTopContainer}>
-            <Text style={styles.recipientNameText}>신순호</Text>
-            <Text style={styles.recipientAccountText}>우리 1005-458-953312</Text>
+            <Text style={styles.recipientNameText}>{holderName}</Text>
+            <Text style={styles.recipientAccountText}>{accountNo}</Text>
           </View>
           <View style={styles.recipientInfoTextBottomContainer}>
-            <Text style={styles.ammountInfoText}>10,000원</Text>
+            <Text style={styles.ammountInfoText}>
+              {parseInt(amount).toLocaleString()}원
+            </Text>
           </View>
         </View>
         <View style={styles.recipientInfoOptionContainer}>
-          <Text>받는 통장 표기</Text>
-          <Text>신호준</Text>
+          <Text>받는 통장 표기 : </Text>
+          <Text>{name}</Text>
         </View>
         <View style={styles.recipientInfoOptionContainer}>
-          <Text>내 통장 표기</Text>
-          <Text>신호준</Text>
+          <Text>내 통장 표기 : </Text>
+          <Text>{holderName}</Text>
         </View>
         <View style={styles.recipientInfoOptionContainer}>
           <Text>예약 이체</Text>
           <FontAwesome
             name="toggle-off"
             size={30}
-            style={styles.toggle}
-          >
-
-          </FontAwesome>
+            style={styles.toggle}></FontAwesome>
         </View>
       </View>
       <TouchableOpacity
@@ -58,7 +99,7 @@ export default function TransferScreen2({ navigation }: any) {
         <Text style={styles.nextButtonText}>다음</Text>
       </TouchableOpacity>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -149,7 +190,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     alignItems: 'center',
     borderTopColor: colors.GRAY_25,
-    borderTopWidth:1,
+    borderTopWidth: 1,
   },
   recipientInfoTextTopContainer: {
     paddingHorizontal: 24,
@@ -161,22 +202,22 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     alignItems: 'center',
   },
-  ammountInfoText:{
-    fontFamily:fonts.MEDIUM,
-    fontSize:20,
-    marginLeft:'auto',
+  ammountInfoText: {
+    fontFamily: fonts.MEDIUM,
+    fontSize: 20,
+    marginLeft: 'auto',
   },
-  recipientNameText:{
-    fontFamily:fonts.MEDIUM,
-    fontSize:16,
-    marginTop:20,
+  recipientNameText: {
+    fontFamily: fonts.MEDIUM,
+    fontSize: 16,
+    marginTop: 20,
   },
-  recipientAccountText:{
-    fontFamily:fonts.MEDIUM,
-    fontSize:12,
-    marginTop:6,
+  recipientAccountText: {
+    fontFamily: fonts.MEDIUM,
+    fontSize: 12,
+    marginTop: 6,
   },
-  toggle:{
-    marginLeft:'auto',
-  }
+  toggle: {
+    marginLeft: 'auto',
+  },
 });

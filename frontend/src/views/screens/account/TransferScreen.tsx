@@ -1,11 +1,11 @@
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
-import KeyPad from '@/views/components/KeyPad';
+import useAccountBalance from '@/hooks/useAccountInfo';
+import useTransferStore from '@/stores/useTransferStore';
 import KeypadModal from '@/views/components/KeyPadModal';
 import TransferRecipientModal from '@/views/components/TransferModal';
 import {useState} from 'react';
 import {
-  Modal,
   Pressable,
   StyleSheet,
   Text,
@@ -13,13 +13,7 @@ import {
   View,
 } from 'react-native';
 
-interface Bank {
-  id: string;
-  name: string;
-}
-
 interface Recipient {
-  bank: Bank;
   accountNumber: string;
 }
 
@@ -29,7 +23,8 @@ export default function TransferScreen({navigation}: any) {
   const [selectedRecipient, setSelectedRecipient] = useState<Recipient | null>(
     null,
   );
-  const [amount, setAmount] = useState<string>('0');
+  const {account, balance, isLoading, error, refetch} = useAccountBalance();
+  const {accountNo, amount, setAccountNo, setAmount} = useTransferStore();
 
   const handleOpenModal = () => {
     setModalVisible(true);
@@ -42,6 +37,7 @@ export default function TransferScreen({navigation}: any) {
   const handleSelectRecipient = (recipient: Recipient) => {
     setSelectedRecipient(recipient);
     setModalVisible(false);
+    setAccountNo(recipient.accountNumber);
   };
 
   const handleOpenKeypadModal = () => {
@@ -52,8 +48,8 @@ export default function TransferScreen({navigation}: any) {
     setKeypadModalVisible(false);
   };
 
-  const handleAmountChange = (newAmount: string) => {
-    setAmount(newAmount);
+  const handleAmountChange = (newAmount: number) => {
+    setAmount(newAmount + '');
   };
 
   const onPressNext = () => {
@@ -65,11 +61,13 @@ export default function TransferScreen({navigation}: any) {
       <View style={styles.myAccountInfoContainer}>
         <View style={styles.myAccountTextContainer}>
           <Text style={styles.myAccountTextHeader}>내 계좌</Text>
-          <Text style={styles.myAccountTextContext}>우리 1005-458-953312</Text>
+          <Text style={styles.myAccountTextContext}>{account}</Text>
         </View>
         <View style={styles.myAccountTextContainer}>
           <Text style={styles.withdrawableAmountTextHeader}>출금가능금액</Text>
-          <Text style={styles.withdrawableAmountTextContext}>1,000,000원</Text>
+          <Text style={styles.withdrawableAmountTextContext}>
+            {parseInt(balance).toLocaleString()}원
+          </Text>
         </View>
       </View>
       <Text style={styles.menuHeaderText}>입금대상</Text>
@@ -77,9 +75,7 @@ export default function TransferScreen({navigation}: any) {
         style={styles.recipientAccountInfoContainer}
         onPress={handleOpenModal}>
         <Text style={styles.recipientAccountInfoText}>
-          {selectedRecipient
-            ? `${selectedRecipient.bank.name} ${selectedRecipient.accountNumber}`
-            : '받을 대상을 선택해 주세요'}
+          {selectedRecipient ? `${accountNo}` : '받을 대상을 선택해 주세요'}
         </Text>
       </Pressable>
 
@@ -94,7 +90,6 @@ export default function TransferScreen({navigation}: any) {
         style={styles.amountInputContainer}
         onPress={handleOpenKeypadModal}>
         <Text style={styles.amountInputText}>
-          {' '}
           {amount === '0'
             ? '보낼 금액을 입력해 주세요'
             : `${parseInt(amount).toLocaleString()}원`}
@@ -119,16 +114,16 @@ export default function TransferScreen({navigation}: any) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // 화면 전체를 차지하도록 설정
-    justifyContent: 'flex-start', // 내용이 화면 상단에 위치하도록 설정
-    alignItems: 'stretch', // 자식 컴포넌트가 화면의 가로를 채우도록 설정
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'stretch',
     paddingHorizontal: 30,
     backgroundColor: colors.YELLOW_25,
   },
   myAccountInfoContainer: {
     backgroundColor: colors.WHITE,
     height: 73,
-    borderRadius: 10,
+    borderRadius: 12,
   },
   myAccountTextContainer: {
     flexDirection: 'row',
@@ -141,17 +136,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.WHITE,
     height: 55,
-    borderRadius: 10,
+    borderRadius: 12,
   },
   amountInputContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.WHITE,
     height: 55,
-    borderRadius: 10,
+    borderRadius: 12,
   },
   menuHeaderText: {
     fontFamily: fonts.BOLD,
+    color: colors.BLACK,
     fontSize: 12,
     paddingTop: 23,
     paddingBottom: 8,
@@ -192,7 +188,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.WHITE,
     height: 55,
-    borderRadius: 10,
+    borderRadius: 12,
   },
   nextButtonText: {
     fontFamily: fonts.BOLD,

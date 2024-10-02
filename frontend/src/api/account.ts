@@ -1,3 +1,4 @@
+import axios, {AxiosError} from 'axios';
 import axiosInstance from './axios';
 
 type RequestCard = {
@@ -39,14 +40,32 @@ type ReauestDailyLimit = {
 
 const postinitAccount = async (): Promise<void> => {
   const response = await axiosInstance.post('/account');
-  console.log('asdf');
   console.log(response);
 };
 
-const getAccount = async (): Promise<Response> => {
-  const {data} = await axiosInstance.get('/account');
-  console.log(data);
-  return data;
+interface AccountResult {
+  success: boolean;
+  data?: ResponseBalance;
+  error?: {
+    message: string;
+    status: number;
+  };
+}
+
+const getAccount = async (): Promise<ResponseBalance> => {
+  try {
+    const {data} = await axiosInstance.get<ResponseBalance>('/account');
+    return data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError;
+      console.error('Error fetching account:', axiosError.response?.data);
+      throw error; // 에러를 다시 throw하여 React Query가 처리하도록 합니다.
+    } else {
+      console.error('Unexpected error:', error);
+      throw new Error('An unexpected error occurred');
+    }
+  }
 };
 
 const postCard = async ({
@@ -75,6 +94,47 @@ const postTransfer = async ({
     withdrawalAccountNo,
     withdrawalTransactionSummary,
   });
+};
+
+type Account = {
+  accountNo: string;
+};
+
+type ResponseBalance = {
+  header: {
+    responseCode: string;
+    responseMessage: string;
+    apiName: string;
+    transmissionDate: string;
+    transmissionTime: string;
+    institutionCode: string;
+  };
+  rec: Array<{
+    bankCode: string;
+    bankName: string;
+    userName: string;
+    accountNo: string;
+    accountName: string;
+    accountTypeCode: string;
+    accountTypeName: string;
+    accountCreatedDate: string;
+    accountExpiryDate: string;
+    dailyTransferLimit: string;
+    oneTimeTransferLimit: string;
+    accountBalance: string;
+    lastTransactionDate: string;
+    currency: string;
+  }>;
+};
+
+const getBalance = async (accountNo: string): Promise<ResponseBalance> => {
+  const {data} = await axiosInstance.get('/account', {
+    params: {
+      accountNo: accountNo,
+    },
+  });
+  // console.log(data);
+  return data;
 };
 
 const getAccountHistory = async (): Promise<ResponseAccountHistory> => {
@@ -143,15 +203,50 @@ const patchAccountAuto = async ({
   });
 };
 
+type RequestAccountHolder = {
+  accountNo: string;
+  name: string;
+  nickName: string;
+};
+
+const getAccountHolder = async (
+  accountNo: string,
+): Promise<RequestAccountHolder> => {
+  console.log('getAccountHolder 호출');
+  console.log('accountNo:', accountNo);
+  const {data} = await axiosInstance.get('/account/holder', {
+    params: {
+      accountNo: accountNo,
+    },
+  });
+  console.log(data);
+  return data;
+};
+
 export {
   postinitAccount,
   getAccount,
   postCard,
   postTransfer,
+  getBalance,
   getAccountHistory,
   patchAccountLimit,
   putDailyLimit,
   putPerTransactionLimit,
   postAccountAuto,
   patchAccountAuto,
+  getAccountHolder,
+};
+
+export type {
+  RequestCard,
+  RequestTransfer,
+  ResponseAccountHistory,
+  RequestAccountLimit,
+  RequestDailyLimit,
+  ReauestDailyLimit,
+  Account,
+  ResponseBalance,
+  RequestAccountHolder,
+  AccountResult,
 };
