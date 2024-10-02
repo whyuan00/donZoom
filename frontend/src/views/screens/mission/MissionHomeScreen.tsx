@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start', 
     alignItems: 'stretch', 
-    backgroundColor:colors.WHITE
+    backgroundColor:colors.WHITE,
   },
 });
 

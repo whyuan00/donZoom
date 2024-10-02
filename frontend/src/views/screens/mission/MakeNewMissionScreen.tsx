@@ -12,6 +12,7 @@ import {colors} from '@/constants/colors';
 import InputField from '@/views/components/InputField';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import CustomCalendar from '@/views/components/CustomCalendar';
+import { fonts } from '@/constants/font';
 
 const MakeNewMissionScreen = ({navigation}: any) => {
   const [text, setText] = useState('');
@@ -102,6 +103,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
+    fontFamily: fonts.BOLD,
     fontSize: 25,
     fontWeight: '700',
     textAlign: 'center',
@@ -130,6 +132,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   dateSettingText: {
+    fontFamily: fonts.BOLD,
     fontWeight: '700',
     fontSize: 13,
     marginLeft: 3,
@@ -158,6 +161,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     textAlign: 'center',
+    fontFamily: fonts.MEDIUM,
     color: colors.WHITE,
     fontSize: 18,
   },

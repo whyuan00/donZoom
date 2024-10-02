@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState,useEffect} from 'react';
 import {
   View,
   Text,
@@ -7,13 +7,19 @@ import {
   ScrollView,
   Modal,
   Button,
+  SafeAreaView
 } from 'react-native';
 import RiskAssetScreen from './UnsafeAssetDetailScreen';
 import Icon from 'react-native-vector-icons/AntDesign';
 import UnsafeAssetDetailScreen from './UnsafeAssetDetailScreen';
+import SafeAssetDetailScreen from './SafeAssetDetailScreen';
+import RealAssetDetailScreen from './RealAssetDetailScreen';
+import {colors} from '@/constants/colors';
+import {fonts} from '@/constants/font';
 
-export default function DetailScreen() {
-  const [selectedAsset, setSelectedAsset] = useState<string>('위험자산'); // 기본 자산 선택
+export default function DetailScreen({route}:any) {
+  const {selectedAsset: initialAsset} = route.params; // 전달된 자산 받기
+  const [selectedAsset, setSelectedAsset] = useState(initialAsset); // 초기 선택 자산 설정
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false); // 모달 상태
   const [selectedDescription, setSelectedDescription] = useState<string>(''); // 설명 상태
 
@@ -55,17 +61,19 @@ export default function DetailScreen() {
   // 선택한 자산에 따른 페이지 렌더링
   const renderSelectedAssetScreen = () => {
     switch (selectedAsset) {
+      case '안전자산':
+        return <SafeAssetDetailScreen />;
       case '실물자산':
-        return <UnsafeAssetDetailScreen />;
+        return <RealAssetDetailScreen />;
       case '위험자산':
-        return <RiskAssetScreen />;
+        return <UnsafeAssetDetailScreen  />;
       default:
         return null;
     }
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {/* 상단 자산 선택 버튼 */}
       <View style={styles.assetButtonContainer}>
         <TouchableOpacity
@@ -83,7 +91,6 @@ export default function DetailScreen() {
             안전자산
           </Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={[
             styles.assetButton,
@@ -116,18 +123,16 @@ export default function DetailScreen() {
           </Text>
         </TouchableOpacity>
 
+        {/* 아이콘 */}
         <TouchableOpacity
-          style={styles.infoIcon}
-          onPress={() => openDescriptionModal(selectedAsset)} // 설명 모달 열기
-        >
+          style={styles.icon}
+          onPress={() => openDescriptionModal(selectedAsset)}>
           <Icon name="infocirlceo" size={25} color="black" />
         </TouchableOpacity>
       </View>
 
       {/* 선택된 자산에 따른 페이지 렌더링 */}
-      <View style={styles.assetDetailContainer}>
-        {renderSelectedAssetScreen()}
-      </View>
+      <View style={{flex:1}}>{renderSelectedAssetScreen()}</View>
 
       {/* 설명 모달 */}
       <Modal visible={isModalVisible} transparent={true} animationType="fade">
@@ -139,45 +144,53 @@ export default function DetailScreen() {
           </View>
         </View>
       </Modal>
-    </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    borderWidth:3,
     backgroundColor: '#fff',
   },
   assetButtonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 10,
-    marginTop: 10,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    margin: 10,
+    marginLeft: 25,
   },
   assetButton: {
-    flex: 1,
-    paddingVertical: 10,
-    marginHorizontal: 5,
+    margin: 7,
+    width: 100,
+    height: 35,
     borderRadius: 10,
+    marginVertical: 10,
     alignItems: 'center',
     justifyContent: 'center',
     borderColor: '#ccc',
     borderWidth: 1,
   },
+  icon: {
+    margin: 5,
+  },
   selectedButton: {
-    backgroundColor: '#FFE999',
+    backgroundColor: colors.YELLOW_100,
     borderColor: '#FFE999',
   },
   selectedText: {
-    color: '#000',
-    fontWeight: 'bold',
+    color: colors.BLACK,
+    fontFamily: fonts.MEDIUM,
+    fontWeight: '300',
   },
   unselectedText: {
-    color: '#ccc',
+    fontFamily: fonts.LIGHT,
+    color: colors.GRAY_75,
   },
   assetDetailContainer: {
     flex: 1,
-    padding: 20,
+    // padding: 20,
   },
   modalOverlay: {
     flex: 1,
@@ -201,8 +214,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 20,
     textAlign: 'center',
-  },
-  infoIcon: {
-    paddingVertical: 10,
   },
 });
