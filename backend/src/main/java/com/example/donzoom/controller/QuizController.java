@@ -1,6 +1,7 @@
 package com.example.donzoom.controller;
 
 import com.example.donzoom.dto.quiz.request.QuizAnswerDto;
+import com.example.donzoom.dto.quiz.response.UserQuizResponseDto;
 import com.example.donzoom.entity.Quiz;
 import com.example.donzoom.service.QuizService;
 import java.util.List;
@@ -24,7 +25,7 @@ public class QuizController {
   @GetMapping
   public ResponseEntity<?> getQuiz() {
     // 내가 푼 퀴즈 가져오기
-    List<Quiz> myQuizzes = quizService.getUserQuizzes();
+    List<UserQuizResponseDto> myQuizzes = quizService.getUserQuizzes();
     return new ResponseEntity<>(myQuizzes, HttpStatus.OK);
   }
 
