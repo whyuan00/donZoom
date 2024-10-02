@@ -4,7 +4,7 @@ import useAccountBalance from '@/hooks/useAccountInfo';
 import useTransferStore from '@/stores/useTransferStore';
 import KeypadModal from '@/views/components/KeyPadModal';
 import TransferRecipientModal from '@/views/components/TransferModal';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {
   Pressable,
   StyleSheet,
@@ -17,7 +17,7 @@ interface Recipient {
   accountNumber: string;
 }
 
-export default function TransferScreen({navigation}: any) {
+export default function TransferScreen({route, navigation}: any) {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [keypadModalVisible, setKeypadModalVisible] = useState<boolean>(false);
   const [selectedRecipient, setSelectedRecipient] = useState<Recipient | null>(
@@ -25,6 +25,14 @@ export default function TransferScreen({navigation}: any) {
   );
   const {account, balance, error, refetch} = useAccountBalance();
   const {accountNo, amount, setAccountNo, setAmount} = useTransferStore();
+
+  useEffect(() => {
+    if (route.params?.accountNo) {
+      setAccountNo(route.params.accountNo);
+      setSelectedRecipient({accountNumber: accountNo});
+      console.log('계좌번호 설정: ', accountNo);
+    }
+  }, [route.params?.accountNo]);
 
   const handleOpenModal = () => {
     setModalVisible(true);

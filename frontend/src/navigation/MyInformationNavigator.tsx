@@ -8,6 +8,7 @@ import InputPassWordScreen from '@/views/screens/myPage/InputPassWordScreen';
 import NewPassWordScreen from '@/views/screens/myPage/NewPassWordScreen';
 import ConfirmPassWordScreen from '@/views/screens/myPage/ConfirmPassWordScreen';
 import QRCodeGenerator from '@/views/components/QRCodeGenerator';
+import AccountInitScreen from '@/views/screens/account/AccountInitScreen';
 
 const MyInformationNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -16,6 +17,7 @@ const MyInformationNavigator = () => {
       <Stack.Screen name="설정" component={MyInformationScreen} />
       <Stack.Screen name="보안 설정" component={SecuritySettingScreen} />
       <Stack.Screen name="QR 생성" component={QRCodeGenerator} />
+      <Stack.Screen name="계좌 생성" component={AccountInitScreen} />
       <Stack.Screen
         name="비밀번호 설정"
         component={InputPassWordScreen}
