@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.WHITE,
   },
   textContainer: {
-    height: 500,
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },

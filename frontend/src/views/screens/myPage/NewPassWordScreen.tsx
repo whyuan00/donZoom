@@ -13,7 +13,7 @@ function NewPassWordScreen({navigation}: any) {
     }
     if (newValue.length === 6) {
       // newValue를 바로 넘겨줌 (setState 비동기 동작을 고려)
-      navigation.navigate('ConfirmPassWordScreen', {newPassword: newValue}); 
+      navigation.navigate('비밀번호확인', {newPassword: newValue});
     }
   };
 
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.WHITE,
   },
   textContainer: {
-    height: 500,
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
