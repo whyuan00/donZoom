@@ -20,7 +20,7 @@ type QuizResponse = {
 
 type QuizAnswer = {
   quizId: number;
-  input: string;
+  answer: string;
 };
 
 const getTodayQuiz = async (): Promise<QuizResponse> => {
@@ -29,14 +29,14 @@ const getTodayQuiz = async (): Promise<QuizResponse> => {
   return response.data;
 };
 
-const submitQuizAnswer = async ({quizId, input}: QuizAnswer): Promise<void> => {
-  // console.log(quizId, input);
-  await axiosInstance.post(`/quiz/${quizId}`, {input});
+const submitQuizAnswer = async ({quizId, answer}: QuizAnswer): Promise<void> => {
+  // console.log(quizId, answer);
+  await axiosInstance.post(`/quiz/${quizId}`, {answer});
 };
 
 const getSolvedQuiz = async (): Promise<string[]> => {
   const response = await axiosInstance.get('/quiz');
-  console.log("이거야? ",response.data);
+  // console.log("이거야? ",response.data);
   return response.data;
 };
 

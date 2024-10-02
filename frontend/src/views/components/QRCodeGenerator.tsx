@@ -5,7 +5,7 @@ import QRCode from 'react-native-qrcode-svg';
 const QRCodeGenerator = () => {
   // QR 코드로 변환할 JSON 데이터
   const accountData = {
-    accountNumber: "0013352627401426",
+    accountNumber: "0017584956261876",
     bank: "싸피은행"
   };
 
