@@ -3,6 +3,7 @@ import axiosInstance from './axios';
 import {getEncryptedStorage} from '@/utils';
 import axios, {AxiosError} from 'axios';
 import {useErrorStore} from '@/stores/errorMessagesStore';
+import messaging from '@react-native-firebase/messaging';
 
 type User = {
   email: string;
@@ -63,12 +64,14 @@ const postSignup = async ({
 
 const postLogin = async ({email, password}: User): Promise<Response> => {
   const setErrorMessage = useErrorStore.getState().setErrorMessage;
-
   try {
+    const deviceToken = await messaging().getToken();
+    console.log(deviceToken);
     console.log('Attempting to send login request...');
     const response = await axiosInstance.post('/user/login', {
       email,
       password,
+      deviceToken,
     });
     // console.log('Login request successful:', response);
     // console.log('Authorization:', response.headers['authorization']);

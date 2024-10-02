@@ -6,6 +6,7 @@ import notifee, {AndroidImportance} from '@notifee/react-native';
 import firebase from '@react-native-firebase/app';
 import queryClient from '@/api/queryClient';
 import RootNavigator from '@/navigation/root/RootNavigator';
+import {useSignupStore} from '@/stores/useAuthStore';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDSUTJysXrGAo2kxrgyEAVNiiVcr4Xfj40',
