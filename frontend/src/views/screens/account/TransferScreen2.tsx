@@ -4,8 +4,7 @@ import useAccount from '@/hooks/queries/useAccount';
 import useAccountBalance from '@/hooks/useAccountInfo';
 import {useSignupStore} from '@/stores/useAuthStore';
 import useTransferStore from '@/stores/useTransferStore';
-import {useFocusEffect} from '@react-navigation/native';
-import {useCallback, useEffect} from 'react';
+import {useEffect} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
@@ -14,7 +13,6 @@ export default function TransferScreen2({navigation}: any) {
     account,
     balance,
     name: accountName,
-    isLoading,
     error,
     refetch,
   } = useAccountBalance();

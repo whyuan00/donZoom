@@ -18,14 +18,13 @@ import DrawMachine from '@/assets/voidDrawMachine.svg';
 import Floor from '@/assets/longFloor.svg';
 import GifImage from 'react-native-gif';
 import Profile from '@/views/components/HomeProfile';
-import useAccount from '@/hooks/queries/useAccount';
-import {useState, useEffect} from 'react';
+import {useEffect} from 'react';
 import useAccountBalance from '@/hooks/useAccountInfo';
 import {useSignupStore} from '@/stores/useAuthStore';
 
 function ChildrenMainScreen() {
   const navigation = useNavigation() as any;
-  const {account, balance, isLoading, error, refetch} = useAccountBalance();
+  const {account, balance, error, refetch} = useAccountBalance();
   const {name} = useSignupStore();
 
   useEffect(() => {
