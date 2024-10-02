@@ -57,6 +57,7 @@ public class NewsService {
 
     return todayNewsList.stream()
         .map(news -> NewsResponseDto.builder()
+            .newsId(news.getId())
             .title(news.getTitle())
             .contents(news.getContents())
             .source(news.getSource())
@@ -72,6 +73,7 @@ public class NewsService {
 
     return newsList.stream()
         .map(news -> NewsResponseDto.builder()
+            .newsId(news.getId())
             .title(news.getTitle())
             .contents(news.getContents())
             .source(news.getSource())
