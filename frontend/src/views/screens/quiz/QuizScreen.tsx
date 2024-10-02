@@ -1,10 +1,10 @@
 import {useState} from 'react';
 import {useQuizStore} from '@/stores/useQuizStore';
-import {useNavigation} from '@react-navigation/native';
 import {Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 
+import useQuiz from '@/hooks/queries/useQuiz';
 import Correct from '@/assets/correct.svg';
 import NotCorrect from '@/assets/notCorrect.svg';
 
@@ -20,6 +20,8 @@ function QuizScreen({navigation}: any) {
   const [isModalVisible, setModalVisible] = useState(false);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
 
+  const {submitQuizAnswerMutation} = useQuiz();
+
   const clickAnswerPress = (answer: string) => {
     setSelectedAnswer(answer);
   };
@@ -27,10 +29,24 @@ function QuizScreen({navigation}: any) {
   const handleSubmit = () => {
     const isCorrect = currentQuestion?.correctAnswer === selectedAnswer;
     setIsAnswerCorrect(isCorrect);
-    setModalVisible(true);
+
+    submitQuizAnswerMutation.mutate(
+      {
+        quizId: currentQuestion.quizId,
+        input: selectedAnswer!,
+      },
+      {
+        onSuccess: () => {
+          setModalVisible(true);
+        },
+        onError: (error: any) => {
+          console.error('Error submitting answer: ', error);
+        },
+      },
+    );
   };
 
-  const handleViewComment = (navigation: any) => {
+  const handleViewComment = () => {
     setModalVisible(false);
     setSelectedAnswer(null);
     navigation.navigate('해설');

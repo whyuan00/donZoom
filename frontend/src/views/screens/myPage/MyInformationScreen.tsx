@@ -71,6 +71,16 @@ function MyInformationScreen() {
         )}
         <View style={styles.alarmMenuContainer}>
           <View style={styles.securityHeaderContainer}>
+            <Text style={styles.cardTitle}>QR코드 생성</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.securityMenuContainer}
+            onPress={() => navigation.navigate('QR 생성')}>
+            <Text style={styles.securityMenuText}>QR 생성</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.alarmMenuContainer}>
+          <View style={styles.securityHeaderContainer}>
             <Text style={styles.cardTitle}>인증/보안</Text>
           </View>
           <TouchableOpacity
