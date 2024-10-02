@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import {colors} from '@/constants/colors';
 import KeyPad from '@/views/components/KeyPad';
+import { fonts } from '@/constants/font';
 
 const MakeNewMissionPayScreen = ({navigation, route}: any) => {
   const {text, selectedDate} = route.params;
@@ -32,18 +33,32 @@ const MakeNewMissionPayScreen = ({navigation, route}: any) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.paybox}>
-        <Text style={{marginTop: 35, fontSize: 20, color: colors.BLACK}}>
+        <Text
+          style={{
+            marginTop: 35,
+            fontFamily: fonts.MEDIUM,
+            fontSize: 20,
+            color: colors.BLACK,
+          }}>
           미션 금액을 설정해주세요!
         </Text>
         <Text
           style={{
             marginTop: 28,
+            fontFamily: fonts.BOLD,
             fontSize: 40,
             fontWeight: '700',
             color: colors.BLUE_100,
           }}>
           {valueString} {''}
-          <Text style={{fontSize: 15, color: colors.BLUE_100}}>원</Text>
+          <Text
+            style={{
+              fontFamily: fonts.BOLD,
+              fontSize: 15,
+              color: colors.BLUE_100,
+            }}>
+            원
+          </Text>
         </Text>
       </View>
       <View style={styles.buttonBox}>
@@ -52,34 +67,56 @@ const MakeNewMissionPayScreen = ({navigation, route}: any) => {
           onPress={() => {
             updateValue(value + 100);
           }}>
-          <Text style={{color: colors.BLACK, fontWeight:'500'}}>+ 백원</Text>
+          <Text style={{color: colors.BLACK, fontWeight: '500'}}>+ 백원</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
             updateValue(value + 1000);
           }}>
-          <Text style={{color: colors.BLACK, fontWeight:'500'}}>+ 천원</Text>
+          <Text style={{color: colors.BLACK, fontWeight: '500'}}>+ 천원</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
             updateValue(value + 10000);
           }}>
-          <Text style={{color: colors.BLACK, fontWeight:'500'}}>+ 만원</Text>
+          <Text style={{color: colors.BLACK, fontWeight: '500'}}>+ 만원</Text>
         </TouchableOpacity>
       </View>
-      <Text style={{marginTop: 10, fontSize: 13, color: colors.GRAY_100}}>
+      <Text
+        style={{
+          marginTop: 10,
+          fontFamily: fonts.MEDIUM,
+          fontSize: 13,
+          color: colors.GRAY_100,
+        }}>
         {alertText}
       </Text>
-      <KeyPad onInput={updateValue} currentValue = {value}/>
+      <KeyPad onInput={updateValue} currentValue={value} />
 
-      <TouchableOpacity style={styles.makeButton} onPress={()=>{navigation.navigate('MakeNewMissionComplete',
-          {text:text,selectedDate:selectedDate,pay:value})}}>
-          <Text style={{marginVertical:10, fontSize:18,color:colors.BLACK,fontWeight:'500',textAlign:'center'}}>미션 생성하기</Text>
+      <TouchableOpacity
+        style={styles.makeButton}
+        onPress={() => {
+          navigation.navigate('MakeNewMissionComplete', {
+            text: text,
+            selectedDate: selectedDate,
+            pay: value,
+          });
+        }}>
+        <Text
+          style={{
+            marginVertical: 10,
+            fontSize: 18,
+            fontFamily: fonts.MEDIUM,
+            color: colors.BLACK,
+            fontWeight: '500',
+            textAlign: 'center',
+          }}>
+          미션 생성하기
+        </Text>
       </TouchableOpacity>
-      <Text>
-      </Text>
+      <Text></Text>
     </SafeAreaView>
   );
 };
@@ -116,7 +153,7 @@ const styles = StyleSheet.create({
   makeButton: {
     // marginTop: 18,
     position: 'absolute',
-    bottom: 80,
+    bottom: 40,
     width: 300,
     height: 50,
     backgroundColor: colors.WHITE,

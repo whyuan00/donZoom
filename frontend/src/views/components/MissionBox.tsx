@@ -1,6 +1,7 @@
 import React, {useRef, useEffect} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Animated} from 'react-native';
 import {colors} from '../../constants/colors';
+import { fonts } from '@/constants/font';
 //TODO: 필요할경우 미션박스 컴포넌트 React.memo로 리팩토링
 interface MissionProps {
   missionTitle: string;
@@ -123,10 +124,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   buttonOneText: {
+    fontFamily: fonts.MEDIUM,
     fontSize: 15,
     color: colors.WHITE,
   },
   buttonTwoText: {
+    fontFamily: fonts.MEDIUM,
     fontSize: 15,
     color: colors.BLACK,
   },
@@ -142,12 +145,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     margin: 3,
     color: colors.BLACK,
+    fontFamily: fonts.BOLD,
     textAlign: 'right',
     fontWeight: '700',
   },
   smalltext: {
     fontSize: 15,
     margin: 3,
+    fontFamily: fonts.MEDIUM,
     color: colors.BLACK,
     textAlign: 'right',
     fontWeight: '400',

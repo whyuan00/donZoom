@@ -3,7 +3,7 @@ import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs
 import MissionPastChildScreen from '../views/screens/mission/child/MissionPastChildScreen';
 import MissionOngoingChildScreen from '../views/screens/mission/child/MissionOngoingChildScreen';
 import MissionCompleteChildScreen from '../views/screens/mission/child/MissionCompleteChildScreen';
-
+import { fonts } from '@/constants/font';
 import {colors} from '../constants/colors';
 
 const Tab = createMaterialTopTabNavigator();
@@ -15,7 +15,7 @@ export default function MissionChildTabNavigator() {
       screenOptions={{
         tabBarActiveTintColor: colors.BLUE_100,
         tabBarInactiveTintColor: colors.BLACK,
-        tabBarLabelStyle: {fontSize: 16},
+        tabBarLabelStyle: {fontFamily:fonts.MEDIUM, fontSize: 16},
         tabBarStyle: {backgroundColor: 'white'},
       }}>
       <Tab.Screen

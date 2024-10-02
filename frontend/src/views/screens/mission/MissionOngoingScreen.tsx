@@ -16,6 +16,7 @@ import {colors} from '@/constants/colors';
 import InputField from '@/views/components/InputField';
 import CustomCalendar from '@/views/components/CustomCalendar';
 import KeyPad from '@/views/components/KeyPad';
+import { fonts } from '@/constants/font';
 
 interface Mission {
   missionId: number;
@@ -203,6 +204,7 @@ const MissionOngoingScreen = () => {
                 style={{
                   color: colors.GRAY_100,
                   fontSize: 15,
+                  fontFamily: fonts.MEDIUM,
                   marginTop: 23,
                   padding: 0,
                 }}
@@ -217,7 +219,12 @@ const MissionOngoingScreen = () => {
 
               <TouchableOpacity onPress={toggleCalendar}>
                 <Text style={{color: colors.GRAY_100}}>
-                  <Text style={{fontSize: 15, color: colors.BLUE_100}}>
+                  <Text
+                    style={{
+                      fontSize: 15,
+                      color: colors.BLUE_100,
+                      fontFamily: fonts.MEDIUM,
+                    }}>
                     {missionDateModifyString}
                   </Text>
                   까지 미션을 완료해주세요!
@@ -237,6 +244,7 @@ const MissionOngoingScreen = () => {
               <Text
                 style={{
                   fontSize: 20,
+                  fontFamily: fonts.MEDIUM,
                   textAlign: 'center',
                   color: colors.BLACK,
                 }}>
@@ -298,6 +306,7 @@ const styles = StyleSheet.create({
   },
   payText: {
     fontSize: 24,
+    fontFamily:fonts.BOLD,
     fontWeight: '700',
     color: colors.BLUE_100,
     marginTop: 8,

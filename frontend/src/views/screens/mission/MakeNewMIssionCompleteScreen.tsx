@@ -9,6 +9,7 @@ import {
 import {colors} from '@/constants/colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axiosInstance from '@/api/axios';
+import { fonts } from '@/constants/font';
 
 const MakeNewMissionCompleteScreen = ({navigation, route}: any) => {
   const {text, selectedDate, pay} = route.params;
@@ -31,25 +32,44 @@ const MakeNewMissionCompleteScreen = ({navigation, route}: any) => {
   return (
     <SafeAreaView style={styles.container}>
       <Icon name="clipboard-text-outline" size={135} />
-      <Text style={{margin:12,fontSize: 25, fontWeight: '500', color: colors.BLACK}}>
+      <Text
+        style={{
+          margin: 12,
+          fontFamily: fonts.MEDIUM,
+          fontSize: 25,
+          fontWeight: '500',
+          color: colors.BLACK,
+        }}>
         미션 생성 완료
       </Text>
       <View style={styles.missionbox}>
         <Text style={styles.missionText}>{text}</Text>
         <Text style={styles.payText}>{pay.toLocaleString()} 원</Text>
         <Text style={styles.missionText}>
-          <Text style={{color: colors.BLUE_100}}>{selectedDate.replaceAll('-','.')}</Text> 까지
-          미션을 완료해주세요!
+          <Text style={{color: colors.BLUE_100}}>
+            {selectedDate.replaceAll('-', '.')}
+          </Text>{' '}
+          까지 미션을 완료해주세요!
         </Text>
       </View>
       <TouchableOpacity
         style={styles.confirmButton}
         onPress={() => {
           console.log('Button pressed');
-          sendMissionInfo(text, pay, selectedDate)
-          navigation.navigate('Mission', {screen: '진행중'});
+          sendMissionInfo(text, pay, selectedDate);
+          navigation.navigate('MissionParent', {screen: '진행중'});
         }}>
-        <Text style={{color:colors.BLACK,fontSize:18,fontWeight:'500',textAlign:'center',padding:10,}}>확인</Text>
+        <Text
+          style={{
+            color: colors.BLACK,
+            fontSize: 18,
+            fontFamily: fonts.MEDIUM,
+            fontWeight: '500',
+            textAlign: 'center',
+            padding: 10,
+          }}>
+          확인
+        </Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -74,17 +94,19 @@ const styles = StyleSheet.create({
   },
   payText: {
     fontSize: 24,
+    fontFamily: fonts.BOLD,
     fontWeight: '700',
     color: colors.BLUE_100,
   },
   missionText: {
     fontSize: 15,
+    fontFamily: fonts.MEDIUM,
     color: colors.GRAY_100,
     fontWeight: '500',
   },
   confirmButton: {
     position: 'absolute',
-    bottom: 80,
+    bottom: 40,
     width: 300,
     height: 50,
     backgroundColor: colors.WHITE,
