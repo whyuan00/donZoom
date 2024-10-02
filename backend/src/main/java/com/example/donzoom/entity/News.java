@@ -30,16 +30,19 @@ public class News {
 
   private String title;
 
+  private String source;
+
   @Column(columnDefinition = "TEXT")
   private String contents;
 
   private LocalDateTime createdAt;
 
   @Builder
-  public News(Stock stock, String title, String contents, LocalDateTime createdAt) {
+  public News(Stock stock, String title, String contents, LocalDateTime createdAt, String source) {
     this.stock = stock;
     this.title = title;
     this.contents = contents;
     this.createdAt = createdAt;
+    this.source = source;
   }
 }

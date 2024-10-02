@@ -83,8 +83,9 @@ def crawl_reports(stockId):
     search_button.click()
 
     # 하루 전 날짜 가져오기
-    yesterday = (datetime.now(KST) - timedelta(days=1)).strftime("%y.%m.%d")  # 한국 시간대로 맞춰줌
-
+    #yesterday = (datetime.now(KST) - timedelta(days=1)).strftime("%y.%m.%d")  # 한국 시간대로 맞춰줌
+    today = datetime.now(KST).strftime("%y.%m.%d")
+    print(today)
     # 리포트 목록을 담고 있는 테이블의 행 가져오기
     report_rows = driver.find_elements(By.XPATH, "//div[@class='box_type_m']//table//tr")
 
@@ -93,10 +94,11 @@ def crawl_reports(stockId):
     for row in report_rows[2:]:
         try:
             date_time = row.find_element(By.CSS_SELECTOR, 'td:nth-child(5)').text
-            if date_time == yesterday:
+            if date_time == today:
                 title = row.find_element(By.CSS_SELECTOR, 'td:nth-child(2) a').text
+                source = row.find_element(By.CSS_SELECTOR, 'td:nth-child(3)').text
                 title_link = row.find_element(By.CSS_SELECTOR, 'td:nth-child(2) a').get_attribute('href')
-                report_list.append({'title': title, 'link': title_link, 'date_time': date_time})
+                report_list.append({'title': title, 'link': title_link, 'date_time': date_time, 'source': source})
         except Exception as e:
             continue
 
@@ -116,6 +118,7 @@ def crawl_reports(stockId):
             data = {
                 "title": report['title'],
                 "contents": article_content,
+                "source": report['source'],
                 "createdAt": created_at  # 현재 시간을 추가 (ISO 8601 형식)
             }
             all_data_list.append(data)
