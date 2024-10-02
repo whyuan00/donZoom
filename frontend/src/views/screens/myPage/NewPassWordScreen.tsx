@@ -1,11 +1,20 @@
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 import PasswordPad from '@/views/components/PasswordPad';
-import {useState} from 'react';
+import {useFocusEffect} from '@react-navigation/native';
+import {useCallback, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
 function NewPassWordScreen({navigation}: any) {
   const [newPassword, setNewPassword] = useState<string>(''); // 새 비밀번호
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setNewPassword('');
+      };
+    }, []),
+  );
 
   const updateValue = (newValue: string) => {
     if (newValue.length <= 6) {

@@ -1,7 +1,9 @@
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 import useAuth from '@/hooks/queries/useAuth';
+import useSignupForm from '@/hooks/useSignupForm';
 import useLogout from '@/stores/useLogout';
+import usePasswordStore from '@/stores/usePasswordStore';
 import {useNavigation} from '@react-navigation/native';
 import {useState} from 'react';
 import {
@@ -19,6 +21,8 @@ function MyInformationScreen() {
   const [isParents] = useState(true);
   const logout = useLogout();
   const {logoutMutation} = useAuth();
+  const {reset: signupReset} = useSignupForm();
+  const {reset: passwordReset} = usePasswordStore();
 
   return (
     <ScrollView>
@@ -105,9 +109,11 @@ function MyInformationScreen() {
           </View>
           <TouchableOpacity
             style={styles.alarmMenuTextContainer}
-            onPress={() => logoutMutation.mutate(null)}
-            // onPress={logout}
-          >
+            onPress={() => {
+              logoutMutation.mutate(null);
+              signupReset();
+              passwordReset();
+            }}>
             <Text style={styles.alarmMenuText}>로그아웃</Text>
           </TouchableOpacity>
         </View>

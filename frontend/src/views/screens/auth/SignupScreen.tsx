@@ -22,10 +22,6 @@ function SignupScreen({navigation}: any) {
   const passwordRef = useRef<TextInput | null>(null);
   const passwordConfirmRef = useRef<TextInput | null>(null);
   const [selected, setSelected] = useState('');
-  const signup = useForm({
-    initialValue: {email: '', password: '', passwordConfirm: ''},
-    validate: validateSignup,
-  });
   const {values, errors, touched, getTextInputProps} = useSignupForm();
 
   const handleNext = () => {
