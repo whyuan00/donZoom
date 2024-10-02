@@ -6,6 +6,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
+from gpt_summarize import summarize_news
 import re
 
 # 종목과 stockId 매핑 (key-value 형태)
@@ -154,7 +155,10 @@ def crawl_world_news(stockId):
             # 출처(meta 정보에서 'twitter:creator'의 content 속성)
             meta_source = driver.find_element(By.CSS_SELECTOR, 'meta[name="twitter:creator"]')
             source = meta_source.get_attribute("content")
-
+            
+             # GPT API로 요약하기 (필요시 사용)
+            content = summarize_news(content)
+            
             # 최종 데이터 생성
             final_data = {
                 "title": title,

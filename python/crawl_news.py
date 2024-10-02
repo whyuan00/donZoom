@@ -130,7 +130,7 @@ def crawl_news(stockId):
                 content = content_section.text.strip()  # 본문 텍스트 추출
 
                 # GPT API로 요약하기 (필요시 사용)
-                #content = summarize_news(content)
+                content = summarize_news(content)
 
                 # 새로운 딕셔너리에 제목, 날짜, 본문만 추가 (링크와 소스는 제외)
                 final_data = {
