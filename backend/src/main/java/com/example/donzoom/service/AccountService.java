@@ -56,6 +56,7 @@ public class AccountService {
   //뱅크사용자 가입
   public BankUserResponseDto createMember() {
     //유저정보 가져오기
+    log.info("싸피은행에 가입합니다.");
     User user = userService.findCurrentUser();
     BankUserResponseDto bankUser = bankApi.createMember(user.getEmail());
     // 코인 차감 및 티켓 추가
@@ -70,7 +71,6 @@ public class AccountService {
   public BankUserResponseDto getMember() {
     //유저정보 가져오기
     User user = userService.findCurrentUser();
-
     return bankApi.getMember(user.getEmail());
   }
 
@@ -83,6 +83,7 @@ public class AccountService {
 
     //유저가 뱅크에 가입되있지 않으면 가입 후 계좌생성
     if (user.getUserKey() == null) {
+      log.info("싸피은행에 가입되지 않았습니다.");
       createMember();
     }
     log.info(user.toString());

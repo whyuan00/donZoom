@@ -102,10 +102,12 @@ public class BankApi {
 
   //회원생성
   public BankUserResponseDto createMember(String userId) {
+    log.info("싸피은행에 멤버를 생성하는 CREATEMEMBER");
     CreateMemberDto member = CreateMemberDto.builder().apiKey(apiKey).userId(userId).build();
 
     try {
       // 회원 생성 시도
+      log.info("회원 가입 시도");
       return webClient.post().uri(createMemberUrl).bodyValue(member).retrieve()
           .bodyToMono(BankUserResponseDto.class)
           .block();  // 동기식으로 블록 처리
@@ -118,8 +120,9 @@ public class BankApi {
           ObjectMapper objectMapper = new ObjectMapper();
           JsonNode errorJson = objectMapper.readTree(e.getResponseBodyAsString());
           String responseCode = errorJson.get("responseCode").asText();
-
+          
           if ("E4002".equals(responseCode)) {
+            log.info("이미 존재하는 회원입니다.(이미 가입된 정보 return)");
             // 이미 존재하는 회원일 때 getMember를 호출하여 처리
             return getMember(userId);
           }

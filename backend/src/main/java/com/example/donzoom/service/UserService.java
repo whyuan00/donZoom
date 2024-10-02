@@ -64,9 +64,10 @@ public class UserService {
     String email = customUserDetails.getUsername();
     String role = customUserDetails.getAuthorities().iterator().next().getAuthority();
 
-    User user = findCurrentUser();
+    // Jwt토큰이 발급 전이라 이렇게 찾아와야함
+    User user = userRepository.findByEmail(email).orElseThrow(()->new IllegalArgumentException("로그인된 유저를 찾을 수 없습니다."));
     user.updateDeviceToken(loginRequestDto.getDeviceToken());
-
+    userRepository.save(user);
     log.info("토큰 발급 전입니다.");
     // AccessToken 발급
     String accessToken = jwtUtil.createAccessJwt(email, role);
@@ -115,5 +116,6 @@ public class UserService {
   public void updatePaymentPassword(String paymentPassword){
     User user = findCurrentUser();
     user.updatePaymentPassword(paymentPassword);
+    userRepository.save(user);
   }
 }
