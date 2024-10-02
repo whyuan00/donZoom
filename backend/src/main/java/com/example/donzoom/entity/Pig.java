@@ -24,10 +24,13 @@ public class Pig {
 
   private String pigName;
 
+  private double probability;
+
   @Builder
-  public Pig(String imageUrl, String pigName) {
+  public Pig(String imageUrl, String pigName, double probability) {
     this.imageUrl = imageUrl;
     this.pigName = pigName;
+    this.probability = probability;
   }
 
 }
