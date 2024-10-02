@@ -37,18 +37,34 @@ public class PigService {
 
     // 현재 인증된 사용자 정보 가져오기
     String username = SecurityUtil.getAuthenticatedUsername();
-    // user에서  지갑 가져오기
     User user = userRepository.findByEmail(username)
         .orElseThrow(() -> new RuntimeException("User not found"));
     Wallet wallet = user.getWallet();
 
-    List<MyPig> myPigs = myPigRepository.findByWalletId(
-        wallet.getId()); //Wallet ID를 기준으로 MyPigs 엔티티 리스트를 반환
-    return myPigs.stream().map(myPig -> PigResponseDto.builder().pigId(myPig.getPig().getId())
-            .imageUrl(myPig.getPig().getImageUrl()).pigName(myPig.getPig().getPigName()).build())
+    List<MyPig> myPigs = myPigRepository.findByWalletId(wallet.getId());
+
+    // 사용자가 소유한 돼지의 ID를 추출
+    Set<Long> ownedPigIds = myPigs.stream()
+        .map(myPig -> myPig.getPig().getId())
+        .collect(Collectors.toSet());
+
+    // 모든 돼지 리스트 가져오기
+    List<Pig> allPigs = pigRepository.findAll();
+
+    // 실루엣 또는 실제 이미지를 결정하여 반환
+    return allPigs.stream()
+        .map(pig -> {
+          String imageUrl = ownedPigIds.contains(pig.getId())
+              ? pig.getImageUrl()  // 사용자가 소유한 돼지는 실제 이미지
+              : pig.getSilhouetteImageUrl();  // 소유하지 않은 돼지는 실루엣 이미지
+          return PigResponseDto.builder()
+              .pigId(pig.getId())
+              .pigName(pig.getPigName())
+              .imageUrl(imageUrl)
+              .build();
+        })
         .collect(Collectors.toList());
   }
-
   //돼지 아이디로 돼지 상세보기
   @Transactional(readOnly = true)
   public PigResponseDto findPigById(Long pigId) {
@@ -119,18 +135,19 @@ public class PigService {
   }
 
   private Pig getRandomPigByProbability(List<Pig> pigs) {
-    double totalProbability = pigs.stream().mapToDouble(Pig::getProbability).sum();  // 전체 확률의 합 계산
+    // 전체 가중치의 합 계산
+    double totalWeight = pigs.stream().mapToDouble(Pig::getProbability).sum();
 
-    // 0부터 totalProbability 사이의 랜덤 값 생성
-    double randomValue = Math.random() * totalProbability;
+    // 0부터 totalWeight 사이의 랜덤 값 생성
+    double randomValue = Math.random() * totalWeight;
 
-    double cumulativeProbability = 0.0;
+    double cumulativeWeight = 0.0;
     for (Pig pig : pigs) {
-      cumulativeProbability += pig.getProbability();
-      if (randomValue <= cumulativeProbability) {
-        return pig;  // 누적 확률 범위에 해당하는 Pig 선택
+      cumulativeWeight += pig.getProbability();
+      if (randomValue <= cumulativeWeight) {
+        return pig;  // 누적 가중치 범위에 해당하는 Pig 선택
       }
     }
-    return pigs.get(pigs.size() - 1); // 혹시 확률 범위에 해당하지 않으면 마지막 Pig 반환
+    return pigs.get(pigs.size() - 1); // 혹시 가중치 범위에 해당하지 않으면 마지막 Pig 반환
   }
 }

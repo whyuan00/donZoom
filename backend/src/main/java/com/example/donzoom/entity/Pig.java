@@ -26,11 +26,15 @@ public class Pig {
 
   private double probability;
 
+  // 실루엣 이미지 URL
+  private String silhouetteImageUrl;
+
   @Builder
-  public Pig(String imageUrl, String pigName, double probability) {
+  public Pig(String imageUrl, String pigName, double probability,String silhouetteImageUrl) {
     this.imageUrl = imageUrl;
     this.pigName = pigName;
     this.probability = probability;
+    this.silhouetteImageUrl = silhouetteImageUrl;
   }
 
 }
