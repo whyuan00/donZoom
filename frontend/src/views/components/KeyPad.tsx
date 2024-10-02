@@ -6,9 +6,14 @@ import {colors} from '@/constants/colors';
 //<KeyPad onInput={updateValue} currentValue={value}/> 처럼 props 전달하여
 // 필요한 경우 하나의 변수를 부모컴포넌트와 키패드에서 함께 관리할수 있도록 구현됨
 
-const KeyPad = ({ onInput, currentValue }: { onInput: (value: number) => void, currentValue: number }) => {
-  useEffect(() => {
-  }, [currentValue]);
+const KeyPad = ({
+  onInput,
+  currentValue,
+}: {
+  onInput: (value: number) => void;
+  currentValue: number;
+}) => {
+  useEffect(() => {}, [currentValue]);
 
   const handlePress = (btnValue: string) => {
     let newValue: number;
@@ -17,14 +22,15 @@ const KeyPad = ({ onInput, currentValue }: { onInput: (value: number) => void, c
     } else if (btnValue !== ' ') {
       let digit = parseInt(btnValue);
       newValue = currentValue * 10 + digit;
-    } else{
-      return
+    } else {
+      return;
     }
     onInput(newValue);
   };
 
-  const renderButton = (btnValue: string) => (
+  const renderButton = (btnValue: string, key: string) => (
     <TouchableOpacity
+      key={key}
       style={styles.button}
       onPress={() => {
         handlePress(btnValue);
@@ -40,10 +46,10 @@ const KeyPad = ({ onInput, currentValue }: { onInput: (value: number) => void, c
   return (
     <View>
       <View style={styles.keypadContainer}>
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9, ' ', 0].map(num =>
-          renderButton(num.toString()),
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9, ' ', 0].map((num, index) =>
+          renderButton(num.toString(), `btn-${num}-${index}`),
         )}
-        <View>{renderButton('←')}</View>
+        {renderButton('←', 'btn-back')}
       </View>
     </View>
   );
