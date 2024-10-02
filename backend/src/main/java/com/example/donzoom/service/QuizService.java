@@ -55,8 +55,10 @@ public class QuizService {
           new TypeReference<List<Long>>() {
           });
 
-      List<Long> solvedQuizzes = userQuizRepository.findAllByUserId(user.getId()).orElseThrow().stream().map(UserQuiz::getId).toList();
-      unsolvedQuizzes = quizRepository.findByIdIn(list).stream().filter(quiz -> !solvedQuizzes.contains(quiz.getId())).toList();
+      List<Long> solvedQuizzes = userQuizRepository.findAllByUserId(user.getId()).orElseThrow()
+          .stream().map(userQuiz -> userQuiz.getQuiz().getId()).toList();
+      unsolvedQuizzes = quizRepository.findByIdIn(list).stream()
+          .filter(quiz -> !solvedQuizzes.contains(quiz.getId())).toList();
     }
 
     return unsolvedQuizzes;
