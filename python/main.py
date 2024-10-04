@@ -131,7 +131,10 @@ def fetch_and_send_data(ticker, stockId):
     
     # 데이터를 전송할 준비
     data = {
-        "price": float(latest_data['Close']),
+        "open": float(latest_data['Open']),
+        "close": float(latest_data['Close']),
+        "high": float(latest_data['High']),
+        "low": float(latest_data['Low']),
         "createdAt": latest_timestamp.strftime('%Y-%m-%dT%H:%M:%S')
     }
     
