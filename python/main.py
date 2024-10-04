@@ -106,8 +106,8 @@ def fetch_and_send_data(ticker, stockId):
 
     # 해외 주식: 밤 11시 30분 ~ 새벽 5시
     if ticker in ["AAPL", "GOOGL", "TSLA"]:
-        if (now_est.hour < 23 or (now_est.hour == 23 and now_est.minute < 30)) or now_est.hour >= 5:
-            print(f"{ticker} - 현재 시간 {now_est}. 해외 주식은 거래 시간이 아닙니다.")
+        if (now_kst.hour < 23 or (now_kst.hour == 23 and now_kst.minute < 30)) or now_kst.hour >= 5:
+            print(f"{ticker} - 현재 시간 {now_kst}. 해외 주식은 거래 시간이 아닙니다.")
             return
 
     print(f"실시간 데이터 가져오기 시작: {now_kst} - {ticker}")
