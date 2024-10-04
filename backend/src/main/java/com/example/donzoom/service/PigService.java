@@ -109,8 +109,12 @@ public class PigService {
     Pig pig = pigRepository.findById(pigId)
         .orElseThrow(() -> new IllegalArgumentException("Pig not found with id: " + pigId));
 
-    return PigResponseDto.builder().pigId(pig.getId()).imageUrl(pig.getImageUrl())
-        .pigName(pig.getPigName()).build();
+    return PigResponseDto.builder()
+        .pigId(pig.getId())
+        .imageUrl(pig.getImageUrl())
+        .pigName(pig.getPigName())
+        .description(pig.getDescription())
+        .build();
   }
 
   @Transactional
