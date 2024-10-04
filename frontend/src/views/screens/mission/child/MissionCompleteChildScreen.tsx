@@ -12,6 +12,7 @@ import {colors} from '@/constants/colors';
 import {useFocusEffect} from '@react-navigation/native';
 import axiosInstance from '@/api/axios';
 import axios from 'axios';
+import { fonts } from '@/constants/font';
 
 interface Mission {
   missionId: number;
@@ -91,11 +92,15 @@ const MissionCompleteChildScreen = () => {
                   <TouchableOpacity
                     style={styles.cancelButton}
                     onPress={() => handleMissionDelete(mission.missionId)}>
-                    <Text style={{fontSize: 18}}>완료 취소</Text>
+                    <Text style={{fontFamily: fonts.MEDIUM, fontSize: 18}}>
+                      완료 취소
+                    </Text>
                   </TouchableOpacity>
                 ) : (
                   <View style={styles.cancelButton}>
-                    <Text style={{fontSize: 18}}>대기중</Text>
+                    <Text style={{fontFamily: fonts.MEDIUM, fontSize: 18}}>
+                      대기중
+                    </Text>
                   </View>
                 )}
 
@@ -159,6 +164,7 @@ const styles = StyleSheet.create({
   largetext: {
     fontSize: 20,
     margin: 3,
+    fontFamily: fonts.BOLD,
     color: colors.BLACK,
     textAlign: 'right',
     fontWeight: '700',
@@ -166,6 +172,7 @@ const styles = StyleSheet.create({
   smalltext: {
     fontSize: 15,
     margin: 3,
+    fontFamily: fonts.MEDIUM,
     color: colors.BLACK,
     textAlign: 'right',
     fontWeight: '400',

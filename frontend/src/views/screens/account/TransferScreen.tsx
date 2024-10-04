@@ -19,7 +19,7 @@ interface Recipient {
   accountNumber: string;
 }
 
-export default function TransferScreen({navigation}: any) {
+export default function TransferScreen({route, navigation}: any) {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [keypadModalVisible, setKeypadModalVisible] = useState<boolean>(false);
   const [selectedRecipient, setSelectedRecipient] = useState<Recipient | null>(

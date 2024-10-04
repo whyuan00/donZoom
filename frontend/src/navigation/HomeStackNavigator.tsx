@@ -19,8 +19,14 @@ import QRCodeScanner from '@/views/components/QRCodeScanner';
 import TransferNavigator from './TransferNavigator';
 import AccountInitScreen from '@/views/screens/account/AccountInitScreen';
 import MissionStackNavigator from './MissionStackNavigator';
+import InvestStackNavigator from './InvestStackNavigator';
 import MyInformationNavigator from './MyInformationNavigator';
 import AccountInitNavigator from './AccountInitNavigator';
+import TransferScreen from '@/views/screens/account/TransferScreen';
+import {fonts} from '@/constants/font';
+import TransferScreen2 from '@/views/screens/account/TransferScreen2';
+import TransferScreen3 from '@/views/screens/account/TransferScreen3';
+import TransferScreen4 from '@/views/screens/account/TransferScreen4';
 
 const HomeStackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -53,6 +59,66 @@ const HomeStackNavigator = () => {
         options={{headerShown: false}}
       />
       <Stack.Screen
+        name="송금"
+        component={TransferScreen}
+        options={{
+          title: '송금하기',
+          headerStyle: {
+            backgroundColor: colors.YELLOW_25,
+          },
+          headerTintColor: colors.BLACK,
+          headerTitleStyle: {
+            fontFamily: fonts.MEDIUM,
+          },
+          headerShadowVisible: false,
+        }}
+      />
+      <Stack.Screen
+        name="송금2"
+        component={TransferScreen2}
+        options={{
+          title: '송금하기',
+          headerStyle: {
+            backgroundColor: colors.YELLOW_25,
+          },
+          headerTintColor: colors.BLACK,
+          headerTitleStyle: {
+            fontFamily: fonts.MEDIUM,
+          },
+          headerShadowVisible: false,
+        }}
+      />
+      <Stack.Screen
+        name="송금3"
+        component={TransferScreen3}
+        options={{
+          title: '송금하기',
+          headerStyle: {
+            backgroundColor: colors.YELLOW_25,
+          },
+          headerTintColor: colors.BLACK,
+          headerTitleStyle: {
+            fontFamily: fonts.MEDIUM,
+          },
+          headerShadowVisible: false,
+        }}
+      />
+      <Stack.Screen
+        name="송금4"
+        component={TransferScreen4}
+        options={{
+          title: '송금하기',
+          headerStyle: {
+            backgroundColor: colors.YELLOW_25,
+          },
+          headerTintColor: colors.BLACK,
+          headerTitleStyle: {
+            fontFamily: fonts.MEDIUM,
+          },
+          headerShadowVisible: false,
+        }}
+      />
+      <Stack.Screen
         name="부모미션"
         component={MissionStackNavigator}
         options={{headerShown: false}}
@@ -60,6 +126,11 @@ const HomeStackNavigator = () => {
       <Stack.Screen
         name="아이미션"
         component={MissionStackNavigator}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="모의투자"
+        component={InvestStackNavigator}
         options={{headerShown: false}}
       />
       <Stack.Screen name="퀴즈" component={QuizHomeScreen} />

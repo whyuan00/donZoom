@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import axiosInstance from '@/api/axios';
 import {colors} from '@/constants/colors';
+import { fonts } from '@/constants/font';
 
 interface Mission {
   missionId: number;
@@ -84,7 +85,9 @@ const MissionPastChildScreen = () => {
                     <TouchableOpacity
                       style={styles.cancelButton}
                       onPress={() => handleMissionDelete(mission.missionId)}>
-                      <Text style={{fontSize: 18}}>삭제</Text>
+                      <Text style={{fontFamily: fonts.MEDIUM, fontSize: 18}}>
+                        삭제
+                      </Text>
                     </TouchableOpacity>
                   )}
                   <View style={{position: 'absolute', right: 25}}>
@@ -149,12 +152,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     margin: 3,
     color: colors.BLACK,
+    fontFamily: fonts.BOLD,
     textAlign: 'right',
     fontWeight: '700',
   },
   smalltext: {
     fontSize: 15,
     margin: 3,
+    fontFamily: fonts.MEDIUM,
     color: colors.BLACK,
     textAlign: 'right',
     fontWeight: '400',

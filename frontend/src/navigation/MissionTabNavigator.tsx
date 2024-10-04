@@ -5,6 +5,7 @@ import MissionCompleteScreen from '../views/screens/mission/MissionCompleteScree
 import MissionPastScreen from '../views/screens/mission/MissionPastScreen';
 
 import { colors } from '../constants/colors';
+import { fonts } from '@/constants/font';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -15,8 +16,9 @@ export default function MissionTabNavigator() {
         screenOptions={{
           tabBarActiveTintColor: colors.BLUE_100,
           tabBarInactiveTintColor: colors.BLACK,
-          tabBarLabelStyle: {fontSize: 16},
+          tabBarLabelStyle: {fontFamily:fonts.MEDIUM,fontSize: 16,},
           tabBarStyle: {backgroundColor: 'white'},
+          
         }}>
         <Tab.Screen
           name="진행중"

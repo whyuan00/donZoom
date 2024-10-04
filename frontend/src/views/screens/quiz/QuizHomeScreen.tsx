@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Modal,
 } from 'react-native';
 import {Calendar, DateData} from 'react-native-calendars';
 import CheckCalendar from '@/assets/CheckCalendar.svg';
@@ -22,10 +23,19 @@ interface MarkedDates {
 function QuizHomeScreen({navigation}: any) {
   const [quizData, setQuizData] = useState<any[]>([]);
   const [quizCompletedDates, setQuizCompletedDates] = useState<MarkedDates>({});
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const setTodaysQuizQuestions = useQuizStore(
     state => state.setTodaysQuizQuestions,
   );
   const {todayQuizMutation, solvedQuizMutation} = useQuiz();
+
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
   const transformQuizData = (quizes: any[]) => {
     return quizes.map(quiz => ({
@@ -42,19 +52,21 @@ function QuizHomeScreen({navigation}: any) {
     if (solvedQuizMutation.data) {
       const solvedQuizDates = solvedQuizMutation.data;
 
-      const makredDates = solvedQuizDates.reduce(
-        (acc: MarkedDates, date: string) => {
-          acc[date] = {marked: true};
+      const markedDates = solvedQuizDates.reduce(
+        (acc: MarkedDates, quiz: {createdAt: string}) => {
+          const quizDate = formatDate(quiz.createdAt);
+          acc[quizDate] = {marked: true};
           return acc;
         },
         {} as MarkedDates,
       );
-      setQuizCompletedDates(makredDates);
+      console.log('markedDates: ', markedDates);
+      setQuizCompletedDates(markedDates);
     }
   }, [solvedQuizMutation.data]);
 
   useEffect(() => {
-    if (todayQuizMutation.data) {
+    if (todayQuizMutation.data && todayQuizMutation.data.length > 0) {
       const quizes = todayQuizMutation.data;
       const transformedQuizes = transformQuizData(quizes);
       setQuizData(transformedQuizes);
@@ -65,6 +77,8 @@ function QuizHomeScreen({navigation}: any) {
   const startTodayQuiz = () => {
     if (quizData.length > 0) {
       navigation.navigate('오늘의 퀴즈');
+    } else {
+      setIsModalVisible(true);
     }
   };
 
@@ -82,9 +96,9 @@ function QuizHomeScreen({navigation}: any) {
         <View style={styles.calendarContainer}>
           <View style={styles.calendarTextContainer}>
             <Text style={styles.calendarTitle}>퀴즈 달력</Text>
-            <Text style={styles.calendarDescription}>
+            {/* <Text style={styles.calendarDescription}>
               3일 연속 퀴즈를 풀었어요!
-            </Text>
+            </Text> */}
           </View>
           <View style={styles.calendar}>
             <Calendar
@@ -140,7 +154,7 @@ function QuizHomeScreen({navigation}: any) {
             <Text style={styles.todayDescription}>
               오늘의 퀴즈를 풀고 모의투자 시드머니를 얻어보세요!
             </Text>
-          </View>
+          </View>                                                                           
           <View style={styles.todayContentBox}>
             <View style={styles.todayContentText}>
               <Text style={styles.todayContentTitle}>
@@ -157,6 +171,24 @@ function QuizHomeScreen({navigation}: any) {
             </TouchableOpacity>
           </View>
         </View>
+        <Modal
+          visible={isModalVisible}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setIsModalVisible(false)}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>
+                오늘의 퀴즈를 다 풀었습니다!
+              </Text>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setIsModalVisible(false)}>
+                <Text style={styles.closeButtonText}>닫기</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
         <View style={styles.reviewContainer}>
           <View style={styles.reviewTextContainer}>
             <Text style={styles.reviewTitle}>퀴즈 다시풀기</Text>
@@ -264,6 +296,40 @@ const styles = StyleSheet.create({
     color: colors.WHITE,
     fontFamily: fonts.MEDIUM,
     fontSize: 15,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    backgroundColor: colors.WHITE,
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+    height: 180,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    color: colors.BLACK,
+    fontSize: 18,
+    fontFamily: fonts.MEDIUM,
+    marginTop: 20,
+    marginBottom: 30,
+  },
+  closeButton: {
+    backgroundColor: colors.YELLOW_100,
+    padding: 10,
+    borderRadius: 8,
+    width: '30%',
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    color: colors.BLACK,
+    fontFamily: fonts.MEDIUM,
+    fontSize: 16,
   },
   reviewContainer: {
     marginTop: 10,

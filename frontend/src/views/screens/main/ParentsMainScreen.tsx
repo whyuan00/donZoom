@@ -194,7 +194,9 @@ function ParentsMainScreen() {
               </Text>
               <Text style={styles.childSituationText}>퀴즈 현황</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.childSituation}>
+            <TouchableOpacity 
+            onPress={()=>(navigation.navigate('모의투자'))}
+            style={styles.childSituation}>
               <Text style={styles.childSituationText}>
                 <Text style={{fontFamily: fonts.BOLD, fontSize: 24}}>
                   {profileOrder[0].name}

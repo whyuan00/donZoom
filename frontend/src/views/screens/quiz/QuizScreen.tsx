@@ -26,14 +26,14 @@ function QuizScreen({navigation}: any) {
     setSelectedAnswer(answer);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = () => { 
     const isCorrect = currentQuestion?.correctAnswer === selectedAnswer;
     setIsAnswerCorrect(isCorrect);
 
     submitQuizAnswerMutation.mutate(
       {
         quizId: currentQuestion.quizId,
-        input: selectedAnswer!,
+        answer: selectedAnswer!,
       },
       {
         onSuccess: () => {

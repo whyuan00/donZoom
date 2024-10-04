@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import {colors} from '@/constants/colors';
+import { fonts } from '@/constants/font';
 
 //부모 컴포넌트에서 updateValue함수와 변경대상인 value를 작성하고
 //<KeyPad onInput={updateValue} currentValue={value}/> 처럼 props 전달하여
@@ -36,7 +37,7 @@ const KeyPad = ({
         handlePress(btnValue);
       }}>
       {btnValue === '←' ? (
-        <Text style={{fontSize: 32}}>←</Text>
+        <Text style={{fontSize: 35}}>←</Text>
       ) : (
         <Text style={styles.buttonText}>{btnValue}</Text>
       )}
@@ -72,7 +73,9 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: colors.BLACK,
+    fontFamily: fonts.MEDIUM,
     fontSize: 25,
+    fontWeight:'500',
   },
 });
 

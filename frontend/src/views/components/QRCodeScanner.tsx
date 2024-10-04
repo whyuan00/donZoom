@@ -13,11 +13,10 @@ import CloseButton from '@/assets/closeButton.svg';
 import {useNavigation} from '@react-navigation/native';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 
-function QRCodeScanner() {
+function QRCodeScanner({navigation}: any) {
   const [scaned, setScaned] = useState<boolean>(true);
   const [hasCameraPermission, setHasCameraPermission] =
     useState<boolean>(false);
-  const navigation = useNavigation();
   const ref = useRef(null);
 
   useEffect(() => {
@@ -45,7 +44,13 @@ function QRCodeScanner() {
     console.log('은행: ', bank);
 
     Alert.alert('QR Code Data', `계좌번호: ${account}, 은행: ${bank}`, [
-      {text: 'OK', onPress: () => setScaned(true)},
+      {
+        text: 'OK',
+        onPress: () => {
+          setScaned(true);
+          navigation.navigate('송금', {accountNo: account});
+        },
+      },
     ]);
   };
 

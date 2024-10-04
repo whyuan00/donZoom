@@ -1,6 +1,7 @@
 import React from 'react';
 import {Image, Text, View, StyleSheet} from 'react-native';
 import {colors} from '../../constants/colors';
+import { fonts } from '@/constants/font';
 
 interface Props {
   name: string;
@@ -34,6 +35,7 @@ const styles = StyleSheet.create({
     fontSize: 26,
     marginLeft: 12,
     color: colors.BLUE_100,
+    fontFamily: fonts.BOLD,
     fontWeight: '700',
   },
 });
