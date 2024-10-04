@@ -61,25 +61,36 @@ public class StockController {
   }
 
   // 보유주식 가져오기
-  @GetMapping("/my")
-  public ResponseEntity<StockWalletSimpleResponseDto> getMyStocks() {
-    StockWalletSimpleResponseDto allMyStock = stockService.getAllMyStock();
+  @GetMapping("/my/{userId}")
+  public ResponseEntity<StockWalletSimpleResponseDto> getMyStocks(
+      @PathVariable(name = "userId", required = false) Long userId) {
+    StockWalletSimpleResponseDto allMyStock = stockService.getAllStocks(userId);
     return ResponseEntity.ok().body(allMyStock);
   }
 
+  // 주식종목별 보유주식 가져오기
+  @GetMapping("/my/{userId}/{stockId}")
+  public ResponseEntity<StockWalletSimpleResponseDto> getStock(
+      @PathVariable(name = "userId") Long userId, @PathVariable(name = "stockId") Long stockId
+  ) {
+    StockWalletSimpleResponseDto stock = stockService.getStock(userId, stockId);
+    return ResponseEntity.ok().body(stock);
+  }
+
   // 내 거래내역 가져오기
-  @GetMapping("/myhistory")
-  public ResponseEntity<StockTransactionHistorySimpleResponseDto> getMyTransactionHistory() {
-    StockTransactionHistorySimpleResponseDto allMyHistories = stockService.getAllTransaction();
+  @GetMapping("/myhistory/{userId}")
+  public ResponseEntity<StockTransactionHistorySimpleResponseDto> getMyTransactionHistory(
+      @PathVariable(name = "userId") Long userId) {
+    StockTransactionHistorySimpleResponseDto allMyHistories = stockService.getAllTransaction(userId);
     return ResponseEntity.ok().body(allMyHistories);
   }
 
   // 종목별 거래내역 가져오기
-  @GetMapping("/myhistory/{stockId}")
+  @GetMapping("/myhistory/{stockId}/{userId}")
   public ResponseEntity<StockTransactionHistorySimpleResponseDto> getMyTransactionHistoryByStockId(
-      @PathVariable(name = "stockId") Long stockId) {
-    StockTransactionHistorySimpleResponseDto historiesByStockId = stockService.getTransaction(
-        stockId);
+      @PathVariable(name = "stockId") Long stockId,
+      @PathVariable(name = "userId") Long userId) {
+    StockTransactionHistorySimpleResponseDto historiesByStockId = stockService.getTransaction(stockId, userId);
     return ResponseEntity.ok().body(historiesByStockId);
   }
 
