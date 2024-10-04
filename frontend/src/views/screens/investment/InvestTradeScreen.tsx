@@ -11,8 +11,9 @@ import {
 import KeyPad from '@/views/components/KeyPad';
 import {fonts} from '@/constants/font';
 import useWebSocket from '@/hooks/useWebSocket';
+import useStock from '@/hooks/queries/useStock';
 
-const InvestTradeScreen = ({route,navigation}: any) => {
+const InvestTradeScreen = ({route, navigation}: any) => {
   const trade = route.params.trade || '';
   const type = route.params.type || '';
   const [cost, setCost] = useState<number>(159335);
@@ -21,12 +22,15 @@ const InvestTradeScreen = ({route,navigation}: any) => {
   const [ableSellNum, setAbleSellNum] = useState<number>(0);
   const [currentValue, setCurrentValue] = useState<number>(0);
   const [modalVisible, setModalVisible] = useState(false);
-  
-  const [stockMessage, setStockMessage] = useState<string>("");
 
-  useWebSocket((message) => {
+  const [stockMessage, setStockMessage] = useState<string>('');
+  const {useGetStock} = useStock();
+
+  useWebSocket(message => {
     setStockMessage(message);
   });
+
+  console.log(useGetStock(5).data);
 
   const setModalState = () => {
     setModalVisible(true);
@@ -221,7 +225,7 @@ const styles = StyleSheet.create({
     height: 150,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius:10,
+    borderRadius: 10,
     backgroundColor: colors.YELLOW_50,
   },
 });
