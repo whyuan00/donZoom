@@ -7,9 +7,12 @@ import com.example.donzoom.dto.stock.response.StockSimpleResponseDto;
 import com.example.donzoom.dto.stock.response.StockTransactionHistoryResponseDto;
 import com.example.donzoom.dto.stock.response.StockTransactionHistorySimpleResponseDto;
 import com.example.donzoom.dto.stock.response.StockWalletSimpleResponseDto;
+import com.example.donzoom.entity.StockHistory;
+import com.example.donzoom.repository.StockHistoryRepository;
 import com.example.donzoom.service.StockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class StockController {
 
   private final StockService stockService;
+  private final SimpMessagingTemplate messagingTemplate;
+  private final StockHistoryRepository stockHistoryRepository;
 
   // 모든 주식 조회(이름, 현재가)
   @GetMapping
@@ -37,6 +42,7 @@ public class StockController {
   public ResponseEntity<StockResponseDto> getStockById(
       @PathVariable(name = "stockId") Long stockId) {
     StockResponseDto stock = stockService.getStockById(stockId);
+
     return ResponseEntity.ok().body(stock);
   }
 
@@ -45,6 +51,12 @@ public class StockController {
   public ResponseEntity<?> addStockHistory(@PathVariable(name = "stockId") Long stockId,
       @RequestBody StockRequestDto stockRequestDto) {
     Long stockHistoryId = stockService.createStockHistory(stockId, stockRequestDto);
+
+    StockHistory stockHistory = stockHistoryRepository.findById(stockHistoryId).orElseThrow();
+
+    // 여기서 WebSocket 전송
+    messagingTemplate.convertAndSend("/topic/stock/" + stockId, stockHistory);
+
     return ResponseEntity.ok().body(stockHistoryId);
   }
 
