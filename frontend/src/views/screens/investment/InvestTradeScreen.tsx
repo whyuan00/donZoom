@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import KeyPad from '@/views/components/KeyPad';
 import {fonts} from '@/constants/font';
+import useWebSocket from '@/hooks/useWebSocket';
 
 const InvestTradeScreen = ({route,navigation}: any) => {
   const trade = route.params.trade || '';
@@ -21,6 +22,11 @@ const InvestTradeScreen = ({route,navigation}: any) => {
   const [currentValue, setCurrentValue] = useState<number>(0);
   const [modalVisible, setModalVisible] = useState(false);
   
+  const [stockMessage, setStockMessage] = useState<string>("");
+
+  useWebSocket((message) => {
+    setStockMessage(message);
+  });
 
   const setModalState = () => {
     setModalVisible(true);
@@ -35,6 +41,7 @@ const InvestTradeScreen = ({route,navigation}: any) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Text>주식 데이터: {stockMessage}</Text>
       <View style={styles.yellowContainer}>
         {trade === 'buy' ? (
           <Text style={styles.titleText}>구매할 가격</Text>
