@@ -6,6 +6,7 @@ import com.example.donzoom.entity.Wallet;
 import com.example.donzoom.repository.UserRepository;
 import com.example.donzoom.repository.WalletRepository;
 import com.example.donzoom.util.SecurityUtil;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,19 +23,24 @@ public class WalletService {
   @Value("${ticketPrice}")
   private int ticketPrice;
 
+  public Wallet findWalletByUserId(Long userId) {
+    return walletRepository.findById(userId)
+        .orElseThrow(() -> new NoSuchElementException("지갑을 찾을 수 없습니다."));
+  }
+
   public Wallet findCurrentWallet() {
     User user = userService.findCurrentUser();
     return user.getWallet();
   }
 
-  public Integer getCurrentUserCoin(){
+  public Integer getCurrentUserCoin() {
     Wallet wallet = findCurrentWallet();
     return wallet.getCoin();
   }
 
-  public void updateCoin(Integer amount){
+  public void updateCoin(Integer amount) {
     Wallet wallet = findCurrentWallet();
-    wallet.updateCoin(wallet.getCoin()+amount);
+    wallet.updateCoin(wallet.getCoin() + amount);
   }
 
   //가상머니로 돼지뽑기권 구매하기

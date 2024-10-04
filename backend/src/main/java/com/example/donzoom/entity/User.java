@@ -55,7 +55,7 @@ public class User extends BaseEntity {
 
   private Boolean isParent;
 
-  @OneToOne(cascade = CascadeType.ALL)
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   @JoinColumn(name = "WALLET_ID")
   private Wallet wallet;
 
@@ -149,6 +149,15 @@ public class User extends BaseEntity {
   // 유저 결제 비밀번호 입력
   public void updatePaymentPassword(String hashedPaymentPassword){
     this.paymentPwdHash = hashedPaymentPassword;
+  }
+
+  // 내 아이인지 확인
+  public Boolean isMyChild(User child) {
+    if(this.children.contains(child)){
+      return Boolean.TRUE;
+    } else {
+      return Boolean.FALSE;
+    }
   }
 
 }
