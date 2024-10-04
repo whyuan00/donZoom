@@ -68,7 +68,10 @@ function ChildrenMainScreen() {
                 </Text>
                 <View style={styles.moneyContentsContainer}>
                   <View style={styles.moneyAccountContainer}>
-                    <Text style={styles.moneyText}>{`${parseInt(
+                    <Text
+                      style={styles.moneyText}
+                      adjustsFontSizeToFit={true}
+                      numberOfLines={1}>{`${parseInt(
                       balance,
                     ).toLocaleString()}원`}</Text>
                     <TouchableOpacity
