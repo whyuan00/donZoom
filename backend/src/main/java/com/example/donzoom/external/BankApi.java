@@ -141,6 +141,7 @@ public class BankApi {
   }
 
   public BankUserResponseDto getMember(String userId) {
+    log.info(userId);
     CreateMemberDto member = CreateMemberDto.builder().apiKey(apiKey).userId(userId).build();
     return webClient.post().uri(userInfoUrl).bodyValue(member).retrieve()
         .bodyToMono(BankUserResponseDto.class).block();
