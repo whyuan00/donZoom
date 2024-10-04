@@ -11,7 +11,21 @@ const TransferNavigator = () => {
   const Stack = createNativeStackNavigator();
   return (
     <Stack.Navigator screenOptions={{headerTitleAlign: 'center'}}>
-      <Stack.Screen name="거래내역" component={AccountHistoryScreen} />
+      <Stack.Screen
+        name="거래내역"
+        component={AccountHistoryScreen}
+        options={{
+          title: '내 아이 거래내역 조회',
+          headerStyle: {
+            backgroundColor: colors.YELLOW_100,
+          },
+          headerTintColor: colors.BLACK,
+          headerTitleStyle: {
+            fontFamily: fonts.MEDIUM,
+          },
+          headerShadowVisible: false,
+        }}
+      />
       <Stack.Screen
         name="송금"
         component={TransferScreen}
