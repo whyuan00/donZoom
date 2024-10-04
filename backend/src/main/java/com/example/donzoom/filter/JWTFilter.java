@@ -96,10 +96,6 @@ public class JWTFilter extends OncePerRequestFilter {
       filterChain.doFilter(request, response);
     } catch (JwtException e) {
       log.error("JWT validation error가 발생했습니다.", e);
-    } catch (Exception e) {
-      log.error("JWT 필터 처리 중 예외 발생", e);
-      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-      response.getWriter().write("Internal Server Error");
     }
   }
 

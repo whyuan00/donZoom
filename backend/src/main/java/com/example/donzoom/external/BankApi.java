@@ -142,7 +142,7 @@ public class BankApi {
   }
 
   public BankUserResponseDto getMember(String userId) {
-    log.info(userId+"eeeeeeee");
+    log.info(userId);
     CreateMemberDto member = CreateMemberDto.builder().apiKey(apiKey).userId(userId).build();
     try {
       // 회원 생성 시도
