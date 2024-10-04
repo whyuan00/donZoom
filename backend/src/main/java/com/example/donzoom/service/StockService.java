@@ -43,6 +43,7 @@ public class StockService {
   private final StockRepository stockRepository;
   private final TransactionHistoryRepository transactionHistoryRepository;
   private final WalletService walletService;
+  private final UserService userService;
 
   // 주식 전종목 조회
   @Transactional(readOnly = true)
@@ -80,10 +81,25 @@ public class StockService {
         .stockHistories(stockHistoryDtos).build();
   }
 
-  // 내 주식 조회
   @Transactional(readOnly = true)
-  public StockWalletSimpleResponseDto getAllMyStock() {
-    Long walletId = walletService.findCurrentWallet().getId();
+  public StockWalletSimpleResponseDto getStock(Long userId, Long stockId) {
+    Long walletId = getWalletId(userId);
+
+    List<StockWalletResponseDto> stockWalletDtos = stockWalletRepository.findByWalletId(walletId)
+        .stream()
+        .filter(stockWallet -> {
+          return stockWallet.getStock().getId().equals(stockId);
+        })
+        .map(stockWallet -> StockWalletResponseDto.builder().stockWallet(stockWallet).build())
+        .toList();
+
+    return StockWalletSimpleResponseDto.builder().myStocks(stockWalletDtos).build();
+  }
+
+  // 보유 주식 조회
+  @Transactional(readOnly = true)
+  public StockWalletSimpleResponseDto getAllStocks(Long userId) {
+    Long walletId = getWalletId(userId);
 
     List<StockWalletResponseDto> stockWalletDtos = stockWalletRepository.findByWalletId(walletId)
         .stream()
@@ -95,8 +111,8 @@ public class StockService {
 
   // 모든 주식 거래내역 조회
   @Transactional(readOnly = true)
-  public StockTransactionHistorySimpleResponseDto getAllTransaction() {
-    Long walletId = walletService.findCurrentWallet().getId();
+  public StockTransactionHistorySimpleResponseDto getAllTransaction(Long userId) {
+    Long walletId = getWalletId(userId);
 
     List<StockTransactionHistoryResponseDto> transactionHistoryDtos = transactionHistoryRepository.findByWalletId(
         walletId).stream().map(transactionHistory -> StockTransactionHistoryResponseDto.builder()
@@ -114,8 +130,8 @@ public class StockService {
 
   // 주식 종목별 거래내역 조회
   @Transactional(readOnly = true)
-  public StockTransactionHistorySimpleResponseDto getTransaction(Long stockId) {
-    Long walletId = walletService.findCurrentWallet().getId();
+  public StockTransactionHistorySimpleResponseDto getTransaction(Long stockId, Long userId) {
+    Long walletId = getWalletId(userId);
 
     List<StockTransactionHistoryResponseDto> transactionHistoryDtos = transactionHistoryRepository.findByWalletIdAndStockId(
         walletId, stockId).stream().map(
@@ -303,5 +319,19 @@ public class StockService {
             .createdAt(news.getCreatedAt()).build()).toList();
 
     return NewsSimpleResponseDto.builder().articles(articles).build();
+  }
+
+  public Long getWalletId(Long userId) {
+    User loginUser = userService.findCurrentUser();
+    if(loginUser.getId().equals(userId)) {
+      return walletService.findWalletByUserId(userId).getId();
+    } else {
+      User user = userService.findUserById(userId);
+      if(!loginUser.isMyChild(user)) {
+        throw new NoSuchElementException("주식정보를 불러올 권한이 없습니다.");
+      } else {
+        return walletService.findWalletByUserId(userId).getId();
+      }
+    }
   }
 }
