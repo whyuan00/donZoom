@@ -44,7 +44,6 @@ public class PigController {
   @GetMapping
   public ResponseEntity<List<PigResponseDto>> getPigs() {
     try {
-      log.info("eeeeeeeeeee");
       List<PigResponseDto> pigs = pigService.findPigs();
       return new ResponseEntity<>(pigs, HttpStatus.OK); // 성공 상태 코드와 데이터 반환
     } catch (Exception e) {
