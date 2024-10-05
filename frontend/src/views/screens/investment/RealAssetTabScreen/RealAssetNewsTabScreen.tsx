@@ -22,7 +22,7 @@ interface News {
   source: string;
 }
 
-const NewsTabScreen = ({navigation}: any) => {
+const RealAssetNewsTabScreen = ({navigation}: any) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedNews, setSelectedNews] = useState<News | null>(null);
   const [todaysNews, setTodaysNews] = useState<News[]>([]);
@@ -66,6 +66,24 @@ const NewsTabScreen = ({navigation}: any) => {
     }
     return formattedTitle.trim();
   };
+
+   if (todaysNews.length < 1) {
+     return (
+       <View style={styles.container}>
+         <Text>오늘의 뉴스가 없습니다</Text>
+         <TouchableOpacity
+           onPress={() => navigation.navigate('RealAssetPastNews')}>
+           <View style={styles.button}>
+             <Text style={{fontFamily: fonts.MEDIUM, color: colors.BLACK}}>
+               지난 뉴스 보기
+             </Text>
+             <Icon name="chevron-right" size={25} />
+           </View>
+         </TouchableOpacity>
+       </View>
+     );
+   }
+
   return (
     <View style={styles.container}>
       {todaysNews.map(news => (
@@ -105,7 +123,7 @@ const NewsTabScreen = ({navigation}: any) => {
           </TouchableWithoutFeedback>
         </Modal>
       </View>
-      <TouchableOpacity onPress={() => navigation.navigate('RealAssetPast')}>
+      <TouchableOpacity onPress={() => navigation.navigate('RealAssetPastNews')}>
         <View style={styles.button}>
           <Text style={{fontFamily: fonts.MEDIUM, color: colors.BLACK}}>
             지난 뉴스 보기
@@ -117,7 +135,7 @@ const NewsTabScreen = ({navigation}: any) => {
   );
 };
 
-export default NewsTabScreen;
+export default RealAssetNewsTabScreen;
 
 const styles = StyleSheet.create({
   container: {

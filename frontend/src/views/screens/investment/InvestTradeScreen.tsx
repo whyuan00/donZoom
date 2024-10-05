@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import KeyPad from '@/views/components/KeyPad';
 import {fonts} from '@/constants/font';
-import useWebSocket from '@/hooks/useWebSocket';
 
 const InvestTradeScreen = ({route,navigation}: any) => {
   const trade = route.params.trade || '';
@@ -22,11 +21,6 @@ const InvestTradeScreen = ({route,navigation}: any) => {
   const [currentValue, setCurrentValue] = useState<number>(0);
   const [modalVisible, setModalVisible] = useState(false);
   
-  const [stockMessage, setStockMessage] = useState<string>("");
-
-  useWebSocket((message) => {
-    setStockMessage(message);
-  });
 
   const setModalState = () => {
     setModalVisible(true);
@@ -41,7 +35,6 @@ const InvestTradeScreen = ({route,navigation}: any) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text>주식 데이터: {stockMessage}</Text>
       <View style={styles.yellowContainer}>
         {trade === 'buy' ? (
           <Text style={styles.titleText}>구매할 가격</Text>
@@ -69,7 +62,7 @@ const InvestTradeScreen = ({route,navigation}: any) => {
           <View>
             {currentValue > 0 ? (
               <Text style={[styles.contentText, styles.textColorBlack]}>
-                {currentValue} 주
+                {currentValue} {type === 'Real' ? '온스' : '주'}
               </Text>
             ) : (
               <Text style={styles.contentText}>
@@ -83,7 +76,8 @@ const InvestTradeScreen = ({route,navigation}: any) => {
                 fontFamily: fonts.LIGHT,
                 color: colors.BLACK,
               }}>
-              구매 가능 최대 {ableBuyNum}주 | {currentValue * ableBuyNum} 머니
+              구매 가능 최대 {ableBuyNum} {type === 'Real' ? '온스' : '주'} |{' '}
+              {currentValue * ableBuyNum} 머니
             </Text>
           </View>
         ) : (
