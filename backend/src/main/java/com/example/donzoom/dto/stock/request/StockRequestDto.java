@@ -9,7 +9,10 @@ import lombok.Getter;
 public class StockRequestDto {
 
   private Long stockId;
-  private Float price;
+  private Float open;
+  private Float close;
+  private Float high;
+  private Float low;
   private LocalDateTime createdAt;
 
 }

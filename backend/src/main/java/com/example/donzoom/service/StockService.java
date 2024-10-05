@@ -57,8 +57,8 @@ public class StockService {
       Stock stock = stockRepository.findById(stockId).orElseThrow(); // 필요시 예외 처리
 
       return StockDetailResponseDto.builder().stockId(stock.getId()).stockName(stock.getStockName())
-          .stockPrice(stockHistory != null ? stockHistory.getPrice() : 0.0f).lastCreatedAt(
-              stockHistory != null ? stockHistory.getCreatedAt() : LocalDateTime.MIN)  // 기본값 처리
+          .stockPrice(stockHistory != null ? stockHistory.getClose() : 0.0f).lastCreatedAt(
+              stockHistory != null ? stockHistory.getCreatedAt() : LocalDateTime.now())  // 기본값 처리
           .build();
     }).toList();
 
@@ -74,13 +74,18 @@ public class StockService {
 
     List<StockHistoryResponseDto> stockHistoryDtos = stockHistories.stream().map(
             stockHistory -> StockHistoryResponseDto.builder().stockHistoryId(stockHistory.getId())
-                .price(stockHistory.getPrice()).createdAt(stockHistory.getCreatedAt()).build())
+                .open(stockHistory.getOpen())
+                .close(stockHistory.getClose())
+                .high(stockHistory.getHigh())
+                .low(stockHistory.getLow())
+                .createdAt(stockHistory.getCreatedAt()).build())
         .toList();
 
     return StockResponseDto.builder().stockId(stock.getId()).stockName(stock.getStockName())
         .stockHistories(stockHistoryDtos).build();
   }
 
+  // 내가 보유한 주식 상세 조회
   @Transactional(readOnly = true)
   public StockWalletSimpleResponseDto getStock(Long userId, Long stockId) {
     Long walletId = getWalletId(userId);
@@ -96,7 +101,7 @@ public class StockService {
     return StockWalletSimpleResponseDto.builder().myStocks(stockWalletDtos).build();
   }
 
-  // 보유 주식 조회
+  // 내가 가진 주식 전부 조회
   @Transactional(readOnly = true)
   public StockWalletSimpleResponseDto getAllStocks(Long userId) {
     Long walletId = getWalletId(userId);
@@ -165,7 +170,7 @@ public class StockService {
         stockId);
 
     // 지갑 내 유동자산 비교
-    Float requiredPrice = recentPrice.getPrice() * amount;
+    Float requiredPrice = recentPrice.getClose() * amount;
     if (walletService.getCurrentUserCoin() < requiredPrice) {
       throw new RuntimeException("Not enough money");
     }
@@ -198,14 +203,14 @@ public class StockService {
       StockWallet newStock = StockWallet.builder().wallet(myWallet).stock(stock)
           .totalInvestedPrice(requiredPrice)  // 초기 투자 금액
           .amount(amount)                      // 초기 수량
-          .averagePrice(recentPrice.getPrice()) // 초기 평단가
+          .averagePrice(recentPrice.getClose()) // 초기 평단가
           .build();
 
       stockWalletRepository.save(newStock);
     }
 
     // 거래 내역 기록
-    Long transactionHistoryId = createTransactionHistory(myWallet, stock, recentPrice.getPrice(),
+    Long transactionHistoryId = createTransactionHistory(myWallet, stock, recentPrice.getClose(),
         amount, requiredPrice, 0.0f, TransactionType.BUY);
 
     TransactionHistory transactionHistory = transactionHistoryRepository.findById(
@@ -249,10 +254,10 @@ public class StockService {
     }
 
     // 실현 수익 계산
-    Float realizedProfit = (recentPrice.getPrice() - preStock.getAveragePrice()) * amount;
+    Float realizedProfit = (recentPrice.getClose() - preStock.getAveragePrice()) * amount;
 
     // 지갑에 실현된 금액 추가
-    walletService.updateCoin((int)(recentPrice.getPrice()*amount));
+    walletService.updateCoin((int)(recentPrice.getClose()*amount));
 
     if (preStock.getAmount().equals(amount)) {
       // 모든 주식을 매도한 경우 삭제
@@ -269,8 +274,8 @@ public class StockService {
     }
 
     // 거래 내역 기록
-    Long transactionHistoryId = createTransactionHistory(myWallet, stock, recentPrice.getPrice(),
-        amount, recentPrice.getPrice() * amount, realizedProfit, TransactionType.SELL);
+    Long transactionHistoryId = createTransactionHistory(myWallet, stock, recentPrice.getClose(),
+        amount, recentPrice.getClose() * amount, realizedProfit, TransactionType.SELL);
 
     TransactionHistory transactionHistory = transactionHistoryRepository.findById(
         transactionHistoryId).orElseThrow();
@@ -291,7 +296,9 @@ public class StockService {
     Stock stock = stockRepository.findById(stockId)
         .orElseThrow(() -> new NoSuchElementException("Stock not found"));
     StockHistory stockHistory = StockHistory.builder().stock(stock)
-        .price(stockRequestDto.getPrice()).createdAt(stockRequestDto.getCreatedAt()).build();
+        .open(stockRequestDto.getOpen()).close(stockRequestDto.getClose())
+        .high(stockRequestDto.getHigh()).low(stockRequestDto.getLow())
+        .createdAt(stockRequestDto.getCreatedAt()).build();
 
     stockHistoryRepository.save(stockHistory);
     return stockHistory.getId();
