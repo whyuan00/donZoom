@@ -19,6 +19,7 @@ import QRCodeScanner from '@/views/components/QRCodeScanner';
 import TransferNavigator from './TransferNavigator';
 import AccountInitScreen from '@/views/screens/account/AccountInitScreen';
 import MissionStackNavigator from './MissionStackNavigator';
+import InvestStackNavigator from './InvestStackNavigator';
 import MyInformationNavigator from './MyInformationNavigator';
 import AccountInitNavigator from './AccountInitNavigator';
 import TransferScreen from '@/views/screens/account/TransferScreen';
@@ -125,6 +126,11 @@ const HomeStackNavigator = () => {
       <Stack.Screen
         name="아이미션"
         component={MissionStackNavigator}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="모의투자"
+        component={InvestStackNavigator}
         options={{headerShown: false}}
       />
       <Stack.Screen name="퀴즈" component={QuizHomeScreen} />

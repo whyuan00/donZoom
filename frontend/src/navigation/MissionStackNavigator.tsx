@@ -79,6 +79,7 @@ const MissionStackNavigator = ({route}:any) => {
         options={{
           title: '미션 생성',
           headerStyle: {backgroundColor: colors.YELLOW_25},
+          headerShadowVisible:false,
         }}
       />
       <Stack.Screen
