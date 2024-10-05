@@ -1,22 +1,22 @@
-import {useState} from 'react';
-import {usePigStore} from '@/stores/pigStore';
+import React, {useEffect, useState} from 'react';
 import {
-  StyleSheet,
-  Text,
   View,
+  Text,
   ScrollView,
   TouchableOpacity,
   Modal,
+  Image,
 } from 'react-native';
+import {usePigStore} from '@/stores/pigStore';
+import usePig from '@/hooks/queries/usePig';
+import {StyleSheet, Vibration} from 'react-native';
 import {colors} from '../../../constants/colors';
 import DrawList from '../../components/DrawList';
-
 import DrawMachineSVG from '../../../assets/drawMachine.svg';
 import CloseButton from '../../../assets/closeButton.svg';
 
 function DrawMachineScreen({}) {
   const {
-    pigs,
     addOwnedPig,
     pigHistory,
     addPigHistory,
@@ -30,52 +30,82 @@ function DrawMachineScreen({}) {
     setIsNewCards,
     isManyDraws,
     setIsManyDraws,
+    setPigs,
   } = usePigStore();
+  const {drawPigMutation, getAllPigMutation} = usePig();
   const [isModalVisible, setModalVisible] = useState(false);
 
+  // 전체 돼지 불러오기
+  useEffect(() => {
+    if (getAllPigMutation.isSuccess && getAllPigMutation.data) {
+      setPigs(getAllPigMutation.data);
+      // console.log('전체 돼지 가져오기: ', getAllPigMutation.data);
+    }
+  }, [getAllPigMutation.data, setPigs]);
+
   // 1회 뽑기
-  const drawCard = () => {
-    // 카드 랜덤으로 뽑기
-    const randomCard = Math.floor(Math.random() * pigs.length);
-    const selected = pigs[randomCard];
+  const drawCard = async () => {
+    try {
+      const drawnPigs = await drawPigMutation.mutateAsync(1);
+      console.log('drawnPigs: ', drawnPigs);
+      const selected = {
+        pigId: drawnPigs[0].pigId,
+        pigName: drawnPigs[0].pigName,
+        owned: false,
+        description: drawnPigs[0].description,
+        imageUrl: drawnPigs[0].imageUrl,
+        silhouetteImageUrl: drawnPigs[0].silhouetteImageUrl,
+        createdAt: drawnPigs[0].createdAt || null,
+      };
+      console.log('이거 뽑았어! ', selected);
+      setSelectedCard(selected);
+      addPigHistory(selected);
 
-    setSelectedCard(selected);
-    addPigHistory(selected);
-
-    // 뽑은 카드인지 체크
-    const isNew = !selected.owned;
-    setIsNewCard(isNew);
-    if (isNew) addOwnedPig(selected);
-
-    // 1회 뽑기 모달창 열기
-    setIsManyDraws(false);
-    setModalVisible(true);
+      const isNew = !selected.owned;
+      setIsNewCard(isNew);
+      if (isNew) addOwnedPig(selected);
+      console.log('selectedCard: ', selectedCard);
+      console.log('imageUrl: ', selectedCard?.imageUrl);
+      // 1회 뽑기 모달창 열기
+      setIsManyDraws(false);
+      setModalVisible(true);
+      Vibration.vibrate(100);
+    } catch (error) {
+      console.error('돼지 1회 뽑기 실패:', error);
+    }
   };
 
   // 5회 뽑기
-  const drawManyCard = () => {
-    const drawnCards = [];
-    const newCards = [];
+  const drawManyCard = async () => {
+    try {
+      const drawnPigs = await drawPigMutation.mutateAsync(5);
+      const newCards: boolean[] = [];
 
-    // 5회 뽑은 카드 배열 만들기
-    for (let i = 0; i < 5; i++) {
-      const randomCard = Math.floor(Math.random() * pigs.length);
-      const card = pigs[randomCard];
-      drawnCards.push(card);
-      addPigHistory(card);
+      const drawnCards = drawnPigs.map(pig => ({
+        pigId: pig.pigId,
+        pigName: pig.pigName,
+        owned: pig.createdAt !== null,
+        description: pig.description,
+        imageUrl: pig.imageUrl,
+        silhouetteImageUrl: pig.silhouetteImageUrl,
+        createdAt: pig.createdAt || null,
+      }));
 
-      // 뽑은 카드인지 체크
-      const isNew = !card.owned;
-      newCards.push(isNew);
-      if (isNew) addOwnedPig(card);
+      drawnCards.forEach(card => {
+        const isNew = !card.owned;
+        newCards.push(isNew);
+        if (isNew) addOwnedPig(card);
+        addPigHistory(card);
+      });
+
+      setSelectedManyCards(drawnCards);
+      setIsNewCards(newCards);
+      setIsManyDraws(true);
+      setModalVisible(true);
+      Vibration.vibrate(500);
+    } catch (error) {
+      console.error('돼지 5회 뽑기 실패:', error);
     }
-
-    setSelectedManyCards(drawnCards); // 이번에 뽑은 카드 내역
-    setIsNewCards(newCards);
-
-    // 5회 뽑기 모달창 열기
-    setIsManyDraws(true);
-    setModalVisible(true);
   };
 
   return (
@@ -99,7 +129,7 @@ function DrawMachineScreen({}) {
           .reverse()
           .map((drewItem, index) => (
             <DrawList
-              key={`${drewItem.id}-${index}`} // key값이 고유해야하기 때문에 id와 date 조합
+              key={`${drewItem.id}-${index}`}
               cardName={drewItem.name}
               date={drewItem.date}
               style={[
@@ -125,8 +155,11 @@ function DrawMachineScreen({}) {
                     {isNewCards && isNewCards[index] && (
                       <Text style={styles.manyNewText}>New!</Text>
                     )}
-                    <card.image width={60} height={60} />
-                    <Text style={styles.manyPigName}>{card.name}</Text>
+                    <Image
+                      source={{uri: card.imageUrl}}
+                      style={{width: 60, height: 60}}
+                    />
+                    <Text style={styles.manyPigName}>{card.pigName}</Text>
                   </View>
                 ))}
               </View>
@@ -136,8 +169,11 @@ function DrawMachineScreen({}) {
                     {isNewCards && isNewCards[index + 3] && (
                       <Text style={styles.manyNewText}>New!</Text>
                     )}
-                    <card.image width={60} height={60} />
-                    <Text style={styles.manyPigName}>{card.name}</Text>
+                    <Image
+                      source={{uri: card.imageUrl}}
+                      style={{width: 60, height: 60}}
+                    />
+                    <Text style={styles.manyPigName}>{card.pigName}</Text>
                   </View>
                 ))}
               </View>
@@ -147,24 +183,20 @@ function DrawMachineScreen({}) {
               {selectedCard && isNewCard && (
                 <Text style={styles.newText}>New!</Text>
               )}
-
               <TouchableOpacity
                 style={styles.closeButton}
                 onPress={() => setModalVisible(false)}>
                 <CloseButton />
               </TouchableOpacity>
-
               {selectedCard && (
-                <selectedCard.image
-                  width={180}
-                  height={180}
-                  marginBottom={30}
+                <Image
+                  source={{uri: selectedCard.imageUrl}}
+                  style={{width: 180, height: 180, marginBottom: 30}}
                 />
               )}
-
               {selectedCard && (
                 <>
-                  <Text style={styles.pigName}>{selectedCard.name}</Text>
+                  <Text style={styles.pigName}>{selectedCard.pigName}</Text>
                   <Text style={styles.pigDescription}>
                     {selectedCard.description}
                   </Text>
@@ -300,9 +332,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'GmarketSansTTFBold',
     color: colors.BLACK,
-  },
-  pigImage: {
-    marginBottom: 40,
   },
   pigName: {
     color: colors.BLACK,

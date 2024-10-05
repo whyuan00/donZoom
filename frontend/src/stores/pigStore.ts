@@ -1,14 +1,13 @@
 import {create} from 'zustand';
-import SunoPig from '@/assets/sunoPig.svg';
-import Silhouette from '@/assets/silhouette.svg';
 
 interface Pig {
-  id: number;
-  name: string;
+  pigId: number;
+  pigName: string;
   owned: boolean;
   description: string;
-  image: any;
-  silhouette: any;
+  imageUrl: string;
+  silhouetteImageUrl: string;
+  createdAt: string | null;
 }
 
 interface PigHistory {
@@ -19,6 +18,7 @@ interface PigHistory {
 
 interface PigStore {
   pigs: Pig[];
+  setPigs: (pigs: Pig[]) => void;
   addOwnedPig: (pig: Pig) => void;
   pigHistory: PigHistory[];
   addPigHistory: (pig: Pig) => void;
@@ -35,39 +35,43 @@ interface PigStore {
 }
 
 export const usePigStore = create<PigStore>(set => ({
-  // 더미데이터
-  pigs: Array.from({length: 100}, (_, index) => ({
-    id: index + 1,
-    name: `돼지 ${index + 1}`,
-    owned: false,
-    description: `돼지 ${index + 1}에 대한 설명`,
-    image: SunoPig,
-    silhouette: Silhouette,
-  })),
+  pigs: [],
+
+  setPigs: pigs => set({pigs}),
+
   addOwnedPig: pig =>
     set(state => ({
-      pigs: state.pigs.map(p => (p.id === pig.id ? {...p, owned: true} : p)),
+      pigs: state.pigs.map(p =>
+        p.pigId === pig.pigId ? {...p, owned: true} : p,
+      ),
     })),
+
   pigHistory: [],
+
   addPigHistory: pig =>
     set(state => ({
       pigHistory: [
         ...state.pigHistory,
         {
-          id: pig.id,
-          name: pig.name,
+          id: pig.pigId,
+          name: pig.pigName,
           date: new Date().toLocaleString('ko-KR', {timeZone: 'Asia/Seoul'}),
         },
       ],
     })),
+
   selectedCard: null,
   setSelectedCard: pig => set({selectedCard: pig}),
+
   selectedManyCards: null,
   setSelectedManyCards: pigs => set({selectedManyCards: pigs}),
+
   isNewCard: false,
   setIsNewCard: isNew => set({isNewCard: isNew}),
+
   isNewCards: [],
   setIsNewCards: newCards => set({isNewCards: newCards}),
+
   isManyDraws: false,
   setIsManyDraws: isMany => set({isManyDraws: isMany}),
 }));
