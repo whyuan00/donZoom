@@ -91,24 +91,43 @@ scheduler = BackgroundScheduler()
 def fetch_and_send_data(ticker, stockId):
     now_kst = datetime.now(KST)
     now_est = datetime.now(EST)
+  
+    # 국내 주식은 한국 시간 기준 주말에 데이터 수집하지 않음
+    if ticker.endswith(".KS") and now_kst.weekday() >= 5:
+        print(f"{ticker} - 현재 시간 {now_kst}. 주말에는 국내 주식을 수집하지 않습니다.")
+        return
 
+    # 해외 주식 및 금의 경우 주말에 데이터 수집 안 함 (뉴욕 시간 기준)
+    if ticker in ["AAPL", "GOOGL", "TSLA"]:
+        if now_est.weekday() >= 5:
+            print(f"{ticker} - 현재 시간 {now_est}. 주말에는 해외 주식을 수집하지 않습니다.")
+            return
+
+  
     # 국내 주식: 9시 ~ 14시 30분
     if ticker.endswith(".KS"):
         if now_kst.hour < 9 or (now_kst.hour == 14 and now_kst.minute > 30) or now_kst.hour > 14:
             print(f"{ticker} - 현재 시간 {now_kst}. 국내 주식은 거래 시간이 아닙니다.")
             return
 
-    # 금 선물: 오전 7시 ~ 다음날 오전 6시
+    # 금 선물 거래 시간 및 주말 확인
+    # 금 선물:한국시간 기준 오전 7시 ~ 다음날 오전 6시
+    # 금 선물: 뉴욕 시간 기준 오후 6시 ~ 다음날 오후 5시
     if ticker == "GC=F":
-        if now_kst.hour < 7 and now_kst.hour >= 6:
-            print(f"{ticker} - 현재 시간 {now_kst}. 금 선물은 거래 시간이 아닙니다.")
+        if now_est.weekday() == 5 and now_est.hour >= 17:
+            print(f"{ticker} - 현재 시간 {now_est}. 금 선물은 거래 시간이 아닙니다.")
+            return
+        elif now_est.weekday() == 6 and now_est.hour < 18:
+            print(f"{ticker} - 현재 시간 {now_est}. 금 선물은 거래 시간이 아닙니다.")
             return
 
-    # 해외 주식: 밤 11시 30분 ~ 새벽 5시
+    # 해외 주식: 한국시간 기준 새벽 12시 00분 ~ 새벽 8시59분
+    # 해외 주식: 뉴욕 시간 기준 오전 11시 00분 ~ 오후 7시 59분
     if ticker in ["AAPL", "GOOGL", "TSLA"]:
-        if (now_kst.hour < 23 or (now_kst.hour == 23 and now_kst.minute < 30)) or now_kst.hour >= 5:
-            print(f"{ticker} - 현재 시간 {now_kst}. 해외 주식은 거래 시간이 아닙니다.")
+        if now_est.hour < 11 or now_est.hour >= 20:
+            print(f"{ticker} - 현재 뉴욕 시간 {now_est}. 해외 주식은 거래 시간이 아닙니다.")
             return
+
 
     print(f"실시간 데이터 가져오기 시작: {now_kst} - {ticker}")
 
