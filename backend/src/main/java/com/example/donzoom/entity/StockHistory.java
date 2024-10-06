@@ -29,7 +29,10 @@ public class StockHistory {
   @JoinColumn(name = "stock_id")
   private Stock stock;
 
-  private Float price;
+  private Float open;
+  private Float close;
+  private Float high;
+  private Float low;
 
   private LocalDateTime createdAt;
 
@@ -37,10 +40,13 @@ public class StockHistory {
   private LocalDateTime updatedAt;
 
   @Builder
-  public StockHistory(Stock stock, Float price, LocalDateTime createdAt) {
+  public StockHistory(Stock stock, Float price, Float open, Float close, Float high, Float low,
+      LocalDateTime createdAt, LocalDateTime updatedAt) {
     this.stock = stock;
-    this.price = price;
-    this.createdAt = createdAt;
+    this.open = open;
+    this.close = close;
+    this.high = high;
+    this.low = low;
+    this.createdAt =createdAt;
   }
-
 }
