@@ -47,7 +47,7 @@ public class UserService {
     }
 
     // 새로운 지갑 생성
-    Wallet wallet = Wallet.builder().build();
+    Wallet wallet = Wallet.builder().user(findCurrentUser()).build();
     walletRepository.save(wallet);
 
     User user = User.builder().email(userCreateDto.getEmail())
