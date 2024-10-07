@@ -143,10 +143,10 @@ def fetch_and_send_data(ticker, stockId):
     
     # 가장 최신 데이터 가져오기
     if ticker in ["AAPL", "GOOGL", "TSLA","GC=F"]:
-        latest_timestamp = new_data.index[-1] + timedelta(minutes=10)
+        latest_timestamp = new_data.index[-2] + timedelta(minutes=10)
     else:
-         latest_timestamp = new_data.index[-1] + timedelta(minutes=20)
-    latest_data = new_data.iloc[-1]
+         latest_timestamp = new_data.index[-2] + timedelta(minutes=20)
+    latest_data = new_data.iloc[-2]
     
     # 데이터를 전송할 준비
     data = {
