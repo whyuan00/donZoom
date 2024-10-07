@@ -22,7 +22,7 @@ const initialState = {
   email: '',
   password: '',
   passwordConfirm: '',
-  role: '부모',
+  role: '',
   name: '',
   nickname: '',
 };

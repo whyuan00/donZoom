@@ -65,16 +65,14 @@ function QuizHomeScreen({navigation}: any) {
     }
   }, [solvedQuizMutation.data]);
 
-  useEffect(() => {
-    if (todayQuizMutation.data && todayQuizMutation.data.length > 0) {
-      const quizes = todayQuizMutation.data;
-      const transformedQuizes = transformQuizData(quizes);
-      setQuizData(transformedQuizes);
-      setTodaysQuizQuestions(transformedQuizes, quizes[0].quiz_id);
-    }
-  }, [todayQuizMutation.data]);
-
   const startTodayQuiz = () => {
+    const quizes = todayQuizMutation.data;
+    const transformedQuizes = transformQuizData(quizes);
+    setQuizData(transformedQuizes);
+    setTodaysQuizQuestions(transformedQuizes, quizes[0].quiz_id);
+
+    console.log("quizData: ",quizData);
+
     if (quizData.length > 0) {
       navigation.navigate('오늘의 퀴즈');
     } else {
@@ -154,7 +152,7 @@ function QuizHomeScreen({navigation}: any) {
             <Text style={styles.todayDescription}>
               오늘의 퀴즈를 풀고 모의투자 시드머니를 얻어보세요!
             </Text>
-          </View>                                                                           
+          </View>
           <View style={styles.todayContentBox}>
             <View style={styles.todayContentText}>
               <Text style={styles.todayContentTitle}>

@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import Slider from '@react-native-community/slider';
 import {
   View,
   Text,
@@ -6,6 +7,7 @@ import {
   TouchableOpacity,
   Modal,
   Image,
+  Alert,
 } from 'react-native';
 import {usePigStore} from '@/stores/pigStore';
 import usePig from '@/hooks/queries/usePig';
@@ -14,6 +16,10 @@ import {colors} from '../../../constants/colors';
 import DrawList from '../../components/DrawList';
 import DrawMachineSVG from '../../../assets/drawMachine.svg';
 import CloseButton from '../../../assets/closeButton.svg';
+import Ticket from 'react-native-vector-icons/Ionicons';
+import Minus from 'react-native-vector-icons/Feather';
+import Plus from 'react-native-vector-icons/Feather';
+import {fonts} from '@/constants/font';
 
 function DrawMachineScreen({}) {
   const {
@@ -32,8 +38,17 @@ function DrawMachineScreen({}) {
     setIsManyDraws,
     setPigs,
   } = usePigStore();
-  const {drawPigMutation, getAllPigMutation} = usePig();
+  const {
+    drawPigMutation,
+    getAllPigMutation,
+    getMyCoinMutation,
+    changeCoinToTicketMutation,
+  } = usePig();
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isTicketModalVisible, setTicketModalVisible] = useState(false);
+  const [ticketValue, setTicketValue] = useState(1);
+  const [myCoin, setMyCoin] = useState(0);
+  const [maximumTicketValue, setMaximumTicketValue] = useState(100);
 
   // 전체 돼지 불러오기
   useEffect(() => {
@@ -92,7 +107,8 @@ function DrawMachineScreen({}) {
       }));
 
       drawnCards.forEach(card => {
-        const isNew = !card.owned;
+        const isNew = card.createdAt === null;
+        console.log('isNew: ', isNew);
         newCards.push(isNew);
         if (isNew) addOwnedPig(card);
         addPigHistory(card);
@@ -108,6 +124,31 @@ function DrawMachineScreen({}) {
     }
   };
 
+  // 티켓 교환 모달창
+  const openTicketModal = () => {
+    setTicketValue(1);
+    const coinAmount = getMyCoinMutation.data;
+    setMyCoin(coinAmount.coin);
+    console.log('내코인 가져오기: ', myCoin);
+    console.log('내코인 가져오기: ', getMyCoinMutation.data.coin);
+    myCoin / 5 > 100
+      ? setMaximumTicketValue(100)
+      : setMaximumTicketValue(Math.floor(myCoin / 5));
+    setTicketModalVisible(true);
+  };
+
+  const plusTicketValue = () => {
+    if (ticketValue < maximumTicketValue) setTicketValue(ticketValue + 1);
+  };
+  const minusTicketValue = () => {
+    if (ticketValue > 1) setTicketValue(ticketValue - 1);
+  };
+
+  const changeCoinToTicket = () => {
+    Alert.alert('교환해?');
+    changeCoinToTicketMutation.mutateAsync(ticketValue);
+  };
+
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -120,10 +161,14 @@ function DrawMachineScreen({}) {
             <Text style={styles.buttonText}>5회 뽑기</Text>
           </TouchableOpacity>
         </View>
-        <Text style={styles.tempText}>돼지를 뽑아라!</Text>
+        <TouchableOpacity style={styles.changeTicket} onPress={openTicketModal}>
+          <Ticket name="ticket-outline" size={40} color={colors.BLACK} />
+          <Text style={styles.tempText}>티켓 교환하기</Text>
+          <Ticket name="ticket-outline" size={40} color={colors.BLACK} />
+        </TouchableOpacity>
       </View>
-      <View style={styles.listContainer}>
-        <Text style={styles.listTitle}>나의 돼지 뽑기 내역</Text>
+      {/* <View style={styles.listContainer}>
+        <Text style={styles.listTitle}>나의 픽 뽑기 내역</Text>
         {pigHistory
           .slice()
           .reverse()
@@ -138,7 +183,49 @@ function DrawMachineScreen({}) {
               ]}
             />
           ))}
-      </View>
+      </View> */}
+      <Modal
+        visible={isTicketModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setTicketModalVisible}>
+        <View style={styles.modalBackground}>
+          <View style={styles.ticketModalContainer}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setTicketModalVisible(false)}>
+              <CloseButton />
+            </TouchableOpacity>
+            <Ticket name="ticket-outline" size={100} color={colors.BLACK} />
+            <View style={styles.ticketInputContainer}>
+              <TouchableOpacity onPress={minusTicketValue}>
+                <Minus name="minus" size={20} color={colors.BLACK} />
+              </TouchableOpacity>
+              <Slider
+                style={{width: 240}}
+                value={ticketValue}
+                onValueChange={value => setTicketValue(value)}
+                minimumValue={1}
+                maximumValue={maximumTicketValue}
+                minimumTrackTintColor={colors.BLUE_100}
+                thumbTintColor={colors.BLUE_100}
+                step={1}
+              />
+              <TouchableOpacity onPress={plusTicketValue}>
+                <Plus name="plus" size={20} color={colors.BLACK} />
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.hasCoinText}>현재 보유 코인: {myCoin}</Text>
+            <TouchableOpacity
+              style={styles.coinChangeButton}
+              onPress={changeCoinToTicket}>
+              <Text style={styles.coinChangeButtonText}>
+                {ticketValue}개 교환하기
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       <Modal
         visible={isModalVisible}
         transparent={true}
@@ -191,7 +278,7 @@ function DrawMachineScreen({}) {
               {selectedCard && (
                 <Image
                   source={{uri: selectedCard.imageUrl}}
-                  style={{width: 180, height: 180, marginBottom: 30}}
+                  style={{width: 200, height: 200}}
                 />
               )}
               {selectedCard && (
@@ -213,7 +300,7 @@ function DrawMachineScreen({}) {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: 680,
+    minHeight: '100%',
     backgroundColor: colors.YELLOW_100,
     justifyContent: 'center',
     alignItems: 'center',
@@ -248,12 +335,18 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontFamily: 'GmarketSansTTFMedium',
   },
+  changeTicket: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   tempText: {
     color: colors.BLACK,
     fontSize: 30,
     lineHeight: 30,
     textAlign: 'center',
     fontFamily: 'GmarketSansTTFBold',
+    marginHorizontal: 5,
   },
   listContainer: {
     backgroundColor: colors.WHITE,
@@ -283,6 +376,45 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  ticketModalContainer: {
+    backgroundColor: colors.WHITE,
+    width: 320,
+    height: 400,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 20,
+  },
+  ticketInputContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginTop: 30,
+  },
+  currentValueText: {
+    color: colors.BLACK,
+    fontFamily: fonts.MEDIUM,
+    marginTop: 10,
+  },
+  hasCoinText: {
+    color: colors.BLACK,
+    fontFamily: fonts.MEDIUM,
+    marginTop: 20,
+    marginBottom: 30,
+  },
+  coinChangeButton: {
+    borderRadius: 10,
+    backgroundColor: colors.YELLOW_75,
+    width: 160,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  coinChangeButtonText: {
+    color: colors.BLACK,
+    fontFamily: fonts.MEDIUM,
+    fontSize: 16,
   },
   modalManyContainer: {
     justifyContent: 'center',
@@ -343,12 +475,13 @@ const styles = StyleSheet.create({
     color: colors.BLACK,
     fontFamily: 'GmarketSansTTFBold',
     fontSize: 14,
-    marginTop: 10,
+    marginTop: 5,
   },
   pigDescription: {
     color: colors.BLACK,
     fontFamily: 'GmarketSansTTFMedium',
     fontSize: 14,
+    lineHeight: 20,
   },
 });
 

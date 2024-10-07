@@ -42,7 +42,7 @@ function DrawCollectionScreen() {
   };
 
   const filteredPigs = getFilteredPigs().sort((a, b) => a.pigId - b.pigId);
-  console.log('필터 피그: ', filteredPigs);
+  // console.log('필터 피그: ', filteredPigs);
 
   // 모달
   const handleCardPress = (pig: typeof selectedCard) => {
@@ -92,13 +92,9 @@ function DrawCollectionScreen() {
             <TouchableOpacity onPress={() => handleCardPress(item)}>
               <View style={styles.pigContainer}>
                 {item.createdAt !== null ? (
-                  <Image source={{uri: item.imageUrl}} width={70} height={70} />
+                  <Image source={{uri: item.imageUrl}} width={80} height={80} />
                 ) : (
-                  <Image
-                    source={{uri: item.silhouetteImageUrl}}
-                    width={70}
-                    height={70}
-                  />
+                  <Image source={{uri: item.imageUrl}} width={80} height={80} />
                 )}
                 <Text style={styles.pigName}>{item.pigName}</Text>
               </View>
@@ -122,22 +118,20 @@ function DrawCollectionScreen() {
             </TouchableOpacity>
             {selectedCard && (
               <>
-                {selectedCard.owned ? (
+                {selectedCard.createdAt !== null ? (
                   <Image
                     source={{uri: selectedCard.imageUrl}}
                     style={{
-                      width: 180,
-                      height: 180,
-                      marginBottom: 30,
+                      width: 200,
+                      height: 200,
                     }}
                   />
                 ) : (
                   <Image
-                    source={{uri: selectedCard.silhouetteImageUrl}}
+                    source={{uri: selectedCard.imageUrl}}
                     style={{
-                      width: 180,
-                      height: 180,
-                      marginBottom: 30,
+                      width: 200,
+                      height: 200,
                     }}
                   />
                 )}
@@ -197,13 +191,13 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   pigName: {
-    marginTop: 15,
+    marginTop: 5,
     fontFamily: fonts.MEDIUM,
     color: colors.BLACK,
   },
   pigNameModal: {
     marginBottom: 15,
-    fontFamily: fonts.MEDIUM,
+    fontFamily: fonts.BOLD,
     color: colors.BLACK,
     fontSize: 20,
   },
@@ -211,6 +205,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.MEDIUM,
     color: colors.BLACK,
     fontSize: 14,
+    lineHeight: 20,
   },
   modalBackground: {
     flex: 1,
