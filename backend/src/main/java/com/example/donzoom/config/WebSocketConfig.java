@@ -30,7 +30,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {
-    registry.addEndpoint("/api/websocket")
+    registry.addEndpoint("/websocket")
         .setAllowedOrigins("https://j11a108.p.ssafy.io", "https://localhost:5500",
             "https://127.0.0.1:5500", "http://127.0.0.1:5500",
             "http://localhost:5500")  // 여기에 허용할 도메인 추가
