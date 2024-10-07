@@ -130,8 +130,6 @@ public class UserService {
     user.updatePaymentPassword(paymentPassword);
     userRepository.save(user);
   }
-
-  // 아이 등록 로직
   public String addChild(String childEmail) {
     // 현재 인증된 사용자 정보 가져오기(부모)
     String username = SecurityUtil.getAuthenticatedUsername();
@@ -141,34 +139,27 @@ public class UserService {
     // Pending 테이블에서 아이의 이메일에 해당하는 레코드가 있는지 확인
     Optional<Pending> pendingRecord = pendingRepository.findByChildEmail(childEmail);
 
-    if (pendingRecord.isPresent()) {
-      // User 테이블에서도 아이의 이메일이 있는지 확인
-      Optional<User> childUser = userRepository.findByEmail(childEmail);
-      if (childUser.isPresent()) {
-        // 아이와 부모 관계 설정
-        setParentChildRelationship(parent, childUser.get());
-        // Pending 테이블에서 해당 레코드 삭제
-        pendingRepository.delete(pendingRecord.get());
-        return "아이와 부모 관계가 설정되었습니다.";
-      } else {
-        return "Pending에 등록되어 있으나 사용자가 존재하지 않습니다.";
-      }
-    } else {
+    if (pendingRecord.isEmpty()) {
       // Pending 테이블에 새로운 레코드 추가
       Pending newPending = Pending.builder()
           .childEmail(childEmail)
           .parentId(parent.getId().toString())
           .build();
       pendingRepository.save(newPending);
-      return "아이 등록 요청이 대기 중입니다.";
+      return "아이 등록 요청이 대기 중입니다: " + childEmail;
+    } else {
+      return "이미 등록 대기 중인 아이입니다: " + childEmail;
     }
   }
 
-  public ParentInfoResponseDto getParentInfo() {
+
+
+  public Object getParentInfo() {
     // 현재 인증된 사용자 정보 가져오기(아이)
     String username = SecurityUtil.getAuthenticatedUsername();
     User child = userRepository.findByEmail(username)
         .orElseThrow(() -> new RuntimeException("User not found"));
+    log.info(child.getEmail()+"Eeeeeee");
     Optional<Pending> pendingRecord = pendingRepository.findByChildEmail(child.getEmail());
 
     if (pendingRecord.isPresent()) {
@@ -185,15 +176,9 @@ public class UserService {
           .build();
     }
 
-    throw new RuntimeException("Pending record not found for the user.");
+    return "저장된 부모 정보가 없습니다.";
   }
 
-
-  // 부모-아이 관계 설정 로직
-  private void setParentChildRelationship(User parent, User child) {
-    child.updateParent(parent);
-    userRepository.save(child);
-  }
 
   public void setParentChildRelationship2() {
     // 현재 로그인한 사용자(아이) 정보 가져오기
