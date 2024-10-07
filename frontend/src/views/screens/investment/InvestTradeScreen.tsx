@@ -45,7 +45,6 @@ const InvestTradeScreen = ({route, navigation}: any) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text>주식 데이터: {stockMessage}</Text>
       <View style={styles.yellowContainer}>
         {trade === 'buy' ? (
           <Text style={styles.titleText}>구매할 가격</Text>
@@ -73,7 +72,7 @@ const InvestTradeScreen = ({route, navigation}: any) => {
           <View>
             {currentValue > 0 ? (
               <Text style={[styles.contentText, styles.textColorBlack]}>
-                {currentValue} 주
+                {currentValue} {type === 'Real' ? '온스' : '주'}
               </Text>
             ) : (
               <Text style={styles.contentText}>
@@ -87,7 +86,8 @@ const InvestTradeScreen = ({route, navigation}: any) => {
                 fontFamily: fonts.LIGHT,
                 color: colors.BLACK,
               }}>
-              구매 가능 최대 {ableBuyNum}주 | {currentValue * ableBuyNum} 머니
+              구매 가능 최대 {ableBuyNum} {type === 'Real' ? '온스' : '주'} |{' '}
+              {currentValue * ableBuyNum} 머니
             </Text>
           </View>
         ) : (

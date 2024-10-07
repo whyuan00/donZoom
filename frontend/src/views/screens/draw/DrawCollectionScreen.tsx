@@ -1,31 +1,48 @@
-import React, {useState} from 'react';
-import {View, Text, FlatList, TouchableOpacity, Modal} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Modal,
+  Image,
+} from 'react-native';
 import {StyleSheet} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import {usePigStore} from '@/stores/pigStore';
+import usePig from '@/hooks/queries/usePig';
 
 import CloseButton from '@/assets/closeButton.svg';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 
 function DrawCollectionScreen() {
-  const {pigs, selectedCard, setSelectedCard} = usePigStore();
+  const {pigs, setPigs, selectedCard, setSelectedCard} = usePigStore();
+  const {getAllPigMutation} = usePig();
   const [filter, setFilter] = useState('전체보기');
   const [isModalVisible, setModalVisible] = useState(false);
+
+  useEffect(() => {
+    if (getAllPigMutation.isSuccess && getAllPigMutation.data) {
+      setPigs(getAllPigMutation.data);
+      // console.log('전체 돼지: ', getAllPigMutation.data);
+    }
+  }, [getAllPigMutation.data, setPigs]);
 
   // 필터
   const getFilteredPigs = () => {
     switch (filter) {
       case '보유한 돼지':
-        return pigs.filter(pig => pig.owned);
+        return pigs.filter(pig => pig.createdAt !== null);
       case '미보유 돼지':
-        return pigs.filter(pig => !pig.owned);
+        return pigs.filter(pig => pig.createdAt === null);
       default:
         return pigs;
     }
   };
 
-  const filteredPigs = getFilteredPigs().sort((a, b) => a.id - b.id);
+  const filteredPigs = getFilteredPigs().sort((a, b) => a.pigId - b.pigId);
+  console.log('필터 피그: ', filteredPigs);
 
   // 모달
   const handleCardPress = (pig: typeof selectedCard) => {
@@ -59,7 +76,8 @@ function DrawCollectionScreen() {
         {filter === '전체보기' && (
           <View>
             <Text style={styles.hasPig}>
-              {pigs.filter(pig => pig.owned).length} / {pigs.length}
+              {pigs.filter(pig => pig.createdAt !== null).length} /{' '}
+              {pigs.length}
             </Text>
           </View>
         )}
@@ -67,18 +85,22 @@ function DrawCollectionScreen() {
       <View style={styles.collectionContainer}>
         <FlatList
           data={filteredPigs}
-          keyExtractor={item => item.id.toString()}
+          keyExtractor={item => item.pigId.toString()}
           numColumns={3}
           contentContainerStyle={styles.flatListContent}
           renderItem={({item}) => (
             <TouchableOpacity onPress={() => handleCardPress(item)}>
               <View style={styles.pigContainer}>
-                {item.owned ? (
-                  <item.image width={70} height={70} />
+                {item.createdAt !== null ? (
+                  <Image source={{uri: item.imageUrl}} width={70} height={70} />
                 ) : (
-                  <item.silhouette width={70} height={70} />
+                  <Image
+                    source={{uri: item.silhouetteImageUrl}}
+                    width={70}
+                    height={70}
+                  />
                 )}
-                <Text style={styles.pigName}>{item.name}</Text>
+                <Text style={styles.pigName}>{item.pigName}</Text>
               </View>
             </TouchableOpacity>
           )}
@@ -101,19 +123,25 @@ function DrawCollectionScreen() {
             {selectedCard && (
               <>
                 {selectedCard.owned ? (
-                  <selectedCard.image
-                    width={180}
-                    height={180}
-                    marginBottom={30}
+                  <Image
+                    source={{uri: selectedCard.imageUrl}}
+                    style={{
+                      width: 180,
+                      height: 180,
+                      marginBottom: 30,
+                    }}
                   />
                 ) : (
-                  <selectedCard.silhouette
-                    width={180}
-                    height={180}
-                    marginBottom={30}
+                  <Image
+                    source={{uri: selectedCard.silhouetteImageUrl}}
+                    style={{
+                      width: 180,
+                      height: 180,
+                      marginBottom: 30,
+                    }}
                   />
                 )}
-                <Text style={styles.pigNameModal}>{selectedCard.name}</Text>
+                <Text style={styles.pigNameModal}>{selectedCard.pigName}</Text>
                 <Text style={styles.pigDescriptionModal}>
                   {selectedCard.description}
                 </Text>

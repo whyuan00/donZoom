@@ -1,20 +1,13 @@
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import UnsafeAssetChartTabScreen from '@/views/screens/investment/UnsafeAssetTabScreen/UnsafeAssetChartTabScreen'
+import UnsafeAssetChartTabScreen from '@/views/screens/investment/UnsafeAssetTabScreen/UnsafeAssetChartTabScreen';
 import UnsafeChartTabScreen from '@/views/screens/investment/UnsafeAssetTabScreen/UnsafeAssetChartTabScreen';
 import UnsafeNewsTabScreen from '@/views/screens/investment/UnsafeAssetTabScreen/UnsafeAssetNewsTabScreen';
 import UnsafeReportTabScreen from '@/views/screens/investment/UnsafeAssetTabScreen/UnsafeAssetReportTabScreen';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  SafeAreaView,
-} from 'react-native';
+import {StyleSheet} from 'react-native';
 
-const InvestTabNavigator = ({selectedAssetType}: any) => {
+const InvestTabNavigator = ({selectedStock}: any) => {
   const Tab = createMaterialTopTabNavigator();
 
   return (
@@ -28,19 +21,23 @@ const InvestTabNavigator = ({selectedAssetType}: any) => {
       style={styles.tabNavigator}>
       <Tab.Screen
         name="차트"
-        component={UnsafeAssetChartTabScreen}
-        initialParams={{selectedAssetType}}
-      />
-      <Tab.Screen
-        name="뉴스"
-        component={UnsafeNewsTabScreen}
-        initialParams={{selectedAssetType}}
-      />
-      <Tab.Screen
-        name="리포트"
-        component={UnsafeReportTabScreen}
-        initialParams={{selectedAssetType}}
-      />
+        options={{
+          tabBarLabel: '차트',
+        }}>
+        {props => (
+          <UnsafeChartTabScreen {...props} selectedStock={selectedStock} />
+        )}
+      </Tab.Screen>
+      <Tab.Screen name="뉴스">
+        {props => (
+          <UnsafeNewsTabScreen {...props} selectedStock={selectedStock} />
+        )}
+      </Tab.Screen>
+      <Tab.Screen name="리포트">
+        {props => (
+          <UnsafeReportTabScreen {...props} selectedStock={selectedStock} />
+        )}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 };

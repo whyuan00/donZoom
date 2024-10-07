@@ -1,10 +1,21 @@
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import InvestUnsafeAssetTabNavigator from '@/navigation/InvestUnsafeAssetTabNavigator';
+import axiosInstance from '@/api/axios';
+import axios from 'axios';
+import {useFocusEffect} from '@react-navigation/native';
+
+
+interface Stocks{
+  stockId:number
+  stockName:string
+  stockPrice:number
+  lastCreatedAt:string 
+}
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -14,10 +25,27 @@ export default function UnsafeAssetDetailScreen({navigation}: any) {
   const [selectedStock, setSelectedStock] = useState<string>('종목 선택'); // 기본 종목 선택 상태
   const [realAssetMoney, setRealAssetMoney] = useState<number>(85335); // 현재 보유한 금을 머니로 환산한 값
   const [realAssetDollar, setRealAssetDollar] = useState<number>(119.37); // 현재 보유한 금을 머니로 환산한 값
-
   // 종목 선택 옵션
-  const domesticStocks = ['삼성전자', 'LG전자', '네이버', '카카오'];
-  const foreignStocks = ['Apple', 'Google', 'Tesla'];
+  const domesticStocks = (['삼성전자', 'LG전자', '네이버', '카카오'])
+  const foreignStocks = (['Apple', 'Google', 'Tesla'])
+
+  useFocusEffect(
+    useCallback(() => {
+      const getData = async () => {
+        try {
+          // const response = await axiosInstance.get(`/stock`);
+          // const {stocks} = response.data;
+          // console.log(stocks)
+          // const news = response.data;
+          // setTodaysNews(news);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      getData();
+    }, []),
+  );
+
 
   // 종목 선택 시
   const handleStockChange = (stock: string) => {
@@ -118,13 +146,12 @@ export default function UnsafeAssetDetailScreen({navigation}: any) {
           </View>
         </View>
       </View>
+      <InvestUnsafeAssetTabNavigator selectedStock={selectedStock} />
       {/* 선택된 종목과 기간에 따른 데이터 렌더링 */}
       {/* <View style={styles.stockDataContainer}>
         <Text>스톡데이터 컨테이너</Text>
         {renderStockData()}
       </View> */}
-
-      <InvestUnsafeAssetTabNavigator/>
     </View>
   );
 }

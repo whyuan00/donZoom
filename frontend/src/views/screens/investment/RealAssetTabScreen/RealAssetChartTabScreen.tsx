@@ -9,7 +9,7 @@ import {
   StyleSheet,
 } from 'react-native';
 
-const ChartTabScreen = ({navigation, route}: any) => {
+const RealAssetChartTabScreen = ({navigation}: any) => {
   const [selectedPeriod, setSelectedPeriod] = useState<string>('1일'); // 기본 기간 선택
 
   // 기간 선택 변경
@@ -21,8 +21,8 @@ const ChartTabScreen = ({navigation, route}: any) => {
     <View style={styles.container}>
       {
         <View style={{width: 350, height: 330, borderWidth: 1}}>
-          <Text style={styles.text}>hi Real Asset ChartTabScreen</Text>
-          <Text>{selectedPeriod}</Text>
+          <Text style={styles.text}>{selectedPeriod}</Text>
+          <Text style={styles.text}>hi Real Asset RealAssetChartTabScreen</Text>
         </View>
       }
 
@@ -52,7 +52,9 @@ const ChartTabScreen = ({navigation, route}: any) => {
       <View style={styles.actionButtonContainer}>
         <TouchableOpacity
           style={[styles.actionButton, styles.buyButton]}
-          onPress={() => navigation.navigate('Trade', {trade: 'buy', type:'Real'})}>
+          onPress={() =>
+            navigation.navigate('Trade', {trade: 'buy', type: 'Real'})
+          }>
           <Text
             style={{
               color: colors.WHITE,
@@ -64,7 +66,9 @@ const ChartTabScreen = ({navigation, route}: any) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.actionButton, styles.sellButton]}
-          onPress={() => navigation.navigate('Trade', {trade: 'sell', type:'Real'})}>
+          onPress={() =>
+            navigation.navigate('Trade', {trade: 'sell', type: 'Real'})
+          }>
           <Text
             style={{
               color: colors.WHITE,
@@ -74,25 +78,24 @@ const ChartTabScreen = ({navigation, route}: any) => {
             매도
           </Text>
         </TouchableOpacity>
-        
       </View>
     </View>
   );
 };
 
-export default ChartTabScreen;
+export default RealAssetChartTabScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor:colors.WHITE
+    backgroundColor: colors.WHITE,
   },
   text: {
     color: colors.BLACK,
     fontFamily: fonts.MEDIUM,
-    fontSize: 100,
+    fontSize: 50,
   },
   periodButtonContainer: {
     flexDirection: 'row',

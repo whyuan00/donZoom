@@ -11,11 +11,9 @@ import {
 import CandlestickChartComponent, {CandleData} from '../CandleChart';
 import useStock from '@/hooks/queries/useStock';
 
-const ChartTabScreen = ({navigation, route}: any) => {
+const UnsafeAssetChartTabScreen = ({navigation, selectedStock}: any) => {
   const {useGetStock} = useStock();
   const [selectedPeriod, setSelectedPeriod] = useState<string>('1일'); // 기본 기간 선택
-
-  // 기간 선택 변경
   const handlePeriodChange = (period: string) => {
     setSelectedPeriod(period);
   };
@@ -49,9 +47,10 @@ const ChartTabScreen = ({navigation, route}: any) => {
     <View style={styles.container}>
       {
         <View style={{width: 350, height: 330, borderWidth: 1}}>
-          {/* <Text style={styles.text}>hi unsafe ChartTabScreen</Text> */}
+          <Text style={styles.text}>{selectedPeriod}</Text>
+          <Text style={styles.text}>{selectedStock}</Text>
+          {/* <Text style={styles.text}>hi unsafe UnsafeAssetChartTabScreen</Text> */}
           <CandlestickChartComponent data={data} />
-          <Text>{selectedPeriod}</Text>
         </View>
       }
 
@@ -112,18 +111,19 @@ const ChartTabScreen = ({navigation, route}: any) => {
   );
 };
 
-export default ChartTabScreen;
+export default UnsafeAssetChartTabScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: colors.WHITE,
   },
   text: {
     color: colors.BLACK,
     fontFamily: fonts.MEDIUM,
-    fontSize: 100,
+    fontSize: 50,
   },
   periodButtonContainer: {
     flexDirection: 'row',
