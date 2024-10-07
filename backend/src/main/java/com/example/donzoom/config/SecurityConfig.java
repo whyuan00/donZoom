@@ -77,7 +77,7 @@ public class SecurityConfig {
         .requestMatchers("/assets/**", "/favicon.ico", "/index.html").permitAll()
         .requestMatchers("/user/**", "/oauth2/**", "/login/**", "/auth/**").permitAll()
         .requestMatchers("/websocket/**").permitAll()
-        //        .requestMatchers("/api/websocket/**").permitAll()
+        .requestMatchers("/api/websocket/**").permitAll()
         //                .anyRequest().authenticated());
         .anyRequest().permitAll());
 
