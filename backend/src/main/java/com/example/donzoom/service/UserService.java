@@ -135,16 +135,24 @@ public class UserService {
   public String addChild(String childEmail) {
     // 현재 인증된 사용자 정보 가져오기(부모)
     String username = SecurityUtil.getAuthenticatedUsername();
-    log.info(username+"eeeee");
     User parent = userRepository.findByEmail(username)
         .orElseThrow(() -> new RuntimeException("User not found"));
+
+    // Pending 테이블에서 아이의 이메일에 해당하는 레코드가 있는지 확인
     Optional<Pending> pendingRecord = pendingRepository.findByChildEmail(childEmail);
 
     if (pendingRecord.isPresent()) {
-      // 관계 설정 후, Pending 테이블에서 삭제
-      setParentChildRelationship(parent, pendingRecord.get().getChildEmail());
-      pendingRepository.delete(pendingRecord.get());
-      return "아이와 부모 관계가 설정되었습니다.";
+      // User 테이블에서도 아이의 이메일이 있는지 확인
+      Optional<User> childUser = userRepository.findByEmail(childEmail);
+      if (childUser.isPresent()) {
+        // 아이와 부모 관계 설정
+        setParentChildRelationship(parent, childUser.get());
+        // Pending 테이블에서 해당 레코드 삭제
+        pendingRepository.delete(pendingRecord.get());
+        return "아이와 부모 관계가 설정되었습니다.";
+      } else {
+        return "Pending에 등록되어 있으나 사용자가 존재하지 않습니다.";
+      }
     } else {
       // Pending 테이블에 새로운 레코드 추가
       Pending newPending = Pending.builder()
@@ -181,10 +189,8 @@ public class UserService {
   }
 
 
-  // 부모의 부모-아이 관계 설정 로직
-  public void setParentChildRelationship(User parent, String childEmail) {
-    User child = userRepository.findByEmail(childEmail).orElseThrow(() ->
-        new IllegalArgumentException("해당 이메일을 가진 사용자가 존재하지 않습니다."));
+  // 부모-아이 관계 설정 로직
+  private void setParentChildRelationship(User parent, User child) {
     child.updateParent(parent);
     userRepository.save(child);
   }
