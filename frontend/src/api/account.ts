@@ -16,8 +16,29 @@ type RequestTransfer = {
 };
 
 type ResponseAccountHistory = {
-  status: string;
-  list: [];
+  header: {
+    responseCode: string;
+    responseMessage: string;
+    apiName: string;
+    transmissionDate: string;
+    transmissionTime: string;
+    institutionCode: string;
+  };
+  rec: {
+    totalCount: string;
+    list: Array<{
+      transactionUniqueNo: string;
+      transactionDate: string;
+      transactionTime: string;
+      transactionType: string;
+      transactionTypeName: string;
+      transactionAccountNo: string;
+      transactionBalance: string;
+      transactionAfterBalance: string;
+      transactionSummary: string;
+      transactionMemo: string;
+    }>;
+  };
 };
 
 type RequestAccountLimit = {
@@ -142,9 +163,30 @@ const getBalance = async (accountNo: string): Promise<ResponseBalance> => {
   return data;
 };
 
-const getAccountHistory = async (): Promise<ResponseAccountHistory> => {
-  const {data} = await axiosInstance.get('/account/history');
-  console.log(data);
+type RequestAccountHistory = {
+  accountNo: string;
+  startDate: string;
+  endDate: string;
+  transactionType: string;
+  orderByType: string;
+};
+
+const getAccountHistory = async ({
+  accountNo,
+  startDate,
+  endDate,
+  transactionType,
+  orderByType,
+}: RequestAccountHistory): Promise<ResponseAccountHistory> => {
+  const {data} = await axiosInstance.get('/account/history', {
+    params: {
+      accountNo: accountNo,
+      startDate: startDate,
+      endDate: endDate,
+      transactionType: transactionType,
+      orderByType: orderByType,
+    },
+  });
   return data;
 };
 
@@ -254,4 +296,5 @@ export type {
   ResponseBalance,
   RequestAccountHolder,
   AccountResult,
+  RequestAccountHistory,
 };

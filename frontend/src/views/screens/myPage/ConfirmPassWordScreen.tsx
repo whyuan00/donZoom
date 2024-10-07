@@ -1,9 +1,9 @@
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 import PasswordPad from '@/views/components/PasswordPad';
-import {useState} from 'react';
+import {useCallback, useState} from 'react';
 import {Alert, StyleSheet, Text, View} from 'react-native';
-import {useRoute, RouteProp} from '@react-navigation/native';
+import {useRoute, RouteProp, useFocusEffect} from '@react-navigation/native';
 import usePasswordStore from '@/stores/usePasswordStore';
 
 // Route props 타입 정의
@@ -20,6 +20,14 @@ function ConfirmPassWordScreen({navigation}: any) {
   // useRoute 훅을 통해 newPassword를 안전하게 받아옴
   const route = useRoute<RouteProp<RouteParams>>();
   const newPassword = route.params?.newPassword; // NewPassWordScreen.tsx에서 전달된 새 비밀번호
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setPassword('');
+      };
+    }, []),
+  );
 
   const updateValue = (newValue: string) => {
     if (newValue.length <= 6) {

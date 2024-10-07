@@ -21,15 +21,22 @@ import Profile from '@/views/components/HomeProfile';
 import {useEffect} from 'react';
 import useAccountBalance from '@/hooks/useAccountInfo';
 import {useSignupStore} from '@/stores/useAuthStore';
+import useAuth from '@/hooks/queries/useAuth';
 
 function ChildrenMainScreen() {
   const navigation = useNavigation() as any;
   const {account, balance, error, refetch} = useAccountBalance();
-  const {name} = useSignupStore();
+  const {name, setName} = useSignupStore();
+  const {getProfileQuery} = useAuth();
 
   useEffect(() => {
     refetch();
-  }, [name]);
+    setName(getProfileQuery.data ? getProfileQuery.data.name : '');
+  }, []);
+
+  const refresh = () => {
+    refetch();
+  };
 
   return (
     <ScrollView>
@@ -61,7 +68,10 @@ function ChildrenMainScreen() {
                 </Text>
                 <View style={styles.moneyContentsContainer}>
                   <View style={styles.moneyAccountContainer}>
-                    <Text style={styles.moneyText}>{`${parseInt(
+                    <Text
+                      style={styles.moneyText}
+                      adjustsFontSizeToFit={true}
+                      numberOfLines={1}>{`${parseInt(
                       balance,
                     ).toLocaleString()}원`}</Text>
                     <TouchableOpacity
@@ -84,6 +94,9 @@ function ChildrenMainScreen() {
                       <PayIcon width={50} height={50} />
                       <Text style={styles.payText}>결제</Text>
                     </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={refresh}>
+                    <Text>새로고침</Text>
                   </TouchableOpacity>
                 </View>
               </View>

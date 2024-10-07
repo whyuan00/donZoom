@@ -1,3 +1,5 @@
+import {colors} from '@/constants/colors';
+import {fonts} from '@/constants/font';
 import React, {useState} from 'react';
 import {
   View,
@@ -70,7 +72,12 @@ const TermsAgreementScreen = ({navigation}: any) => {
   }) => (
     <View style={styles.agreementItem}>
       <Text style={styles.agreementText}>{title}</Text>
-      <Switch value={agreed} onValueChange={onToggle} />
+      <Switch
+        value={agreed}
+        onValueChange={onToggle}
+        trackColor={{false: '#767577', true: colors.YELLOW_100}}
+        thumbColor={agreed ? colors.YELLOW_100 : '#f4f3f4'}
+      />
     </View>
   );
 
@@ -114,7 +121,7 @@ const TermsAgreementScreen = ({navigation}: any) => {
               agreements.termsOfService &&
               agreements.privacyPolicy &&
               agreements.dataUsage
-                ? '#007AFF'
+                ? colors.YELLOW_100
                 : '#A0A0A0',
           },
         ]}
@@ -160,7 +167,7 @@ const styles = StyleSheet.create({
   continueButtonText: {
     color: 'white',
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: fonts.MEDIUM,
   },
 });
 

@@ -4,8 +4,10 @@ import useAccountBalance from '@/hooks/useAccountInfo';
 import useTransferStore from '@/stores/useTransferStore';
 import KeypadModal from '@/views/components/KeyPadModal';
 import TransferRecipientModal from '@/views/components/TransferModal';
-import {useEffect, useState} from 'react';
+import {useFocusEffect} from '@react-navigation/native';
+import {useCallback, useState} from 'react';
 import {
+  Alert,
   Pressable,
   StyleSheet,
   Text,
@@ -26,13 +28,11 @@ export default function TransferScreen({route, navigation}: any) {
   const {account, balance, error, refetch} = useAccountBalance();
   const {accountNo, amount, setAccountNo, setAmount} = useTransferStore();
 
-  useEffect(() => {
-    if (route.params?.accountNo) {
-      setAccountNo(route.params.accountNo);
-      setSelectedRecipient({accountNumber: accountNo});
-      console.log('계좌번호 설정: ', accountNo);
-    }
-  }, [route.params?.accountNo]);
+  useFocusEffect(
+    useCallback(() => {
+      setAmount('0');
+    }, []),
+  );
 
   const handleOpenModal = () => {
     setModalVisible(true);
@@ -61,7 +61,15 @@ export default function TransferScreen({route, navigation}: any) {
   };
 
   const onPressNext = () => {
-    navigation.navigate('송금2');
+    if (balance < amount) {
+      Alert.alert('잔액이 부족합니다.');
+    } else if (accountNo === '') {
+      Alert.alert('계좌번호를 확인해주세요.');
+    } else if (amount === '0') {
+      Alert.alert('보낼금액을 확인해주세요.');
+    } else {
+      navigation.navigate('송금2');
+    }
   };
   return (
     <View style={styles.container}>

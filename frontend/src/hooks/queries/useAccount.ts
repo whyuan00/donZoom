@@ -1,7 +1,9 @@
 import {
   Account,
   AccountResult,
+  RequestAccountHistory,
   RequestAccountHolder,
+  ResponseAccountHistory,
   ResponseBalance,
   getAccount,
   getAccountHistory,
@@ -60,10 +62,31 @@ function useGetBalance(
   });
 }
 
-function useGetAccountHistory(queryOptions?: UseQueryCustomOptions<any>) {
+function useGetAccountHistory(
+  accountNo: string,
+  startDate: string,
+  endDate: string,
+  transactionType: string,
+  orderByType: string,
+  queryOptions?: UseQueryCustomOptions<ResponseAccountHistory>,
+) {
   return useQuery({
-    queryKey: [queryKeys.ACCOUNT],
-    queryFn: getAccountHistory,
+    queryKey: [
+      queryKeys.ACCOUNT,
+      accountNo,
+      startDate,
+      endDate,
+      transactionType,
+      orderByType,
+    ],
+    queryFn: () =>
+      getAccountHistory({
+        accountNo,
+        startDate,
+        endDate,
+        transactionType,
+        orderByType,
+      }),
     ...queryOptions,
   });
 }
@@ -119,7 +142,6 @@ function useAccount() {
   const getAccount = useGetAccount();
   const cardMutation = usePostCard();
   const transferMutation = usePostTransfer();
-  const getAccountHistory = useGetAccountHistory();
   const accountLimitMutation = usePatchAccountLimit();
   const dailyLimitMutation = usePutDailyLimit();
   const perTransactionLimitMutation = usePutPerTransactionLimit();
@@ -131,7 +153,7 @@ function useAccount() {
     cardMutation,
     transferMutation,
     useGetBalance,
-    getAccountHistory,
+    useGetAccountHistory,
     accountLimitMutation,
     dailyLimitMutation,
     perTransactionLimitMutation,

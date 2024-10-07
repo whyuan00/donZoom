@@ -9,6 +9,9 @@ const queryKeys = {
     ACCOUNTNO: 'accountNo',
     ACCOUNTHOLDER: 'accountHolder',
   },
+  STOCK: {
+    '': 'stock',
+  },
 } as const;
 
 const storageKeys = {

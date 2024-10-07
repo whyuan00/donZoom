@@ -1,4 +1,5 @@
 import useAccount from '@/hooks/queries/useAccount';
+import useAccountBalance from '@/hooks/useAccountInfo';
 import useForm from '@/hooks/useForm';
 import usePasswordStore from '@/stores/usePasswordStore';
 import {validateAccount} from '@/utils';
@@ -9,10 +10,12 @@ import {Alert, StyleSheet, Text, View} from 'react-native';
 function AccountInitScreen({navigation}: any) {
   const {initAccountMutation} = useAccount();
   const {password} = usePasswordStore();
+  const {refetch} = useAccountBalance();
   const handelInitAccount = () => {
     initAccountMutation.mutate(password, {
       onSuccess: () => {
         Alert.alert('계좌가 생성되었습니다!');
+        refetch();
         navigation.navigate('홈화면');
       },
       onError: () => {

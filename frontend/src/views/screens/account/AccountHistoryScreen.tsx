@@ -1,34 +1,98 @@
 import {colors} from '@/constants/colors';
+import {fonts} from '@/constants/font';
 import useAccount from '@/hooks/queries/useAccount';
 import useAccountBalance from '@/hooks/useAccountInfo';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Pressable, ScrollView} from 'react-native';
 import {StyleSheet, Text, View} from 'react-native';
 
 function AccountHistoryScreen({navigation}: any) {
-  const isParent = true; // 임시 변수
+  const isParent = true;
   const [selected, setSelected] = useState('아이');
   const {account, balance, error, refetch} = useAccountBalance();
-  const {getAccountHistory} = useAccount();
-  console.log(getAccountHistory);
-  const transactionData = [
-    {
-      date: '2024.9.2. 14시 23분 03초',
-      marketName: '싸피문구점',
-      historyType: '사용한 금액',
-      amount: '-25000원',
-      remainingBalance: '1,234,567원',
-    },
-  ];
+  const {useGetAccountHistory} = useAccount();
+  const {data} = useGetAccountHistory(
+    account,
+    '20241001',
+    '20241004',
+    'A',
+    'ASC',
+  );
+
+  const transactionList = data?.rec.list;
+
+  interface RawTransaction {
+    transactionUniqueNo: string;
+    transactionDate: string;
+    transactionTime: string;
+    transactionType: string;
+    transactionTypeName: string;
+    transactionAccountNo: string;
+    transactionBalance: string;
+    transactionAfterBalance: string;
+    transactionSummary: string;
+    transactionMemo: string;
+  }
+
+  interface TransformedTransaction {
+    date: string;
+    marketName: string;
+    historyType: string;
+    amount: string;
+    remainingBalance: string;
+  }
+
+  const transformTransactionData = (
+    rawData: RawTransaction[] | undefined,
+  ): TransformedTransaction[] => {
+    if (!rawData) return [];
+
+    return rawData.map((transaction: RawTransaction) => {
+      const date = new Date(
+        parseInt(transaction.transactionDate.slice(0, 4)),
+        parseInt(transaction.transactionDate.slice(4, 6)) - 1,
+        parseInt(transaction.transactionDate.slice(6, 8)),
+        parseInt(transaction.transactionTime.slice(0, 2)),
+        parseInt(transaction.transactionTime.slice(2, 4)),
+        parseInt(transaction.transactionTime.slice(4, 6)),
+      );
+
+      const formattedDate = `${date.getFullYear()}.${
+        date.getMonth() + 1
+      }.${date.getDate()}. ${date.getHours()}시 ${date.getMinutes()}분 ${date.getSeconds()}초`;
+
+      const historyType =
+        transaction.transactionType === '1' ? '입금된 금액' : '사용한 금액';
+      const amount =
+        transaction.transactionType === '1'
+          ? `+${parseInt(transaction.transactionBalance).toLocaleString()}원`
+          : `-${parseInt(transaction.transactionBalance).toLocaleString()}원`;
+
+      return {
+        date: formattedDate,
+        marketName: transaction.transactionSummary,
+        historyType: historyType,
+        amount: amount,
+        remainingBalance: `${parseInt(
+          transaction.transactionAfterBalance,
+        ).toLocaleString()}원`,
+      };
+    });
+  };
+
+  const transactionData = transformTransactionData(transactionList);
+
   return (
     <View style={styles.container}>
       {isParent ? (
         <View style={styles.accountInfoContainer}>
           <View style={styles.parentAccountInfoContainer}>
             <View style={styles.parentInfoTop}>
-              <Text>아이 계좌 번호</Text>
-              <Text style={styles.parentInfoTopBankInfo}>싸피은행</Text>
-              <Text>{account}</Text>
+              <Text style={styles.parentInfoTopBankInfo}>아이 계좌 번호</Text>
+              <View style={{flexDirection: 'row'}}>
+                <Text style={styles.parentInfoTopBankInfo}>싸피은행</Text>
+                <Text style={styles.parentInfoTopBankInfo}>{account}</Text>
+              </View>
             </View>
             <View style={styles.parentInfoMiddle}>
               <Text style={styles.parentBalanceHeader}>남은 금액</Text>
@@ -39,7 +103,7 @@ function AccountHistoryScreen({navigation}: any) {
             <Pressable
               style={styles.parentInfoBottom}
               onPress={() => navigation.navigate('송금')}>
-              <Text>용돈 보내기</Text>
+              <Text style={styles.text}>용돈 보내기</Text>
             </Pressable>
           </View>
         </View>
@@ -127,9 +191,13 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
   },
+  text: {
+    fontFamily: fonts.LIGHT,
+    color: colors.BLACK,
+  },
   accountInfoContainer: {
     width: '100%',
-    height: 166,
+    height: 200,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.YELLOW_100,
@@ -139,7 +207,7 @@ const styles = StyleSheet.create({
     width: 309,
     height: 166,
     backgroundColor: colors.WHITE,
-    borderRadius: 6,
+    borderRadius: 10,
   },
   parentInfoTop: {
     flexDirection: 'row',
@@ -149,6 +217,9 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   parentInfoTopBankInfo: {
+    fontFamily: fonts.LIGHT,
+    fontSize: 12,
+    color: colors.BLACK,
     marginLeft: 'auto',
     marginRight: 7,
   },
@@ -165,15 +236,17 @@ const styles = StyleSheet.create({
   parentBalanceHeader: {
     marginTop: 'auto',
     marginBottom: 16,
-    fontFamily: 'GmarketSansTTFBold',
+    fontFamily: fonts.MEDIUM,
     fontSize: 16,
+    color: colors.BLACK,
   },
   parentBalanceText: {
     marginTop: 'auto',
     marginBottom: 16,
     marginLeft: 10,
-    fontFamily: 'GmarketSansTTFBold',
+    fontFamily: fonts.MEDIUM,
     fontSize: 25,
+    color: colors.BLACK,
   },
   parentInfoBottom: {
     flexDirection: 'row',
@@ -232,18 +305,21 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   balanceHeader: {
-    fontFamily: 'GmarketSansTTFBold',
+    fontFamily: fonts.LIGHT,
     fontSize: 16,
+    color: colors.BLACK,
   },
   balanceText: {
-    fontFamily: 'GmarketSansTTFBold',
+    fontFamily: fonts.LIGHT,
     fontSize: 25,
+    color: colors.BLACK,
   },
   accountHistoryContainer: {
     flex: 1,
     flexGrow: 1,
     width: '100%',
     paddingHorizontal: 20,
+    backgroundColor: colors.WHITE,
   },
   accountHistoryHeader: {
     flexDirection: 'row',
@@ -311,6 +387,10 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  balance: {
+    fontFamily: fonts.LIGHT,
+    color: colors.BLACK,
   },
 });
 
