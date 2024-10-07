@@ -153,7 +153,9 @@ public class User extends BaseEntity {
   public void updatePaymentPassword(String hashedPaymentPassword) {
     this.paymentPwdHash = hashedPaymentPassword;
   }
-
+  public void updateParent(User parent){
+    this.parent = parent;
+  }
   // 내 아이인지 확인
   public Boolean isMyChild(User child) {
     if (this.children.contains(child)) {
