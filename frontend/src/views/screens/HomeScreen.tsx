@@ -13,8 +13,7 @@ function HomeScreen() {
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.contentsContainer}>
-          {/* {role === '부모' ? <ParentsMainScreen /> : <ChildrenMainScreen />} */}
-          <ChildrenMainScreen />
+          {role === '부모' ? <ParentsMainScreen /> : <ChildrenMainScreen />}
         </View>
       </View>
     </ScrollView>

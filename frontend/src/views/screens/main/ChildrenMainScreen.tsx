@@ -131,7 +131,7 @@ function ChildrenMainScreen() {
           <Floor style={styles.floor} />
           <TouchableOpacity
             style={styles.goDraw}
-            onPress={() => navigation.navigate('돼지뽑기')}>
+            onPress={() => navigation.navigate('픽뽑기')}>
             <GifImage
               source={require('@/assets/coin.gif')}
               style={styles.gifImage}

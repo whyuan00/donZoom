@@ -16,23 +16,7 @@ const Stack = createNativeStackNavigator();
 const AuthStackNavigator = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen
-        name="Login"
-        component={LoginScreen}
-        options={({navigation}) => ({
-          headerRight: () => (
-            <Text
-              style={{
-                color: colors.BLUE_100,
-                fontFamily: fonts.LIGHT,
-                fontSize: 20,
-              }}
-              onPress={() => navigation.navigate('Footer')}>
-              메인화면
-            </Text>
-          ),
-        })}
-      />
+      <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="AuthHome" component={AuthHomeScreen} />
       <Stack.Screen name="회원가입" component={SignupScreen} />
       <Stack.Screen name="부모/아이 설정" component={CheckFamilyScreen} />

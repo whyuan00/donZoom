@@ -10,6 +10,10 @@ type Pig = {
   createdAt: string | null;
 };
 
+type MyCoin = {
+  coin: number;
+};
+
 // 전체 돼지 가져오기
 const getAllPig = async (): Promise<Pig[]> => {
   const response = await axiosInstance.get('/pig');
@@ -33,4 +37,19 @@ const drawPig = async (amount: number): Promise<Pig[]> => {
   return response.data;
 };
 
-export {getAllPig, getMyPig, drawPig};
+// 가지고 있는 코인 개수 가져오기
+const getMyCoin = async (): Promise<MyCoin> => {
+  const response = await axiosInstance.get('/coin');
+  console.log('내 코인은 이만큼있어: ', response.data);
+  return response.data;
+};
+
+// 티켓 구매하기
+const changeCoinToTicket = async (amount: number): Promise<any> => {
+  const response = await axiosInstance.post('/pig/ticket', null, {
+    params: {amount},
+  });
+  console.log('샀어 ', response.data);
+};
+
+export {getAllPig, getMyPig, drawPig, getMyCoin, changeCoinToTicket};

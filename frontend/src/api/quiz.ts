@@ -25,7 +25,7 @@ type QuizAnswer = {
 
 const getTodayQuiz = async (): Promise<QuizResponse> => {
   const response = await axiosInstance.get('/quiz/today');
-  // console.log(response.data);
+  console.log(response.data);
   return response.data;
 };
 

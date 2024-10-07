@@ -16,13 +16,13 @@ const DrawStackNavigator = () => {
         component={DrawMachineScreen}
         options={({navigation}) => ({
           headerRight: () => (
-            <TouchableOpacity onPress={() => navigation.navigate('돼지수집함')}>
+            <TouchableOpacity onPress={() => navigation.navigate('픽수집함')}>
               <CollectionButton width={24} height={24} />
             </TouchableOpacity>
           ),
         })}
       />
-      <Stack.Screen name="돼지수집함" component={DrawCollectionScreen} />
+      <Stack.Screen name="픽수집함" component={DrawCollectionScreen} />
     </Stack.Navigator>
   );
 };
