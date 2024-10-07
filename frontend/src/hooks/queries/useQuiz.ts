@@ -6,6 +6,7 @@ function useGetTodayQuiz(queryOptions?: UseQueryCustomOptions<any>) {
   return useQuery({
     queryKey: ['getTodayQuiz'],
     queryFn: getTodayQuiz,
+    enabled:false,
     ...queryOptions,
   });
 }

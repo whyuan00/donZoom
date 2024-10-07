@@ -25,11 +25,14 @@ type QuizAnswer = {
 
 const getTodayQuiz = async (): Promise<QuizResponse> => {
   const response = await axiosInstance.get('/quiz/today');
-  console.log(response.data);
+  console.log('api 실행: ', response.data);
   return response.data;
 };
 
-const submitQuizAnswer = async ({quizId, answer}: QuizAnswer): Promise<void> => {
+const submitQuizAnswer = async ({
+  quizId,
+  answer,
+}: QuizAnswer): Promise<void> => {
   // console.log(quizId, answer);
   await axiosInstance.post(`/quiz/${quizId}`, {answer});
 };
