@@ -22,7 +22,7 @@ public class WalletService {
   private int ticketPrice;
 
   public Wallet findWalletByUserId(Long userId) {
-    return walletRepository.findById(userId)
+    return walletRepository.findByUserId(userId)
         .orElseThrow(() -> new NoSuchElementException("지갑을 찾을 수 없습니다."));
   }
 
