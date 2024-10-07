@@ -23,18 +23,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
 
-  private final RedisService redisService;
-
   private static final List<String> EXCLUDE_PATHS = Arrays.asList(
 
       "/users/check-email", "/auth/login", "/auth/logout", "/auth/token", "/auth/refresh", "/login",
-      "/user/login", "/api/user/login",
-      "/api/auth/google", "/auth/google",
-      "/api/fcm/send","/fcm/send",
-      "/api/login/oauth2/code/kakao", "/login/oauth2/code/kakao",
-      "/api/login/oauth2/code/naver", "/login/oauth2/code/naver",
-      "/api/login/oauth2/code/google", "/login/oauth2/code/google", "/app/**",
-      "/api/websocket/info");
+      "/user/login", "/api/user/login", "/api/auth/google", "/auth/google", "/api/fcm/send",
+      "/fcm/send", "/api/login/oauth2/code/kakao", "/login/oauth2/code/kakao",
+      "/api/login/oauth2/code/naver", "/login/oauth2/code/naver", "/api/login/oauth2/code/google",
+      "/login/oauth2/code/google", "/app/**", "/api/websocket/info");
+  private final RedisService redisService;
   private final JWTUtil jwtUtil;
 
   @Override
@@ -91,7 +87,7 @@ public class JWTFilter extends OncePerRequestFilter {
       } else {
         // auth 정보가 없는 경우
         log.info("유효한 Authorization 헤더가 없습니다.");
-//        return;
+        //        return;
       }
       filterChain.doFilter(request, response);
     } catch (JwtException e) {

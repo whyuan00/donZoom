@@ -28,7 +28,8 @@ public class MissionController {
   private final MissionService missionService;
 
   @GetMapping
-  public ResponseEntity<?> getAllMissions(@PathVariable Long userId, @PathVariable MissionStatus status) {
+  public ResponseEntity<?> getAllMissions(@PathVariable Long userId,
+      @PathVariable MissionStatus status) {
     // 내 미션 전체 조회
     List<MissionResponseDto> userMissions = missionService.getUserMissions(userId, status);
     return new ResponseEntity<>(Map.of("missions", userMissions), HttpStatus.OK);

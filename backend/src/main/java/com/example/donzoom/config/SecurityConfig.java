@@ -16,9 +16,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -39,7 +36,8 @@ public class SecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http, RedisService redisService) throws Exception {
+  public SecurityFilterChain filterChain(HttpSecurity http, RedisService redisService)
+      throws Exception {
 
     //
     //        http.cors((corsCustomizer -> corsCustomizer.configurationSource(
@@ -77,14 +75,15 @@ public class SecurityConfig {
     http.authorizeHttpRequests(auth -> auth
         //                .requestMatchers("/register").authenticated()
         .requestMatchers("/assets/**", "/favicon.ico", "/index.html").permitAll()
-        .requestMatchers("/user/**", "/oauth2/**", "/login/**","/auth/**").permitAll()
+        .requestMatchers("/user/**", "/oauth2/**", "/login/**", "/auth/**").permitAll()
         .requestMatchers("/websocket/**").permitAll()
-//        .requestMatchers("/api/websocket/**").permitAll()
+        //        .requestMatchers("/api/websocket/**").permitAll()
         //                .anyRequest().authenticated());
         .anyRequest().permitAll());
 
     // 필터 추가
-    http.addFilterBefore(new JWTFilter(redisService, jwtUtil), UsernamePasswordAuthenticationFilter.class);
+    http.addFilterBefore(new JWTFilter(redisService, jwtUtil),
+        UsernamePasswordAuthenticationFilter.class);
 
     //세션 설정 ( JWT 를 사용해 유저 정보를 인증하기 때문에 세션은 필요 없음 )
     http.sessionManagement(

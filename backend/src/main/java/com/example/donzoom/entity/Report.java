@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Report{
+public class Report {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,7 +38,8 @@ public class Report{
   private String source;
 
   @Builder
-  public Report(Stock stock, String title, String contents, LocalDateTime createdAt,String source) {
+  public Report(Stock stock, String title, String contents, LocalDateTime createdAt,
+      String source) {
     this.stock = stock;
     this.title = title;
     this.contents = contents;

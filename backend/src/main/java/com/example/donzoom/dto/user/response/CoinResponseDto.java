@@ -6,5 +6,6 @@ import lombok.Getter;
 @Builder
 @Getter
 public class CoinResponseDto {
+
   private final Integer coin;
 }

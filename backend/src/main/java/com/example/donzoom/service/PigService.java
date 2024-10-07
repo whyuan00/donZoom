@@ -1,6 +1,5 @@
 package com.example.donzoom.service;
 
-import com.example.donzoom.dto.pig.request.PigRequestDto;
 import com.example.donzoom.dto.pig.response.PigResponseDto;
 import com.example.donzoom.entity.MyPig;
 import com.example.donzoom.entity.Pig;
@@ -18,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -49,15 +47,11 @@ public class PigService {
     List<MyPig> myPigs = myPigRepository.findByWalletId(user.getWallet().getId());
 
     // 돼지 정보를 DTO로 변환하여 반환
-    return myPigs.stream()
-        .map(myPig -> PigResponseDto.builder()
-            .pigId(myPig.getPig().getId())
-            .imageUrl(myPig.getPig().getImageUrl())
-            .pigName(myPig.getPig().getPigName())
-            .description(myPig.getPig().getDescription())
-            .createdAt(Optional.ofNullable(myPig.getCreatedAt()).map(LocalDateTime::toString).orElse("N/A"))
-            .build())
-        .collect(Collectors.toList());
+    return myPigs.stream().map(myPig -> PigResponseDto.builder().pigId(myPig.getPig().getId())
+        .imageUrl(myPig.getPig().getImageUrl()).pigName(myPig.getPig().getPigName())
+        .description(myPig.getPig().getDescription()).createdAt(
+            Optional.ofNullable(myPig.getCreatedAt()).map(LocalDateTime::toString).orElse("N/A"))
+        .build()).collect(Collectors.toList());
   }
 
   @Transactional(readOnly = true)
@@ -73,33 +67,27 @@ public class PigService {
     List<MyPig> myPigs = myPigRepository.findByWalletId(wallet.getId());
 
     // 소유한 돼지 ID와 생성 날짜를 매핑하는 맵 생성 (null 값 방지 처리)
-    Map<Long, LocalDateTime> ownedPigWithCreationDate = myPigs.stream()
-        .collect(Collectors.toMap(
-            myPig -> myPig.getPig().getId(),
-            myPig -> myPig.getCreatedAt() != null ? myPig.getCreatedAt() : LocalDateTime.now() // null 값 처리
+    Map<Long, LocalDateTime> ownedPigWithCreationDate = myPigs.stream().collect(
+        Collectors.toMap(myPig -> myPig.getPig().getId(),
+            myPig -> myPig.getCreatedAt() != null ? myPig.getCreatedAt() : LocalDateTime.now()
+            // null 값 처리
         ));
 
     // 모든 돼지 리스트 가져오기
     List<Pig> allPigs = pigRepository.findAll();
 
     // 소유한 돼지는 실제 이미지 및 createdAt, 소유하지 않은 돼지는 실루엣 이미지로 반환
-    return allPigs.stream()
-        .map(pig -> {
-          boolean isOwned = ownedPigWithCreationDate.containsKey(pig.getId());
-          String imageUrl = isOwned ? pig.getImageUrl() : pig.getSilhouetteImageUrl();
-          String createdAt = isOwned && ownedPigWithCreationDate.get(pig.getId()) != null
-              ? ownedPigWithCreationDate.get(pig.getId()).toString()
-              : null;  // 소유한 돼지의 createdAt 또는 null
+    return allPigs.stream().map(pig -> {
+      boolean isOwned = ownedPigWithCreationDate.containsKey(pig.getId());
+      String imageUrl = isOwned ? pig.getImageUrl() : pig.getSilhouetteImageUrl();
+      String createdAt = isOwned && ownedPigWithCreationDate.get(pig.getId()) != null
+          ? ownedPigWithCreationDate.get(pig.getId()).toString()
+          : null;  // 소유한 돼지의 createdAt 또는 null
 
-          return PigResponseDto.builder()
-              .pigId(pig.getId())
-              .pigName(pig.getPigName())
-              .imageUrl(imageUrl)
-              .createdAt(createdAt)  // 소유한 돼지의 createdAt을 추가
-              .description(pig.getDescription())
-              .build();
-        })
-        .collect(Collectors.toList());
+      return PigResponseDto.builder().pigId(pig.getId()).pigName(pig.getPigName())
+          .imageUrl(imageUrl).createdAt(createdAt)  // 소유한 돼지의 createdAt을 추가
+          .description(pig.getDescription()).build();
+    }).collect(Collectors.toList());
   }
 
 
@@ -109,12 +97,8 @@ public class PigService {
     Pig pig = pigRepository.findById(pigId)
         .orElseThrow(() -> new IllegalArgumentException("Pig not found with id: " + pigId));
 
-    return PigResponseDto.builder()
-        .pigId(pig.getId())
-        .imageUrl(pig.getImageUrl())
-        .pigName(pig.getPigName())
-        .description(pig.getDescription())
-        .build();
+    return PigResponseDto.builder().pigId(pig.getId()).imageUrl(pig.getImageUrl())
+        .pigName(pig.getPigName()).description(pig.getDescription()).build();
   }
 
   @Transactional
@@ -142,8 +126,7 @@ public class PigService {
     List<MyPig> existingPigsInWallet = myPigRepository.findByWalletId(walletId);
 
     // 이미 지갑에 있는 돼지 ID를 추출
-    Set<Long> existingPigIds = existingPigsInWallet.stream()
-        .map(myPig -> myPig.getPig().getId())
+    Set<Long> existingPigIds = existingPigsInWallet.stream().map(myPig -> myPig.getPig().getId())
         .collect(Collectors.toSet());
 
     // 확률 기반으로 랜덤하게 돼지를 선택하는 로직
@@ -194,7 +177,8 @@ public class PigService {
   }
 
   @Transactional
-  public String uploadPigAndSave(MultipartFile imageFile, MultipartFile silhouetteFile, String name, double probability,String description) throws IOException {
+  public String uploadPigAndSave(MultipartFile imageFile, MultipartFile silhouetteFile, String name,
+      double probability, String description) throws IOException {
     // 진짜 돼지 이미지 저장
     String imageFileUrl = fileUploadUtil.saveFile(imageFile, name + "_real");
 
@@ -202,13 +186,8 @@ public class PigService {
     String silhouetteFileUrl = fileUploadUtil.saveFile(silhouetteFile, name + "_silhouette");
 
     // Pig 엔티티 생성 및 저장
-    Pig pig = Pig.builder()
-        .imageUrl(imageFileUrl)
-        .silhouetteImageUrl(silhouetteFileUrl)
-        .pigName(name)
-        .probability(probability)
-        .description(description)
-        .build();
+    Pig pig = Pig.builder().imageUrl(imageFileUrl).silhouetteImageUrl(silhouetteFileUrl)
+        .pigName(name).probability(probability).description(description).build();
 
     pigRepository.save(pig);
 

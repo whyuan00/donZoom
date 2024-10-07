@@ -5,7 +5,6 @@ import com.example.donzoom.dto.account.request.CreateMemberDto;
 import com.example.donzoom.dto.account.request.TransactionRequestDto;
 import com.example.donzoom.dto.account.request.TransferRequestDto;
 import com.example.donzoom.dto.account.response.AccountCreateResponseDto;
-import com.example.donzoom.dto.account.response.AccountHolderResponseDto;
 import com.example.donzoom.dto.account.response.AccountResponseDto;
 import com.example.donzoom.dto.account.response.BalanceResponseDto;
 import com.example.donzoom.dto.account.response.BankUserResponseDto;
@@ -103,15 +102,14 @@ public class BankApi {
   //회원생성
   public BankUserResponseDto createMember(String userId) {
     log.info("싸피은행에 멤버를 생성하는 CREATEMEMBER");
-    log.info(userId+"userid");
+    log.info(userId + "userid");
     CreateMemberDto member = CreateMemberDto.builder().apiKey(apiKey).userId(userId).build();
 
     try {
       // 회원 생성 시도
       log.info("회원 가입 시도");
       return webClient.post().uri(createMemberUrl).bodyValue(member).retrieve()
-          .bodyToMono(BankUserResponseDto.class)
-          .block();  // 동기식으로 블록 처리
+          .bodyToMono(BankUserResponseDto.class).block();  // 동기식으로 블록 처리
 
     } catch (WebClientResponseException e) {
       // 서버에서 HTTP 상태 코드 4xx 또는 5xx로 응답한 경우 처리
@@ -121,7 +119,7 @@ public class BankApi {
           ObjectMapper objectMapper = new ObjectMapper();
           JsonNode errorJson = objectMapper.readTree(e.getResponseBodyAsString());
           String responseCode = errorJson.get("responseCode").asText();
-          
+
           if ("E4002".equals(responseCode)) {
             log.info("이미 존재하는 회원입니다.(이미 가입된 정보 return)");
             // 이미 존재하는 회원일 때 getMember를 호출하여 처리
@@ -154,13 +152,13 @@ public class BankApi {
       // 서버에서 HTTP 상태 코드 4xx 또는 5xx로 응답한 경우 처리
       if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
         // 에러 메시지를 파싱
-        try{
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode errorJson = objectMapper.readTree(e.getResponseBodyAsString());
-        String responseCode = errorJson.get("responseCode").asText();
-        log.error(responseCode);
-          }catch(Exception ne){
-            log.error(ne.getMessage());
+        try {
+          ObjectMapper objectMapper = new ObjectMapper();
+          JsonNode errorJson = objectMapper.readTree(e.getResponseBodyAsString());
+          String responseCode = errorJson.get("responseCode").asText();
+          log.error(responseCode);
+        } catch (Exception ne) {
+          log.error(ne.getMessage());
         }
       }
 
@@ -173,20 +171,20 @@ public class BankApi {
     }
   }
 
-//  //계좌번호로 계좌정보와 예금주 조회
-//  public AccountHolderResponseDto getUserAccountData(GetUserDataRequestDto dto, String userKey) {
-//    // 요청 본문 구성
-//    log.info(dto.getAccountNo());
-//    Map<String, Object> requestBody = Map.of("Header",
-//        Map.of("apiName", "inquireDemandDepositAccountHolderName", "transmissionDate", getDate(),
-//            "transmissionTime", getTime(), "institutionCode", "00100", "fintechAppNo", "001",
-//            "apiServiceCode", "inquireDemandDepositAccountHolderName", "institutionTransactionUniqueNo",
-//            generateUniqueNumber(), "apiKey", apiKey, "userKey", userKey)
-//        , "accountNo", dto.getAccountNo()
-//    );
-//    return webClient.post().uri(getUserNameUrl).bodyValue(requestBody).retrieve()
-//        .bodyToMono(AccountHolderResponseDto.class).block();
-//  }
+  //  //계좌번호로 계좌정보와 예금주 조회
+  //  public AccountHolderResponseDto getUserAccountData(GetUserDataRequestDto dto, String userKey) {
+  //    // 요청 본문 구성
+  //    log.info(dto.getAccountNo());
+  //    Map<String, Object> requestBody = Map.of("Header",
+  //        Map.of("apiName", "inquireDemandDepositAccountHolderName", "transmissionDate", getDate(),
+  //            "transmissionTime", getTime(), "institutionCode", "00100", "fintechAppNo", "001",
+  //            "apiServiceCode", "inquireDemandDepositAccountHolderName", "institutionTransactionUniqueNo",
+  //            generateUniqueNumber(), "apiKey", apiKey, "userKey", userKey)
+  //        , "accountNo", dto.getAccountNo()
+  //    );
+  //    return webClient.post().uri(getUserNameUrl).bodyValue(requestBody).retrieve()
+  //        .bodyToMono(AccountHolderResponseDto.class).block();
+  //  }
 
   //계좌 생성
   public AccountCreateResponseDto createDemandDepositAccount(String accountTypeUniqueNo,

@@ -12,7 +12,6 @@ import com.example.donzoom.util.SecurityUtil;
 import com.example.donzoom.util.TimeUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,12 +45,11 @@ public class QuizService {
 
     // 비어 있다면
     if (redisService.getList(todayQuizPrefix + username, new TypeReference<List<Long>>() {
-    }) == null
-        || redisService.getList(todayQuizPrefix + username, new TypeReference<List<Long>>() {
+    }) == null || redisService.getList(todayQuizPrefix + username, new TypeReference<List<Long>>() {
     }).isEmpty()) {
       unsolvedQuizzes = quizRepository.findUnsolvedQuizzesByUser(user.getId(), limit);
-      redisService.saveListWithTTL(todayQuizPrefix + username, unsolvedQuizzes.stream().map(
-          Quiz::getId).toList(), timeUtil.getSecondsUntilEndOfDay());
+      redisService.saveListWithTTL(todayQuizPrefix + username,
+          unsolvedQuizzes.stream().map(Quiz::getId).toList(), timeUtil.getSecondsUntilEndOfDay());
     } else {
       List<Long> list = redisService.getList(todayQuizPrefix + username,
           new TypeReference<List<Long>>() {
@@ -78,20 +76,13 @@ public class QuizService {
     // 유저가 푼 퀴즈 목록 가져오기
     List<UserQuiz> userQuizzes = userQuizRepository.findAllByUserId(user.getId())
         .orElseThrow(() -> new RuntimeException("Quiz Not Found"));
-    return userQuizzes.stream().map(uq-> UserQuizResponseDto.builder()
-        .id(uq.getQuiz().getId())
-            .quizType(uq.getQuiz().getQuizType())
-            .question(uq.getQuiz().getQuestion())
-            .answer(uq.getQuiz().getAnswer())
-            .option1(uq.getQuiz().getOption1())
-            .option2(uq.getQuiz().getOption4())
-            .option3(uq.getQuiz().getOption1())
-            .option4(uq.getQuiz().getOption1())
-            .explanations(uq.getQuiz().getExplanations())
-            .answerExplanation(uq.getQuiz().getAnswerExplanation())
-            .createdAt(uq.getCreatedAt())
-            .build())
-        .collect(Collectors.toList());
+    return userQuizzes.stream().map(uq -> UserQuizResponseDto.builder().id(uq.getQuiz().getId())
+        .quizType(uq.getQuiz().getQuizType()).question(uq.getQuiz().getQuestion())
+        .answer(uq.getQuiz().getAnswer()).option1(uq.getQuiz().getOption1())
+        .option2(uq.getQuiz().getOption4()).option3(uq.getQuiz().getOption1())
+        .option4(uq.getQuiz().getOption1()).explanations(uq.getQuiz().getExplanations())
+        .answerExplanation(uq.getQuiz().getAnswerExplanation()).createdAt(uq.getCreatedAt())
+        .build()).collect(Collectors.toList());
   }
 
   public void submitAnswer(Long quizId, QuizAnswerDto quizAnswerDto) {
@@ -109,11 +100,9 @@ public class QuizService {
     boolean isCorrect = quiz.getAnswer().equals(quizAnswerDto.getAnswer().trim());
     // 유저가 제출한 답안을 UserQuiz에 저장
     UserQuiz userQuiz = UserQuiz.builder().user(user).quiz(quiz)
-        .selectedAnswer(quizAnswerDto.getAnswer())
-        .isCorrect(isCorrect)
-        .build();
+        .selectedAnswer(quizAnswerDto.getAnswer()).isCorrect(isCorrect).build();
 
-    if(isCorrect){
+    if (isCorrect) {
       walletService.updateCoin(1);
     }
 

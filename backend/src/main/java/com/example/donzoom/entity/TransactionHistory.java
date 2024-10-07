@@ -39,20 +39,20 @@ public class TransactionHistory extends BaseEntity {
   private TransactionType transactionType;
 
   // 매수 또는 매도 가격
-  private Float price;
+  private Integer price;
 
   // 매수 또는 매도 수량
   private Integer amount;
 
   // 총 거래 금액 (단가 * 수량)
-  private Float total;
+  private Integer total;
 
   // 발생 수익
-  private Float profit;
+  private Integer profit;
 
   @Builder
-  public TransactionHistory(Wallet wallet, Stock stock, Float price, Integer amount, Float total,
-      Float profit, TransactionType transactionType) {
+  public TransactionHistory(Wallet wallet, Stock stock, Integer price, Integer amount,
+      Integer total, Integer profit, TransactionType transactionType) {
     this.wallet = wallet;
     this.stock = stock;
     this.price = price;

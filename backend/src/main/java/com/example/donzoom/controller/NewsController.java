@@ -1,8 +1,6 @@
 package com.example.donzoom.controller;
 
 import com.example.donzoom.dto.news.response.NewsResponseDto;
-import com.example.donzoom.dto.stock.request.StockRequestDto;
-import com.example.donzoom.dto.stock.response.StockResponseDto;
 import com.example.donzoom.service.NewsService;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,20 +23,21 @@ public class NewsController {
   private final NewsService newsService;
 
   @PostMapping("/{stockId}")
-  public ResponseEntity<?> addNews(@PathVariable(name = "stockId") Long stockId, @RequestBody List<NewsResponseDto> articles) {
+  public ResponseEntity<?> addNews(@PathVariable(name = "stockId") Long stockId,
+      @RequestBody List<NewsResponseDto> articles) {
     newsService.createNews(articles, stockId);
     return ResponseEntity.ok().body(articles);
   }
 
   @GetMapping("/{stockId}/today")
   public ResponseEntity<?> getTodayNewsByStockId(@PathVariable(name = "stockId") Long stockId) {
-    ArrayList<NewsResponseDto> newsList= newsService.getTodayNewsByStockId(stockId);
+    ArrayList<NewsResponseDto> newsList = newsService.getTodayNewsByStockId(stockId);
     return ResponseEntity.ok().body(newsList);
   }
 
   @GetMapping("/{stockId}")
   public ResponseEntity<?> getNewsByStockId(@PathVariable(name = "stockId") Long stockId) {
-    ArrayList<NewsResponseDto> newsList= newsService.getNewsByStockId(stockId);
+    ArrayList<NewsResponseDto> newsList = newsService.getNewsByStockId(stockId);
     return ResponseEntity.ok().body(newsList);
   }
 }

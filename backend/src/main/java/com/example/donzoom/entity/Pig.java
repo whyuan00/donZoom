@@ -32,7 +32,8 @@ public class Pig {
   private String silhouetteImageUrl;
 
   @Builder
-  public Pig(String imageUrl, String pigName, double probability,String silhouetteImageUrl,String description ){
+  public Pig(String imageUrl, String pigName, double probability, String silhouetteImageUrl,
+      String description) {
     this.imageUrl = imageUrl;
     this.pigName = pigName;
     this.probability = probability;

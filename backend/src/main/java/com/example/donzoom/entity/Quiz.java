@@ -41,7 +41,7 @@ public class Quiz extends BaseEntity {
 
   @Builder
   public Quiz(QuizType quizType, String question, String answer, String option1, String option2,
-      String option3, String option4,  String explanations, String answerExplanation) {
+      String option3, String option4, String explanations, String answerExplanation) {
     this.quizType = quizType;
     this.question = question;
     this.answer = answer;

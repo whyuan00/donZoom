@@ -17,7 +17,6 @@ import jakarta.validation.Valid;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,25 +42,18 @@ public class UserController {
   private final String accessTokenPrefix = "Bearer ";
   private final String refreshTokenPrefix = "refreshToken: ";
   private final UserRepository userRepository;
-
-  @Value("${jwt.refreshToken.expireTime}")
-  private Long refreshExpired;
-
   private final UserService userService;
   private final RedisService redisService;
   private final AuthService authService;
+  @Value("${jwt.refreshToken.expireTime}")
+  private Long refreshExpired;
 
   @GetMapping
-  public ResponseEntity<?> getCurrentUserInfo(){
+  public ResponseEntity<?> getCurrentUserInfo() {
     User loginUser = userService.findCurrentUser();
-    UserInfoResponseDto userInfoResponseDto = UserInfoResponseDto.builder()
-        .id(loginUser.getId())
-        .email(loginUser.getEmail())
-        .name(loginUser.getName())
-        .nickname(loginUser.getNickname())
-        .isParent(loginUser.getIsParent())
-        .profileImage(loginUser.getProfileImage())
-        .build();
+    UserInfoResponseDto userInfoResponseDto = UserInfoResponseDto.builder().id(loginUser.getId())
+        .email(loginUser.getEmail()).name(loginUser.getName()).nickname(loginUser.getNickname())
+        .isParent(loginUser.getIsParent()).profileImage(loginUser.getProfileImage()).build();
     return ResponseEntity.ok(userInfoResponseDto);
   }
 
@@ -131,7 +123,7 @@ public class UserController {
     log.info("GET : /api/user/update");
     try {
       userService.updateUser(file, userUpdateRequestDto);
-    }catch(Exception e) {
+    } catch (Exception e) {
       log.error(e.getMessage());
     }
     return ResponseEntity.ok().build();

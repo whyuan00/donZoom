@@ -1,15 +1,13 @@
 package com.example.donzoom.util;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import java.util.UUID;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 @Component
 public class FileUploadUtil {
@@ -45,7 +43,7 @@ public class FileUploadUtil {
     String fileExtension = getFileExtension(originalFileName);
 
     // UUID를 사용하여 고유한 파일 이름 생성
-    String uniqueFileName = UUID.randomUUID().toString() + "." + fileExtension;
+    String uniqueFileName = UUID.randomUUID() + "." + fileExtension;
 
     // 파일 경로 설정
     Path filePath = Paths.get(uploadDir, uniqueFileName);
@@ -55,7 +53,7 @@ public class FileUploadUtil {
     Files.copy(file.getInputStream(), filePath);
 
     // 저장된 파일의 전체 URL을 반환 (서버 URL + 파일 경로)
-    return serverUrl +contextPath+ "/uploads/" + uniqueFileName;
+    return serverUrl + contextPath + "/uploads/" + uniqueFileName;
   }
 
   // 파일 확장자 가져오기

@@ -8,6 +8,7 @@ import lombok.Getter;
 @Builder
 @Getter
 public class TokenRequestDto {
+
   private String refreshToken;
 
   @JsonCreator
