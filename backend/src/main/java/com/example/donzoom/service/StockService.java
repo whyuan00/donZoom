@@ -11,7 +11,7 @@ import com.example.donzoom.dto.stock.response.StockTransactionHistoryResponseDto
 import com.example.donzoom.dto.stock.response.StockTransactionHistorySimpleResponseDto;
 import com.example.donzoom.dto.stock.response.StockWalletResponseDto;
 import com.example.donzoom.dto.stock.response.StockWalletSimpleResponseDto;
-import com.example.donzoom.dto.stockhistory.response.StockHistoryResponseDto;
+import com.example.donzoom.dto.stockHistory.response.StockHistoryResponseDto;
 import com.example.donzoom.entity.News;
 import com.example.donzoom.entity.Stock;
 import com.example.donzoom.entity.StockHistory;
@@ -73,13 +73,10 @@ public class StockService {
     List<StockHistory> stockHistories = stockHistoryRepository.findByStockId(stockId);
 
     List<StockHistoryResponseDto> stockHistoryDtos = stockHistories.stream().map(
-            stockHistory -> StockHistoryResponseDto.builder().stockHistoryId(stockHistory.getId())
-                .open(stockHistory.getOpen())
-                .close(stockHistory.getClose())
-                .high(stockHistory.getHigh())
-                .low(stockHistory.getLow())
-                .createdAt(stockHistory.getCreatedAt()).build())
-        .toList();
+        stockHistory -> StockHistoryResponseDto.builder().stockHistoryId(stockHistory.getId())
+            .open(stockHistory.getOpen()).close(stockHistory.getClose())
+            .high(stockHistory.getHigh()).low(stockHistory.getLow())
+            .createdAt(stockHistory.getCreatedAt()).build()).toList();
 
     return StockResponseDto.builder().stockId(stock.getId()).stockName(stock.getStockName())
         .stockHistories(stockHistoryDtos).build();
@@ -91,11 +88,9 @@ public class StockService {
     Long walletId = getWalletId(userId);
 
     List<StockWalletResponseDto> stockWalletDtos = stockWalletRepository.findByWalletId(walletId)
-        .stream()
-        .filter(stockWallet -> {
+        .stream().filter(stockWallet -> {
           return stockWallet.getStock().getId().equals(stockId);
-        })
-        .map(stockWallet -> StockWalletResponseDto.builder().stockWallet(stockWallet).build())
+        }).map(stockWallet -> StockWalletResponseDto.builder().stockWallet(stockWallet).build())
         .toList();
 
     return StockWalletSimpleResponseDto.builder().myStocks(stockWalletDtos).build();
@@ -170,13 +165,13 @@ public class StockService {
         stockId);
 
     // 지갑 내 유동자산 비교
-    Float requiredPrice = recentPrice.getClose() * amount;
+    Integer requiredPrice = recentPrice.getClose() * amount;
     if (walletService.getCurrentUserCoin() < requiredPrice) {
       throw new RuntimeException("Not enough money");
     }
 
     // 매수에 따른 코인 차감
-    walletService.updateCoin((int)(requiredPrice*-1));
+    walletService.updateCoin(requiredPrice * -1);
 
     // 이미 보유한 주식인지 확인
     List<Long> myStockId = stockWalletRepository.findByWalletId(walletId).stream()
@@ -190,7 +185,7 @@ public class StockService {
           .orElseThrow(() -> new NoSuchElementException("Stock not found"));
 
       // 총 투자 금액과 평단가 업데이트
-      Float newTotalInvestedPrice = preStock.getTotalInvestedPrice() + requiredPrice;
+      Integer newTotalInvestedPrice = preStock.getTotalInvestedPrice() + requiredPrice;
       Integer newTotalAmount = preStock.getAmount() + amount;
 
       preStock.updateInvestment(newTotalInvestedPrice, newTotalAmount);
@@ -211,7 +206,7 @@ public class StockService {
 
     // 거래 내역 기록
     Long transactionHistoryId = createTransactionHistory(myWallet, stock, recentPrice.getClose(),
-        amount, requiredPrice, 0.0f, TransactionType.BUY);
+        amount, requiredPrice, 0, TransactionType.BUY);
 
     TransactionHistory transactionHistory = transactionHistoryRepository.findById(
         transactionHistoryId).orElseThrow();
@@ -235,7 +230,6 @@ public class StockService {
     Wallet myWallet = walletService.findCurrentWallet();
     Long walletId = myWallet.getId();
 
-
     // 주식 들고오기
     Stock stock = stockRepository.findById(stockId)
         .orElseThrow(() -> new NoSuchElementException("Stock not found"));
@@ -254,10 +248,10 @@ public class StockService {
     }
 
     // 실현 수익 계산
-    Float realizedProfit = (recentPrice.getClose() - preStock.getAveragePrice()) * amount;
+    Integer realizedProfit = (recentPrice.getClose() - preStock.getAveragePrice()) * amount;
 
     // 지갑에 실현된 금액 추가
-    walletService.updateCoin((int)(recentPrice.getClose()*amount));
+    walletService.updateCoin(recentPrice.getClose() * amount);
 
     if (preStock.getAmount().equals(amount)) {
       // 모든 주식을 매도한 경우 삭제
@@ -265,7 +259,7 @@ public class StockService {
 
     } else {
       // 남은 주식의 총 투자 금액과 수량 업데이트
-      Float remainingInvestedPrice =
+      Integer remainingInvestedPrice =
           preStock.getTotalInvestedPrice() - preStock.getAveragePrice() * amount;
       Integer remainingAmount = preStock.getAmount() - amount;
 
@@ -295,10 +289,9 @@ public class StockService {
   public Long createStockHistory(Long stockId, StockRequestDto stockRequestDto) {
     Stock stock = stockRepository.findById(stockId)
         .orElseThrow(() -> new NoSuchElementException("Stock not found"));
-    StockHistory stockHistory = StockHistory.builder().stock(stock)
-        .open(stockRequestDto.getOpen()).close(stockRequestDto.getClose())
-        .high(stockRequestDto.getHigh()).low(stockRequestDto.getLow())
-        .createdAt(stockRequestDto.getCreatedAt()).build();
+    StockHistory stockHistory = StockHistory.builder().stock(stock).open(stockRequestDto.getOpen())
+        .close(stockRequestDto.getClose()).high(stockRequestDto.getHigh())
+        .low(stockRequestDto.getLow()).createdAt(stockRequestDto.getCreatedAt()).build();
 
     stockHistoryRepository.save(stockHistory);
     return stockHistory.getId();
@@ -306,8 +299,8 @@ public class StockService {
 
   // 주식 거래내역 기록
   @Transactional
-  public Long createTransactionHistory(Wallet wallet, Stock stock, Float price, Integer amount,
-      Float total, Float profit, TransactionType transactionType) {
+  public Long createTransactionHistory(Wallet wallet, Stock stock, Integer price, Integer amount,
+      Integer total, Integer profit, TransactionType transactionType) {
 
     TransactionHistory transactionHistory = TransactionHistory.builder().wallet(wallet).stock(stock)
         .price(price).amount(amount).total(total).profit(profit).transactionType(transactionType)
@@ -330,11 +323,11 @@ public class StockService {
 
   public Long getWalletId(Long userId) {
     User loginUser = userService.findCurrentUser();
-    if(loginUser.getId().equals(userId)) {
+    if (loginUser.getId().equals(userId)) {
       return walletService.findWalletByUserId(userId).getId();
     } else {
       User user = userService.findUserById(userId);
-      if(!loginUser.isMyChild(user)) {
+      if (!loginUser.isMyChild(user)) {
         throw new NoSuchElementException("주식정보를 불러올 권한이 없습니다.");
       } else {
         return walletService.findWalletByUserId(userId).getId();

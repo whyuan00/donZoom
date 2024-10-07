@@ -74,9 +74,9 @@ public class User extends BaseEntity {
   private String deviceToken;
 
   @Builder
-  public User(User parent, String email, String pwdHash, String name, String nickname, String profileImage,
-      String userKey, Boolean isParent, String role, String provider, Wallet wallet,
-      List<AutoTransfer> autoTransfers) {
+  public User(User parent, String email, String pwdHash, String name, String nickname,
+      String profileImage, String userKey, Boolean isParent, String role, String provider,
+      Wallet wallet, List<AutoTransfer> autoTransfers) {
     this.parent = parent;
     this.email = email;
     this.pwdHash = pwdHash;
@@ -134,12 +134,15 @@ public class User extends BaseEntity {
   public void updateAccountNo(String accountNo) {
     this.accountNo = accountNo;
   }
-  
+
   // 유저 프로필이미지 업데이트
-  public void updateProfileImage(String profileImage) {this.profileImage = profileImage;}
+  public void updateProfileImage(String profileImage) {
+    this.profileImage = profileImage;
+  }
 
   // 유저 추가정보 입력
-  public void updateAdditionalInfo(String name, String nickname, String profileImage, Boolean isParent) {
+  public void updateAdditionalInfo(String name, String nickname, String profileImage,
+      Boolean isParent) {
     this.name = name;
     this.nickname = nickname;
     this.profileImage = profileImage;
@@ -147,13 +150,13 @@ public class User extends BaseEntity {
   }
 
   // 유저 결제 비밀번호 입력
-  public void updatePaymentPassword(String hashedPaymentPassword){
+  public void updatePaymentPassword(String hashedPaymentPassword) {
     this.paymentPwdHash = hashedPaymentPassword;
   }
 
   // 내 아이인지 확인
   public Boolean isMyChild(User child) {
-    if(this.children.contains(child)){
+    if (this.children.contains(child)) {
       return Boolean.TRUE;
     } else {
       return Boolean.FALSE;

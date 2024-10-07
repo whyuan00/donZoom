@@ -1,4 +1,4 @@
-package com.example.donzoom.dto.stockhistory.response;
+package com.example.donzoom.dto.stockHistory.response;
 
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -9,10 +9,10 @@ import lombok.Getter;
 public class StockHistoryResponseDto {
 
   private Long stockHistoryId;
-  private Float open;
-  private Float close;
-  private Float high;
-  private Float low;
+  private Integer open;
+  private Integer close;
+  private Integer high;
+  private Integer low;
   private LocalDateTime createdAt;
 
 }

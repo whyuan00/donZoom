@@ -4,7 +4,6 @@ import com.example.donzoom.dto.user.request.TokenRequestDto;
 import com.example.donzoom.dto.user.request.UserCreateDto;
 import com.example.donzoom.dto.user.response.LoginResponseDto;
 import com.example.donzoom.dto.user.response.UserDetailDto;
-import com.example.donzoom.entity.User;
 import com.example.donzoom.service.AuthService;
 import com.example.donzoom.service.UserService;
 import com.example.donzoom.util.JWTUtil;
@@ -44,19 +43,15 @@ public class AuthController {
   private final UserService userService;
   private final JWTUtil jwtUtil;
   private final RestTemplate restTemplate = new RestTemplate();
-
-  @Value("${google.client.id}")
-  private String googleClintId;
-
-  @Value("${spring.security.oauth2.client.provider.naver.user-info-uri}")
-  private String naverUserInfoUri;
-
-  @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}")
-  private String kakaoUserInfoUri;
-
   private final String accessTokenHeader = "Authorization";
   private final String accessTokenPrefix = "Bearer ";
   private final String refreshTokenPrefix = "refreshToken: ";
+  @Value("${google.client.id}")
+  private String googleClintId;
+  @Value("${spring.security.oauth2.client.provider.naver.user-info-uri}")
+  private String naverUserInfoUri;
+  @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}")
+  private String kakaoUserInfoUri;
 
   @PostMapping("/google")
   public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> payload,
@@ -135,7 +130,8 @@ public class AuthController {
   }
 
   @PostMapping("/kakao")
-  public ResponseEntity<?> kakaoLogin(@RequestBody Map<String, String> payload, HttpServletResponse response) {
+  public ResponseEntity<?> kakaoLogin(@RequestBody Map<String, String> payload,
+      HttpServletResponse response) {
     String accessToken = payload.get("accessToken");
 
     HttpHeaders headers = new HttpHeaders();
@@ -154,8 +150,7 @@ public class AuthController {
 
       // 데이터베이스에서 사용자 존재 여부 확인
       LoginResponseDto loginResponseDto = authService.authUser(email);
-      response.setHeader(accessTokenHeader,
-          accessTokenPrefix + loginResponseDto.getAccessToken());
+      response.setHeader(accessTokenHeader, accessTokenPrefix + loginResponseDto.getAccessToken());
 
       // Refresh Token을 바디에 설정
       response.setHeader("accessToken", loginResponseDto.getAccessToken());

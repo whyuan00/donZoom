@@ -1,12 +1,8 @@
 package com.example.donzoom.dto.quiz.response;
 
 import com.example.donzoom.constant.QuizType;
-import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +10,7 @@ import lombok.Getter;
 @Builder
 @Getter
 public class UserQuizResponseDto {
+
   private Long id;
 
   @Enumerated(EnumType.STRING)

@@ -52,7 +52,8 @@ public class UserService {
     return user.getId();
   }
 
-  public LoginResponseDto login(LoginRequestDto loginRequestDto) {log.info("로그인 요청입니다.");
+  public LoginResponseDto login(LoginRequestDto loginRequestDto) {
+    log.info("로그인 요청입니다.");
     // 인증 객체 생성 및 검증
     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
         loginRequestDto.getEmail(), loginRequestDto.getPassword());
@@ -65,7 +66,8 @@ public class UserService {
     String role = customUserDetails.getAuthorities().iterator().next().getAuthority();
 
     // Jwt토큰이 발급 전이라 이렇게 찾아와야함
-    User user = userRepository.findByEmail(email).orElseThrow(()->new IllegalArgumentException("로그인된 유저를 찾을 수 없습니다."));
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new IllegalArgumentException("로그인된 유저를 찾을 수 없습니다."));
     user.updateDeviceToken(loginRequestDto.getDeviceToken());
     userRepository.save(user);
     log.info("토큰 발급 전입니다.");
@@ -93,9 +95,10 @@ public class UserService {
     userRepository.save(user);
   }
 
-  public User findCurrentUser(){
+  public User findCurrentUser() {
     String username = SecurityUtil.getAuthenticatedUsername();
-    return userRepository.findByEmail(username).orElseThrow(()->new IllegalArgumentException("현재 로그인 된 유저를 찾을 수 없습니다."));
+    return userRepository.findByEmail(username)
+        .orElseThrow(() -> new IllegalArgumentException("현재 로그인 된 유저를 찾을 수 없습니다."));
   }
 
   public User findUserById(Long userId) {
@@ -113,7 +116,7 @@ public class UserService {
         .orElseThrow(() -> new IllegalArgumentException("해당 계좌번호의 유저를 찾을 수 없습니다."));
   }
 
-  public void updatePaymentPassword(String paymentPassword){
+  public void updatePaymentPassword(String paymentPassword) {
     User user = findCurrentUser();
     user.updatePaymentPassword(paymentPassword);
     userRepository.save(user);

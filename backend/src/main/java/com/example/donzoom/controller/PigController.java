@@ -1,9 +1,6 @@
 package com.example.donzoom.controller;
 
-import com.example.donzoom.dto.pig.request.PigRequestDto;
-import com.example.donzoom.dto.pig.request.TicketPurchaseRequestDto;
 import com.example.donzoom.dto.pig.response.PigResponseDto;
-import com.example.donzoom.entity.Pig;
 import com.example.donzoom.repository.PigRepository;
 import com.example.donzoom.service.PigService;
 import com.example.donzoom.service.WalletService;
@@ -17,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -62,8 +58,7 @@ public class PigController {
   }
 
   @PostMapping("/ticket")
-  public ResponseEntity<Void> createReport(
-      @RequestParam String amount) {
+  public ResponseEntity<Void> createReport(@RequestParam String amount) {
     try {
       walletService.buyTicket(amount);
       return new ResponseEntity<>(HttpStatus.CREATED); // 성공 상태 코드
@@ -74,8 +69,7 @@ public class PigController {
   }
 
   @PostMapping
-  public List<PigResponseDto> getRandomPigsAndAddToWallet(
-      @RequestParam String amount) {
+  public List<PigResponseDto> getRandomPigsAndAddToWallet(@RequestParam String amount) {
     return pigService.getRandomPigsAndAddToWallet(amount);
   }
 
@@ -84,12 +78,12 @@ public class PigController {
   public ResponseEntity<String> uploadFileAndSavePig(
       @RequestParam("imageFile") MultipartFile imageFile,
       @RequestParam("silhouetteFile") MultipartFile silhouetteFile,
-      @RequestParam("name") String name,
-      @RequestParam("probability") double probability,
+      @RequestParam("name") String name, @RequestParam("probability") double probability,
       @RequestParam("description") String description) {
     try {
       // PigService를 사용하여 이미지 저장 및 Pig 데이터 저장
-      String responseMessage = pigService.uploadPigAndSave(imageFile, silhouetteFile, name, probability,description);
+      String responseMessage = pigService.uploadPigAndSave(imageFile, silhouetteFile, name,
+          probability, description);
 
       return ResponseEntity.ok("돼지 저장 성공! " + responseMessage);
 

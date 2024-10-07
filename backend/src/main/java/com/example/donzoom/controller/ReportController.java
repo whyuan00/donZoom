@@ -1,8 +1,6 @@
 package com.example.donzoom.controller;
 
-import com.example.donzoom.dto.news.response.NewsResponseDto;
 import com.example.donzoom.dto.report.response.ReportResponseDto;
-import com.example.donzoom.service.NewsService;
 import com.example.donzoom.service.ReportService;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +23,8 @@ public class ReportController {
   private final ReportService reportService;
 
   @PostMapping("/{stockId}")
-  public ResponseEntity<?> addNews(@PathVariable(name = "stockId") Long stockId, @RequestBody List<ReportResponseDto> report) {
+  public ResponseEntity<?> addNews(@PathVariable(name = "stockId") Long stockId,
+      @RequestBody List<ReportResponseDto> report) {
     reportService.createReport(report, stockId);
     return ResponseEntity.ok().body(report);
   }

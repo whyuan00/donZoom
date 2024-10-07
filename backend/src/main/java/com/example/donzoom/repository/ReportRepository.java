@@ -1,6 +1,5 @@
 package com.example.donzoom.repository;
 
-import com.example.donzoom.entity.News;
 import com.example.donzoom.entity.Report;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,5 +11,6 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
   List<Report> findByStockIdOrderByCreatedAtDesc(Long stockId);
 
   // 특정 stockId로 오늘 날짜의 리포트를 조회
-  List<Report> findByStockIdAndCreatedAtBetween(Long stockId, LocalDateTime startDate, LocalDateTime endDate);
+  List<Report> findByStockIdAndCreatedAtBetween(Long stockId, LocalDateTime startDate,
+      LocalDateTime endDate);
 }

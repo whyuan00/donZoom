@@ -25,30 +25,28 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AuthService  {
+public class AuthService {
 
   private final WalletRepository walletRepository;
   private final UserService userService;
+  private final String accessTokenPrefix = "Bearer ";
+  private final String refreshTokenPrefix = "refreshToken: ";
+  private final String blackListPrefix = "blackList: ";
+  private final JWTUtil jwtUtil;
+  private final UserRepository userRepository;
+  private final OAuth2UserService oAuth2UserService;
+  private final RedisService redisService;
   @Value("${jwt.accessToken.expireTime}")
   private Long accessExpired;
   @Value("${jwt.refreshToken.expireTime}")
   private Long refreshExpired;
 
-  private final String accessTokenPrefix = "Bearer ";
-  private final String refreshTokenPrefix = "refreshToken: ";
-  private final String blackListPrefix = "blackList: ";
-
-  private final JWTUtil jwtUtil;
-  private final UserRepository userRepository;
-  private final OAuth2UserService oAuth2UserService;
-  private final RedisService redisService;
-
-  public LoginResponseDto authUser(String email){
+  public LoginResponseDto authUser(String email) {
     User user;
     // 회원가입 처리
     try {
       user = userService.findUserByEmail(email);
-    }catch(Exception e) {
+    } catch (Exception e) {
       log.info(e.getMessage());
       // 없는 유저(회원가입)
       log.info("존재하지 않는 유저입니다. 회원가입을 진행합니다");
@@ -61,11 +59,12 @@ public class AuthService  {
     log.info("로그인 성공 : JWT 토큰 발급");
     String accessToken = jwtUtil.createAccessJwt(user.getEmail(), user.getRole());
     String refreshToken = jwtUtil.createRefreshJwt(user.getEmail(), user.getRole());
-    redisService.saveObjectWithTTL(refreshTokenPrefix,refreshToken,refreshExpired);
-    return LoginResponseDto.builder().accessToken(accessToken).refreshToken(refreshToken).name(user.getName()).build();
+    redisService.saveObjectWithTTL(refreshTokenPrefix, refreshToken, refreshExpired);
+    return LoginResponseDto.builder().accessToken(accessToken).refreshToken(refreshToken)
+        .name(user.getName()).build();
   }
 
-  public Long registOauth2User(OauthUserCreateDto userCreateDto){
+  public Long registOauth2User(OauthUserCreateDto userCreateDto) {
     //이메일 중복체크
     if (userRepository.existsByEmail(userCreateDto.getEmail())) {
       throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
@@ -75,8 +74,7 @@ public class AuthService  {
     Wallet wallet = Wallet.builder().build();
     walletRepository.save(wallet);
 
-    User user = User.builder().email(userCreateDto.getEmail())
-        .wallet(wallet).build();
+    User user = User.builder().email(userCreateDto.getEmail()).wallet(wallet).build();
 
     userRepository.save(user);
     return user.getId();
@@ -100,12 +98,12 @@ public class AuthService  {
   public void logout(HttpServletRequest request, HttpServletResponse response) {
     String accessToken = extractAccessTokenFromHeader(request);
 
-    if(accessToken == null) {
+    if (accessToken == null) {
       log.info("유효한 Access Token이 없습니다.");
       return;
     }
 
-    if(jwtUtil.isExpired(accessToken)) {
+    if (jwtUtil.isExpired(accessToken)) {
       log.info("만료된 Access Token입니다. 다시 로그인해주세요.");
       return;
     }
@@ -159,7 +157,7 @@ public class AuthService  {
   private String extractAccessTokenFromHeader(HttpServletRequest request) {
     String authorizationHeader = request.getHeader("Authorization");
 
-    if(authorizationHeader != null && authorizationHeader.startsWith(accessTokenPrefix)) {
+    if (authorizationHeader != null && authorizationHeader.startsWith(accessTokenPrefix)) {
       return authorizationHeader.substring(accessTokenPrefix.length());
     }
 

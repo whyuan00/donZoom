@@ -39,13 +39,9 @@ public class MissionService {
         .orElseThrow(() -> new RuntimeException("User not found"));
 
     List<MissionResponseDto> list = missionRepository.findByUserIdAndStatus(userId, status).stream()
-        .map(mission -> MissionResponseDto.builder()
-            .missionId(mission.getId())
-            .contents(mission.getContents())
-            .reward(mission.getReward())
-            .status(mission.getStatus())
-            .dueDate(mission.getDueDate().toLocalDate())
-            .build()).toList();
+        .map(mission -> MissionResponseDto.builder().missionId(mission.getId())
+            .contents(mission.getContents()).reward(mission.getReward()).status(mission.getStatus())
+            .dueDate(mission.getDueDate().toLocalDate()).build()).toList();
 
     return list;
   }
@@ -66,13 +62,13 @@ public class MissionService {
     User user = userRepository.findByEmail(username)
         .orElseThrow(() -> new RuntimeException("User not found"));
 
-    User child = userRepository.findById(missionCreateDto.getChildId()).orElseThrow(() -> new RuntimeException("Child not found"));
+    User child = userRepository.findById(missionCreateDto.getChildId())
+        .orElseThrow(() -> new RuntimeException("Child not found"));
 
     Mission mission = Mission.builder().user(child).contents(missionCreateDto.getContents())
-        .reward(missionCreateDto.getReward()).dueDate(missionCreateDto.getDueDate().atTime(
-            LocalTime.MAX)
-        )
-        .status(MissionStatus.CREATED).build();
+        .reward(missionCreateDto.getReward())
+        .dueDate(missionCreateDto.getDueDate().atTime(LocalTime.MAX)).status(MissionStatus.CREATED)
+        .build();
     missionRepository.save(mission);
     return mission;
   }

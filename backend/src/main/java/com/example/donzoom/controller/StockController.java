@@ -71,8 +71,7 @@ public class StockController {
   // 주식종목별 보유주식 가져오기
   @GetMapping("/my/{userId}/{stockId}")
   public ResponseEntity<StockWalletSimpleResponseDto> getStock(
-      @PathVariable(name = "userId") Long userId, @PathVariable(name = "stockId") Long stockId
-  ) {
+      @PathVariable(name = "userId") Long userId, @PathVariable(name = "stockId") Long stockId) {
     StockWalletSimpleResponseDto stock = stockService.getStock(userId, stockId);
     return ResponseEntity.ok().body(stock);
   }
@@ -81,16 +80,17 @@ public class StockController {
   @GetMapping("/myhistory/{userId}")
   public ResponseEntity<StockTransactionHistorySimpleResponseDto> getMyTransactionHistory(
       @PathVariable(name = "userId") Long userId) {
-    StockTransactionHistorySimpleResponseDto allMyHistories = stockService.getAllTransaction(userId);
+    StockTransactionHistorySimpleResponseDto allMyHistories = stockService.getAllTransaction(
+        userId);
     return ResponseEntity.ok().body(allMyHistories);
   }
 
   // 종목별 거래내역 가져오기
   @GetMapping("/myhistory/{stockId}/{userId}")
   public ResponseEntity<StockTransactionHistorySimpleResponseDto> getMyTransactionHistoryByStockId(
-      @PathVariable(name = "stockId") Long stockId,
-      @PathVariable(name = "userId") Long userId) {
-    StockTransactionHistorySimpleResponseDto historiesByStockId = stockService.getTransaction(stockId, userId);
+      @PathVariable(name = "stockId") Long stockId, @PathVariable(name = "userId") Long userId) {
+    StockTransactionHistorySimpleResponseDto historiesByStockId = stockService.getTransaction(
+        stockId, userId);
     return ResponseEntity.ok().body(historiesByStockId);
   }
 

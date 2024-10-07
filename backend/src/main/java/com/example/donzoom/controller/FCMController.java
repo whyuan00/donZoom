@@ -22,10 +22,8 @@ public class FCMController {
   }
 
   @PostMapping("/send")
-  public ResponseEntity<String> sendNotification(
-      @RequestParam String token,
-      @RequestParam String title,
-      @RequestParam String body) {
+  public ResponseEntity<String> sendNotification(@RequestParam String token,
+      @RequestParam String title, @RequestParam String body) {
 
     try {
       // FCM 서비스 호출

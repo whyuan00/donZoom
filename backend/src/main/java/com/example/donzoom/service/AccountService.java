@@ -1,6 +1,5 @@
 package com.example.donzoom.service;
 
-import com.example.donzoom.config.PasswordConfig;
 import com.example.donzoom.dto.account.request.AutoTransferRequestDto;
 import com.example.donzoom.dto.account.request.AutoTransferUpdateRequestDto;
 import com.example.donzoom.dto.account.request.CreateAccountRequestDto;
@@ -26,7 +25,6 @@ import com.example.donzoom.exception.NoUserKeyException;
 import com.example.donzoom.external.BankApi;
 import com.example.donzoom.repository.AutoTransferRepository;
 import com.example.donzoom.repository.UserRepository;
-import com.example.donzoom.util.SecurityUtil;
 import com.example.donzoom.util.StoreMappingUtil;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +43,8 @@ public class AccountService {
 
   @Autowired
   public AccountService(BankApi bankApi, UserRepository userRepository,
-      AutoTransferRepository autoTransferRepository, UserService userService, PasswordService passwordService) {
+      AutoTransferRepository autoTransferRepository, UserService userService,
+      PasswordService passwordService) {
     this.bankApi = bankApi;
     this.userRepository = userRepository;
     this.autoTransferRepository = autoTransferRepository;
@@ -75,7 +74,8 @@ public class AccountService {
   }
 
   //계좌 생성
-  public AccountCreateResponseDto createDemandDepositAccount(CreateAccountRequestDto createAccountRequestDto) {
+  public AccountCreateResponseDto createDemandDepositAccount(
+      CreateAccountRequestDto createAccountRequestDto) {
     String accountTypeUniqueNo = "001-1-ffa4253081d540"; //우리가 생성해야함.
 
     //유저정보 가져오기
@@ -88,9 +88,11 @@ public class AccountService {
     }
     log.info(user.toString());
     // 계좌 비밀번호 설정
-    user.updatePaymentPassword(passwordService.encode(createAccountRequestDto.getPaymentPassword()));
+    user.updatePaymentPassword(
+        passwordService.encode(createAccountRequestDto.getPaymentPassword()));
 
-    AccountCreateResponseDto accountCreateResponseDto =  bankApi.createDemandDepositAccount(accountTypeUniqueNo, user.getUserKey());
+    AccountCreateResponseDto accountCreateResponseDto = bankApi.createDemandDepositAccount(
+        accountTypeUniqueNo, user.getUserKey());
 
     //user에 계좌번호 저장
     user.updateAccountNo(accountCreateResponseDto.getREC().getAccountNo());
@@ -153,11 +155,8 @@ public class AccountService {
     //유저정보 가져오기
     User selectedUser = userService.findUserByAccountNo(accountNo);
 
-    return GetUserByAccountNoResponseDto.builder()
-        .name(selectedUser.getName())
-        .nickName(selectedUser.getNickname())
-        .accountNo(selectedUser.getAccountNo())
-        .build();
+    return GetUserByAccountNoResponseDto.builder().name(selectedUser.getName())
+        .nickName(selectedUser.getNickname()).accountNo(selectedUser.getAccountNo()).build();
   }
 
   public void setAutoTransfer(AutoTransferRequestDto autoTransferRequestDto) {
@@ -169,8 +168,7 @@ public class AccountService {
         .withdrawalAccountNo(autoTransferRequestDto.getWithdrawalAccountNo())
         .depositAccountNo(autoTransferRequestDto.getDepositAccountNo())
         .transactionBalance(autoTransferRequestDto.getTransactionBalance())
-        .transferDate(autoTransferRequestDto.getTransferDate()).userKey(user.getUserKey())
-        .build();
+        .transferDate(autoTransferRequestDto.getTransferDate()).userKey(user.getUserKey()).build();
 
     // AutoTransfer를 저장하기 전에 User의 autoTransfers에 추가
     user.getAutoTransfers().add(autoTransfer);
@@ -192,7 +190,7 @@ public class AccountService {
     AutoTransfer autoTransfer = autoTransferRepository.findByWithdrawalAccountNoAndDepositAccountNo(
             updateRequestDto.getWithdrawalAccountNo(), updateRequestDto.getDepositAccountNo())
         .orElseThrow(() -> new RuntimeException("AutoTransfer not found"));
-    
+
     // 자동이체 정보 수정
     if (updateRequestDto.getTransactionBalance() != null) {
       autoTransfer.updateTransactionBalance(updateRequestDto.getTransactionBalance());
@@ -268,14 +266,16 @@ public class AccountService {
         .orElseThrow(() -> new IllegalArgumentException("해당 카드 번호에 해당하는 계좌가 없습니다."));  // 없으면 예외 발생
   }
 
-  public boolean validatePassword(ValidatePaymentPasswordRequestDto validatePaymentPasswordRequestDto){
+  public boolean validatePassword(
+      ValidatePaymentPasswordRequestDto validatePaymentPasswordRequestDto) {
     User user = userService.findCurrentUser();
-    return passwordService.matches(validatePaymentPasswordRequestDto.getPaymentPassword(),user.getPaymentPwdHash());
+    return passwordService.matches(validatePaymentPasswordRequestDto.getPaymentPassword(),
+        user.getPaymentPwdHash());
   }
 
-  private String getCurrentUserKey(){
+  private String getCurrentUserKey() {
     User user = userService.findCurrentUser();
-    if(user.getUserKey()==null){
+    if (user.getUserKey() == null) {
       throw new NoUserKeyException("은행(싸피)에 가입하지 않은 유저입니다. 은행 서비스 이용 전 가입을 먼저 해주세요");
     }
     return user.getUserKey();

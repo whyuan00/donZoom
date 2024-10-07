@@ -1,11 +1,9 @@
 package com.example.donzoom.service;
 
-import com.example.donzoom.dto.pig.request.TicketPurchaseRequestDto;
 import com.example.donzoom.entity.User;
 import com.example.donzoom.entity.Wallet;
 import com.example.donzoom.repository.UserRepository;
 import com.example.donzoom.repository.WalletRepository;
-import com.example.donzoom.util.SecurityUtil;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
