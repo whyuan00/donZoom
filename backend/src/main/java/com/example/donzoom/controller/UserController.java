@@ -1,9 +1,12 @@
 package com.example.donzoom.controller;
 
+import com.example.donzoom.dto.user.request.ChildRequest;
 import com.example.donzoom.dto.user.request.LoginRequestDto;
 import com.example.donzoom.dto.user.request.UserCreateDto;
 import com.example.donzoom.dto.user.request.UserUpdateRequestDto;
+import com.example.donzoom.dto.user.response.ChildInfoResponseDto;
 import com.example.donzoom.dto.user.response.LoginResponseDto;
+import com.example.donzoom.dto.user.response.ParentInfoResponseDto;
 import com.example.donzoom.dto.user.response.UserInfoResponseDto;
 import com.example.donzoom.entity.User;
 import com.example.donzoom.exception.DuplicateEmailException;
@@ -14,9 +17,12 @@ import com.example.donzoom.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,18 +48,35 @@ public class UserController {
   private final String accessTokenPrefix = "Bearer ";
   private final String refreshTokenPrefix = "refreshToken: ";
   private final UserRepository userRepository;
-  private final UserService userService;
-  private final RedisService redisService;
-  private final AuthService authService;
+
   @Value("${jwt.refreshToken.expireTime}")
   private Long refreshExpired;
 
+  private final UserService userService;
+  private final RedisService redisService;
+  private final AuthService authService;
+
   @GetMapping
-  public ResponseEntity<?> getCurrentUserInfo() {
+  public ResponseEntity<?> getCurrentUserInfo(){
     User loginUser = userService.findCurrentUser();
-    UserInfoResponseDto userInfoResponseDto = UserInfoResponseDto.builder().id(loginUser.getId())
-        .email(loginUser.getEmail()).name(loginUser.getName()).nickname(loginUser.getNickname())
-        .isParent(loginUser.getIsParent()).profileImage(loginUser.getProfileImage()).build();
+    List<ChildInfoResponseDto> childrenDtos = loginUser.getChildren().stream()
+        .map(child -> ChildInfoResponseDto.builder()
+            .id(child.getId())
+            .email(child.getEmail())
+            .name(child.getName())
+            .nickname(child.getNickname())
+            .build())
+        .collect(Collectors.toList());
+
+    UserInfoResponseDto userInfoResponseDto = UserInfoResponseDto.builder()
+        .id(loginUser.getId())
+        .email(loginUser.getEmail())
+        .name(loginUser.getName())
+        .nickname(loginUser.getNickname())
+        .isParent(loginUser.getIsParent())
+        .profileImage(loginUser.getProfileImage())
+        .children(childrenDtos)
+        .build();
     return ResponseEntity.ok(userInfoResponseDto);
   }
 
@@ -123,9 +146,32 @@ public class UserController {
     log.info("GET : /api/user/update");
     try {
       userService.updateUser(file, userUpdateRequestDto);
-    } catch (Exception e) {
+    }catch(Exception e) {
       log.error(e.getMessage());
     }
     return ResponseEntity.ok().build();
+  }
+
+  @PostMapping("/child-add")
+  public ResponseEntity<?> addChild(@RequestBody ChildRequest request) {
+    String result = userService.addChild(request.getChildEmail());
+    return ResponseEntity.ok(result);
+  }
+
+  @GetMapping("/parent-info")
+  public ResponseEntity<?> getParentInfo() {
+    ParentInfoResponseDto parent = userService.getParentInfo();
+    if (parent != null) {
+      return ResponseEntity.ok(parent);
+    } else {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("부모 정보가 없습니다.");
+    }
+  }
+
+  //아이 로그인 상태에서 부모와 연관관계설정.
+  @PostMapping("/set-relationship")
+  public ResponseEntity<?> setParentChildRelationship() {
+    userService.setParentChildRelationship2();
+    return ResponseEntity.ok("부모-아이 관계가 설정되었습니다.");
   }
 }

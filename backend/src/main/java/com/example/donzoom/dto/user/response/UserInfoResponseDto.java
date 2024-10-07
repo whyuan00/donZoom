@@ -18,8 +18,8 @@ public class UserInfoResponseDto {
   private String profileImage;
   private Boolean isParent;
 
-  private User parent;
-  private List<User> children;
+  private ParentInfoResponseDto parent;
+  private List<ChildInfoResponseDto> children;
 
   private Wallet wallet;
   private Long dailyLimit;             // 1일 결제 한도
