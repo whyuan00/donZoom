@@ -47,8 +47,8 @@ const UnsafeAssetChartTabScreen = ({navigation, selectedStock}: any) => {
     <View style={styles.container}>
       {
         <View style={{width: 350, height: 330, borderWidth: 1}}>
-          <Text style={styles.text}>{selectedPeriod}</Text>
-          <Text style={styles.text}>{selectedStock}</Text>
+          {/* <Text style={styles.text}>{selectedPeriod}</Text> */}
+          {/* <Text style={styles.text}>{selectedStock}</Text> */}
           {/* <Text style={styles.text}>hi unsafe UnsafeAssetChartTabScreen</Text> */}
           <CandlestickChartComponent data={data} />
         </View>
