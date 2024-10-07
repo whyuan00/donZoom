@@ -46,9 +46,11 @@ public class JWTFilter extends OncePerRequestFilter {
     if (path.matches("^/api/stock/\\d+$")) {
       return true;  // 이 경로는 JWT 검사를 제외
     }
-    if (path.startsWith("/api/websocket/")) {
-      return true;
+
+    if (path.matches("^/api/websocket.*$")) {
+      return true; // 이 경로는 JWT 검사를 제외
     }
+
 
     // POST 요청인 경우 회원가입은 필터 제외
     if (path.equals("/api/user") && method.equals("POST")) {
