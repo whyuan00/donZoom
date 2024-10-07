@@ -17,6 +17,7 @@ import com.example.donzoom.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -154,18 +155,27 @@ public class UserController {
 
   @PostMapping("/child-add")
   public ResponseEntity<?> addChild(@RequestBody ChildRequest request) {
-    String result = userService.addChild(request.getChildEmail());
-    return ResponseEntity.ok(result);
+    List<String> childEmails = request.getChildEmails();
+    List<String> results = new ArrayList<>();
+
+    for (String childEmail : childEmails) {
+      String result = userService.addChild(childEmail);
+      results.add(result);
+    }
+
+    return ResponseEntity.ok(results);
   }
+
 
   @GetMapping("/parent-info")
   public ResponseEntity<?> getParentInfo() {
-    ParentInfoResponseDto parent = userService.getParentInfo();
-    if (parent != null) {
-      return ResponseEntity.ok(parent);
-    } else {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("부모 정보가 없습니다.");
+    Object response = userService.getParentInfo();
+    if (response instanceof ParentInfoResponseDto) {
+      return ResponseEntity.ok(response);
+    } else if (response instanceof String) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("알 수 없는 오류가 발생했습니다.");
   }
 
   //아이 로그인 상태에서 부모와 연관관계설정.
