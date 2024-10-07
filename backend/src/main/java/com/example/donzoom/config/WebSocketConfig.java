@@ -33,7 +33,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     registry.addEndpoint("/websocket")
         .setAllowedOrigins("https://j11a108.p.ssafy.io", "https://localhost:5500",
             "https://127.0.0.1:5500", "http://127.0.0.1:5500",
-            "http://localhost:5500")  // 여기에 허용할 도메인 추가
+            "http://localhost:5500", "wss://j11a108.p.ssafy.io:433", "ws://j11a108.p.ssafy.io:8081")  // 여기에 허용할 도메인 추가
         .setAllowedOrigins("*")
         .withSockJS(); // 클라이언트가 웹소켓 연결에 사용할 엔드포인트
     // withSockJs => 소켓 지원하지 않는곳에서도 사용하게금 설정 (우리 프로젝트는 아마 필요 없음)
