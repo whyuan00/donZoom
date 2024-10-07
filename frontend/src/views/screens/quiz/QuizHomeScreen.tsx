@@ -65,15 +65,12 @@ function QuizHomeScreen({navigation}: any) {
     }
   }, [solvedQuizMutation.data]);
 
-  const startTodayQuiz = () => {
-    const quizes = todayQuizMutation.data;
-    const transformedQuizes = transformQuizData(quizes);
-    setQuizData(transformedQuizes);
-    setTodaysQuizQuestions(transformedQuizes, quizes[0].quiz_id);
-
-    console.log("quizData: ",quizData);
-
-    if (quizData.length > 0) {
+  const startTodayQuiz = async () => {
+    const {data: quizes} = await todayQuizMutation.refetch();
+    if (quizes && quizes.length > 0) {
+      const transformedQuizes = transformQuizData(quizes);
+      setQuizData(transformedQuizes);
+      setTodaysQuizQuestions(transformedQuizes, quizes[0].quiz_id);
       navigation.navigate('오늘의 퀴즈');
     } else {
       setIsModalVisible(true);
