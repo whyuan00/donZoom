@@ -26,7 +26,7 @@ const InvestTradeScreen = ({route, navigation}: any) => {
   const [stockMessage, setStockMessage] = useState<string>('');
   const {useGetStock} = useStock();
 
-  useWebSocket(message => {
+  useWebSocket([5],message => {
     setStockMessage(message);
   });
 

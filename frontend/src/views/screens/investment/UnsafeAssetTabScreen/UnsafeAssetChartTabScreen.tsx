@@ -10,14 +10,21 @@ import {
 } from 'react-native';
 import CandlestickChartComponent, {CandleData} from '../CandleChart';
 import useStock from '@/hooks/queries/useStock';
+import useWebSocket from '@/hooks/useWebSocket';
 
 const UnsafeAssetChartTabScreen = ({navigation, selectedStock}: any) => {
   const {useGetStock} = useStock();
+  const [stockMessage, setStockMessage] = useState<string>('');
   const [selectedPeriod, setSelectedPeriod] = useState<string>('1일'); // 기본 기간 선택
   const handlePeriodChange = (period: string) => {
     setSelectedPeriod(period);
   };
 
+  useWebSocket([4],message => {
+    setStockMessage(message);
+  });
+
+  
   console.log(useGetStock(4).data);
 
   const data: CandleData[] = [
