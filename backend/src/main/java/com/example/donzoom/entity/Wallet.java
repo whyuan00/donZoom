@@ -54,4 +54,8 @@ public class Wallet {
   public void updateTicket(Integer ticket) {
     this.ticket = ticket;
   }
+
+  public void updateUser(User user) {
+    this.user = user;
+  }
 }
