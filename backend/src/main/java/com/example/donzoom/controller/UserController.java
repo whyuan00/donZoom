@@ -201,16 +201,11 @@ public class UserController {
     log.info("token : {}", token);
 
     // 자동 로그인(Security Context)
-    authService.autoLogin(token);
-
-    Map<String, String> tokenMap = authService.refreshAccessToken(token);
+    Map<String, String> tokenMap = authService.autoLogin(token);
 
     // Access Token을 헤더에 설정
     response.setHeader(accessTokenHeader, accessTokenPrefix + tokenMap.get("accessToken"));
 
-    // Refresh Token을 바디에 설정
-    Map<String, String> refreshToken = Map.of("refreshToken", tokenMap.get("refreshToken"));
-
-    return ResponseEntity.ok(refreshToken);
+    return ResponseEntity.ok(tokenMap);
   }
 }

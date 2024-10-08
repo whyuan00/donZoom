@@ -239,7 +239,7 @@ public class AuthService {
     return Map.of("accessToken", newAccessToken, "refreshToken", newRefreshToken);
   }
 
-  public void autoLogin(String refreshToken) {
+  public Map<String, String> autoLogin(String refreshToken) {
     // 1. JWT에서 사용자 정보 추출
     log.info("로그인 요청입니다.");
     String username = jwtUtil.getUsername(refreshToken); // JWT에서 사용자 정보 추출
@@ -248,21 +248,11 @@ public class AuthService {
     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, null);
     log.info("인증 객체를 생성했습니다.");
 
-//    // 3. 인증 처리 (AuthenticationManager 사용)
-//    Authentication authentication = authenticationManager.authenticate(authToken);
-//    log.info("인증 과정을 완료했습니다.");
-
     // 4. SecurityContext에 인증 정보 저장
     SecurityContextHolder.getContext().setAuthentication(authToken);
     log.info("SecurityContext에 인증 정보를 설정했습니다.");
 
-//    // 이후 추가적인 사용자 정보 활용 가능
-//    CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-//    log.info("커스텀 디테일을 생성했습니다.");
-//    String email = customUserDetails.getUsername();
-//    String role = customUserDetails.getAuthorities().iterator().next().getAuthority();
-
-//    log.info("사용자 이메일: {}, 역할: {}", email, role);
+    return refreshAccessToken(refreshToken);
   }
 
 
