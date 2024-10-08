@@ -56,10 +56,11 @@ function DrawMachineScreen({}) {
   useEffect(() => {
     if (getAllPigMutation.isSuccess && getAllPigMutation.data) {
       setPigs(getAllPigMutation.data);
-      // console.log('전체 돼지 가져오기: ', getAllPigMutation.data);
     }
 
-    setMyTicket(getMyTicketMutation.data.ticket);
+    const ticketData = getMyTicketMutation.data?.ticket || 0;
+    setMyTicket(ticketData);
+    console.log('내 티켓 가져오기: ', ticketData);
   }, [getAllPigMutation.data, getMyTicketMutation.data, setPigs, setMyTicket]);
 
   // 1회 뽑기
