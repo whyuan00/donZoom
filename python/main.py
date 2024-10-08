@@ -369,7 +369,7 @@ async def lifespan(app: FastAPI):
     scheduler.shutdown()
     print("스케줄러가 종료되었습니다.")
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(root_path="/fastapi",lifespan=lifespan)
 
 @app.get("/")
 def read_root():
