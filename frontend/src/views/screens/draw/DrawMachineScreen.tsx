@@ -482,6 +482,7 @@ const styles = StyleSheet.create({
     fontFamily: 'GmarketSansTTFMedium',
     fontSize: 14,
     lineHeight: 20,
+    textAlign: 'justify',
   },
 });
 
