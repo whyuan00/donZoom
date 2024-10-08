@@ -4,6 +4,7 @@ import com.example.donzoom.entity.User;
 import com.example.donzoom.entity.Wallet;
 import com.example.donzoom.repository.UserRepository;
 import com.example.donzoom.repository.WalletRepository;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ public class WalletService {
   private final WalletRepository walletRepository;
   private final UserRepository userRepository;
   private final UserService userService;
+  private final FCMService fcmService;
   @Value("${ticketPrice}")
   private int ticketPrice;
 
@@ -39,6 +41,14 @@ public class WalletService {
   public void updateCoin(Integer amount) {
     Wallet wallet = findCurrentWallet();
     wallet.updateCoin(wallet.getCoin() + amount);
+    if(amount > 0){
+      User user = userService.findCurrentUser();
+      try {
+        fcmService.sendNotification(user.getDeviceToken(),"코인획득","먹고 가라");
+      } catch (FirebaseMessagingException e) {
+        log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
+      }
+    }
   }
 
   //가상머니로 돼지뽑기권 구매하기

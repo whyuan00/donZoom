@@ -9,6 +9,7 @@ import com.example.donzoom.entity.User;
 import com.example.donzoom.repository.MissionRepository;
 import com.example.donzoom.repository.UserRepository;
 import com.example.donzoom.util.SecurityUtil;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +21,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MissionService {
 
+  private final FCMService fcmService;
   private static final Logger log = LoggerFactory.getLogger(MissionService.class);
   private final MissionRepository missionRepository;
   private final UserRepository userRepository;
+  private final UserService userService;
+
 
   public List<MissionResponseDto> getUserMissions(Long userId, MissionStatus status) {
     // 현재 사용자의 미션 가져오기
@@ -56,12 +60,6 @@ public class MissionService {
 
   public Mission createMission(MissionCreateDto missionCreateDto) {
 
-    // 현재 인증된 사용자 정보 가져오기
-    String username = SecurityUtil.getAuthenticatedUsername();
-    // 사용자 정보 (예: PK) 가져오기
-    User user = userRepository.findByEmail(username)
-        .orElseThrow(() -> new RuntimeException("User not found"));
-
     User child = userRepository.findById(missionCreateDto.getChildId())
         .orElseThrow(() -> new RuntimeException("Child not found"));
 
@@ -70,6 +68,11 @@ public class MissionService {
         .dueDate(missionCreateDto.getDueDate().atTime(LocalTime.MAX)).status(MissionStatus.CREATED)
         .build();
     missionRepository.save(mission);
+    try {
+      fcmService.sendNotification(child.getDeviceToken(),"미션생성","미션...만듬...");
+    } catch (FirebaseMessagingException e) {
+      log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
+    }
     return mission;
   }
 
