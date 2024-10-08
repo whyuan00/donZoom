@@ -1,4 +1,4 @@
-import React, {useCallback, useState, useEffect} from 'react';
+import React, {useCallback, useState, useMemo} from 'react';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -10,37 +10,38 @@ import {
   Image,
   ScrollView,
 } from 'react-native';
-import axiosInstance from '@/api/axios';
+import useStock from '@/hooks/queries/useStock';
+import {ResponseNews} from '@/api/stock';
 
-interface News {
-  newsId: number;
-  title: string;
-  contents: string;
-  createdAt: string;
-  source: string;
-}
 
 const RealAssetPastNewsScreen = () => {
-  const [newsData, setNewsData] = useState<News[]>([]);
   const [sortedByCreatedAt, setSortedByCreatedAt] = useState(true);
+  const {useGetNews} = useStock();
+  const {data: newsData = [] as ResponseNews, isLoading, error} = useGetNews(5);
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const response = await axiosInstance.get(`/news/5`);
-        const news = response.data;
-        setNewsData(news);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getData();
-  },[]);
+  const sortedNews = useMemo(() => {
+    if (newsData.length >= 1)
+      return sortedByCreatedAt ? [...newsData] : [...newsData].reverse();
+  }, [newsData, sortedByCreatedAt]);
 
- const switchSortOrder = () => {
-   setNewsData(prevData => [...prevData].reverse());
-   setSortedByCreatedAt(prev => !prev);
- };
+  const switchSortOrder = () => {
+    setSortedByCreatedAt(prev => !prev);
+  };
+
+  // 날짜 형식 바꾸기
+  // date를 YYYY.MM.DD로 포맷팅
+  const formatDate = (dateStr: Date) => {
+    return new Date(dateStr).toISOString().slice(0, 10).replaceAll('-', '.');
+  };
+
+  if (newsData.length<1){
+    return (
+      <View style={styles.container}>
+        <Text style={{marginTop:30,textAlign:'center'}}> 뉴스가 없습니다</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -59,20 +60,22 @@ const RealAssetPastNewsScreen = () => {
         )}
       </TouchableOpacity>
       <ScrollView>
-        {newsData.map(news => (
-          <TouchableOpacity key={news.newsId} style={styles.newsContainer}>
-            <View style={{flex: 0.8, marginRight: 15}}>
-              <Text style={styles.headText}>{news.title}</Text>
-              <Text style={styles.sourceText}>
-                {news.createdAt.slice(0, 20).replaceAll('-', '.')} ·{' '}
-                {news.source}
-              </Text>
-            </View>
-            <Image
-              style={styles.image}
-              source={require('@/assets/gold.png')}></Image>
-          </TouchableOpacity>
-        ))}
+        {newsData.length >= 1 &&
+          sortedNews?.map(news => (
+            <TouchableOpacity key={news.Id} style={styles.newsContainer}>
+              <View style={{flex: 0.8, marginRight: 15}}>
+                <Text style={styles.headText}>{news.title}</Text>
+                <Text style={styles.sourceText}>
+                  {formatDate(news.createdAt)} 
+                  {' '}
+                  {news.source}
+                </Text>
+              </View>
+              <Image
+                style={styles.image}
+                source={require('@/assets/gold.png')}></Image>
+            </TouchableOpacity>
+          ))}
       </ScrollView>
     </View>
   );
@@ -86,13 +89,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.WHITE,
   },
   buttonContainer: {
-    marginTop:20,
-    marginLeft:30,
+    marginTop: 20,
+    marginLeft: 30,
     flexDirection: 'row',
     alignItems: 'center',
   },
-  buttonText:{
-    fontFamily:fonts.BOLD,
+  buttonText: {
+    fontFamily: fonts.BOLD,
   },
   newsContainer: {
     flexDirection: 'row',
@@ -103,7 +106,7 @@ const styles = StyleSheet.create({
   },
   headText: {
     fontFamily: fonts.MEDIUM,
-    color:colors.BLACK,
+    color: colors.BLACK,
     fontSize: 16,
   },
   sourceText: {

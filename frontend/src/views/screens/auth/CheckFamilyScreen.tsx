@@ -18,7 +18,7 @@ function CheckFamilyScreen({navigation}: any) {
       </View>
       <View style={styles.optionContainer}>
         <TouchableOpacity
-          style={[styles.option, role === '아이' && styles.selectedOption]}
+          style={[styles.option, role === '아이' && styles.selectedOptionChild]}
           onPress={() => setRole('아이')}>
           <View
             style={[
@@ -32,7 +32,7 @@ function CheckFamilyScreen({navigation}: any) {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.option, role === '부모' && styles.selectedOption]}
+          style={[styles.option, role === '부모' && styles.selectedOptionParent]}
           onPress={() => setRole('부모')}>
           <View
             style={[
@@ -49,6 +49,7 @@ function CheckFamilyScreen({navigation}: any) {
         <CustomButton
           label="다음으로"
           variant="auth"
+          role={role}
           onPress={() => navigation.navigate('닉네임 설정')}
         />
       </View>
@@ -96,7 +97,10 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 40,
   },
-  selectedOption: {
+  selectedOptionChild: {
+    borderColor: colors.YELLOW_100,
+  },
+  selectedOptionParent: {
     borderColor: colors.BLUE_100,
   },
   radio: {

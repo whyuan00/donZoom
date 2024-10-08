@@ -14,7 +14,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 
-const InvestTabNavigator = ({selectedAssetType}: any) => {
+const InvestRealAssetTabNavigator = ({selectedAssetType}: any) => {
   const Tab = createMaterialTopTabNavigator();
 
   return (
@@ -45,7 +45,7 @@ const InvestTabNavigator = ({selectedAssetType}: any) => {
   );
 };
 
-export default InvestTabNavigator;
+export default InvestRealAssetTabNavigator;
 
 const styles = StyleSheet.create({
   tabNavigator: {

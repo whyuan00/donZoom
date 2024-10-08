@@ -1,5 +1,4 @@
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import UnsafeAssetChartTabScreen from '@/views/screens/investment/UnsafeAssetTabScreen/UnsafeAssetChartTabScreen';
 import UnsafeChartTabScreen from '@/views/screens/investment/UnsafeAssetTabScreen/UnsafeAssetChartTabScreen';
 import UnsafeNewsTabScreen from '@/views/screens/investment/UnsafeAssetTabScreen/UnsafeAssetNewsTabScreen';
 import UnsafeReportTabScreen from '@/views/screens/investment/UnsafeAssetTabScreen/UnsafeAssetReportTabScreen';
@@ -7,7 +6,7 @@ import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 import {StyleSheet} from 'react-native';
 
-const InvestTabNavigator = ({selectedStock}: any) => {
+const InvestUnsafeAssetTabNavigator = ({selectedStock}: any) => {
   const Tab = createMaterialTopTabNavigator();
 
   return (
@@ -42,7 +41,7 @@ const InvestTabNavigator = ({selectedStock}: any) => {
   );
 };
 
-export default InvestTabNavigator;
+export default InvestUnsafeAssetTabNavigator;
 
 const styles = StyleSheet.create({
   tabNavigator: {
