@@ -16,6 +16,7 @@ import com.example.donzoom.entity.News;
 import com.example.donzoom.entity.Stock;
 import com.example.donzoom.entity.StockHistory;
 import com.example.donzoom.entity.StockHistory1d;
+import com.example.donzoom.entity.StockHistory1m;
 import com.example.donzoom.entity.StockHistory1mo;
 import com.example.donzoom.entity.StockHistory1wk;
 import com.example.donzoom.entity.StockWallet;
@@ -24,14 +25,13 @@ import com.example.donzoom.entity.User;
 import com.example.donzoom.entity.Wallet;
 import com.example.donzoom.repository.NewsRepository;
 import com.example.donzoom.repository.StockHistory1dRepository;
+import com.example.donzoom.repository.StockHistory1mRepository;
 import com.example.donzoom.repository.StockHistory1moRepository;
 import com.example.donzoom.repository.StockHistory1wkRepository;
-import com.example.donzoom.repository.StockHistoryRepository;
 import com.example.donzoom.repository.StockRepository;
 import com.example.donzoom.repository.StockWalletRepository;
 import com.example.donzoom.repository.TransactionHistoryRepository;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +46,6 @@ public class StockService {
 
   private final NewsRepository newsRepository;
   private final StockWalletRepository stockWalletRepository;
-  private final StockHistoryRepository stockHistoryRepository;
   private final StockRepository stockRepository;
   private final TransactionHistoryRepository transactionHistoryRepository;
   private final WalletService walletService;
@@ -54,6 +53,7 @@ public class StockService {
   private final StockHistory1dRepository stockHistory1dRepository;
   private final StockHistory1wkRepository stockHistory1wkRepository;
   private final StockHistory1moRepository stockHistory1moRepository;
+  private final StockHistory1mRepository stockHistory1mRepository;
 
   // 주식 전종목 조회
   @Transactional(readOnly = true)
@@ -62,7 +62,7 @@ public class StockService {
     log.info("getAllStocks: {}", stockIds);
 
     List<StockDetailResponseDto> stockDtos = stockIds.stream().map(stockId -> {
-      StockHistory stockHistory = stockHistoryRepository.findTop1ByStockIdOrderByCreatedAtDesc(
+      StockHistory stockHistory = stockHistory1mRepository.findTop1ByStockIdOrderByCreatedAtDesc(
           stockId);
       Stock stock = stockRepository.findById(stockId).orElseThrow(); // 필요시 예외 처리
 
@@ -82,7 +82,7 @@ public class StockService {
     Stock stock = stockRepository.findById(stockId).orElseThrow();
     switch (interval) {
       case "min" -> {
-        List<StockHistory> stockHistories = stockHistoryRepository.findByStockId(stockId);
+        List<StockHistory1m> stockHistories = stockHistory1mRepository.findByStockId(stockId);
         List<StockHistoryResponseDto> stockHistoryDtos = stockHistories.stream().map(
             stockHistory -> StockHistoryResponseDto.builder().stockHistoryId(stockHistory.getId())
                 .open(stockHistory.getOpen()).close(stockHistory.getClose())
@@ -204,7 +204,7 @@ public class StockService {
         .orElseThrow(() -> new NoSuchElementException("Stock not found"));
 
     // 주식 현재가 들고오기
-    StockHistory recentPrice = stockHistoryRepository.findTop1ByStockIdOrderByCreatedAtDesc(
+    StockHistory recentPrice = stockHistory1mRepository.findTop1ByStockIdOrderByCreatedAtDesc(
         stockId);
 
     // 지갑 내 유동자산 비교
@@ -278,7 +278,7 @@ public class StockService {
         .orElseThrow(() -> new NoSuchElementException("Stock not found"));
 
     // 주식 현재가 들고오기
-    StockHistory recentPrice = stockHistoryRepository.findTop1ByStockIdOrderByCreatedAtDesc(
+    StockHistory recentPrice = stockHistory1mRepository.findTop1ByStockIdOrderByCreatedAtDesc(
         stockId);
 
     // 내가 보유중인 주식인지 확인
@@ -329,33 +329,21 @@ public class StockService {
 
   @Transactional
   public void saveAll(List<StockRequestDto> stockDataList) {
-    log.info("SAVEALL");
-    log.info(stockDataList.size()+" ");
-    log.info(
-        stockDataList.get(0).getStockId()+" "+
-        stockDataList.get(0).getOpen()+" "+
-        stockDataList.get(0).getClose()+" "+
-        stockDataList.get(0).getLow()+" "+
-        stockDataList.get(0).getHigh()+" "+
-            stockDataList.get(0).getInterval()
-        );
     for (StockRequestDto stockRequestDto : stockDataList) {
       Long stockId = stockRequestDto.getStockId();
       Stock stock = stockRepository.findById(stockId)
           .orElseThrow(() -> new NoSuchElementException("Stock not found"));
       String interval = stockRequestDto.getInterval();
-      log.info(interval);
-      log.info(stockRequestDto.toString());
       boolean exists = true;
       switch (interval) {
         case "1m" -> {
-          if (!stockHistoryRepository.existsByStockIdAndCreatedAt(stockRequestDto.getStockId(),
+          if (!stockHistory1mRepository.existsByStockIdAndCreatedAt(stockRequestDto.getStockId(),
               stockRequestDto.getCreatedAt())) {
-            StockHistory stockHistory = StockHistory.builder().stock(stock)
+            StockHistory1m stockHistory = StockHistory1m.builder().stock(stock)
                 .open(stockRequestDto.getOpen()).close(stockRequestDto.getClose())
                 .high(stockRequestDto.getHigh()).low(stockRequestDto.getLow())
                 .createdAt(stockRequestDto.getCreatedAt()).build();
-            stockHistoryRepository.save(stockHistory);
+            stockHistory1mRepository.save(stockHistory);
           }
         }
         case "1d" -> {
@@ -399,11 +387,11 @@ public class StockService {
         .orElseThrow(() -> new NoSuchElementException("Stock not found"));
     String interval = stockRequestDto.getInterval();
     if (interval.equals("1m")) {
-      StockHistory stockHistory = StockHistory.builder().stock(stock)
+      StockHistory1m stockHistory = StockHistory1m.builder().stock(stock)
           .open(stockRequestDto.getOpen()).close(stockRequestDto.getClose())
           .high(stockRequestDto.getHigh()).low(stockRequestDto.getLow())
           .createdAt(stockRequestDto.getCreatedAt()).build();
-      stockHistoryRepository.save(stockHistory);
+      stockHistory1mRepository.save(stockHistory);
       return stockHistory.getId();
     } else if (interval.equals("1d")) {
       StockHistory1d stockHistory = StockHistory1d.builder().stock(stock)

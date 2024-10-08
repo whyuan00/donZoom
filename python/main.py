@@ -142,7 +142,18 @@ def fetch_and_send_data(ticker, stockId, interval):
     print(f"실시간 데이터 가져오기 시작: {now_kst} - {ticker}")
 
     # 데이터 다운로드 (1분 간격 데이터)
-    new_data = yf.download(ticker, period=period, interval=interval)
+    # 데이터 다운로드 (1분 간격 데이터)
+    try:
+        new_data = yf.download(ticker, period=period, interval=interval)
+        if new_data.empty:
+            print(f"{ticker}에 대한 데이터 없음. 전송 중단.")
+            return
+    except KeyError as e:
+        print(f"{ticker} 데이터 다운로드 중 키 에러 발생: {e}")
+        return
+    except Exception as e:
+        print(f"{ticker} 데이터 다운로드 중 예상치 못한 에러 발생: {e}")
+        return
 
     if new_data.empty:
         print(f"{ticker}에 대한 데이터 없음. 전송 중단.")
