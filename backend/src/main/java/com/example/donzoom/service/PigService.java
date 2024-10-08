@@ -14,6 +14,7 @@ import com.example.donzoom.util.SecurityUtil;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -125,40 +126,55 @@ public class PigService {
     // 지갑에 이미 저장된 돼지 목록 조회
     List<MyPig> existingPigsInWallet = myPigRepository.findByWalletId(walletId);
 
-    // 이미 지갑에 있는 돼지 ID를 추출
-    Set<Long> existingPigIds = existingPigsInWallet.stream().map(myPig -> myPig.getPig().getId())
-        .collect(Collectors.toSet());
+    // 이미 지갑에 있는 돼지 ID와 생성 날짜를 매핑하는 맵 생성
+    Map<Long, LocalDateTime> existingPigIdToCreatedAt = existingPigsInWallet.stream()
+        .collect(Collectors.toMap(
+            myPig -> myPig.getPig().getId(),
+            MyPig::getCreatedAt
+        ));
 
-    // 확률 기반으로 랜덤하게 돼지를 선택하는 로직
-    List<Pig> selectedPigs = new ArrayList<>();
-    List<Pig> newPigsToSave = new ArrayList<>(); // 새로 저장할 돼지 목록
+    // 돼지 정보를 저장할 리스트
+    List<PigResponseDto> pigResponseDtos = new ArrayList<>();
+    Set<Long> newPigIdsToSave = new HashSet<>(); // 새로 저장할 돼지 ID를 저장할 Set
 
+    // 확률 기반으로 돼지를 선택하고, 그 정보를 DTO에 추가
     for (int i = 0; i < count; i++) {
       Pig selectedPig = getRandomPigByProbability(allPigs);  // 확률에 따른 Pig 선택
-      selectedPigs.add(selectedPig); // 선택된 돼지는 리스트에 추가
 
-      // 중복되지 않은 돼지만 저장 목록에 추가
-      if (!existingPigIds.contains(selectedPig.getId())) {
-        newPigsToSave.add(selectedPig);
-        existingPigIds.add(selectedPig.getId());  // 저장된 돼지 목록에 추가하여 중복 방지
+      // 이미 소유한 돼지인지 여부 체크
+      boolean isOwned = existingPigIdToCreatedAt.containsKey(selectedPig.getId());
+      LocalDateTime createdAt = isOwned ? existingPigIdToCreatedAt.get(selectedPig.getId()) : null;
+
+      // 돼지 정보를 DTO로 변환하여 리스트에 추가
+      pigResponseDtos.add(PigResponseDto.builder()
+          .pigId(selectedPig.getId())
+          .imageUrl(selectedPig.getImageUrl())
+          .pigName(selectedPig.getPigName())
+          .description(selectedPig.getDescription())
+          .createdAt(createdAt != null ? createdAt.toString() : null) // createdAt 추가
+          .build());
+
+      // 중복되지 않고 아직 소유하지 않은 돼지라면 Set에 추가
+      if (!isOwned) {
+        newPigIdsToSave.add(selectedPig.getId());
       }
     }
 
     // 티켓 쓴 만큼 차감
     wallet.updateTicket(wallet.getTicket() - count);
 
-    // 중복되지 않은 돼지만 MyPig에 저장
-    for (Pig pig : newPigsToSave) {
+    // 중복되지 않은 돼지들만 MyPig에 저장
+    for (Long pigId : newPigIdsToSave) {
+      Pig pig = pigRepository.findById(pigId)
+          .orElseThrow(() -> new IllegalArgumentException("Pig not found"));
       MyPig myPig = MyPig.builder().wallet(wallet).pig(pig).build();
       myPigRepository.save(myPig);
     }
 
-    // PigResponseDto 리스트 반환 (선택된 돼지들을 반환)
-    return selectedPigs.stream().map(
-        pig -> PigResponseDto.builder().pigId(pig.getId()).imageUrl(pig.getImageUrl())
-            .pigName(pig.getPigName()).description(pig.getDescription()).build()).toList();
+    return pigResponseDtos;
   }
 
+  // 확률 기반으로 돼지를 랜덤하게 선택하는 메서드
   private Pig getRandomPigByProbability(List<Pig> pigs) {
     // 전체 가중치의 합 계산
     double totalWeight = pigs.stream().mapToDouble(Pig::getProbability).sum();
@@ -175,6 +191,7 @@ public class PigService {
     }
     return pigs.get(pigs.size() - 1); // 혹시 가중치 범위에 해당하지 않으면 마지막 Pig 반환
   }
+
 
   @Transactional
   public String uploadPigAndSave(MultipartFile imageFile, MultipartFile silhouetteFile, String name,
