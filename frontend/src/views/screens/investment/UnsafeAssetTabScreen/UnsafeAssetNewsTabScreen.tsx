@@ -11,15 +11,14 @@ import {
   ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import axiosInstance from '@/api/axios';
-import {useFocusEffect} from '@react-navigation/native';
-import {getStock} from '@/api/stock';
+import {ResponseNews, getStock} from '@/api/stock';
+import useStock from '@/hooks/queries/useStock';
 
 interface News {
-  newsId: number;
+  Id: number;
   title: string;
   contents: string;
-  createdAt: string;
+  createdAt: Date;
   source: string;
 }
 type StockName =
@@ -43,38 +42,36 @@ const StockId: Record<StockName, number> = {
   Tesla: 8,
 };
 
-
 const UnsafeAssetNewsTabScreen = ({navigation, selectedStock}: any) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedNews, setSelectedNews] = useState<News | null>(null);
-  const [todaysNews, setTodaysNews] = useState<News[]>([]);
 
-  const getStockId = (selectedStock: string): number | undefined => {
+  const getStockId = (selectedStock: string): number => {
     return StockId[selectedStock as StockName];
   };
 
   const stockId = useMemo(() => getStockId(selectedStock), [selectedStock]);
-  
-  useFocusEffect(
-    useCallback(() => {
-      const getData = async () => {
-        try {
-          const response = await axiosInstance.get(`/news/${stockId}/today`);
-          const news = response.data;
-          setTodaysNews(news);
-        } catch (error) {
-          console.log(error);
-        }
-      };
-      getData();
-    }, [stockId]),
-  );
+  const {useGetTodaysNews} = useStock();
+  const {
+    data: todaysNews = [] as ResponseNews,
+    isLoading,
+    error,
+  } = useGetTodaysNews(stockId, {
+    enabled: !!stockId, // stockId 있을때 실행
+  });
 
   const openModal = (news: News) => {
     setSelectedNews(news);
     setModalVisible(true);
   };
 
+  // 날짜 형식 바꾸기
+  // date를 YYYY.MM.DD로 포맷팅
+  const formatDate = (dateStr: Date) => {
+    return new Date(dateStr).toISOString().slice(0, 10).replaceAll('-', '.');
+  };
+
+  //  타이틀 적당히 자르기
   const formatTitle = (title: string) => {
     const words = title.split(' ');
     let formattedTitle = '';
@@ -103,19 +100,36 @@ const UnsafeAssetNewsTabScreen = ({navigation, selectedStock}: any) => {
       </View>
     );
   }
+  
+  if (todaysNews.length < 1) {
+    return (
+      <View style={styles.container}>
+        <Text> 오늘의 {selectedStock} 뉴스가 없습니다</Text>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('UnsafeAssetPastNews', {stockId})}>
+          <View style={styles.button}>
+            <Text style={{fontFamily: fonts.MEDIUM, color: colors.BLACK}}>
+              지난 뉴스 보기
+            </Text>
+            <Icon name="chevron-right" size={25} />
+          </View>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       {todaysNews.map(news => (
         <TouchableOpacity
           onPress={() => openModal(news)}
-          key={news.newsId}
+          key={news.Id}
           style={styles.newsContainer}>
           <Text style={styles.headText}> {formatTitle(news.title)}</Text>
           <View style={{marginLeft: 210}}>
             <Text style={styles.headContentText}> {news.source}</Text>
             <Text style={styles.headContentText}>
-              {news.createdAt.substring(0, 10).replaceAll('-', '.')}
+              {formatDate(news.createdAt)}
             </Text>
           </View>
         </TouchableOpacity>
@@ -144,7 +158,7 @@ const UnsafeAssetNewsTabScreen = ({navigation, selectedStock}: any) => {
         </Modal>
       </View>
       <TouchableOpacity
-        onPress={() => navigation.navigate('UnsafeAssetPastNews',{stockId})}>
+        onPress={() => navigation.navigate('UnsafeAssetPastNews', {stockId})}>
         <View style={styles.button}>
           <Text style={{fontFamily: fonts.MEDIUM, color: colors.BLACK}}>
             지난 뉴스 보기
@@ -186,14 +200,14 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: colors.BLACK,
   },
-  // 모달컨테이너 기본디자인 
+  // 모달컨테이너 기본디자인
   modalContainer: {
     flex: 1,
     width: '90%',
     maxHeight: '60%',
     backgroundColor: colors.YELLOW_50,
-    paddingTop:10,
-    paddingBottom:30,
+    paddingTop: 10,
+    paddingBottom: 30,
     paddingHorizontal: 30,
   },
   modalBodyText: {

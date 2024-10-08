@@ -26,11 +26,11 @@ const InvestTradeScreen = ({route, navigation}: any) => {
   const [stockMessage, setStockMessage] = useState<string>('');
   const {useGetStock} = useStock();
 
-  useWebSocket(message => {
+  useWebSocket([5],message => {
     setStockMessage(message);
   });
 
-  console.log(useGetStock(5).data);
+  // console.log(useGetStock(5).data);
 
   const setModalState = () => {
     setModalVisible(true);

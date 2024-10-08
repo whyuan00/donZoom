@@ -5,8 +5,6 @@ import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import InvestUnsafeAssetTabNavigator from '@/navigation/InvestUnsafeAssetTabNavigator';
-import axiosInstance from '@/api/axios';
-import axios from 'axios';
 import {useFocusEffect} from '@react-navigation/native';
 
 
@@ -17,7 +15,6 @@ interface Stocks{
   lastCreatedAt:string 
 }
 
-const Tab = createMaterialTopTabNavigator();
 
 export default function UnsafeAssetDetailScreen({navigation}: any) {
   const [selectedPeriod, setSelectedPeriod] = useState<string>('1일'); // 기본 기간 선택

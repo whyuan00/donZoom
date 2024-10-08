@@ -108,5 +108,12 @@ const logout = async () => {
   await axiosInstance.delete('/user/logout');
 };
 
-export {postSignup, postLogin, getProfile, logout};
+const postChildAdd = async (childEmails: string[]) => {
+  // console.log(childEmails);
+  const {data} = await axiosInstance.post('/user/child-add', {childEmails});
+  // console.log('애들이메일:', response);
+  return {data};
+};
+
+export {postSignup, postLogin, getProfile, logout, postChildAdd};
 export type {User as RequestUser, ResponseToken, ResponseProfile};

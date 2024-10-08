@@ -1,8 +1,9 @@
 import axiosInstance from '@/api/axios';
+import useStock from '@/hooks/queries/useStock';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
-import InvestRealAssetTabNavigator from '@/navigation/InvestRealAssetTabNavigator'
-import { useFocusEffect } from '@react-navigation/native';
+import InvestRealAssetTabNavigator from '@/navigation/InvestRealAssetTabNavigator';
+import {useFocusEffect} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
 import {
   View,
@@ -13,33 +14,26 @@ import {
   SafeAreaView,
 } from 'react-native';
 
+type ResponseStockList = {
+  stockId: number;
+  stockName: string;
+  stockPrice: number;
+  lastCreatedAt: Date;
+};
+
 export default function RealAssetDetailScreen({navigation}: any) {
-
   const [selectedStock, setSelectedStock] = useState<string>('금'); // 기본 종목 선택 상태
-  const [realAssetMoney, setRealAssetMoney] = useState<number>(159335); // 현재 보유한 금을 머니로 환산한 값
-  const [realAssetDollar, setRealAssetDollar] = useState<number>(119.37); // 현재 보유한 금을 머니로 환산한 값
+  // const [realAssetMoney, setRealAssetMoney] = useState<number>(159335); // 현재 보유한 금을 머니로 환산한 값
+  // const [realAssetDollar, setRealAssetDollar] = useState<number>(119.37); // 현재 보유한 금을 머니로 환산한 값
 
-  useFocusEffect(
-    useCallback(() => {
-      const getData = async () => {
-        try {
-          // const response = await axiosInstance.get(`/stock/5`);
-          // const {stockHistories} = response.data;
-          // const price = stockHistories.price // 현재 금 시세 
-          // console.log(stocks)
-          // const news = response.data;
-          // setTodaysNews(news);
-        } catch (error) {
-          console.log(error);
-        }
-      };
-      getData();
-    }, []),
-  );
+  const {useGetStock} = useStock();
+  const {data: stockData, isLoading, error} = useGetStock(5);
+  // console.log(stockData[0])
+  const realAssetMoney = stockData?.price ?? 0;
+  const realAssetDollar = realAssetMoney * 0.09;
 
   return (
     <View style={styles.container}>
-
       {/* 금, 머니환산 컨테이너 */}
       <View style={styles.headerContainer}>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -52,8 +46,7 @@ export default function RealAssetDetailScreen({navigation}: any) {
           <Text style={styles.dollarTitle}>${realAssetDollar} 달러 </Text>
         </View>
       </View>
-
-      <InvestRealAssetTabNavigator />
+      <InvestRealAssetTabNavigator/>
     </View>
   );
 }
