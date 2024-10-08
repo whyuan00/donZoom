@@ -2,6 +2,7 @@ package com.example.donzoom.controller;
 
 import com.example.donzoom.dto.user.request.ChildRequest;
 import com.example.donzoom.dto.user.request.LoginRequestDto;
+import com.example.donzoom.dto.user.request.TokenRequestDto;
 import com.example.donzoom.dto.user.request.UserCreateDto;
 import com.example.donzoom.dto.user.request.UserUpdateRequestDto;
 import com.example.donzoom.dto.user.response.ChildInfoResponseDto;
@@ -183,5 +184,20 @@ public class UserController {
   public ResponseEntity<?> setParentChildRelationship() {
     userService.setParentChildRelationship2();
     return ResponseEntity.ok("부모-아이 관계가 설정되었습니다.");
+  }
+
+  @PostMapping("/auto-login")
+  public ResponseEntity<?> autoLogin(TokenRequestDto tokenRequestDto, HttpServletResponse response) {
+    // 1. RefreshToken 검증
+    String token = tokenRequestDto.getRefreshToken();
+    Map<String, String> tokenMap = authService.refreshAccessToken(token);
+
+    // Access Token을 헤더에 설정
+    response.setHeader(accessTokenHeader, accessTokenPrefix + tokenMap.get("accessToken"));
+
+    // Refresh Token을 바디에 설정
+    Map<String, String> refreshToken = Map.of("refreshToken", tokenMap.get("refreshToken"));
+
+    return ResponseEntity.ok(refreshToken);
   }
 }
