@@ -58,4 +58,12 @@ public class Wallet {
   public void updateUser(User user) {
     this.user = user;
   }
+
+  // 코인을 차감하는 메서드
+  public void withdraw(Integer amount) {
+    if (this.coin < amount) {
+      throw new IllegalArgumentException("잔액이 부족합니다.");
+    }
+    this.coin -= amount;
+  }
 }

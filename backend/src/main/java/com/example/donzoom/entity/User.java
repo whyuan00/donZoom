@@ -73,6 +73,9 @@ public class User extends BaseEntity {
 
   private String deviceToken;
 
+  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+  private SavingAccount savingAccount;
+
   @Builder
   public User(User parent, String email, String pwdHash, String name, String nickname,
       String profileImage, String userKey, Boolean isParent, String role, String provider,
