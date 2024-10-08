@@ -369,7 +369,7 @@ scheduler.add_job(send_reports_to_springboot,  trigger=CronTrigger(hour=14, minu
 scheduler.add_job(send_worldNews_data,  trigger=CronTrigger(hour=14, minute=50))
 
 #금 뉴스 기사를 가져오고 바로 본문을 가져오도록 스케줄러 설정
-scheduler.add_job(send_goldNews_data,  trigger=CronTrigger(hour=14, minute=40))
+scheduler.add_job(send_goldNews_data,  trigger=CronTrigger(hour=16, minute=24))
 
 # Lifespan 이벤트 핸들러 사용
 @asynccontextmanager

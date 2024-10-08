@@ -10,12 +10,12 @@ from datetime import datetime, timedelta
 from gpt_summarize import summarize_news
 
 def crawl_gold_news():
-    # 어제 날짜를 가져옴 (형식: YYYY.MM.DD)
-    yesterday_date = (datetime.now() - timedelta(days=1)).strftime("%Y.%m.%d")
+    # 오늘 날짜를 가져옴 (형식: YYYY.MM.DD)
+    today = datetime.now().strftime("%y.%m.%d")
 
     # Selenium 설정
     chrome_options = Options()
-    chrome_options.add_argument("--headless")  # 헤드리스 모드로 실행
+    chrome_options.add_argument("--headless=old")  # 헤드리스 모드로 실행
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
 
@@ -38,7 +38,7 @@ def crawl_gold_news():
             date_text = row.find_element(By.CSS_SELECTOR, "td:nth-child(3)").text.strip()
 
             # 어제 날짜와 일치하는 경우
-            if date_text == yesterday_date:
+            if date_text == today:
                 # 제목과 링크 가져오기
                 title_element = row.find_element(By.CSS_SELECTOR, "td.board_tit a")
                 title = title_element.text.strip()
