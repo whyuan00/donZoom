@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -73,6 +74,11 @@ public class UserService {
     log.info("인증 과정을 완료했습니다.");
     CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
     log.info("커스텀 디테일을 생성했습니다.");
+
+    // 4. SecurityContext에 인증 정보 저장
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+    log.info("SecurityContext에 인증 정보를 설정했습니다.");
+
     String email = customUserDetails.getUsername();
     String role = customUserDetails.getAuthorities().iterator().next().getAuthority();
 

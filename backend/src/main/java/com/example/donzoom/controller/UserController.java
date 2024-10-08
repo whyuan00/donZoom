@@ -200,6 +200,9 @@ public class UserController {
     String token = tokenRequestDto.getRefreshToken();
     log.info("token : {}", token);
 
+    // 자동 로그인(Security Context)
+    authService.autoLogin(token);
+
     Map<String, String> tokenMap = authService.refreshAccessToken(token);
 
     // Access Token을 헤더에 설정

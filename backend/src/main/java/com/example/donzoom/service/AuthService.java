@@ -3,6 +3,7 @@ package com.example.donzoom.service;
 import com.example.donzoom.constant.LoginMessage;
 import com.example.donzoom.dto.user.CustomUserDetails;
 import com.example.donzoom.dto.user.request.OauthUserCreateDto;
+import com.example.donzoom.dto.user.request.TokenRequestDto;
 import com.example.donzoom.dto.user.request.UserCreateDto;
 import com.example.donzoom.dto.user.response.LoginResponseDto;
 import com.example.donzoom.dto.user.response.UserDetailDto;
@@ -11,6 +12,7 @@ import com.example.donzoom.entity.Wallet;
 import com.example.donzoom.exception.DuplicateEmailException;
 import com.example.donzoom.repository.UserRepository;
 import com.example.donzoom.repository.WalletRepository;
+import com.example.donzoom.security.CustomUserDetailsService;
 import com.example.donzoom.util.JWTUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +21,12 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,6 +34,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AuthService {
 
+  private final AuthenticationManager authenticationManager;
   private final WalletRepository walletRepository;
   private final UserService userService;
   private final String accessTokenPrefix = "Bearer ";
@@ -36,6 +44,7 @@ public class AuthService {
   private final UserRepository userRepository;
   private final OAuth2UserService oAuth2UserService;
   private final RedisService redisService;
+  private final CustomUserDetailsService customUserDetailsService;
   @Value("${jwt.accessToken.expireTime}")
   private Long accessExpired;
   @Value("${jwt.refreshToken.expireTime}")
@@ -209,6 +218,8 @@ public class AuthService {
     if (!refreshToken.equals(storedRefreshToken)) {
       log.info("Redis에 저장된 Refresh Token이 일치하지 않습니다. 재로그인 필요.");
       return null; // 재로그인 필요
+
+
     }
 
     // 3. 새로운 Access Token 및 Refresh Token 발급
@@ -227,5 +238,32 @@ public class AuthService {
     // 새로운 Access Token과 Refresh Token 반환
     return Map.of("accessToken", newAccessToken, "refreshToken", newRefreshToken);
   }
+
+  public void autoLogin(String refreshToken) {
+    // 1. JWT에서 사용자 정보 추출
+    log.info("로그인 요청입니다.");
+    String username = jwtUtil.getUsername(refreshToken); // JWT에서 사용자 정보 추출
+
+    // 2. 인증 객체 생성 및 검증
+    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, null);
+    log.info("인증 객체를 생성했습니다.");
+
+    // 3. 인증 처리 (AuthenticationManager 사용)
+    Authentication authentication = authenticationManager.authenticate(authToken);
+    log.info("인증 과정을 완료했습니다.");
+
+    // 4. SecurityContext에 인증 정보 저장
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+    log.info("SecurityContext에 인증 정보를 설정했습니다.");
+
+    // 이후 추가적인 사용자 정보 활용 가능
+    CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+    log.info("커스텀 디테일을 생성했습니다.");
+    String email = customUserDetails.getUsername();
+    String role = customUserDetails.getAuthorities().iterator().next().getAuthority();
+
+    log.info("사용자 이메일: {}, 역할: {}", email, role);
+  }
+
 
 }
