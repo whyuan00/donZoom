@@ -29,7 +29,7 @@ public class JWTFilter extends OncePerRequestFilter {
       "/user/login", "/api/user/login", "/api/auth/google", "/auth/google", "/api/fcm/send",
       "/fcm/send", "/api/login/oauth2/code/kakao", "/login/oauth2/code/kakao",
       "/api/login/oauth2/code/naver", "/login/oauth2/code/naver", "/api/login/oauth2/code/google",
-      "/login/oauth2/code/google", "/app/**", "/api/websocket/info");
+      "/login/oauth2/code/google", "/app/**", "/api/websocket/info","/api/stock/bulk");
   private final RedisService redisService;
   private final JWTUtil jwtUtil;
 

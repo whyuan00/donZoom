@@ -11,21 +11,27 @@ import com.example.donzoom.dto.stock.response.StockTransactionHistoryResponseDto
 import com.example.donzoom.dto.stock.response.StockTransactionHistorySimpleResponseDto;
 import com.example.donzoom.dto.stock.response.StockWalletResponseDto;
 import com.example.donzoom.dto.stock.response.StockWalletSimpleResponseDto;
-
 import com.example.donzoom.dto.stockHistory.response.StockHistoryResponseDto;
 import com.example.donzoom.entity.News;
 import com.example.donzoom.entity.Stock;
 import com.example.donzoom.entity.StockHistory;
+import com.example.donzoom.entity.StockHistory1d;
+import com.example.donzoom.entity.StockHistory1mo;
+import com.example.donzoom.entity.StockHistory1wk;
 import com.example.donzoom.entity.StockWallet;
 import com.example.donzoom.entity.TransactionHistory;
 import com.example.donzoom.entity.User;
 import com.example.donzoom.entity.Wallet;
 import com.example.donzoom.repository.NewsRepository;
+import com.example.donzoom.repository.StockHistory1dRepository;
+import com.example.donzoom.repository.StockHistory1moRepository;
+import com.example.donzoom.repository.StockHistory1wkRepository;
 import com.example.donzoom.repository.StockHistoryRepository;
 import com.example.donzoom.repository.StockRepository;
 import com.example.donzoom.repository.StockWalletRepository;
 import com.example.donzoom.repository.TransactionHistoryRepository;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +51,9 @@ public class StockService {
   private final TransactionHistoryRepository transactionHistoryRepository;
   private final WalletService walletService;
   private final UserService userService;
+  private final StockHistory1dRepository stockHistory1dRepository;
+  private final StockHistory1wkRepository stockHistory1wkRepository;
+  private final StockHistory1moRepository stockHistory1moRepository;
 
   // 주식 전종목 조회
   @Transactional(readOnly = true)
@@ -69,18 +78,51 @@ public class StockService {
 
   // 주식 상세 조회
   @Transactional(readOnly = true)
-  public StockResponseDto getStockById(Long stockId) {
+  public StockResponseDto getStockById(Long stockId, String interval) {
     Stock stock = stockRepository.findById(stockId).orElseThrow();
-    List<StockHistory> stockHistories = stockHistoryRepository.findByStockId(stockId);
-
-    List<StockHistoryResponseDto> stockHistoryDtos = stockHistories.stream().map(
-        stockHistory -> StockHistoryResponseDto.builder().stockHistoryId(stockHistory.getId())
-            .open(stockHistory.getOpen()).close(stockHistory.getClose())
-            .high(stockHistory.getHigh()).low(stockHistory.getLow())
-            .createdAt(stockHistory.getCreatedAt()).build()).toList();
-
-    return StockResponseDto.builder().stockId(stock.getId()).stockName(stock.getStockName())
-        .stockHistories(stockHistoryDtos).build();
+    switch (interval) {
+      case "min" -> {
+        List<StockHistory> stockHistories = stockHistoryRepository.findByStockId(stockId);
+        List<StockHistoryResponseDto> stockHistoryDtos = stockHistories.stream().map(
+            stockHistory -> StockHistoryResponseDto.builder().stockHistoryId(stockHistory.getId())
+                .open(stockHistory.getOpen()).close(stockHistory.getClose())
+                .high(stockHistory.getHigh()).low(stockHistory.getLow())
+                .createdAt(stockHistory.getCreatedAt()).build()).toList();
+        return StockResponseDto.builder().stockId(stock.getId()).stockName(stock.getStockName())
+            .stockHistories(stockHistoryDtos).build();
+      }
+      case "day" -> {
+        List<StockHistory1d> stockHistories = stockHistory1dRepository.findByStockId(stockId);
+        List<StockHistoryResponseDto> stockHistoryDtos = stockHistories.stream().map(
+            stockHistory -> StockHistoryResponseDto.builder().stockHistoryId(stockHistory.getId())
+                .open(stockHistory.getOpen()).close(stockHistory.getClose())
+                .high(stockHistory.getHigh()).low(stockHistory.getLow())
+                .createdAt(stockHistory.getCreatedAt()).build()).toList();
+        return StockResponseDto.builder().stockId(stock.getId()).stockName(stock.getStockName())
+            .stockHistories(stockHistoryDtos).build();
+      }
+      case "week" -> {
+        List<StockHistory1wk> stockHistories = stockHistory1wkRepository.findByStockId(stockId);
+        List<StockHistoryResponseDto> stockHistoryDtos = stockHistories.stream().map(
+            stockHistory -> StockHistoryResponseDto.builder().stockHistoryId(stockHistory.getId())
+                .open(stockHistory.getOpen()).close(stockHistory.getClose())
+                .high(stockHistory.getHigh()).low(stockHistory.getLow())
+                .createdAt(stockHistory.getCreatedAt()).build()).toList();
+        return StockResponseDto.builder().stockId(stock.getId()).stockName(stock.getStockName())
+            .stockHistories(stockHistoryDtos).build();
+      }
+      case "month" -> {
+        List<StockHistory1mo> stockHistories = stockHistory1moRepository.findByStockId(stockId);
+        List<StockHistoryResponseDto> stockHistoryDtos = stockHistories.stream().map(
+            stockHistory -> StockHistoryResponseDto.builder().stockHistoryId(stockHistory.getId())
+                .open(stockHistory.getOpen()).close(stockHistory.getClose())
+                .high(stockHistory.getHigh()).low(stockHistory.getLow())
+                .createdAt(stockHistory.getCreatedAt()).build()).toList();
+        return StockResponseDto.builder().stockId(stock.getId()).stockName(stock.getStockName())
+            .stockHistories(stockHistoryDtos).build();
+      }
+    }
+    throw new RuntimeException("주식 정보를 불러오는 중 오류가 발생했습니다");
   }
 
   // 내가 보유한 주식 상세 조회
@@ -285,17 +327,107 @@ public class StockService {
         .build();
   }
 
+  @Transactional
+  public void saveAll(List<StockRequestDto> stockDataList) {
+    log.info("SAVEALL");
+    log.info(stockDataList.size()+" ");
+    log.info(
+        stockDataList.get(0).getStockId()+" "+
+        stockDataList.get(0).getOpen()+" "+
+        stockDataList.get(0).getClose()+" "+
+        stockDataList.get(0).getLow()+" "+
+        stockDataList.get(0).getHigh()+" "+
+            stockDataList.get(0).getInterval()
+        );
+    for (StockRequestDto stockRequestDto : stockDataList) {
+      Long stockId = stockRequestDto.getStockId();
+      Stock stock = stockRepository.findById(stockId)
+          .orElseThrow(() -> new NoSuchElementException("Stock not found"));
+      String interval = stockRequestDto.getInterval();
+      log.info(interval);
+      log.info(stockRequestDto.toString());
+      boolean exists = true;
+      switch (interval) {
+        case "1m" -> {
+          if (!stockHistoryRepository.existsByStockIdAndCreatedAt(stockRequestDto.getStockId(),
+              stockRequestDto.getCreatedAt())) {
+            StockHistory stockHistory = StockHistory.builder().stock(stock)
+                .open(stockRequestDto.getOpen()).close(stockRequestDto.getClose())
+                .high(stockRequestDto.getHigh()).low(stockRequestDto.getLow())
+                .createdAt(stockRequestDto.getCreatedAt()).build();
+            stockHistoryRepository.save(stockHistory);
+          }
+        }
+        case "1d" -> {
+          if (!stockHistory1dRepository.existsByStockIdAndCreatedAt(stockRequestDto.getStockId(),
+              stockRequestDto.getCreatedAt())) {
+            StockHistory1d stockHistory = StockHistory1d.builder().stock(stock)
+                .open(stockRequestDto.getOpen()).close(stockRequestDto.getClose())
+                .high(stockRequestDto.getHigh()).low(stockRequestDto.getLow())
+                .createdAt(stockRequestDto.getCreatedAt()).build();
+            stockHistory1dRepository.save(stockHistory);
+          }
+        }
+        case "1wk" -> {
+          if (!stockHistory1wkRepository.existsByStockIdAndCreatedAt(stockRequestDto.getStockId(),
+              stockRequestDto.getCreatedAt())) {
+            StockHistory1wk stockHistory = StockHistory1wk.builder().stock(stock)
+                .open(stockRequestDto.getOpen()).close(stockRequestDto.getClose())
+                .high(stockRequestDto.getHigh()).low(stockRequestDto.getLow())
+                .createdAt(stockRequestDto.getCreatedAt()).build();
+            stockHistory1wkRepository.save(stockHistory);
+          }
+        }
+        case "1mo" -> {
+          if (!stockHistory1moRepository.existsByStockIdAndCreatedAt(stockRequestDto.getStockId(),
+              stockRequestDto.getCreatedAt())) {
+            StockHistory1mo stockHistory = StockHistory1mo.builder().stock(stock)
+                .open(stockRequestDto.getOpen()).close(stockRequestDto.getClose())
+                .high(stockRequestDto.getHigh()).low(stockRequestDto.getLow())
+                .createdAt(stockRequestDto.getCreatedAt()).build();
+            stockHistory1moRepository.save(stockHistory);
+          }
+        }
+      }
+    }
+  }
+
   // 주식 변동내역 기록
   @Transactional
   public Long createStockHistory(Long stockId, StockRequestDto stockRequestDto) {
     Stock stock = stockRepository.findById(stockId)
         .orElseThrow(() -> new NoSuchElementException("Stock not found"));
-    StockHistory stockHistory = StockHistory.builder().stock(stock).open(stockRequestDto.getOpen())
-        .close(stockRequestDto.getClose()).high(stockRequestDto.getHigh())
-        .low(stockRequestDto.getLow()).createdAt(stockRequestDto.getCreatedAt()).build();
-
-    stockHistoryRepository.save(stockHistory);
-    return stockHistory.getId();
+    String interval = stockRequestDto.getInterval();
+    if (interval.equals("1m")) {
+      StockHistory stockHistory = StockHistory.builder().stock(stock)
+          .open(stockRequestDto.getOpen()).close(stockRequestDto.getClose())
+          .high(stockRequestDto.getHigh()).low(stockRequestDto.getLow())
+          .createdAt(stockRequestDto.getCreatedAt()).build();
+      stockHistoryRepository.save(stockHistory);
+      return stockHistory.getId();
+    } else if (interval.equals("1d")) {
+      StockHistory1d stockHistory = StockHistory1d.builder().stock(stock)
+          .open(stockRequestDto.getOpen()).close(stockRequestDto.getClose())
+          .high(stockRequestDto.getHigh()).low(stockRequestDto.getLow())
+          .createdAt(stockRequestDto.getCreatedAt()).build();
+      stockHistory1dRepository.save(stockHistory);
+      return stockHistory.getId();
+    } else if (interval.equals("1wk")) {
+      StockHistory1wk stockHistory = StockHistory1wk.builder().stock(stock)
+          .open(stockRequestDto.getOpen()).close(stockRequestDto.getClose())
+          .high(stockRequestDto.getHigh()).low(stockRequestDto.getLow())
+          .createdAt(stockRequestDto.getCreatedAt()).build();
+      stockHistory1wkRepository.save(stockHistory);
+      return stockHistory.getId();
+    } else if (interval.equals("1mo")) {
+      StockHistory1mo stockHistory = StockHistory1mo.builder().stock(stock)
+          .open(stockRequestDto.getOpen()).close(stockRequestDto.getClose())
+          .high(stockRequestDto.getHigh()).low(stockRequestDto.getLow())
+          .createdAt(stockRequestDto.getCreatedAt()).build();
+      stockHistory1moRepository.save(stockHistory);
+      return stockHistory.getId();
+    }
+    return -1L;
   }
 
   // 주식 거래내역 기록

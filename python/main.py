@@ -88,9 +88,18 @@ print(save_report_URL)
 scheduler = BackgroundScheduler()
 
 # 특정 주식이나 금 데이터를 가져오고 Spring Boot 서버로 전송하는 함수
-def fetch_and_send_data(ticker, stockId):
+def fetch_and_send_data(ticker, stockId, interval):
     now_kst = datetime.now(KST)
     now_est = datetime.now(EST)
+    period = "1d"
+    if interval == "1m":
+        period = "1d"
+    elif interval == "1d":
+        period = "1mo"
+    elif interval == "1wk":
+        period = "3mo"
+    elif interval == "1mo":
+        period = "1y"
   
     # 국내 주식은 한국 시간 기준 주말에 데이터 수집하지 않음
     if ticker.endswith(".KS") and now_kst.weekday() >= 5:
@@ -132,7 +141,7 @@ def fetch_and_send_data(ticker, stockId):
     print(f"실시간 데이터 가져오기 시작: {now_kst} - {ticker}")
 
     # 데이터 다운로드 (1분 간격 데이터)
-    new_data = yf.download(ticker, period="1d", interval="1m")
+    new_data = yf.download(ticker, period=period, interval=interval)
 
     if new_data.empty:
         print(f"{ticker}에 대한 데이터 없음. 전송 중단.")
@@ -154,7 +163,8 @@ def fetch_and_send_data(ticker, stockId):
         "close": float(latest_data['Close']),
         "high": float(latest_data['High']),
         "low": float(latest_data['Low']),
-        "createdAt": latest_timestamp.strftime('%Y-%m-%dT%H:%M:%S')
+        "createdAt": latest_timestamp.strftime('%Y-%m-%dT%H:%M:%S'),
+        "interval":interval,
     }
     
     print(f"전송할 데이터: {data}")
@@ -173,9 +183,9 @@ def fetch_and_send_data(ticker, stockId):
     return data
 
 # 모든 종목 데이터를 가져오고 전송하는 함수
-def fetch_and_send_data_all():
+def fetch_and_send_data_all(interval):
     for ticker, stockId in ticker_to_id_map.items():
-        fetch_and_send_data(ticker, stockId)
+        fetch_and_send_data(ticker, stockId,interval)
 
 
 
@@ -244,13 +254,78 @@ def send_reports_to_springboot():
         except requests.exceptions.RequestException as e:
             print(f"stockId {stockId}에 대한 요청 실패: {e}")
 
+# FastAPI에서 모든 데이터를 가져오고 한꺼번에 전송하는 함수
+def fetch_and_send_all_historical_data(ticker, stockId, interval):
+    print(ticker);
+    print(stockId);
+    # 데이터 다운로드
+    try:
+        # 충분한 기간을 지정하여 각 주기의 모든 데이터를 가져옵니다.
+        period = "max"  # 최대한 긴 기간의 데이터를 가져옵니다.
+        new_data = yf.download(ticker, period=period, interval=interval)
+    except ValueError as e:
+        print(f"{ticker} 데이터 다운로드 중 에러 발생: {e}")
+        return
+
+    if new_data.empty:
+        print(f"{ticker}에 대한 데이터 없음. 전송 중단.")
+        return
+
+    # 타임존에 맞게 시간 변환 (tz-naive인지 tz-aware인지 확인 후 처리)
+    if new_data.index.tz is None:
+        # tz-naive일 경우 타임존 설정
+        new_data.index = new_data.index.tz_localize('UTC').tz_convert(KST)
+    else:
+        # 이미 tz-aware일 경우 변환만 수행
+        new_data.index = new_data.index.tz_convert(KST)
+
+    # 가격 변환 (해외 주식과 금 선물은 원화로 변환)
+    conversion_rate = 1200 if ticker in ["AAPL", "GOOGL", "TSLA", "GC=F"] else 1
+
+    # 데이터를 JSON 형태로 변환
+    all_data = []
+    for timestamp, row in new_data.iterrows():
+        data = {
+            "stockId": stockId,
+            "open": float(row['Open']) * conversion_rate,
+            "close": float(row['Close']) * conversion_rate,
+            "high": float(row['High']) * conversion_rate,
+            "low": float(row['Low']) * conversion_rate,
+            "createdAt": timestamp.strftime('%Y-%m-%dT%H:%M:%S'),
+            "interval": interval,
+        }
+        all_data.append(data)
+
+    # Spring Boot 서버로 데이터 전송
+    try:
+        response = requests.post(save_stock_history_url + "/bulk", json=all_data)
+        if response.status_code == 200:
+            print(f"{ticker}에 대한 전체 데이터 전송 성공 (주기: {interval})")
+        else:
+            print(f"{ticker}에 대한 전체 데이터 전송 실패 (주기: {interval}): {response.status_code}")
+    except requests.exceptions.RequestException as e:
+        print(f"요청 실패 (주기: {interval}): {e}")
+
+
+
+
 
 
 #현재 시간 가져오기
 now = datetime.now(KST)
 
-# 1분마다 모든 종목에 대해 데이터를 가져오고 전송하는 스케줄러 설정
-scheduler.add_job(fetch_and_send_data_all, 'interval', minutes=1)
+# 1분마다 모든 종목에 대해 데이터를 가져오고 전송하는 스케줄러 설정 (1분 간격 데이터)
+scheduler.add_job(fetch_and_send_data_all, 'interval', minutes=1, args=["1m"])
+
+# 매일 데이터를 가져오고 전송하는 스케줄러 설정 (하루 간격 데이터)
+scheduler.add_job(fetch_and_send_data_all, 'cron', hour=0, minute=0, args=["1d"])
+
+# 매주 데이터를 가져오고 전송하는 스케줄러 설정 (일주일 간격 데이터)
+scheduler.add_job(fetch_and_send_data_all, 'cron', day_of_week='mon', hour=0, minute=0, args=["1wk"])
+
+# 매달 데이터를 가져오고 전송하는 스케줄러 설정 (한 달 간격 데이터)
+scheduler.add_job(fetch_and_send_data_all, 'cron', day=1, hour=0, minute=0, args=["1mo"])
+
 # 국내주식 뉴스 기사를 가져오고 바로 본문을 가져오도록 스케줄러 설정
 scheduler.add_job(send_news_data,  trigger=CronTrigger(hour=14, minute=45))
 #scheduler.add_job(send_news_data, trigger=DateTrigger(run_date=now))
@@ -278,7 +353,13 @@ app = FastAPI(lifespan=lifespan)
 def read_root():
     return {"message": "스케줄러가 실행 중입니다."}
 
-
+@app.get("/bulk")
+def send_bulk_data():
+    intervals = ["1m", "1d", "1wk", "1mo"]  # 모든 주기
+    for interval in intervals:
+        for ticker, stockId in ticker_to_id_map.items():
+            fetch_and_send_all_historical_data(ticker, stockId, interval)
+    return {"message": "모든 주기에 대한 데이터가 Spring Boot 서버로 전송되었습니다."}
 # 앱 실행 명령어
 # uvicorn main:app --reload --port 8082
 
