@@ -187,9 +187,12 @@ public class UserController {
   }
 
   @PostMapping("/auto-login")
-  public ResponseEntity<?> autoLogin(TokenRequestDto tokenRequestDto, HttpServletResponse response) {
+  public ResponseEntity<?> autoLogin(@RequestBody TokenRequestDto tokenRequestDto, HttpServletResponse response) {
+
     // 1. RefreshToken 검증
     String token = tokenRequestDto.getRefreshToken();
+    log.info("token : {}", token);
+
     Map<String, String> tokenMap = authService.refreshAccessToken(token);
 
     // Access Token을 헤더에 설정

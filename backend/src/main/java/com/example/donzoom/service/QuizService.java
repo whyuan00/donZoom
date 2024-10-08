@@ -79,8 +79,8 @@ public class QuizService {
     return userQuizzes.stream().map(uq -> UserQuizResponseDto.builder().id(uq.getQuiz().getId())
         .quizType(uq.getQuiz().getQuizType()).question(uq.getQuiz().getQuestion())
         .answer(uq.getQuiz().getAnswer()).option1(uq.getQuiz().getOption1())
-        .option2(uq.getQuiz().getOption4()).option3(uq.getQuiz().getOption1())
-        .option4(uq.getQuiz().getOption1()).explanations(uq.getQuiz().getExplanations())
+        .option2(uq.getQuiz().getOption2()).option3(uq.getQuiz().getOption3())
+        .option4(uq.getQuiz().getOption4()).explanations(uq.getQuiz().getExplanations())
         .answerExplanation(uq.getQuiz().getAnswerExplanation()).createdAt(uq.getCreatedAt())
         .build()).collect(Collectors.toList());
   }
