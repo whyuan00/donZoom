@@ -177,8 +177,8 @@ public class AuthController {
   }
 
   @PostMapping("/refresh")
-  public ResponseEntity<?> refreshAccessToken(HttpServletRequest request,
-      HttpServletResponse response, @RequestBody TokenRequestDto tokenRequestDto) {
+  public ResponseEntity<?> refreshAccessToken(HttpServletResponse response,
+      @RequestBody TokenRequestDto tokenRequestDto) {
     // 클라이언트가 바디로 보내준 Refresh Token을 추출
     String refreshToken = tokenRequestDto.getRefreshToken();
 
