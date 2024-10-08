@@ -63,9 +63,9 @@ public class JWTFilter extends OncePerRequestFilter {
     if (path.matches("^/api/report/\\d+$")) {
       return true;  // 이 경로는 JWT 검사를 제외
     }
-    if (path.matches("^/api/fcm/")) {
-      return true;  // 이 경로는 JWT 검사를 제외
-    }
+//    if (path.matches("^/api/fcm/")) {
+//      return true;  // 이 경로는 JWT 검사를 제외
+//    }
     return EXCLUDE_PATHS.contains(path);
   }
 
