@@ -26,6 +26,7 @@ public class Quiz {
   @Enumerated(EnumType.STRING)
   private QuizType quizType;
 
+  @Column(columnDefinition = "TEXT")
   private String question;
 
   private String answer;
@@ -35,7 +36,9 @@ public class Quiz {
   private String option3;
   private String option4;
 
+  @Column(columnDefinition = "TEXT")
   private String explanations;
+  @Column(columnDefinition = "TEXT")
   private String answerExplanation;
 
 
