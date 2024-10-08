@@ -16,6 +16,7 @@ import NextIcon from 'react-native-vector-icons/MaterialIcons';
 import Profile from '@/views/components/ParentsProfile';
 import {useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
+import useAccountBalance from '@/hooks/useAccountInfo';
 
 const profiles = [
   {
@@ -42,6 +43,7 @@ function ParentsMainScreen() {
   const [selectedProfileIndex, setSelectedProfileIndex] = useState(0);
   const [profileOrder, setProfileOrder] = useState(profiles);
   const navigation = useNavigation() as any;
+  const {balance} = useAccountBalance();
 
   const animatedValues = profiles.map(() => new Animated.Value(0));
   const animatedXValues = profiles.map(() => new Animated.Value(0));
@@ -114,7 +116,6 @@ function ParentsMainScreen() {
                 </TouchableOpacity>
               );
             })}
-
           </View>
           <View style={styles.moneyContainer}>
             <View style={styles.mypageContainer}>
@@ -139,9 +140,9 @@ function ParentsMainScreen() {
                 <View style={styles.moneyAccountContainer}>
                   <View style={styles.balance}>
                     <Text style={styles.balanceText}>남은 금액</Text>
-                    <Text style={styles.moneyText}>
-                      {profileOrder[0].balance}원
-                    </Text>
+                    <Text style={styles.moneyText}>{`${parseInt(
+                      balance,
+                    ).toLocaleString()}원`}</Text>
                   </View>
                   <View style={styles.accountText}>
                     <TouchableOpacity
@@ -185,7 +186,9 @@ function ParentsMainScreen() {
             </TouchableOpacity>
           </View>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.childSituation} onPress={()=>navigation.navigate('퀴즈')}>
+            <TouchableOpacity
+              style={styles.childSituation}
+              onPress={() => navigation.navigate('퀴즈')}>
               <Text style={styles.childSituationText}>
                 <Text style={{fontFamily: fonts.BOLD, fontSize: 24}}>
                   {profileOrder[0].name}
@@ -194,9 +197,9 @@ function ParentsMainScreen() {
               </Text>
               <Text style={styles.childSituationText}>퀴즈 현황</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
-            onPress={()=>(navigation.navigate('모의투자'))}
-            style={styles.childSituation}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('모의투자')}
+              style={styles.childSituation}>
               <Text style={styles.childSituationText}>
                 <Text style={{fontFamily: fonts.BOLD, fontSize: 24}}>
                   {profileOrder[0].name}

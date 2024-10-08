@@ -17,6 +17,7 @@ interface RequestSignup {
   name: string;
   nickname: string;
   role: string;
+  image?: File;
 }
 
 type ResponseToken = {
@@ -34,78 +35,10 @@ type LoginError = {
 
 type ResponseProfile = Profile;
 
-interface FormDataValue {
-  uri: string;
-  name: string;
-  type: string;
-}
-
-interface FormData {
-  append(
-    name: string,
-    value: string | Blob | FormDataValue,
-    fileName?: string,
-  ): void;
-  set(
-    name: string,
-    value: string | Blob | FormDataValue,
-    fileName?: string,
-  ): void;
-  delete(name: string): void;
-  get(name: string): FormDataValue | null;
-  getAll(name: string): FormDataValue[];
-  has(name: string): boolean;
-}
-
-declare var FormData: {
-  prototype: FormData;
-  new (): FormData;
-};
-
-const postSignup = async (user: RequestSignup, image?: File): Promise<void> => {
-  const formData = new FormData();
-  console.log(user);
-  // user 객체를 JSON 문자열로 변환하여 Blob으로 추가
-  const userBlob = new Blob([JSON.stringify(user)], {
-    type: 'application/json',
-    lastModified: new Date().getTime(),
-  });
-  formData.append('user', userBlob);
-
-  const asdf = new FormData();
-
-  console.log(asdf);
-  console.log(formData);
-
-  console.log('찎는다.');
-  for (const [key, value] of Object.entries(formData)) {
-    console.log(key, value);
-  }
-
-  // 이미지가 있다면 추가
-  if (image) {
-    formData.append('image', image);
-  } else {
-    const emptyFile = new Blob([], {
-      type: 'image/jpeg',
-      lastModified: new Date().getTime(),
-    });
-    formData.append('image', emptyFile);
-  }
-
-  // console.log('Sending user data:', JSON.stringify(user));
-  // try {
-  //   await axios.post('https://j11a108.p.ssafy.io/api/user', formData, {
-  //     headers: {
-  //       'Content-Type': 'multipart/form-data',
-  //     },
-  //   });
-  // } catch (err) {
-  //   console.error(err);
-  // }
+const postSignup = async (user: RequestSignup): Promise<void> => {
   try {
-    const {data} = await axiosInstance.post('/user', formData);
-    console.log('Response data:', data);
+    const {data} = await axiosInstance.post('/user', {user});
+    console.log('data:', data);
   } catch (error) {
     console.log('Error:', error);
   }
