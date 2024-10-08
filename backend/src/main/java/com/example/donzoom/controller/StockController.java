@@ -10,7 +10,9 @@ import com.example.donzoom.dto.stock.response.StockWalletSimpleResponseDto;
 import com.example.donzoom.entity.StockHistory;
 import com.example.donzoom.repository.StockHistoryRepository;
 import com.example.donzoom.service.StockService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,12 +40,24 @@ public class StockController {
   }
 
   // 주식 상세 조회
-  @GetMapping("/{stockId}")
+  @GetMapping("/{stockId}/{interval}")
   public ResponseEntity<StockResponseDto> getStockById(
-      @PathVariable(name = "stockId") Long stockId) {
-    StockResponseDto stock = stockService.getStockById(stockId);
+      @PathVariable(name = "stockId") Long stockId,
+      @PathVariable(name="interval") String interval
+  ) {
+    StockResponseDto stock = stockService.getStockById(stockId,interval);
 
     return ResponseEntity.ok().body(stock);
+  }
+
+  @PostMapping("/bulk")
+  public ResponseEntity<String> saveStockData(@RequestBody List<StockRequestDto> stockDataList) {
+    try {
+      stockService.saveAll(stockDataList);
+      return ResponseEntity.ok("Data saved successfully");
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving data");
+    }
   }
 
   // 주식 정보 받아오기 및 현재가 갱신
@@ -55,8 +69,9 @@ public class StockController {
     StockHistory stockHistory = stockHistoryRepository.findById(stockHistoryId).orElseThrow();
 
     // 여기서 WebSocket 전송
-    messagingTemplate.convertAndSend("/topic/stock/" + stockId, stockHistory);
-
+    if(stockRequestDto.getInterval().equals("1m")) {
+      messagingTemplate.convertAndSend("/topic/stock/" + stockId, stockHistory);
+    }
     return ResponseEntity.ok().body(stockHistoryId);
   }
 

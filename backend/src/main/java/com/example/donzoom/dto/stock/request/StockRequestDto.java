@@ -14,5 +14,5 @@ public class StockRequestDto {
   private Integer high;
   private Integer low;
   private LocalDateTime createdAt;
-
+  private String interval;
 }
