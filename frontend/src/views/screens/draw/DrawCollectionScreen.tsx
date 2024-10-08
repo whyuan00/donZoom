@@ -206,6 +206,7 @@ const styles = StyleSheet.create({
     color: colors.BLACK,
     fontSize: 14,
     lineHeight: 20,
+    textAlign: 'justify',
   },
   modalBackground: {
     flex: 1,
