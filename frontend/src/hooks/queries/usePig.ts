@@ -3,6 +3,7 @@ import {
   getMyPig,
   drawPig,
   getMyCoin,
+  getMyTicket,
   changeCoinToTicket,
 } from '@/api/pig';
 import {UseMutationCustomOptions, UseQueryCustomOptions} from '@/types/common';
@@ -39,6 +40,14 @@ function useGetMyCoin(queryOptions?: UseQueryCustomOptions<any>) {
   });
 }
 
+function useGetMyTicket(queryOptions?: UseQueryCustomOptions<any>) {
+  return useQuery({
+    queryKey: ['getMyTicket'],
+    queryFn: getMyTicket,
+    ...queryOptions,
+  });
+}
+
 function usePostChangeCoinToTicket(mutationOptions?: UseMutationCustomOptions) {
   return useMutation({
     mutationFn: changeCoinToTicket,
@@ -51,6 +60,7 @@ function usePig() {
   const getMyPigMutation = useGetMyPig();
   const drawPigMutation = usePostDrawPig();
   const getMyCoinMutation = useGetMyCoin();
+  const getMyTicketMutation = useGetMyTicket();
   const changeCoinToTicketMutation = usePostChangeCoinToTicket();
 
   return {
@@ -58,6 +68,7 @@ function usePig() {
     getMyPigMutation,
     drawPigMutation,
     getMyCoinMutation,
+    getMyTicketMutation,
     changeCoinToTicketMutation,
   };
 }
