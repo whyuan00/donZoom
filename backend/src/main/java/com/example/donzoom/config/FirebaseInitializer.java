@@ -6,6 +6,7 @@ import com.google.firebase.FirebaseOptions;
 import jakarta.annotation.PostConstruct;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -21,8 +22,7 @@ public class FirebaseInitializer {
       // 이미 초기화된 FirebaseApp이 있는지 확인
       List<FirebaseApp> firebaseApps = FirebaseApp.getApps();
       if (firebaseApps.isEmpty()) {
-        FileInputStream serviceAccount = new FileInputStream(
-            "src/main/resources/firebase-service-account.json");
+        InputStream serviceAccount = getClass().getClassLoader().getResourceAsStream("firebase-service-account.json");
 
         FirebaseOptions options = FirebaseOptions.builder()
             .setCredentials(GoogleCredentials.fromStream(serviceAccount)).build();
