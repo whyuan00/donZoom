@@ -26,6 +26,7 @@ import com.example.donzoom.external.BankApi;
 import com.example.donzoom.repository.AutoTransferRepository;
 import com.example.donzoom.repository.UserRepository;
 import com.example.donzoom.util.StoreMappingUtil;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ import org.springframework.stereotype.Service;
 public class AccountService {
 
   private final BankApi bankApi;
+  private final FCMService fcmService;
   private final UserRepository userRepository;
   private final AutoTransferRepository autoTransferRepository;
   private final UserService userService;
@@ -44,12 +46,13 @@ public class AccountService {
   @Autowired
   public AccountService(BankApi bankApi, UserRepository userRepository,
       AutoTransferRepository autoTransferRepository, UserService userService,
-      PasswordService passwordService) {
+      PasswordService passwordService,FCMService fcmService) {
     this.bankApi = bankApi;
     this.userRepository = userRepository;
     this.autoTransferRepository = autoTransferRepository;
     this.userService = userService;
     this.passwordService = passwordService;
+    this.fcmService = fcmService;
   }
 
   //뱅크사용자 가입
@@ -133,6 +136,11 @@ public class AccountService {
         .orElseThrow(() -> new RuntimeException("User not found"));
     child.updateDailyLimit(Long.parseLong(updateLimitRequestDto.getLimit()));
     userRepository.save(child);
+    try {
+      fcmService.sendNotification(child.getDeviceToken(),"1일결제한도수정","한도수정...");
+    } catch (FirebaseMessagingException e) {
+      log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
+    }
   }
 
   // 1회 결제 한도 수정
@@ -141,6 +149,11 @@ public class AccountService {
         .orElseThrow(() -> new RuntimeException("User not found"));
     child.updatePerTransactionLimit(Long.parseLong(updateLimitRequestDto.getLimit()));
     userRepository.save(child);
+    try {
+      fcmService.sendNotification(child.getDeviceToken(),"1회결제한도수정","한도수정...");
+    } catch (FirebaseMessagingException e) {
+      log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
+    }
   }
 
   //카드생성
@@ -179,6 +192,11 @@ public class AccountService {
         autoTransferRequestDto.getWithdrawalAccountNo(),
         autoTransferRequestDto.getDepositAccountNo(),
         autoTransferRequestDto.getTransactionBalance(), autoTransferRequestDto.getTransferDate());
+    try {
+      fcmService.sendNotification(user.getDeviceToken(),"자동이체 설정..","자동이체설정....");
+    } catch (FirebaseMessagingException e) {
+      log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
+    }
   }
 
   // 자동이체 정보 수정
@@ -206,6 +224,11 @@ public class AccountService {
     log.info("자동이체 정보가 수정되었습니다. 출금 계좌: {}, 입금 계좌: {}, 금액: {}, 날짜: {}",
         updateRequestDto.getWithdrawalAccountNo(), updateRequestDto.getDepositAccountNo(),
         updateRequestDto.getTransactionBalance(), updateRequestDto.getTransferDate());
+    try {
+      fcmService.sendNotification(user.getDeviceToken(),"자동이체 수정..","자동이체수정....");
+    } catch (FirebaseMessagingException e) {
+      log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
+    }
   }
 
   public void executeTransfer(AutoTransfer autoTransfer) {
@@ -250,6 +273,11 @@ public class AccountService {
     bankApi.withdrawal(accountNo, paymentBalance, storeName, user.getUserKey());
 
     // 유저의 1일 한도 넘게되면 추가 처리 (예: 알림, 로깅 등)
+    try {
+      fcmService.sendNotification(user.getDeviceToken(),"결제..","결제....");
+    } catch (FirebaseMessagingException e) {
+      log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
+    }
   }
 
 

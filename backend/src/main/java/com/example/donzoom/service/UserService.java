@@ -39,7 +39,7 @@ public class UserService {
   private final FileUploadUtil fileUploadUtil;
   private final PendingRepository pendingRepository;
 
-  public Long registerUser(UserCreateDto userCreateDto) {
+  public Long registerUser(UserCreateDto userCreateDto, String imgUrl) {
 
     //이메일 중복체크
     if (userRepository.existsByEmail(userCreateDto.getEmail())) {
@@ -53,6 +53,8 @@ public class UserService {
     User user = User.builder().email(userCreateDto.getEmail())
         .pwdHash(passwordService.encode(userCreateDto.getPassword())).name(userCreateDto.getName())
         .nickname(userCreateDto.getNickname()).wallet(wallet).build();
+
+    user.updateProfileImage(imgUrl);
 
     userRepository.save(user);
     wallet.updateUser(user);

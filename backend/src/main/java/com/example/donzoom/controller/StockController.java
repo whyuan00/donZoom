@@ -68,7 +68,7 @@ public class StockController {
       @RequestBody StockRequestDto stockRequestDto) {
     Long stockHistoryId = stockService.createStockHistory(stockId, stockRequestDto);
     String interval = stockRequestDto.getInterval();
-    
+
     // 여기서 WebSocket 전송
     if(interval.equals("1m")) {
       StockHistory1m stockHistory = stockHistory1mRepository.findById(stockHistoryId).orElseThrow();

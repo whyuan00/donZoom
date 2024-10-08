@@ -31,6 +31,7 @@ import com.example.donzoom.repository.StockHistory1wkRepository;
 import com.example.donzoom.repository.StockRepository;
 import com.example.donzoom.repository.StockWalletRepository;
 import com.example.donzoom.repository.TransactionHistoryRepository;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -50,6 +51,7 @@ public class StockService {
   private final TransactionHistoryRepository transactionHistoryRepository;
   private final WalletService walletService;
   private final UserService userService;
+  private final FCMService fcmService;
   private final StockHistory1dRepository stockHistory1dRepository;
   private final StockHistory1wkRepository stockHistory1wkRepository;
   private final StockHistory1moRepository stockHistory1moRepository;
@@ -253,6 +255,12 @@ public class StockService {
 
     TransactionHistory transactionHistory = transactionHistoryRepository.findById(
         transactionHistoryId).orElseThrow();
+    User user = userService.findCurrentUser();
+    try {
+      fcmService.sendNotification(user.getDeviceToken(),"매수","ㅠㅠ");
+    } catch (FirebaseMessagingException e) {
+      log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
+    }
 
     return StockTransactionHistoryResponseDto.builder()
         .transactionHistoryId(transactionHistory.getId())
@@ -317,6 +325,13 @@ public class StockService {
     TransactionHistory transactionHistory = transactionHistoryRepository.findById(
         transactionHistoryId).orElseThrow();
 
+    User user = userService.findCurrentUser();
+    try {
+      fcmService.sendNotification(user.getDeviceToken(),"매도","ㅗ");
+    } catch (FirebaseMessagingException e) {
+      log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
+    }
+
     return StockTransactionHistoryResponseDto.builder()
         .transactionHistoryId(transactionHistory.getId())
         .stockId(transactionHistory.getStock().getId())
@@ -334,7 +349,6 @@ public class StockService {
       Stock stock = stockRepository.findById(stockId)
           .orElseThrow(() -> new NoSuchElementException("Stock not found"));
       String interval = stockRequestDto.getInterval();
-      boolean exists = true;
       switch (interval) {
         case "1m" -> {
           if (!stockHistory1mRepository.existsByStockIdAndCreatedAt(stockRequestDto.getStockId(),
@@ -386,34 +400,39 @@ public class StockService {
     Stock stock = stockRepository.findById(stockId)
         .orElseThrow(() -> new NoSuchElementException("Stock not found"));
     String interval = stockRequestDto.getInterval();
-    if (interval.equals("1m")) {
-      StockHistory1m stockHistory = StockHistory1m.builder().stock(stock)
-          .open(stockRequestDto.getOpen()).close(stockRequestDto.getClose())
-          .high(stockRequestDto.getHigh()).low(stockRequestDto.getLow())
-          .createdAt(stockRequestDto.getCreatedAt()).build();
-      stockHistory1mRepository.save(stockHistory);
-      return stockHistory.getId();
-    } else if (interval.equals("1d")) {
-      StockHistory1d stockHistory = StockHistory1d.builder().stock(stock)
-          .open(stockRequestDto.getOpen()).close(stockRequestDto.getClose())
-          .high(stockRequestDto.getHigh()).low(stockRequestDto.getLow())
-          .createdAt(stockRequestDto.getCreatedAt()).build();
-      stockHistory1dRepository.save(stockHistory);
-      return stockHistory.getId();
-    } else if (interval.equals("1wk")) {
-      StockHistory1wk stockHistory = StockHistory1wk.builder().stock(stock)
-          .open(stockRequestDto.getOpen()).close(stockRequestDto.getClose())
-          .high(stockRequestDto.getHigh()).low(stockRequestDto.getLow())
-          .createdAt(stockRequestDto.getCreatedAt()).build();
-      stockHistory1wkRepository.save(stockHistory);
-      return stockHistory.getId();
-    } else if (interval.equals("1mo")) {
-      StockHistory1mo stockHistory = StockHistory1mo.builder().stock(stock)
-          .open(stockRequestDto.getOpen()).close(stockRequestDto.getClose())
-          .high(stockRequestDto.getHigh()).low(stockRequestDto.getLow())
-          .createdAt(stockRequestDto.getCreatedAt()).build();
-      stockHistory1moRepository.save(stockHistory);
-      return stockHistory.getId();
+    switch (interval) {
+      case "1m" -> {
+        StockHistory1m stockHistory = StockHistory1m.builder().stock(stock)
+            .open(stockRequestDto.getOpen()).close(stockRequestDto.getClose())
+            .high(stockRequestDto.getHigh()).low(stockRequestDto.getLow())
+            .createdAt(stockRequestDto.getCreatedAt()).build();
+        stockHistory1mRepository.save(stockHistory);
+        return stockHistory.getId();
+      }
+      case "1d" -> {
+        StockHistory1d stockHistory = StockHistory1d.builder().stock(stock)
+            .open(stockRequestDto.getOpen()).close(stockRequestDto.getClose())
+            .high(stockRequestDto.getHigh()).low(stockRequestDto.getLow())
+            .createdAt(stockRequestDto.getCreatedAt()).build();
+        stockHistory1dRepository.save(stockHistory);
+        return stockHistory.getId();
+      }
+      case "1wk" -> {
+        StockHistory1wk stockHistory = StockHistory1wk.builder().stock(stock)
+            .open(stockRequestDto.getOpen()).close(stockRequestDto.getClose())
+            .high(stockRequestDto.getHigh()).low(stockRequestDto.getLow())
+            .createdAt(stockRequestDto.getCreatedAt()).build();
+        stockHistory1wkRepository.save(stockHistory);
+        return stockHistory.getId();
+      }
+      case "1mo" -> {
+        StockHistory1mo stockHistory = StockHistory1mo.builder().stock(stock)
+            .open(stockRequestDto.getOpen()).close(stockRequestDto.getClose())
+            .high(stockRequestDto.getHigh()).low(stockRequestDto.getLow())
+            .createdAt(stockRequestDto.getCreatedAt()).build();
+        stockHistory1moRepository.save(stockHistory);
+        return stockHistory.getId();
+      }
     }
     return -1L;
   }

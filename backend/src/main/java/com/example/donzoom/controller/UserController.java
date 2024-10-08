@@ -15,6 +15,7 @@ import com.example.donzoom.repository.UserRepository;
 import com.example.donzoom.service.AuthService;
 import com.example.donzoom.service.RedisService;
 import com.example.donzoom.service.UserService;
+import com.example.donzoom.util.FileUploadUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -50,6 +51,7 @@ public class UserController {
   private final String accessTokenPrefix = "Bearer ";
   private final String refreshTokenPrefix = "refreshToken: ";
   private final UserRepository userRepository;
+  private final FileUploadUtil fileUploadUtil;
 
   @Value("${jwt.refreshToken.expireTime}")
   private Long refreshExpired;
@@ -83,7 +85,8 @@ public class UserController {
   }
 
   @PostMapping
-  public ResponseEntity<?> register(@Valid @RequestBody UserCreateDto userCreateDto,
+  public ResponseEntity<?> register(@RequestPart("user") @Valid UserCreateDto userCreateDto,
+      @RequestPart(value = "image", required = false) MultipartFile image,
       BindingResult bindingResult) {
 
     // 입력 데이터 유효성 검증
@@ -97,7 +100,11 @@ public class UserController {
 
     try {
       // 회원가입 시도
-      Long id = userService.registerUser(userCreateDto);
+      String imgUrl = "";
+      if(image!= null && !image.isEmpty()){
+        imgUrl = fileUploadUtil.saveFile(image);
+      }
+      Long id = userService.registerUser(userCreateDto,imgUrl);
       return new ResponseEntity<>("회원가입 성공", HttpStatus.CREATED);
     } catch (DuplicateEmailException e) {
       return new ResponseEntity<>("이미 가입된 회원입니다", HttpStatus.CONFLICT);
