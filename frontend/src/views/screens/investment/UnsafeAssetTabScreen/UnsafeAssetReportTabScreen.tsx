@@ -13,12 +13,14 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axiosInstance from '@/api/axios';
 import {useFocusEffect} from '@react-navigation/native';
+import {ResponseReports} from '@/api/stock';
+import useStock from '@/hooks/queries/useStock';
 
 interface Report {
-  reportId: number;
+  Id: number;
   title: string;
   contents: string;
-  createdAt: string;
+  createdAt: Date;
   source: string;
 }
 
@@ -46,34 +48,31 @@ const StockId: Record<StockName, number> = {
 const UnsafeAssetReportTabScreen = ({navigation, selectedStock}: any) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedReports, setSelectedReports] = useState<Report | null>(null);
-  const [todaysReports, setTodaysReports] = useState<Report[]>([]);
-  // stockid 찾기
 
-  const getStockId = (selectedStock: string): number | undefined => {
+  const getStockId = (selectedStock: string): number => {
     return StockId[selectedStock as StockName];
   };
   const stockId = useMemo(() => getStockId(selectedStock), [selectedStock]);
+  const {useGetTodaysReports} = useStock();
+  const {
+    data: todaysReports = [] as ResponseReports,
+    isLoading,
+    error,
+  } = useGetTodaysReports(stockId, {
+    enabled: !!stockId, // stockId 있을때 실행
+  });
 
-  useFocusEffect(
-    useCallback(() => {
-      const getData = async (stockId: number | undefined) => {
-        try {
-          const response = await axiosInstance.get(`/report/${stockId}/today`);
-          const reports = response.data;
-          setTodaysReports(reports);
-        } catch (error) {
-          console.log(error);
-        }
-      };
-      getData(stockId);
-    }, [stockId]),
-  );
-
-  const openModal = (news: Report) => {
-    setSelectedReports(news);
+  const openModal = (report: Report) => {
+    setSelectedReports(report);
     setModalVisible(true);
   };
 
+  // 날짜 형식 바꾸기
+  // date를 YYYY.MM.DD로 포맷팅
+  const formatDate = (dateStr: Date) => {
+    return new Date(dateStr).toISOString().slice(0, 10).replaceAll('-', '.');
+  };
+  // 제목파싱
   const formatTitle = (title: string) => {
     const words = title.split(' ');
     let formattedTitle = '';
@@ -101,10 +100,10 @@ const UnsafeAssetReportTabScreen = ({navigation, selectedStock}: any) => {
       </View>
     );
   }
-  if (todaysReports.length < 1) {
+  if (stockId && todaysReports.length < 1) {
     return (
       <View style={styles.container}>
-        <Text>오늘의 리포트가 없습니다</Text>
+        <Text>오늘의 {selectedStock} 리포트가 없습니다</Text>
         <TouchableOpacity
           onPress={() =>
             navigation.navigate('UnsafeAssetPastReport', {stockId})
@@ -121,16 +120,16 @@ const UnsafeAssetReportTabScreen = ({navigation, selectedStock}: any) => {
   }
   return (
     <View style={styles.container}>
-      {todaysReports.map(news => (
+      {todaysReports.map(report => (
         <TouchableOpacity
-          onPress={() => openModal(news)}
-          key={news.reportId}
+          onPress={() => openModal(report)}
+          key={report.Id}
           style={styles.reportContainer}>
-          <Text style={styles.headText}> {formatTitle(news.title)}</Text>
+          <Text style={styles.headText}> {formatTitle(report.title)}</Text>
           <View style={{marginLeft: 210}}>
-            <Text style={styles.headContentText}> {news.source}</Text>
+            <Text style={styles.headContentText}> {report.source}</Text>
             <Text style={styles.headContentText}>
-              {news.createdAt.substring(0, 10).replaceAll('-', '.')}
+              {formatDate(report.createdAt)}
             </Text>
           </View>
         </TouchableOpacity>

@@ -15,18 +15,23 @@ interface CustomButtonProps extends PressableProps {
   label: string;
   variant?: 'sns' | 'auth';
   inValid?: boolean;
+  role?:'부모'|'아이';
 }
 
 function CustomButton({
   label,
   variant = 'auth',
   inValid = false,
+  role,
   ...props
 }: CustomButtonProps) {
+  const backgroundColor = role === '부모' ? colors.BLUE_100 : colors.YELLOW_100;
+  const textColor = role === '부모' ? colors.WHITE : colors.BLACK;
+
   return (
     <Pressable style={styles.container} {...props}>
-      <View style={[styles[variant]]}>
-        <Text style={[styles[`${variant}Text`]]}>{label}</Text>
+      <View style={[styles[variant],{backgroundColor}]}>
+        <Text style={[styles[`${variant}Text`],{color:textColor}]}>{label}</Text>
       </View>
     </Pressable>
   );
@@ -44,14 +49,14 @@ const styles = StyleSheet.create({
   sns: {
     width: 50,
     height: 30,
-    backgroundColor: colors.YELLOW_100,
+    // backgroundColor: colors.YELLOW_100,
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
   },
   snsText: {
-    color: colors.WHITE,
+    // color: colors.WHITE,
     fontFamily: 'GmarketSansTTFBold',
     fontSize: 16,
     textAlign: 'center',
@@ -66,7 +71,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.YELLOW_100,
   },
   authText: {
-    color: colors.BLACK,
+    // color: colors.BLACK,
     fontFamily: 'GmarketSansTTFBold',
     fontSize: 16,
     textAlign: 'center',

@@ -11,42 +11,40 @@ import {
   ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import axiosInstance from '@/api/axios';
-import {useFocusEffect} from '@react-navigation/native';
+import useStock from '@/hooks/queries/useStock';
+import {ResponseReports} from '@/api/stock';
 
 interface Report {
-  reportId: number;
+  Id: number;
   title: string;
   contents: string;
-  createdAt: string;
+  createdAt: Date;
   source: string;
 }
 
 const RealAssetReportTabScreen = ({navigation}: any) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedReports, setSelectedReports] = useState<Report | null>(null);
-  const [todaysReports, setTodaysReports] = useState<Report[]>([]);
 
-  useFocusEffect(
-    useCallback(() => {
-      const getData = async () => {
-        try {
-          const response = await axiosInstance.get(`/report/5/today`);
-          const news = response.data;
-          setTodaysReports(news);
-        } catch (error) {
-          console.log(error);
-        }
-      };
-      getData();
-    }, []),
-  );
+  const {useGetTodaysReports} = useStock();
+  const {
+    data: todaysReports = [] as ResponseReports,
+    isLoading,
+    error,
+  } = useGetTodaysReports(5);
 
-  const openModal = (news: Report) => {
-    setSelectedReports(news);
+  const openModal = (report: Report) => {
+    setSelectedReports(report);
     setModalVisible(true);
   };
 
+  // 날짜 형식 바꾸기
+  // date를 YYYY.MM.DD로 포맷팅
+  const formatDate = (dateStr: Date) => {
+    return new Date(dateStr).toISOString().slice(0, 10).replaceAll('-', '.');
+  };
+
+// 제목 적당히 파싱
   const formatTitle = (title: string) => {
     const words = title.split(' ');
     let formattedTitle = '';
@@ -84,16 +82,16 @@ const RealAssetReportTabScreen = ({navigation}: any) => {
   }
   return (
     <View style={styles.container}>
-      {todaysReports.map(news => (
+      {todaysReports.map(report => (
         <TouchableOpacity
-          onPress={() => openModal(news)}
-          key={news.reportId}
+          onPress={() => openModal(report)}
+          key={report.Id}
           style={styles.reportContainer}>
-          <Text style={styles.headText}> {formatTitle(news.title)}</Text>
+          <Text style={styles.headText}> {formatTitle(report.title)}</Text>
           <View style={{marginLeft: 210}}>
-            <Text style={styles.headContentText}> {news.source}</Text>
+            <Text style={styles.headContentText}> {report.source}</Text>
             <Text style={styles.headContentText}>
-              {news.createdAt.substring(0, 10).replaceAll('-', '.')}
+              {formatDate(report.createdAt)}
             </Text>
           </View>
         </TouchableOpacity>

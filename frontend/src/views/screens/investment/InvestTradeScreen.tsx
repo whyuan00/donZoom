@@ -30,7 +30,7 @@ const InvestTradeScreen = ({route, navigation}: any) => {
     setStockMessage(message);
   });
 
-  console.log(useGetStock(5).data);
+  // console.log(useGetStock(5).data);
 
   const setModalState = () => {
     setModalVisible(true);
