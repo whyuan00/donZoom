@@ -7,7 +7,7 @@ import {useSignupStore} from '@/stores/useAuthStore';
 import {validateInit, validateSignup} from '@/utils/validate';
 import CustomButton from '@/views/components/CustomButton';
 import InputField from '@/views/components/InputField';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Keyboard,
   SafeAreaView,
@@ -17,12 +17,14 @@ import {
   View,
 } from 'react-native';
 import Svg, {Path} from 'react-native-svg';
+import {launchImageLibrary} from 'react-native-image-picker';
 
 interface NickNameScreenProps {}
 
 function NickNameScreen({}: NickNameScreenProps) {
   const {signupMutation, loginMutation} = useAuth();
   const {values, errors, touched, getTextInputProps} = useSignupForm();
+  const [profileImage, setProfileImage] = useState(null);
   const {role} = useSignupStore();
   const email = values.email;
   const password = values.password;
@@ -42,6 +44,27 @@ function NickNameScreen({}: NickNameScreenProps) {
       onSuccess: () => loginMutation.mutate({email, password}),
     });
   };
+
+  // const handleImagePick = () => {
+  //   const options = {
+  //     mediaType: 'photo',
+  //     includeBase64: false,
+  //     maxHeight: 2000,
+  //     maxWidth: 2000,
+  //   };
+
+  //   launchImageLibrary(options, response => {
+  //     if (response.didCancel) {
+  //       console.log('User cancelled image picker');
+  //     } else if (response.error) {
+  //       console.log('ImagePicker Error: ', response.error);
+  //     } else {
+  //       const source = {uri: response.assets[0].uri};
+  //       setProfileImage(source);
+  //     }
+  //   });
+  // };
+
   return (
     <TouchableOpacity
       activeOpacity={1}
@@ -50,7 +73,7 @@ function NickNameScreen({}: NickNameScreenProps) {
       <View style={styles.textContainer}>
         <Text style={styles.text}>정보를 입력해주세요.</Text>
       </View>
-      <View style={styles.profileImage}>
+      <TouchableOpacity style={styles.profileImage}>
         <Svg
           width="30"
           height="28"
@@ -62,7 +85,7 @@ function NickNameScreen({}: NickNameScreenProps) {
             fill="#77787B"
           />
         </Svg>
-      </View>
+      </TouchableOpacity>
       <View style={styles.inputContainer}>
         <InputField
           placeholder="이름"

@@ -20,13 +20,13 @@ interface News {
   source: string;
 }
 
-const UnsafeAssetPastNewsScreen = ({route}:any) => {
+const UnsafeAssetPastNewsScreen = ({route}: any) => {
   const [newsData, setNewsData] = useState<News[]>([]);
   const [sortedByCreatedAt, setSortedByCreatedAt] = useState(true);
   const stockId = route.params.stockId;
 
   useEffect(() => {
-    const getData = async (stockId:number) => {
+    const getData = async (stockId: number) => {
       try {
         const response = await axiosInstance.get(`/news/${stockId}`);
         const news = response.data;
@@ -36,12 +36,12 @@ const UnsafeAssetPastNewsScreen = ({route}:any) => {
       }
     };
     getData(stockId);
-  },[stockId]);
+  }, [stockId]);
 
- const switchSortOrder = () => {
-   setNewsData(prevData => [...prevData].reverse());
-   setSortedByCreatedAt(prev => !prev);
- };
+  const switchSortOrder = () => {
+    setNewsData(prevData => [...prevData].reverse());
+    setSortedByCreatedAt(prev => !prev);
+  };
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -87,13 +87,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.WHITE,
   },
   buttonContainer: {
-    marginTop:20,
-    marginLeft:30,
+    marginTop: 20,
+    marginLeft: 30,
     flexDirection: 'row',
     alignItems: 'center',
   },
-  buttonText:{
-    fontFamily:fonts.BOLD,
+  buttonText: {
+    fontFamily: fonts.BOLD,
   },
   newsContainer: {
     flexDirection: 'row',
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   },
   headText: {
     fontFamily: fonts.MEDIUM,
-    color:colors.BLACK,
+    color: colors.BLACK,
     fontSize: 16,
   },
   sourceText: {

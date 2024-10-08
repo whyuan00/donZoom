@@ -85,10 +85,10 @@ const getAccount = async (): Promise<ResponseBalance> => {
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError;
-      console.error('Error fetching account:', axiosError.response?.data);
+      // console.error('Error fetching account:', axiosError.response?.data);
       throw error;
     } else {
-      console.error('Unexpected error:', error);
+      // console.error('Unexpected error:', error);
       throw new Error('An unexpected error occurred');
     }
   }

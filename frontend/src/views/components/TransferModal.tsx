@@ -1,3 +1,5 @@
+import {colors} from '@/constants/colors';
+import {fonts} from '@/constants/font';
 import React, {useState} from 'react';
 import {
   Modal,
@@ -89,12 +91,15 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: fonts.MEDIUM,
+    color: colors.BLACK,
     marginBottom: 20,
   },
   label: {
     fontSize: 16,
     marginBottom: 10,
+    fontFamily: fonts.MEDIUM,
+    color: colors.BLACK,
   },
   bankItem: {
     padding: 10,
@@ -108,10 +113,11 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.GRAY_50,
     borderRadius: 5,
     padding: 10,
     marginBottom: 20,
+    fontFamily: fonts.MEDIUM,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -124,15 +130,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   confirmButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.BLUE_100,
   },
   buttonText: {
-    color: '#007AFF',
-    fontWeight: 'bold',
+    fontFamily: fonts.MEDIUM,
+    color: colors.BLACK,
   },
   confirmText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: colors.WHITE,
+    fontFamily: fonts.MEDIUM,
   },
 });
 

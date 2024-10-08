@@ -2,6 +2,7 @@ import {
   ResponseProfile,
   getProfile,
   logout,
+  postAutoLogin,
   postLogin,
   postSignup,
 } from '@/api/auth';
@@ -60,12 +61,20 @@ function useLogout(mutationOptions?: UseMutationCustomOptions) {
   });
 }
 
+function useAutoLogin(mutationOptions?: UseMutationCustomOptions) {
+  return useMutation({
+    mutationFn: postAutoLogin,
+    ...mutationOptions,
+  });
+}
+
 function useAuth() {
   const signupMutation = useSignup();
   const getProfileQuery = useGetProfile();
   const isLogin = getProfileQuery.isSuccess;
   const loginMutation = useLogin();
   const logoutMutation = useLogout();
+  const autoLoginMutation = useAutoLogin();
 
   return {
     signupMutation,
@@ -73,6 +82,7 @@ function useAuth() {
     isLogin,
     loginMutation,
     logoutMutation,
+    autoLoginMutation,
   };
 }
 

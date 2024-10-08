@@ -12,15 +12,36 @@ import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 import Icon from 'react-native-vector-icons/Octicons';
 import Icon2 from 'react-native-vector-icons/AntDesign';
+import useStock from '@/hooks/queries/useStock';
+import {useSignupStore} from '@/stores/useAuthStore';
+import usePig from '@/hooks/queries/usePig';
+import {MyStock, ResponseMyStock} from '@/api/stock';
 
 export default function InvestmentHomeScreen({navigation}: any) {
-  // 더미 데이터 (주식명, 현재가, 전일대비, 등락률)
-  const stockData = [
-    {name: '삼성전자', currentPrice: '150,000', change: '50%'},
-    {name: '카카오', currentPrice: '95,000', change: '-10%'},
-    {name: 'LG화학', currentPrice: '700,000', change: '5%'},
-    {name: '네이버', currentPrice: '320,000', change: '-5%'},
-  ];
+  const {useGetMyStock} = useStock();
+  const {id} = useSignupStore();
+  const {getMyCoinMutation} = usePig();
+  const money = getMyCoinMutation.data?.coin;
+
+  // console.log(useGetMyStock(id).data);
+
+  const myStockData = useGetMyStock(id).data?.myStocks;
+  const stockData = Array.isArray(myStockData)
+    ? myStockData.map(
+        (item: {
+          stockWalletId: number;
+          stockId: number;
+          stockName: string;
+          totalInvestedPrice: number;
+          amount: number;
+          averagePrice: number;
+        }) => ({
+          name: item.stockName,
+          currentPrice: item.averagePrice,
+          change: '10%',
+        }),
+      )
+    : [];
 
   return (
     <ScrollView>
@@ -30,25 +51,19 @@ export default function InvestmentHomeScreen({navigation}: any) {
             <View style={styles.assetInnerHeaderContainer}>
               <Text style={styles.headerText}>전체 순자산</Text>
               <View style={styles.notification}>
-                <TouchableOpacity
-                
-                onPress={()=>{}}
-                >
-
-                <Text style={styles.notificationText}>
-                  {' '}
-                  <Icon name="bell-fill" size={15} color="black" /> 투자 알림
-                </Text>
-              
+                <TouchableOpacity onPress={() => {}}>
+                  <Text style={styles.notificationText}>
+                    {' '}
+                    <Icon name="bell-fill" size={15} color="black" /> 투자 알림
+                  </Text>
                 </TouchableOpacity>
-              
               </View>
             </View>
           </View>
 
           <View style={styles.assetInfoContainer}>
             <View style={styles.assetTextConainer}>
-              <Text style={styles.assetAmount}>3,000머니</Text>
+              <Text style={styles.assetAmount}>{money}머니</Text>
               <View style={styles.profitSection}>
                 <Text style={styles.profitText}>수익률 변동</Text>
                 <Text style={styles.profitAmount}>▲ 1,500머니 (100%)</Text>
@@ -132,7 +147,6 @@ export default function InvestmentHomeScreen({navigation}: any) {
             </Pressable>
           </TouchableOpacity>
 
- 
           {/* 금 수익 현황 */}
           <View style={styles.statusContainer}>
             <View style={styles.titleCell}>
@@ -178,7 +192,7 @@ export default function InvestmentHomeScreen({navigation}: any) {
             </Pressable>
           </TouchableOpacity>
 
-                   {/* 주식 수익 현황 */}
+          {/* 주식 수익 현황 */}
           <View style={styles.statusContainer}>
             <View style={styles.titleCell}>
               <Text style={styles.titleText}>주식 수익 현황</Text>
@@ -222,7 +236,6 @@ export default function InvestmentHomeScreen({navigation}: any) {
             </View>
           </View>
 
-
           {/* 보유 주식 현황 */}
           <View style={styles.statusContainer}>
             <View style={styles.titleCell}>
@@ -245,11 +258,10 @@ export default function InvestmentHomeScreen({navigation}: any) {
                   styles.borderRight,
                   styles.yellow,
                 ]}>
-                <Text style={styles.unSafeTitleText}>현재가</Text>
+                <Text style={styles.unSafeTitleText}>매입단가</Text>
               </View>
               <View style={[styles.cell, styles.borderTop, styles.yellow]}>
-                <Text style={styles.unSafeTitleText}>전일대비</Text>
-                <Text style={styles.unSafeTitleText}>등락률</Text>
+                <Text style={styles.unSafeTitleText}>수익률</Text>
               </View>
             </View>
 

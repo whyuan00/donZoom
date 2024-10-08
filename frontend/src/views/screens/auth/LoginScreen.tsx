@@ -37,7 +37,7 @@ function LoginScreen({navigation}: any) {
   const {loginMutation, getProfileQuery, isLogin} = useAuth();
   const [selected, setSelected] = useState('');
   const {errorMessage, clearErrorMessage} = useErrorStore();
-  const {setName, setNickname} = useSignupStore();
+  const {setName, setId} = useSignupStore();
   const login = useForm({
     initialValue: {
       email: '',
@@ -149,7 +149,8 @@ function LoginScreen({navigation}: any) {
       await loginMutation.mutateAsync(login.values);
       const profileData = await getProfileQuery.refetch();
       if (profileData.data) {
-        setName(profileData.data.name || 'asdf');
+        setName(profileData.data.name);
+        setId(profileData.data.id);
         // console.log('profile:', profileData.data);
         console.log(isLogin);
       } else {

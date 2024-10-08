@@ -53,3 +53,5 @@ const changeCoinToTicket = async (amount: number): Promise<any> => {
 };
 
 export {getAllPig, getMyPig, drawPig, getMyCoin, changeCoinToTicket};
+
+export type {MyCoin};

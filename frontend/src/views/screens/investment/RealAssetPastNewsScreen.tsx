@@ -11,36 +11,28 @@ import {
   ScrollView,
 } from 'react-native';
 import axiosInstance from '@/api/axios';
+import useStock from '@/hooks/queries/useStock';
+import {Articles} from '@/api/stock';
 
 interface News {
   newsId: number;
   title: string;
   contents: string;
   createdAt: string;
-  source: string;
 }
 
 const RealAssetPastNewsScreen = () => {
-  const [newsData, setNewsData] = useState<News[]>([]);
+  const [newsData, setNewsData] = useState<Articles>([]);
   const [sortedByCreatedAt, setSortedByCreatedAt] = useState(true);
+  const {useGetNews} = useStock();
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const response = await axiosInstance.get(`/news/5`);
-        const news = response.data;
-        setNewsData(news);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getData();
-  },[]);
+  console.log(useGetNews('4').data);
+  setNewsData(useGetNews('4').data?.articles ?? []);
 
- const switchSortOrder = () => {
-   setNewsData(prevData => [...prevData].reverse());
-   setSortedByCreatedAt(prev => !prev);
- };
+  const switchSortOrder = () => {
+    setNewsData(prevData => [...prevData].reverse());
+    setSortedByCreatedAt(prev => !prev);
+  };
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -59,13 +51,12 @@ const RealAssetPastNewsScreen = () => {
         )}
       </TouchableOpacity>
       <ScrollView>
-        {newsData.map(news => (
-          <TouchableOpacity key={news.newsId} style={styles.newsContainer}>
+        {newsData.map((news, index) => (
+          <TouchableOpacity key={index} style={styles.newsContainer}>
             <View style={{flex: 0.8, marginRight: 15}}>
               <Text style={styles.headText}>{news.title}</Text>
               <Text style={styles.sourceText}>
                 {news.createdAt.slice(0, 20).replaceAll('-', '.')} ·{' '}
-                {news.source}
               </Text>
             </View>
             <Image
@@ -86,13 +77,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.WHITE,
   },
   buttonContainer: {
-    marginTop:20,
-    marginLeft:30,
+    marginTop: 20,
+    marginLeft: 30,
     flexDirection: 'row',
     alignItems: 'center',
   },
-  buttonText:{
-    fontFamily:fonts.BOLD,
+  buttonText: {
+    fontFamily: fonts.BOLD,
   },
   newsContainer: {
     flexDirection: 'row',
@@ -103,7 +94,7 @@ const styles = StyleSheet.create({
   },
   headText: {
     fontFamily: fonts.MEDIUM,
-    color:colors.BLACK,
+    color: colors.BLACK,
     fontSize: 16,
   },
   sourceText: {

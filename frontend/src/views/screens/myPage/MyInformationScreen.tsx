@@ -117,6 +117,16 @@ function MyInformationScreen() {
             <Text style={styles.alarmMenuText}>로그아웃</Text>
           </TouchableOpacity>
         </View>
+        <View style={styles.alarmMenuContainer}>
+          <View style={styles.securityHeaderContainer}>
+            <Text style={styles.cardTitle}>결제한도 설정</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.alarmMenuTextContainer}
+            onPress={() => {}}>
+            <Text style={styles.alarmMenuText}>결제한도 설정</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScrollView>
   );

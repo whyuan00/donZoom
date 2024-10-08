@@ -127,10 +127,10 @@ function DrawMachineScreen({}) {
   // 티켓 교환 모달창
   const openTicketModal = () => {
     setTicketValue(1);
-    const coinAmount = getMyCoinMutation.data;
-    setMyCoin(coinAmount.coin);
+    const coinAmount = getMyCoinMutation.data ? getMyCoinMutation.data.coin : 0;
+    setMyCoin(coinAmount);
     console.log('내코인 가져오기: ', myCoin);
-    console.log('내코인 가져오기: ', getMyCoinMutation.data.coin);
+    console.log('내코인 가져오기: ', getMyCoinMutation.data?.coin);
     myCoin / 5 > 100
       ? setMaximumTicketValue(100)
       : setMaximumTicketValue(Math.floor(myCoin / 5));

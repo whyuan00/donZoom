@@ -2,12 +2,14 @@ import {create} from 'zustand';
 import {validateSignup} from '@/utils/validate';
 
 interface SignupState {
+  id: number;
   email: string;
   password: string;
   passwordConfirm: string;
   role: string;
   name: string;
   nickname: string;
+  setId: (id: number) => void;
   setEmail: (email: string) => void;
   setPassword: (password: string) => void;
   setPasswordConfirm: (passwordConfirm: string) => void;
@@ -19,6 +21,7 @@ interface SignupState {
 }
 
 const initialState = {
+  id: 0,
   email: '',
   password: '',
   passwordConfirm: '',
@@ -29,6 +32,7 @@ const initialState = {
 
 export const useSignupStore = create<SignupState>((set, get) => ({
   ...initialState,
+  setId: id => set({id}),
   setEmail: email => set({email}),
   setPassword: password => set({password}),
   setPasswordConfirm: passwordConfirm => set({passwordConfirm}),

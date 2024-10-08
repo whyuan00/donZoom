@@ -39,10 +39,13 @@ function useGetStock(
   });
 }
 
-function useGetMyStock(queryOptions?: UseQueryCustomOptions<ResponseMyStock>) {
+function useGetMyStock(
+  userId: number,
+  queryOptions?: UseQueryCustomOptions<ResponseMyStock>,
+) {
   return useQuery({
-    queryKey: [queryKeys.STOCK],
-    queryFn: getMyStock,
+    queryKey: [queryKeys.STOCK, userId],
+    queryFn: () => getMyStock(userId),
     ...queryOptions,
   });
 }
