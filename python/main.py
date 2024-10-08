@@ -19,6 +19,7 @@ import time
 from crawl_reports import crawl_reports  # 크롤링 모듈 임포트
 from crawl_news import crawl_news 
 from crawl_world_news import crawl_world_news 
+from crawl_gold_news import crawl_gold_news 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.date import DateTrigger
 from datetime import datetime, timedelta
@@ -221,6 +222,24 @@ def send_worldNews_data():
         except requests.exceptions.RequestException as e:
             print(f"stockId {stockId}에 대한 요청 실패: {e}")
 
+# 월드 뉴스 데이터를 Spring Boot 서버로 전송하는 함수 (모든 stockId에 대해 반복)
+def send_goldNews_data():
+    
+    all_world_gold_news = crawl_gold_news()
+    if not crawl_gold_news:
+        print(f"stockId {5}에 대한 월드 뉴스가 없습니다.")
+        return
+    try:
+        print(f"stockId {5}에 대한 월드 뉴스 본문 전송 시작")
+        response = requests.post(save_news_URL + "/" + str(5), json=all_world_gold_news, headers={'Content-Type': 'application/json'})
+
+        if response.status_code == 200:
+            print(f"stockId {5}에 대한 월드 뉴스 본문 전송 성공: {len(all_world_gold_news)}개 기사")
+        else:
+            print(f"stockId {5}에 대한 월드 뉴스 본문 전송 실패: {response.status_code}")
+    
+    except requests.exceptions.RequestException as e:
+        print(f"stockId {5}에 대한 요청 실패: {e}")
 
 
 # 리포트 데이터를 Spring Boot 서버로 전송하는 함수
@@ -262,6 +281,9 @@ scheduler.add_job(send_reports_to_springboot,  trigger=CronTrigger(hour=14, minu
 # 해외주식 뉴스기사를 가져오고 바로 본문을 가져오도록 스케줄러 설정
 #scheduler.add_job(send_reports_to_springboot, trigger=DateTrigger(run_date=now))
 scheduler.add_job(send_worldNews_data,  trigger=CronTrigger(hour=14, minute=50))
+
+#금 뉴스 기사를 가져오고 바로 본문을 가져오도록 스케줄러 설정
+scheduler.add_job(send_goldNews_data,  trigger=CronTrigger(hour=14, minute=40))
 
 # Lifespan 이벤트 핸들러 사용
 @asynccontextmanager
