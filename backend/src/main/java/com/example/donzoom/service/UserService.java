@@ -64,6 +64,8 @@ public class UserService {
   }
 
   public LoginResponseDto login(LoginRequestDto loginRequestDto) {
+    log.info(loginRequestDto.getEmail());
+    log.info(loginRequestDto.getPassword());
     log.info("로그인 요청입니다.");
     // 인증 객체 생성 및 검증
     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
