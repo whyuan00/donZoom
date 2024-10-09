@@ -10,6 +10,7 @@ import InputField from '@/views/components/InputField';
 import React, {useEffect, useState} from 'react';
 import Icon from 'react-native-vector-icons/Entypo';
 import {
+  Image,
   Keyboard,
   Modal,
   SafeAreaView,
@@ -20,18 +21,28 @@ import {
 } from 'react-native';
 import Svg, {Path} from 'react-native-svg';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
-
-interface NickNameScreenProps {}
+import {
+  launchImageLibrary,
+  ImageLibraryOptions,
+  Asset,
+} from 'react-native-image-picker';
 
 interface emailData {
   emailId: any;
   emailAddress: string;
 }
 
-function NickNameScreen({}: NickNameScreenProps) {
-  const {signupMutation, loginMutation, childAddMutation} = useAuth();
+function NickNameScreen() {
+  const {
+    isLogin,
+    signupMutation,
+    loginMutation,
+    profileImageMutation,
+    getProfileQuery,
+  , childAddMutation} = useAuth();
   const {values, errors, touched, getTextInputProps} = useSignupForm();
-  const {role} = useSignupStore();
+  const [profileImage, setProfileImage] = useState<Asset | null>(null);
+  const {role, setName, setId, setProfileImage: setImage} = useSignupStore();
   const [modal, setModal] = useState(false);
   const [text, setText] = useState<string>('');
   const [emailData, setEmailData] = useState<emailData[]>([]); //아이 email데이터
@@ -51,18 +62,49 @@ function NickNameScreen({}: NickNameScreenProps) {
 
   const handleSubmit = () => {
     signupMutation.mutate(account.values, {
-      onSuccess: () => {
-        const childEmails = emailData.map(email => email.emailAddress);
-        console.log('먼저 확인:', childEmails);
+      onSuccess: async () => {
         loginMutation.mutate(
           {email, password},
           {
             onSuccess: () => {
-              childAddMutation.mutate(childEmails);
+              if (profileImage !== null) {
+                console.log('이미지 있음:', profileImage);
+                profileImageMutation.mutate(profileImage);
+              } else {
+                console.log('이미지 없음');
+              }
             },
           },
         );
+        const profileData = await getProfileQuery.refetch();
+        if (profileData.data) {
+          setName(profileData.data.name);
+          setId(profileData.data.id);
+          if (profileData.data.profileImage !== '') {
+            setImage(profileData.data.profileImage);
+          }
+          console.log(isLogin);
+        } else {
+          console.log('Profile data is not available');
+        }
       },
+    });
+  };
+
+  const handleImagePick = () => {
+    const options: ImageLibraryOptions = {
+      mediaType: 'photo',
+      includeBase64: false,
+    };
+
+    launchImageLibrary(options, response => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.errorCode) {
+        console.log('ImagePicker Error: ', response.errorMessage);
+      } else if (response.assets && response.assets.length > 0) {
+        setProfileImage(response.assets[0]);
+      }
     });
   };
 
@@ -111,19 +153,25 @@ function NickNameScreen({}: NickNameScreenProps) {
         <View style={styles.textContainer}>
           <Text style={styles.text}>정보를 입력해주세요.</Text>
         </View>
-        <View style={styles.profileImage}>
-          <Svg
-            width="30"
-            height="28"
-            viewBox="0 0 30 28"
-            fill="none"
-            style={styles.profileSvg}>
-            <Path
-              d="M26.5385 3.65217H22.5404L20.5745 0.541739C20.4692 0.375187 20.3266 0.238613 20.1593 0.144117C19.992 0.0496212 19.8052 0.000120225 19.6154 0H10.3846C10.1948 0.000120225 10.008 0.0496212 9.84073 0.144117C9.67343 0.238613 9.5308 0.375187 9.42548 0.541739L7.45817 3.65217H3.46154C2.54348 3.65217 1.66303 4.03696 1.01386 4.72187C0.364697 5.40679 0 6.33573 0 7.30435V24.3478C0 25.3164 0.364697 26.2454 1.01386 26.9303C1.66303 27.6152 2.54348 28 3.46154 28H26.5385C27.4565 28 28.337 27.6152 28.9861 26.9303C29.6353 26.2454 30 25.3164 30 24.3478V7.30435C30 6.33573 29.6353 5.40679 28.9861 4.72187C28.337 4.03696 27.4565 3.65217 26.5385 3.65217ZM20.1923 15.2174C20.1923 16.3009 19.8878 17.3601 19.3172 18.261C18.7467 19.1618 17.9358 19.864 16.987 20.2786C16.0382 20.6933 14.9942 20.8018 13.987 20.5904C12.9798 20.379 12.0546 19.8573 11.3285 19.0911C10.6023 18.325 10.1078 17.3488 9.90746 16.2861C9.70711 15.2235 9.80994 14.122 10.2029 13.121C10.5959 12.1199 11.2614 11.2643 12.1153 10.6624C12.9692 10.0604 13.9731 9.73913 15 9.73913C16.3771 9.73913 17.6978 10.3163 18.6715 11.3437C19.6453 12.371 20.1923 13.7645 20.1923 15.2174Z"
-              fill="#77787B"
-            />
-          </Svg>
-        </View>
+        <TouchableOpacity
+        style={styles.profileImageContainer}
+        onPress={handleImagePick}>
+        {profileImage ? (
+          <Image source={{uri: profileImage.uri}} style={styles.profileImage} />
+        ) : (
+            <Svg
+              width="30"
+              height="28"
+              viewBox="0 0 30 28"
+              fill="none"
+              style={styles.profileSvg}>
+              <Path
+                d="M26.5385 3.65217H22.5404L20.5745 0.541739C20.4692 0.375187 20.3266 0.238613 20.1593 0.144117C19.992 0.0496212 19.8052 0.000120225 19.6154 0H10.3846C10.1948 0.000120225 10.008 0.0496212 9.84073 0.144117C9.67343 0.238613 9.5308 0.375187 9.42548 0.541739L7.45817 3.65217H3.46154C2.54348 3.65217 1.66303 4.03696 1.01386 4.72187C0.364697 5.40679 0 6.33573 0 7.30435V24.3478C0 25.3164 0.364697 26.2454 1.01386 26.9303C1.66303 27.6152 2.54348 28 3.46154 28H26.5385C27.4565 28 28.337 27.6152 28.9861 26.9303C29.6353 26.2454 30 25.3164 30 24.3478V7.30435C30 6.33573 29.6353 5.40679 28.9861 4.72187C28.337 4.03696 27.4565 3.65217 26.5385 3.65217ZM20.1923 15.2174C20.1923 16.3009 19.8878 17.3601 19.3172 18.261C18.7467 19.1618 17.9358 19.864 16.987 20.2786C16.0382 20.6933 14.9942 20.8018 13.987 20.5904C12.9798 20.379 12.0546 19.8573 11.3285 19.0911C10.6023 18.325 10.1078 17.3488 9.90746 16.2861C9.70711 15.2235 9.80994 14.122 10.2029 13.121C10.5959 12.1199 11.2614 11.2643 12.1153 10.6624C12.9692 10.0604 13.9731 9.73913 15 9.73913C16.3771 9.73913 17.6978 10.3163 18.6715 11.3437C19.6453 12.371 20.1923 13.7645 20.1923 15.2174Z"
+                fill="#77787B"
+              />
+            </Svg>
+        )}
+        </TouchableOpacity>
         <View style={styles.inputContainer}>
           <InputField
             placeholder="이름"
@@ -250,13 +298,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 81,
   },
-  profileImage: {
+  profileImageContainer: {
     width: 110,
     height: 110,
     marginTop: 39,
+    borderRadius: 55,
+    backgroundColor: colors.GRAY_25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  profileImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
     borderRadius: 60,
     backgroundColor: colors.GRAY_25,
-    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
   },
   profileSvg: {
     position: 'absolute',

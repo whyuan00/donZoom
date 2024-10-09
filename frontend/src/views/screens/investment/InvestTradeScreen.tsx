@@ -24,15 +24,19 @@ const InvestTradeScreen = ({route, navigation}: any) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const [stockMessage, setStockMessage] = useState<string>('');
-  const {useGetStock} = useStock();
+  const {useGetStock, buyStockMutation} = useStock();
 
-  useWebSocket([5],message => {
-    setStockMessage(message);
-  });
+  // useWebSocket([5], message => {
+  //   setStockMessage(message);
+  // });
 
   // console.log(useGetStock(5).data);
 
+  const stockId = '4';
+  const amount = 1;
+
   const setModalState = () => {
+    buyStockMutation.mutate({stockId, amount});
     setModalVisible(true);
     setTimeout(() => {
       setModalVisible(false);
@@ -129,7 +133,7 @@ const InvestTradeScreen = ({route, navigation}: any) => {
               fontFamily: fonts.MEDIUM,
               fontWeight: '500',
             }}>
-            {trade === 'buy' ? '매수' : '매도'}
+            {trade === 'buy' ? '매수수수' : '매도'}
           </Text>
         </TouchableOpacity>
       ) : (

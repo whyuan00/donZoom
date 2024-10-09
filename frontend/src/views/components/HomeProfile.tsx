@@ -1,18 +1,25 @@
 import React from 'react';
 import {Image, Text, View, StyleSheet} from 'react-native';
 import {colors} from '../../constants/colors';
-import { fonts } from '@/constants/font';
+import {fonts} from '@/constants/font';
+import {useSignupStore} from '@/stores/useAuthStore';
 
 interface Props {
   name: string;
 }
 
 const HomeProfile = ({name}: Props) => {
+  const {profileImage} = useSignupStore();
   return (
     <View style={styles.container}>
       <View style={styles.profileContainer}>
         <Image
-          source={require('../../assets/images/characterImage.webp')}
+          source={{
+            uri:
+              profileImage !== undefined
+                ? profileImage
+                : 'http://j11a108.p.ssafy.io:8081/api/uploads/1897a985-d18b-4a52-b7c4-0040b7453d29.png',
+          }}
           style={styles.image}
         />
         <Text style={styles.text}>
@@ -30,6 +37,7 @@ const styles = StyleSheet.create({
   profileContainer: {
     alignItems: 'center',
     flexDirection: 'row',
+    padding: 5,
   },
   image: {
     width: 80,
@@ -43,7 +51,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 20,
     color: colors.BLACK,
-    fontFamily: fonts.MEDIUM
+    fontFamily: fonts.MEDIUM,
   },
   textName: {
     width: 80,

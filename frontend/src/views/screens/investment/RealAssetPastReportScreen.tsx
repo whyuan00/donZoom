@@ -11,12 +11,16 @@ import {
   ScrollView,
 } from 'react-native';
 import useStock from '@/hooks/queries/useStock';
-import { ResponseReports } from '@/api/stock';
+import {ResponseReports} from '@/api/stock';
 
 const RealAssetPastReportScreen = () => {
   const [sortedByCreatedAt, setSortedByCreatedAt] = useState(true);
   const {useGetReports} = useStock();
-  const {data: reportData = [] as ResponseReports, isLoading, error} = useGetReports(3);
+  const {
+    data: reportData = [] as ResponseReports,
+    isLoading,
+    error,
+  } = useGetReports(3);
 
   const sortedReports = useMemo(() => {
     if (reportData.length >= 1)
@@ -33,7 +37,7 @@ const RealAssetPastReportScreen = () => {
     return new Date(dateStr).toISOString().slice(0, 10).replaceAll('-', '.');
   };
 
-  if (reportData.length<1) {
+  if (reportData.length < 1) {
     return (
       <View style={styles.container}>
         <Text style={{marginTop: 30, textAlign: 'center'}}>
@@ -61,21 +65,20 @@ const RealAssetPastReportScreen = () => {
         )}
       </TouchableOpacity>
       <ScrollView>
-        {reportData.length >=1 && sortedReports?.map(report => (
-          <TouchableOpacity key={report.Id} style={styles.reportContainer}>
-            <View style={{flex: 0.8, marginRight: 15}}>
-              <Text style={styles.headText}>{report.title}</Text>
-              <Text style={styles.sourceText}>
-                {formatDate(report.createdAt)}
-                {' '}
-                {report.source}
-              </Text>
-            </View>
-            <Image
-              style={styles.image}
-              source={require('@/assets/gold.png')}></Image>
-          </TouchableOpacity>
-        ))}
+        {reportData.length >= 1 &&
+          sortedReports?.map(report => (
+            <TouchableOpacity key={report.Id} style={styles.reportContainer}>
+              <View style={{flex: 0.8, marginRight: 15}}>
+                <Text style={styles.headText}>{report.title}</Text>
+                <Text style={styles.sourceText}>
+                  {formatDate(report.createdAt)} {report.source}
+                </Text>
+              </View>
+              <Image
+                style={styles.image}
+                source={require('@/assets/gold.png')}></Image>
+            </TouchableOpacity>
+          ))}
       </ScrollView>
     </View>
   );

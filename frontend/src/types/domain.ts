@@ -8,6 +8,7 @@ interface Profile {
   id: number;
   isParent: null;
   name: string;
+  profileImage: string;
 }
 
 export type {ImageUri, Profile};

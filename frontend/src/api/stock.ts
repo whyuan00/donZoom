@@ -13,30 +13,44 @@ const getStockList = async (): Promise<ResponseStockList> => {
   return data;
 };
 
-type ResponseStock = {
+type stockPriceArr = {
+  close: number;
+  createdAt: string;
+  high: number;
+  low: number;
+  open: number;
   stockHistoryId: number;
-  price: number;
-  createdAt: Date;
+}[];
+
+type ResponseStock = {
+  stockHistories: stockPriceArr;
+  stockId: number;
+  stockName: string;
 };
 
 const getStock = async (stockId: number): Promise<ResponseStock> => {
   const {data} = await axiosInstance.get(`/stock/${stockId}`);
-  // console.log(data);
+  // // console.log(data);
   return data;
 };
 
-type ResponseMyStock = {
+type MyStock = {
   stockWalletId: number;
   stockId: number;
   stockName: string;
   totalInvestedPrice: number;
   amount: number;
   averagePrice: number;
+}[];
+
+type ResponseMyStock = {
+  myStocks: MyStock;
 };
 
-const getMyStock = async (): Promise<ResponseMyStock> => {
-  const {data} = await axiosInstance.get('/stock/my');
-  // console.log(data);
+const getMyStock = async (userId: number): Promise<ResponseMyStock> => {
+  console.log(userId);
+  const {data} = await axiosInstance.get(`/stock/my/${userId}`);
+  console.log('data:', data);
   return data;
 };
 
@@ -67,9 +81,23 @@ const getMyHistory = async (stockId: number): Promise<ResponseMyHistory> => {
 
 type ResponseBuyStock = ResponseMyHistoryList;
 
-const postBuyStock = async (stockId: string): Promise<ResponseBuyStock> => {
-  const response = await axiosInstance.post(`/stock/${stockId}/buy`);
-  // console.log(response);
+type RequestBuyStock = {
+  stockId: string;
+  amount: number;
+};
+
+const postBuyStock = async ({
+  stockId,
+  amount,
+}: RequestBuyStock): Promise<ResponseBuyStock> => {
+  console.log(stockId);
+  console.log(amount);
+  const response = await axiosInstance.post(`/stock/${stockId}/buy`, null, {
+    params: {
+      amount: amount,
+    },
+  });
+  console.log(response.data);
   return response.data;
 };
 
@@ -81,7 +109,6 @@ const postSellStock = async (stockId: string): Promise<ResponseSellStock> => {
   return response.data;
 };
 
-
 type ResponseContentsList = {
   Id: number;
   title: string;
@@ -89,7 +116,6 @@ type ResponseContentsList = {
   createdAt: Date;
   source: string;
 }[]; // 뉴스리스트 배열로 설정
-
 
 type ResponseNews = ResponseContentsList;
 
@@ -118,7 +144,6 @@ const getTodaysReports = async (stockId: number): Promise<ResponseReports> => {
   return data;
 };
 
-
 export {
   getStockList,
   getStock,
@@ -141,5 +166,9 @@ export type {
   ResponseBuyStock,
   ResponseSellStock,
   ResponseNews,
+  RequestBuyStock,
+  MyStock,
+  Articles,
+  stockPriceArr,
   ResponseReports,
 };

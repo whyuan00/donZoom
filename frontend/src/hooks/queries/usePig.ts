@@ -5,6 +5,7 @@ import {
   getMyCoin,
   getMyTicket,
   changeCoinToTicket,
+  MyCoin,
 } from '@/api/pig';
 import {UseMutationCustomOptions, UseQueryCustomOptions} from '@/types/common';
 import {useMutation, useQuery} from '@tanstack/react-query';
@@ -32,7 +33,7 @@ function usePostDrawPig(mutationOptions?: UseMutationCustomOptions) {
   });
 }
 
-function useGetMyCoin(queryOptions?: UseQueryCustomOptions<any>) {
+function useGetMyCoin(queryOptions?: UseQueryCustomOptions<MyCoin>) {
   return useQuery({
     queryKey: ['getMyCoin'],
     queryFn: getMyCoin,

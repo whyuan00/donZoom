@@ -1,5 +1,6 @@
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
+import useAccount from '@/hooks/queries/useAccount';
 import useAccountBalance from '@/hooks/useAccountInfo';
 import useTransferStore from '@/stores/useTransferStore';
 import KeypadModal from '@/views/components/KeyPadModal';
@@ -27,6 +28,7 @@ export default function TransferScreen({route, navigation}: any) {
   );
   const {account, balance, error, refetch} = useAccountBalance();
   const {accountNo, amount, setAccountNo, setAmount} = useTransferStore();
+  const {useGetAccountHolder} = useAccount();
 
   useFocusEffect(
     useCallback(() => {
@@ -59,16 +61,23 @@ export default function TransferScreen({route, navigation}: any) {
   const handleAmountChange = (newAmount: number) => {
     setAmount(newAmount + '');
   };
+  const accountCheck = useGetAccountHolder(accountNo).isSuccess;
 
   const onPressNext = () => {
     if (balance < amount) {
+      console.log(balance);
+      console.log(amount);
       Alert.alert('잔액이 부족합니다.');
     } else if (accountNo === '') {
       Alert.alert('계좌번호를 확인해주세요.');
     } else if (amount === '0') {
       Alert.alert('보낼금액을 확인해주세요.');
     } else {
-      navigation.navigate('송금2');
+      if (accountCheck) {
+        navigation.navigate('송금2');
+      } else {
+        Alert.alert('계좌번호를 확인해주세요.');
+      }
     }
   };
   return (
@@ -77,7 +86,7 @@ export default function TransferScreen({route, navigation}: any) {
       <View style={styles.myAccountInfoContainer}>
         <View style={styles.myAccountTextContainer}>
           <Text style={styles.myAccountTextHeader}>내 계좌</Text>
-          <Text style={styles.myAccountTextContext}>{account}</Text>
+          <Text style={styles.myAccountTextContext}>싸피 {account}</Text>
         </View>
         <View style={styles.myAccountTextContainer}>
           <Text style={styles.withdrawableAmountTextHeader}>출금가능금액</Text>
@@ -162,31 +171,33 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   menuHeaderText: {
-    fontFamily: fonts.BOLD,
+    fontFamily: fonts.MEDIUM,
     color: colors.BLACK,
     fontSize: 12,
     paddingTop: 23,
     paddingBottom: 8,
   },
   recipientAccountInfoText: {
-    fontFamily: fonts.BOLD,
+    fontFamily: fonts.MEDIUM,
     fontSize: 16,
   },
   amountInputText: {
-    fontFamily: fonts.BOLD,
+    fontFamily: fonts.MEDIUM,
     fontSize: 16,
   },
   myAccountTextHeader: {
-    fontFamily: fonts.BOLD,
+    fontFamily: fonts.MEDIUM,
     fontSize: 12,
+    color: colors.BLACK,
   },
   myAccountTextContext: {
-    fontFamily: fonts.BOLD,
+    fontFamily: fonts.MEDIUM,
     marginLeft: 'auto',
     fontSize: 12,
+    color: colors.BLACK,
   },
   withdrawableAmountTextHeader: {
-    fontFamily: fonts.BOLD,
+    fontFamily: fonts.MEDIUM,
     color: colors.BLUE_100,
     marginLeft: 'auto',
     fontSize: 12,
@@ -207,7 +218,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   nextButtonText: {
-    fontFamily: fonts.BOLD,
+    fontFamily: fonts.MEDIUM,
+    color: colors.BLACK,
     fontSize: 18,
   },
 });

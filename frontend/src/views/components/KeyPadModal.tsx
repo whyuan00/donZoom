@@ -2,6 +2,7 @@ import React from 'react';
 import {Modal, View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import KeyPad from './KeyPad';
 import {colors} from '@/constants/colors';
+import {fonts} from '@/constants/font';
 
 interface KeypadModalProps {
   visible: boolean;
@@ -62,7 +63,7 @@ const styles = StyleSheet.create({
   },
   amountText: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontFamily: fonts.MEDIUM,
     textAlign: 'right',
     marginBottom: 20,
     color: colors.BLACK,
@@ -83,11 +84,11 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: colors.BLUE_100,
-    fontWeight: 'bold',
+    fontFamily: fonts.MEDIUM,
   },
   confitmText: {
     color: colors.WHITE,
-    fontWeight: 'bold',
+    fontFamily: fonts.MEDIUM,
   },
 });
 

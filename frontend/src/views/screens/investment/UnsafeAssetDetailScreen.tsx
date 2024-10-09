@@ -6,25 +6,50 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import InvestUnsafeAssetTabNavigator from '@/navigation/InvestUnsafeAssetTabNavigator';
 import {useFocusEffect} from '@react-navigation/native';
+import usePig from '@/hooks/queries/usePig';
+import useStock from '@/hooks/queries/useStock';
+import useWebSocket from '@/hooks/useWebSocket';
 
-
-interface Stocks{
-  stockId:number
-  stockName:string
-  stockPrice:number
-  lastCreatedAt:string 
+interface Stocks {
+  stockId: number;
+  stockName: string;
+  stockPrice: number;
+  lastCreatedAt: string;
 }
 
+const stockIndices = {
+  삼성전자: 1,
+  LG전자: 2,
+  네이버: 3,
+  카카오: 4,
+  Apple: 5,
+  Google: 6,
+  Tesla: 7,
+};
+
+const Tab = createMaterialTopTabNavigator();
 
 export default function UnsafeAssetDetailScreen({navigation}: any) {
   const [selectedPeriod, setSelectedPeriod] = useState<string>('1일'); // 기본 기간 선택
   const [isDropdownVisible, setIsDropdownVisible] = useState(false); // 드롭다운 메뉴 표시 상태
-  const [selectedStock, setSelectedStock] = useState<string>('종목 선택'); // 기본 종목 선택 상태
-  const [realAssetMoney, setRealAssetMoney] = useState<number>(85335); // 현재 보유한 금을 머니로 환산한 값
-  const [realAssetDollar, setRealAssetDollar] = useState<number>(119.37); // 현재 보유한 금을 머니로 환산한 값
+  const [selectedStock, setSelectedStock] = useState<string>('삼성전자'); // 기본 종목 선택 상태
+  const [realAssetMoney, setRealAssetMoney] = useState(0); // 현재 보유한 금을 머니로 환산한 값
+  const [realAssetDollar, setRealAssetDollar] = useState<number>(0); // 현재 보유한 금을 머니로 환산한 값
+  const {getMyCoinMutation} = usePig();
+  const {useGetStock} = useStock();
   // 종목 선택 옵션
-  const domesticStocks = (['삼성전자', 'LG전자', '네이버', '카카오'])
-  const foreignStocks = (['Apple', 'Google', 'Tesla'])
+  const domesticStocks = ['삼성전자', 'LG전자', '네이버', '카카오'];
+  const foreignStocks = ['Apple', 'Google', 'Tesla'];
+
+  const getSelectedStockIndex = () => {
+    return stockIndices[selectedStock as keyof typeof stockIndices] || 0;
+  };
+
+  const [stockMessage, setStockMessage] = useState<string>('');
+
+  // useWebSocket([getSelectedStockIndex()], message => {
+  //   setStockMessage(message);
+  // });
 
   useFocusEffect(
     useCallback(() => {
@@ -40,14 +65,24 @@ export default function UnsafeAssetDetailScreen({navigation}: any) {
         }
       };
       getData();
+      setRealAssetMoney(getMyCoinMutation.data?.coin ?? 0);
+      setRealAssetDollar(
+        Number(
+          (getMyCoinMutation.data
+            ? getMyCoinMutation.data.coin / 1200
+            : 0
+          ).toFixed(2),
+        ),
+      );
+      // useGetStock(getSelectedStockIndex()).data?.stockHistories[0].open;
     }, []),
   );
-
 
   // 종목 선택 시
   const handleStockChange = (stock: string) => {
     setSelectedStock(stock);
-    setIsDropdownVisible(false); // 드롭다운 메뉴 닫기
+    setIsDropdownVisible(false);
+    console.log(`Selected stock: ${stock}, Index: ${getSelectedStockIndex()}`);
   };
 
   // 드롭다운 버튼 토글
@@ -143,7 +178,10 @@ export default function UnsafeAssetDetailScreen({navigation}: any) {
           </View>
         </View>
       </View>
-      <InvestUnsafeAssetTabNavigator selectedStock={selectedStock} />
+      <InvestUnsafeAssetTabNavigator
+        selectedStock={selectedStock}
+        selectedStockIndex={getSelectedStockIndex()}
+      />
       {/* 선택된 종목과 기간에 따른 데이터 렌더링 */}
       {/* <View style={styles.stockDataContainer}>
         <Text>스톡데이터 컨테이너</Text>

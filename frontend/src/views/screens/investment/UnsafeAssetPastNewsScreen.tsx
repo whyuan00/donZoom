@@ -11,13 +11,17 @@ import {
   ScrollView,
 } from 'react-native';
 import useStock from '@/hooks/queries/useStock';
-import { ResponseNews } from '@/api/stock';
+import {ResponseNews} from '@/api/stock';
 
 const UnsafeAssetPastNewsScreen = ({route}: any) => {
   const stockId = route.params.stockId;
   const [sortedByCreatedAt, setSortedByCreatedAt] = useState(true);
   const {useGetNews} = useStock();
-  const {data: newsData = [] as ResponseNews, isLoading, error} = useGetNews(stockId);
+  const {
+    data: newsData = [] as ResponseNews,
+    isLoading,
+    error,
+  } = useGetNews(stockId);
 
   const sortedNews = useMemo(() => {
     if (newsData.length >= 1)

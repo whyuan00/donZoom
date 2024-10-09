@@ -13,7 +13,6 @@ import {
 import useStock from '@/hooks/queries/useStock';
 import {ResponseNews} from '@/api/stock';
 
-
 const RealAssetPastNewsScreen = () => {
   const [sortedByCreatedAt, setSortedByCreatedAt] = useState(true);
   const {useGetNews} = useStock();
@@ -34,10 +33,13 @@ const RealAssetPastNewsScreen = () => {
     return new Date(dateStr).toISOString().slice(0, 10).replaceAll('-', '.');
   };
 
-  if (newsData.length<1){
+  if (newsData.length < 1) {
     return (
       <View style={styles.container}>
-        <Text style={{marginTop:30,textAlign:'center'}}> 뉴스가 없습니다</Text>
+        <Text style={{marginTop: 30, textAlign: 'center'}}>
+          {' '}
+          뉴스가 없습니다
+        </Text>
       </View>
     );
   }
@@ -66,9 +68,7 @@ const RealAssetPastNewsScreen = () => {
               <View style={{flex: 0.8, marginRight: 15}}>
                 <Text style={styles.headText}>{news.title}</Text>
                 <Text style={styles.sourceText}>
-                  {formatDate(news.createdAt)} 
-                  {' '}
-                  {news.source}
+                  {formatDate(news.createdAt)} {news.source}
                 </Text>
               </View>
               <Image

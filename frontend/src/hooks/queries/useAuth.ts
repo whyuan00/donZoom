@@ -2,8 +2,10 @@ import {
   ResponseProfile,
   getProfile,
   logout,
+  postAutoLogin,
   postChildAdd,
   postLogin,
+  postProfileImage,
   postSignup,
 } from '@/api/auth';
 import queryClient from '@/api/queryClient';
@@ -61,6 +63,20 @@ function useLogout(mutationOptions?: UseMutationCustomOptions) {
   });
 }
 
+function useAutoLogin(mutationOptions?: UseMutationCustomOptions) {
+  return useMutation({
+    mutationFn: postAutoLogin,
+    ...mutationOptions,
+  });
+}
+
+function useProfileImage(mutationOptions?: UseMutationCustomOptions) {
+  return useMutation({
+    mutationFn: postProfileImage,
+    ...mutationOptions,
+  });
+}
+
 function useChildAdd(mutationOptions?: UseMutationCustomOptions) {
   return useMutation({
     mutationFn: postChildAdd,
@@ -74,6 +90,8 @@ function useAuth() {
   const isLogin = getProfileQuery.isSuccess;
   const loginMutation = useLogin();
   const logoutMutation = useLogout();
+  const autoLoginMutation = useAutoLogin();
+  const profileImageMutation = useProfileImage();
   const childAddMutation = useChildAdd();
 
   return {
@@ -82,6 +100,8 @@ function useAuth() {
     isLogin,
     loginMutation,
     logoutMutation,
+    autoLoginMutation,
+    profileImageMutation,
     childAddMutation,
   };
 }
