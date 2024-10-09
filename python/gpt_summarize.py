@@ -19,7 +19,7 @@ def summarize_news(text):
     payload = {
         "model": "gpt-4o",
         "messages": [
-            {"role": "system", "content": "너는 경제뉴스 기사를 7살 이하의 아이들이 이해할 수 있게 설명해주는 역할을 맡고 있어. 금리같은 경제단어는 뜻을 같이 말해줘. 요약한 티 내지말고"},
+            {"role": "system", "content": "너는 경제뉴스 기사를 7살 이하의 아이들이 이해할 수 있게 설명해주는 역할을 맡고 있어. 금리같은 경제단어는 뜻을 같이 말해줘. 요약한 티 내지말고 자, 얘들아, 안녕 같은 말은 빼줘"},
             {"role": "user", "content": f"이 뉴스 기사를 아이들이 이해할 수 있게 쉽게 풀어주고 요약해줘: {text}"}
         ]
     }
@@ -45,7 +45,7 @@ def summarize_report(text):
     payload = {
         "model": "gpt-4",
         "messages": [
-            {"role": "system", "content": "너는 종목분석 리포트 요약글을 아이들이 이해할 수 있도록 잘 설명해줄거야"},
+            {"role": "system", "content": "너는 종목분석 리포트 요약글을 아이들이 이해할 수 있도록 잘 설명해줄거야. 금리같은 경제단어는 뜻을 같이 말해줘. 자, 얘들아, 안녕 같은 말은 빼줘"},
             {"role": "user", "content": f"이 종목분석 리포트 요약글을 설명해줘: {text}"}
         ]
     }
