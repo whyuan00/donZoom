@@ -37,7 +37,7 @@ function LoginScreen({navigation}: any) {
   const {loginMutation, getProfileQuery, isLogin} = useAuth();
   const [selected, setSelected] = useState('');
   const {errorMessage, clearErrorMessage} = useErrorStore();
-  const {setName, setId} = useSignupStore();
+  const {setName, setId, setProfileImage} = useSignupStore();
   const login = useForm({
     initialValue: {
       email: '',
@@ -151,6 +151,9 @@ function LoginScreen({navigation}: any) {
       if (profileData.data) {
         setName(profileData.data.name);
         setId(profileData.data.id);
+        if (profileData.data.profileImage !== '') {
+          setProfileImage(profileData.data.profileImage);
+        }
         // console.log('profile:', profileData.data);
         console.log(isLogin);
       } else {

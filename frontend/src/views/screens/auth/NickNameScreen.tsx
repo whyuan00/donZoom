@@ -21,14 +21,20 @@ import Svg, {Path} from 'react-native-svg';
 import {
   launchImageLibrary,
   ImageLibraryOptions,
+  Asset,
 } from 'react-native-image-picker';
-interface NickNameScreenProps {}
 
-function NickNameScreen({}: NickNameScreenProps) {
-  const {signupMutation, loginMutation} = useAuth();
+function NickNameScreen() {
+  const {
+    isLogin,
+    signupMutation,
+    loginMutation,
+    profileImageMutation,
+    getProfileQuery,
+  } = useAuth();
   const {values, errors, touched, getTextInputProps} = useSignupForm();
-  const [profileImage, setProfileImage] = useState<{uri: string} | null>(null);
-  const {role} = useSignupStore();
+  const [profileImage, setProfileImage] = useState<Asset | null>(null);
+  const {role, setName, setId, setProfileImage: setImage} = useSignupStore();
   const email = values.email;
   const password = values.password;
   const account = useForm({
@@ -44,7 +50,32 @@ function NickNameScreen({}: NickNameScreenProps) {
   });
   const handleSubmit = () => {
     signupMutation.mutate(account.values, {
-      onSuccess: () => loginMutation.mutate({email, password}),
+      onSuccess: async () => {
+        loginMutation.mutate(
+          {email, password},
+          {
+            onSuccess: () => {
+              if (profileImage !== null) {
+                console.log('이미지 있음:', profileImage);
+                profileImageMutation.mutate(profileImage);
+              } else {
+                console.log('이미지 없음');
+              }
+            },
+          },
+        );
+        const profileData = await getProfileQuery.refetch();
+        if (profileData.data) {
+          setName(profileData.data.name);
+          setId(profileData.data.id);
+          if (profileData.data.profileImage !== '') {
+            setImage(profileData.data.profileImage);
+          }
+          console.log(isLogin);
+        } else {
+          console.log('Profile data is not available');
+        }
+      },
     });
   };
 
@@ -52,8 +83,6 @@ function NickNameScreen({}: NickNameScreenProps) {
     const options: ImageLibraryOptions = {
       mediaType: 'photo',
       includeBase64: false,
-      maxHeight: 2000,
-      maxWidth: 2000,
     };
 
     launchImageLibrary(options, response => {
@@ -62,12 +91,7 @@ function NickNameScreen({}: NickNameScreenProps) {
       } else if (response.errorCode) {
         console.log('ImagePicker Error: ', response.errorMessage);
       } else if (response.assets && response.assets.length > 0) {
-        const asset = response.assets[0];
-        if (asset.uri) {
-          setProfileImage({uri: asset.uri});
-        } else {
-          console.log('Selected asset does not have a valid URI');
-        }
+        setProfileImage(response.assets[0]);
       }
     });
   };
@@ -84,7 +108,7 @@ function NickNameScreen({}: NickNameScreenProps) {
         style={styles.profileImageContainer}
         onPress={handleImagePick}>
         {profileImage ? (
-          <Image source={profileImage} style={styles.profileImage} />
+          <Image source={{uri: profileImage.uri}} style={styles.profileImage} />
         ) : (
           <Svg
             width="30"
@@ -149,7 +173,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
-    marginTop: 39,
     borderRadius: 60,
     backgroundColor: colors.GRAY_25,
     justifyContent: 'center',

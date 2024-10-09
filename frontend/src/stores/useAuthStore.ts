@@ -9,6 +9,7 @@ interface SignupState {
   role: string;
   name: string;
   nickname: string;
+  profileImage?: string;
   setId: (id: number) => void;
   setEmail: (email: string) => void;
   setPassword: (password: string) => void;
@@ -16,6 +17,7 @@ interface SignupState {
   setRole: (role: string) => void;
   setName: (name: string) => void;
   setNickname: (nickname: string) => void;
+  setProfileImage: (profileImage: string) => void;
   validate: () => {email: string; password: string; passwordConfirm: string};
   reset: () => void;
 }
@@ -28,6 +30,7 @@ const initialState = {
   role: '',
   name: '',
   nickname: '',
+  prifileImage: null,
 };
 
 export const useSignupStore = create<SignupState>((set, get) => ({
@@ -39,6 +42,7 @@ export const useSignupStore = create<SignupState>((set, get) => ({
   setRole: role => set({role}),
   setName: name => set({name}),
   setNickname: nickname => set({nickname}),
+  setProfileImage: profileImage => set({profileImage}),
   validate: () => {
     const {email, password, passwordConfirm} = get();
     return validateSignup({email, password, passwordConfirm});

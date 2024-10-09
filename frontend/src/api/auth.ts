@@ -4,6 +4,9 @@ import {getEncryptedStorage} from '@/utils';
 import axios, {AxiosError} from 'axios';
 import {useErrorStore} from '@/stores/errorMessagesStore';
 import messaging from '@react-native-firebase/messaging';
+import * as RNFS from 'react-native-fs';
+import {Asset} from 'react-native-image-picker';
+import {Platform} from 'react-native';
 
 type User = {
   email: string;
@@ -35,13 +38,32 @@ type LoginError = {
 
 type ResponseProfile = Profile;
 
-const postSignup = async (user: RequestSignup): Promise<void> => {
-  try {
-    const {data} = await axiosInstance.post('/user', {user});
-    console.log('data:', data);
-  } catch (error) {
-    console.log('Error:', error);
-  }
+const postSignup = async ({
+  email,
+  password,
+  passwordConfirm,
+  name,
+  nickname,
+  role,
+}: RequestSignup): Promise<void> => {
+  console.log('signup values', {
+    email,
+    password,
+    passwordConfirm,
+    name,
+    nickname,
+    role,
+  });
+  const {data} = await axiosInstance.post('/user', {
+    email,
+    password,
+    passwordConfirm,
+    name,
+    nickname,
+    role,
+  });
+  console.log(data);
+  return data;
 };
 
 const postLogin = async ({email, password}: User): Promise<Response> => {
@@ -95,5 +117,59 @@ const postAutoLogin = async () => {
   console.log(response);
 };
 
-export {postSignup, postLogin, getProfile, logout, postAutoLogin};
+const postProfileImage = async (profileImage: Asset) => {
+  try {
+    const formData = new FormData();
+    const fileData = {
+      uri:
+        Platform.OS === 'android'
+          ? profileImage.uri
+          : profileImage.uri?.replace('file://', ''),
+      type: profileImage.type || 'image/jpeg',
+      name: profileImage.fileName || 'profile.jpg',
+    };
+    formData.append('file', fileData as any);
+
+    console.log('File data:', fileData);
+    console.log('Form data:', formData);
+
+    const {data} = await axiosInstance.post('/user/profileImage', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      transformRequest: (data, headers) => {
+        return formData;
+      },
+    });
+    console.log('Profile image uploaded successfully:', data);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      // 이제 error는 AxiosError 타입으로 취급됩니다
+      if (error.response) {
+        // 서버 응답이 있는 경우
+        console.error('Server responded with error:', error.response.data);
+        console.error('Status code:', error.response.status);
+        console.error('Headers:', error.response.headers);
+      } else if (error.request) {
+        // 요청은 보냈지만 응답을 받지 못한 경우
+        console.error('No response received:', error.request);
+      } else {
+        // 요청 설정 중 오류가 발생한 경우
+        console.error('Error setting up request:', error.message);
+      }
+    } else {
+      // AxiosError가 아닌 경우
+      console.error('An unexpected error occurred:', error);
+    }
+  }
+};
+
+export {
+  postSignup,
+  postLogin,
+  getProfile,
+  logout,
+  postAutoLogin,
+  postProfileImage,
+};
 export type {User as RequestUser, ResponseToken, ResponseProfile};
