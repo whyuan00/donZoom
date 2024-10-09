@@ -19,6 +19,7 @@ public class Alarm {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "user_id") // 이 부분을 명시적으로 추가
     private User user;
 
