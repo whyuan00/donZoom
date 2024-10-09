@@ -31,14 +31,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -85,10 +78,9 @@ public class UserController {
   }
 
   @PostMapping
-  public ResponseEntity<?> register(@RequestPart("user") @Valid UserCreateDto userCreateDto,
-      @RequestPart(value = "image", required = false) MultipartFile image,
+  public ResponseEntity<?> register(@RequestBody @Valid UserCreateDto userCreateDto,
       BindingResult bindingResult) {
-
+    log.info(userCreateDto.toString());
     // 입력 데이터 유효성 검증
     if (bindingResult.hasErrors()) {
       StringBuilder errors = new StringBuilder();
@@ -99,12 +91,7 @@ public class UserController {
     }
 
     try {
-      // 회원가입 시도
-      String imgUrl = "";
-      if(image!= null && !image.isEmpty()){
-        imgUrl = fileUploadUtil.saveFile(image);
-      }
-      Long id = userService.registerUser(userCreateDto,imgUrl);
+      Long id = userService.registerUser(userCreateDto);
       return new ResponseEntity<>("회원가입 성공", HttpStatus.CREATED);
     } catch (DuplicateEmailException e) {
       return new ResponseEntity<>("이미 가입된 회원입니다", HttpStatus.CONFLICT);
@@ -207,5 +194,19 @@ public class UserController {
     response.setHeader(accessTokenHeader, accessTokenPrefix + tokenMap.get("accessToken"));
 
     return ResponseEntity.ok(tokenMap);
+  }
+
+  @PostMapping("/profileImage")
+  public ResponseEntity<?> updateImage(@RequestParam("file") MultipartFile file) {
+    try {
+      if (file == null || file.isEmpty()) {
+        return new ResponseEntity<>("파일이 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+      }
+      String imageUrl = userService.updateUser(file);
+
+      return new ResponseEntity<>(imageUrl, HttpStatus.OK);
+    } catch (Exception e) {
+      return new ResponseEntity<>("이미지 업로드 중 오류 발생", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

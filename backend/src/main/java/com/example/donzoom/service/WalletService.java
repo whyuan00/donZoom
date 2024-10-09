@@ -42,6 +42,7 @@ public class WalletService {
     Wallet wallet = findCurrentWallet();
     wallet.updateCoin(wallet.getCoin() + amount);
     if(amount > 0){
+      log.info("코인을 획득했습니다.");
       User user = userService.findCurrentUser();
       try {
         fcmService.sendNotification(user.getDeviceToken(),"코인획득","먹고 가라");
@@ -49,6 +50,7 @@ public class WalletService {
         log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
       }
     }
+    walletRepository.save(wallet);
   }
 
   //가상머니로 돼지뽑기권 구매하기
