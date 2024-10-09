@@ -89,7 +89,7 @@ public class User extends BaseEntity {
     this.name = name;
     this.nickname = nickname;
     this.profileImage = profileImage;
-    this.isParent = false;
+    this.isParent = isParent;
     this.userKey = userKey;
     this.role = role;
     this.provider = provider;
