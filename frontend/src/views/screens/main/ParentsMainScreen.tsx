@@ -219,6 +219,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.WHITE,
+    justifyContent: 'center',
     alignItems: 'center',
   },
   contentsContainer: {
@@ -232,7 +233,7 @@ const styles = StyleSheet.create({
     marginHorizontal: -12,
   },
   mypageContainer: {
-    width: 350,
+    width: 320,
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
@@ -255,7 +256,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   moneyContainer: {
-    width: 360,
+    width: 340,
     height: 244,
     justifyContent: 'center',
     alignItems: 'center',
@@ -274,7 +275,7 @@ const styles = StyleSheet.create({
     marginLeft: 6,
   },
   moneyContentsContainer: {
-    width: 320,
+    width: 300,
     height: 110,
     borderRadius: 10,
     flexDirection: 'row',
@@ -317,8 +318,8 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   missionContainer: {
-    width: 360,
-    height: 330,
+    width: 340,
+    height: 310,
     borderRadius: 10,
     backgroundColor: colors.YELLOW_50,
     justifyContent: 'center',
@@ -341,7 +342,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   missionBox: {
-    width: 320,
+    width: 300,
     height: 60,
     backgroundColor: colors.WHITE,
     borderRadius: 10,
@@ -360,7 +361,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   detailMission: {
-    width: 310,
+    width: 300,
     color: colors.BLACK,
     fontFamily: fonts.MEDIUM,
     fontSize: 12,
