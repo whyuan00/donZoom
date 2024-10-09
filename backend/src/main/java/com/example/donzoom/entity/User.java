@@ -1,5 +1,6 @@
 package com.example.donzoom.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -57,6 +58,7 @@ public class User extends BaseEntity {
 
   @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   @JoinColumn(name = "WALLET_ID")
+  @JsonManagedReference
   private Wallet wallet;
 
   private Long dailyLimit;             // 1일 결제 한도

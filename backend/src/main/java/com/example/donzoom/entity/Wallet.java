@@ -1,5 +1,6 @@
 package com.example.donzoom.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,7 +30,7 @@ public class Wallet {
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
-  @JsonIgnore
+  @JsonBackReference
   private User user;
 
   @OneToMany(mappedBy = "wallet")
