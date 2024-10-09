@@ -168,7 +168,6 @@ export type {
   ResponseNews,
   RequestBuyStock,
   MyStock,
-  Articles,
   stockPriceArr,
   ResponseReports,
 };

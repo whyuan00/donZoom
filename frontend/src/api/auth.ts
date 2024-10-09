@@ -70,9 +70,8 @@ const postLogin = async ({email, password}: User): Promise<Response> => {
   const setErrorMessage = useErrorStore.getState().setErrorMessage;
   try {
     const deviceToken = await messaging().getToken();
-    console.log('deviceToken: ',deviceToken);
+    console.log('deviceToken: ', deviceToken);
     console.log('Attempting to send login request...');
-    console.error(email,password);
     const response = await axiosInstance.post('/user/login', {
       email,
       password,
@@ -179,5 +178,6 @@ export {
   logout,
   postAutoLogin,
   postProfileImage,
-, postChildAdd};
+  postChildAdd,
+};
 export type {User as RequestUser, ResponseToken, ResponseProfile};
