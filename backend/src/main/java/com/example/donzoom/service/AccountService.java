@@ -115,7 +115,16 @@ public class AccountService {
   public TransferResponseDto transfer(TransferRequestDto transferRequestDto) {
     //유저정보 가져오기
     String userKey = getCurrentUserKey();
-    return bankApi.transfer(transferRequestDto, userKey);
+    TransferResponseDto transferResponseDto = bankApi.transfer(transferRequestDto,userKey);
+    try{
+      User withdrawalUser = userService.findUserByAccountNo(transferRequestDto.getWithdrawalAccountNo());
+      User depositUser = userService.findUserByAccountNo(transferRequestDto.getDepositAccountNo());
+      fcmService.sendNotification(withdrawalUser,"출금","-"+transferRequestDto.getTransactionBalance()+"원","3","default");
+      fcmService.sendNotification(depositUser,"입금","+"+transferRequestDto.getTransactionBalance()+"원","2","default");
+    }catch (FirebaseMessagingException e) {
+        log.error(e.getMessage());
+    }
+    return transferResponseDto;
   }
 
   public BalanceResponseDto getBalance(String accountNo) {

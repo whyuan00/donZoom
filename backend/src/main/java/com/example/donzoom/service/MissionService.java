@@ -69,7 +69,7 @@ public class MissionService {
         .build();
     missionRepository.save(mission);
     try {
-      fcmService.sendNotification(child,"미션생성","미션...만듬...");
+      fcmService.sendNotification(child,"미션생성","미션이 생성되었습니다.","4","default_status");
     } catch (FirebaseMessagingException e) {
       log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
     }
@@ -83,8 +83,22 @@ public class MissionService {
         .orElseThrow(() -> new RuntimeException("Mission not found"));
 
     mission.updateMission(missionUpdateDto);
-
     missionRepository.save(mission);
+    if(mission.getStatus().equals(MissionStatus.ACCEPTED)){
+      User parent = mission.getUser().getParent();
+      try {
+        fcmService.sendNotification(parent, "미션 완료 요청", "미션 완료 요청이 도착하였습니다.", "5", "default_status");
+      } catch (FirebaseMessagingException e) {
+        log.error(e.getMessage());
+      }
+    }else if(mission.getStatus().equals(MissionStatus.DONE)){
+        // 송금 로직
+        try {
+            fcmService.sendNotification(mission.getUser(), "미션 완료", "미션이 완료되었습니다..", "6", "default_status");
+        } catch (FirebaseMessagingException e) {
+            log.error(e.getMessage());
+        }
+    }
     return mission;
   }
 
