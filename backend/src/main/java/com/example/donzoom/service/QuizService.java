@@ -32,6 +32,7 @@ public class QuizService {
   private final QuizRepository quizRepository;
   private final UserRepository userRepository;
   private final UserQuizRepository userQuizRepository;
+  private final UserService userService;
 
   public List<Quiz> getTodayQuizzes() {
     // 오늘의 퀴즈 안푼것중  (랜덤 3개) 가져오기
@@ -89,9 +90,7 @@ public class QuizService {
     // 정답 제출하기
 
     // 현재 로그인된 사용자 정보 가져오기
-    String username = SecurityUtil.getAuthenticatedUsername();
-    User user = userRepository.findByEmail(username)
-        .orElseThrow(() -> new RuntimeException("User not found"));
+    User user = userService.findCurrentUser();
 
     // 퀴즈 정보 가져오기
     Quiz quiz = quizRepository.findById(quizId)
