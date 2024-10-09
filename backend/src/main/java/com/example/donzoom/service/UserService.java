@@ -51,9 +51,10 @@ public class UserService {
     Wallet wallet = Wallet.builder().build();
     walletRepository.save(wallet);
 
+    log.info(userCreateDto.getIsParent().toString());
     User user = User.builder().email(userCreateDto.getEmail())
         .pwdHash(passwordService.encode(userCreateDto.getPassword())).name(userCreateDto.getName())
-            .isParent(userCreateDto.getIsParent())
+            .isParent(userCreateDto.getIsParent().equals(true))
         .nickname(userCreateDto.getNickname()).wallet(wallet).build();
 
 
