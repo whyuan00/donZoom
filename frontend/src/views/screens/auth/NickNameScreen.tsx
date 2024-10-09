@@ -39,7 +39,8 @@ function NickNameScreen() {
     loginMutation,
     profileImageMutation,
     getProfileQuery,
-  , childAddMutation} = useAuth();
+    childAddMutation,
+  } = useAuth();
   const {values, errors, touched, getTextInputProps} = useSignupForm();
   const [profileImage, setProfileImage] = useState<Asset | null>(null);
   const {role, setName, setId, setProfileImage: setImage} = useSignupStore();
@@ -63,10 +64,13 @@ function NickNameScreen() {
   const handleSubmit = () => {
     signupMutation.mutate(account.values, {
       onSuccess: async () => {
+        const childEmails = emailData.map(email => email.emailAddress);
+        console.log('아이 이메일 확인:', childEmails);
         loginMutation.mutate(
           {email, password},
           {
             onSuccess: () => {
+              childAddMutation.mutate(childEmails);
               if (profileImage !== null) {
                 console.log('이미지 있음:', profileImage);
                 profileImageMutation.mutate(profileImage);
@@ -117,13 +121,13 @@ function NickNameScreen() {
   };
 
   // 이메일 형식 유효성 검사 (정규식)
-  const isValidEmail = email => {
+  const isValidEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
   // 이메일 추가 함수
-  const handleUpdateEmail = email => {
+  const handleUpdateEmail = (email: string) => {
     if (!isValidEmail(email)) {
       return;
     }
@@ -154,11 +158,14 @@ function NickNameScreen() {
           <Text style={styles.text}>정보를 입력해주세요.</Text>
         </View>
         <TouchableOpacity
-        style={styles.profileImageContainer}
-        onPress={handleImagePick}>
-        {profileImage ? (
-          <Image source={{uri: profileImage.uri}} style={styles.profileImage} />
-        ) : (
+          style={styles.profileImageContainer}
+          onPress={handleImagePick}>
+          {profileImage ? (
+            <Image
+              source={{uri: profileImage.uri}}
+              style={styles.profileImage}
+            />
+          ) : (
             <Svg
               width="30"
               height="28"
@@ -170,7 +177,7 @@ function NickNameScreen() {
                 fill="#77787B"
               />
             </Svg>
-        )}
+          )}
         </TouchableOpacity>
         <View style={styles.inputContainer}>
           <InputField
