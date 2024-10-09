@@ -83,7 +83,7 @@ const UnsafeAssetChartTabScreen = ({
   return (
     <View style={styles.container}>
       {
-        <View style={{width: 350, height: 330, borderWidth: 1}}>
+        <View style={{width: 350, height: 330}}>
           <CandlestickChartComponent data={candleData} />
         </View>
       }

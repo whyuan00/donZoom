@@ -2,8 +2,11 @@ import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 import useAuth from '@/hooks/queries/useAuth';
 import useSignupForm from '@/hooks/useSignupForm';
+import {useSignupStore} from '@/stores/useAuthStore';
 import useLogout from '@/stores/useLogout';
 import usePasswordStore from '@/stores/usePasswordStore';
+import CustomButton from '@/views/components/CustomButton';
+import InputField from '@/views/components/InputField';
 import {useNavigation} from '@react-navigation/native';
 import {useState} from 'react';
 import {
@@ -13,16 +16,68 @@ import {
   Text,
   Image,
   TouchableOpacity,
+  Modal,
 } from 'react-native';
 import NextIcon from 'react-native-vector-icons/MaterialIcons';
+
+interface emailData {
+  emailId: any;
+  emailAddress: string;
+}
 
 function MyInformationScreen() {
   const navigation = useNavigation() as any;
   const [isParents] = useState(true);
   const logout = useLogout();
-  const {logoutMutation} = useAuth();
+  const {logoutMutation, childAddMutation} = useAuth();
   const {reset: signupReset} = useSignupForm();
   const {reset: passwordReset} = usePasswordStore();
+  const {isParent} = useSignupStore();
+  const [modal, setModal] = useState(false);
+  const [text, setText] = useState<string>('');
+  const [emailData, setEmailData] = useState<emailData[]>([]); //아이 email데이터
+
+  const toggleModal = () => {
+    setModal(!modal);
+  };
+
+  const onChangeText = (input: string) => {
+    setText(input);
+  };
+
+  // 이메일 형식 유효성 검사 (정규식)
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // 이메일 추가 함수
+  const handleUpdateEmail = (email: string) => {
+    if (!isValidEmail(email)) {
+      return;
+    }
+    const emailExists = emailData.some(item => item.emailAddress === email);
+    if (emailExists) {
+      return;
+    }
+    // 3. 유효성 검사를 통과한 경우 이메일 추가
+    const newEmail = {
+      emailId: Date.now(), // 고유한 id
+      emailAddress: email,
+    };
+    setEmailData([...emailData, newEmail]); // 이메일 리스트에 추가
+    setText(''); // 입력 필드를 초기화
+  };
+
+  const handleDelete = (id: number) => {
+    setEmailData(emailData.filter(email => email.emailId !== id));
+  };
+
+  const handleModalClose = () => {
+    const childEmails = emailData.map(email => email.emailAddress);
+    childAddMutation.mutate(childEmails);
+    setModal(false);
+  };
 
   return (
     <ScrollView>
@@ -49,28 +104,37 @@ function MyInformationScreen() {
                 <NextIcon name="navigate-next" size={20} color={colors.BLACK} />
               </TouchableOpacity>
             </View>
-            <View style={styles.menuContainer}>
-              <View style={styles.childInfoHeaderContainer}>
-                <Text style={styles.cardTitle}>등록된 아이 정보</Text>
-              </View>
-              <View style={styles.childInfoContainer}>
-                <View style={styles.childInfoDetailContainer}>
-                  <Image
-                    source={require('@/assets/images/characterImage.webp')}
-                    style={styles.image}
-                  />
-                  <Text style={styles.childInfoText}>김싸피(닉네임)</Text>
+            {isParent ? (
+              <View style={styles.menuContainer}>
+                <View style={styles.childInfoHeaderContainer}>
+                  <Text style={styles.cardTitle}>등록된 아이 정보</Text>
                 </View>
-                <View style={styles.childInfoManageContainer}>
-                  <TouchableOpacity>
-                    <Text style={styles.manageText}>관리</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Text style={styles.deleteText}>삭제</Text>
-                  </TouchableOpacity>
+                <View style={styles.childInfoContainer}>
+                  <View style={styles.childInfoDetailContainer}>
+                    <Image
+                      source={require('@/assets/images/characterImage.webp')}
+                      style={styles.image}
+                    />
+                    <Text style={styles.childInfoText}>김싸피(닉네임)</Text>
+                  </View>
+                  <View style={styles.childInfoManageContainer}>
+                    <TouchableOpacity>
+                      <Text style={styles.manageText}>관리</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                      <Text style={styles.deleteText}>삭제</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
+                <TouchableOpacity
+                  style={styles.securityMenuContainer}
+                  onPress={() => setModal(true)}>
+                  <Text style={styles.securityMenuText}>아이 정보 추가</Text>
+                </TouchableOpacity>
               </View>
-            </View>
+            ) : (
+              <></>
+            )}
           </>
         )}
         <View style={styles.alarmMenuContainer}>
@@ -128,6 +192,62 @@ function MyInformationScreen() {
           </TouchableOpacity>
         </View>
       </View>
+      {/* 아이 정보 추가 모달 */}
+      <Modal transparent={true} visible={modal} onRequestClose={toggleModal}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            {/* 텍스트 박스 */}
+            <View style={{marginTop: 50, marginBottom: 20}}>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  fontFamily: fonts.MEDIUM,
+                  fontSize: 20,
+                  color: colors.BLACK,
+                }}>
+                아이 정보를 추가해주세요
+              </Text>
+            </View>
+            <View
+              style={{
+                marginBottom: 10,
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <InputField
+                style={styles.input}
+                inputMode="text"
+                placeholder="아이 이메일"
+                onChangeText={onChangeText}
+                value={text}
+              />
+              <TouchableOpacity
+                style={{alignItems: 'center'}}
+                onPress={() => handleUpdateEmail(text)}>
+                <Text style={[styles.textButton, {color: colors.BLUE_100}]}>
+                  추가
+                </Text>
+              </TouchableOpacity>
+            </View>
+            {emailData.map(email => (
+              <View key={email.emailId} style={styles.emailContainer}>
+                <View style={styles.emailBox}>
+                  <Text style={styles.emailText}> {email.emailAddress} </Text>
+                </View>
+                <TouchableOpacity onPress={() => handleDelete(email.emailId)}>
+                  <Text style={styles.textButton}>삭제</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+            <CustomButton
+              style={{marginTop: 50, marginBottom: 25}}
+              label="확인"
+              isParent={isParent}
+              onPress={handleModalClose}
+            />
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -143,10 +263,10 @@ const styles = StyleSheet.create({
   menuContainer: {
     backgroundColor: colors.YELLOW_50,
     width: 360,
-    height: 200,
     borderRadius: 10,
     marginBottom: 20,
     alignItems: 'center',
+    gap: 10,
   },
   alarmMenuContainer: {
     backgroundColor: colors.YELLOW_50,
@@ -278,6 +398,51 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.BLACK,
     fontFamily: fonts.MEDIUM,
+  },
+  input: {
+    fontFamily: fonts.LIGHT,
+    fontSize: 14,
+    borderBottomColor: colors.GRAY_50,
+    borderBottomWidth: 1,
+    width: 215,
+  },
+  modalOverlay: {
+    flex: 1,
+    paddingTop: 180,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    width: 350,
+    borderRadius: 10,
+    alignItems: 'center',
+    backgroundColor: colors.WHITE,
+  },
+  emailContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    width: '68%',
+    marginTop: 10,
+  },
+  emailBox: {
+    flex: 1,
+    backgroundColor: colors.GRAY_25,
+    borderRadius: 5,
+    marginRight: 10,
+    paddingVertical: 5,
+    paddingLeft: 5,
+  },
+  emailText: {
+    fontSize: 12,
+    fontFamily: fonts.LIGHT,
+    color: colors.BLACK,
+    textAlign: 'left',
+  },
+  textButton: {
+    fontFamily: fonts.LIGHT,
+    fontSize: 10,
+    color: colors.BLACK,
   },
 });
 
