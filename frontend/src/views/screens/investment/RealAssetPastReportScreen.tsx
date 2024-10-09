@@ -1,4 +1,4 @@
-import React, {useCallback, useState, useEffect} from 'react';
+import React, {useCallback, useState, useMemo} from 'react';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -10,37 +10,43 @@ import {
   Image,
   ScrollView,
 } from 'react-native';
-import axiosInstance from '@/api/axios';
-
-interface Report {
-  reportId: number;
-  title: string;
-  contents: string;
-  createdAt: string;
-  source: string;
-}
+import useStock from '@/hooks/queries/useStock';
+import {ResponseReports} from '@/api/stock';
 
 const RealAssetPastReportScreen = () => {
-  const [reportData, setReportData] = useState<Report[]>([]);
   const [sortedByCreatedAt, setSortedByCreatedAt] = useState(true);
+  const {useGetReports} = useStock();
+  const {
+    data: reportData = [] as ResponseReports,
+    isLoading,
+    error,
+  } = useGetReports(3);
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const response = await axiosInstance.get(`/report/5`);
-        const news = response.data;
-        setReportData(news);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getData();
-  }, []);
+  const sortedReports = useMemo(() => {
+    if (reportData.length >= 1)
+      return sortedByCreatedAt ? [...reportData] : [...reportData].reverse();
+  }, [reportData, sortedByCreatedAt]);
 
   const switchSortOrder = () => {
-    setReportData(prevData => [...prevData].reverse());
     setSortedByCreatedAt(prev => !prev);
   };
+
+  // 날짜 형식 바꾸기
+  // date를 YYYY.MM.DD로 포맷팅
+  const formatDate = (dateStr: Date) => {
+    return new Date(dateStr).toISOString().slice(0, 10).replaceAll('-', '.');
+  };
+
+  if (reportData.length < 1) {
+    return (
+      <View style={styles.container}>
+        <Text style={{marginTop: 30, textAlign: 'center'}}>
+          리포트가 없습니다
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -59,20 +65,20 @@ const RealAssetPastReportScreen = () => {
         )}
       </TouchableOpacity>
       <ScrollView>
-        {reportData.map(news => (
-          <TouchableOpacity key={news.reportId} style={styles.newsContainer}>
-            <View style={{flex: 0.8, marginRight: 15}}>
-              <Text style={styles.headText}>{news.title}</Text>
-              <Text style={styles.sourceText}>
-                {news.createdAt.slice(0, 20).replaceAll('-', '.')} ·{' '}
-                {news.source}
-              </Text>
-            </View>
-            <Image
-              style={styles.image}
-              source={require('@/assets/gold.png')}></Image>
-          </TouchableOpacity>
-        ))}
+        {reportData.length >= 1 &&
+          sortedReports?.map(report => (
+            <TouchableOpacity key={report.Id} style={styles.reportContainer}>
+              <View style={{flex: 0.8, marginRight: 15}}>
+                <Text style={styles.headText}>{report.title}</Text>
+                <Text style={styles.sourceText}>
+                  {formatDate(report.createdAt)} {report.source}
+                </Text>
+              </View>
+              <Image
+                style={styles.image}
+                source={require('@/assets/gold.png')}></Image>
+            </TouchableOpacity>
+          ))}
       </ScrollView>
     </View>
   );
@@ -94,7 +100,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontFamily: fonts.BOLD,
   },
-  newsContainer: {
+  reportContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',

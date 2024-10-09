@@ -27,6 +27,8 @@ import {fonts} from '@/constants/font';
 import TransferScreen2 from '@/views/screens/account/TransferScreen2';
 import TransferScreen3 from '@/views/screens/account/TransferScreen3';
 import TransferScreen4 from '@/views/screens/account/TransferScreen4';
+import QuizReviewScreen from '@/views/screens/quiz/QuizReviewScreen';
+import QuizReviewExplanationScreen from '@/views/screens/quiz/QuizReviewExplanationScreen';
 
 const HomeStackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -136,6 +138,8 @@ const HomeStackNavigator = () => {
       <Stack.Screen name="퀴즈" component={QuizHomeScreen} />
       <Stack.Screen name="오늘의 퀴즈" component={QuizScreen} />
       <Stack.Screen name="해설" component={QuizExplanationScreen} />
+      <Stack.Screen name="퀴즈 리뷰" component={QuizReviewScreen} />
+      <Stack.Screen name="리뷰 해설" component={QuizReviewExplanationScreen} />
       <Stack.Screen
         name="픽뽑기"
         component={DrawMachineScreen}

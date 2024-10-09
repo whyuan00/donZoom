@@ -42,21 +42,26 @@ function DrawMachineScreen({}) {
     drawPigMutation,
     getAllPigMutation,
     getMyCoinMutation,
+    getMyTicketMutation,
     changeCoinToTicketMutation,
   } = usePig();
   const [isModalVisible, setModalVisible] = useState(false);
   const [isTicketModalVisible, setTicketModalVisible] = useState(false);
   const [ticketValue, setTicketValue] = useState(1);
   const [myCoin, setMyCoin] = useState(0);
+  const [myTicket, setMyTicket] = useState(0);
   const [maximumTicketValue, setMaximumTicketValue] = useState(100);
 
   // 전체 돼지 불러오기
   useEffect(() => {
     if (getAllPigMutation.isSuccess && getAllPigMutation.data) {
       setPigs(getAllPigMutation.data);
-      // console.log('전체 돼지 가져오기: ', getAllPigMutation.data);
     }
-  }, [getAllPigMutation.data, setPigs]);
+
+    const ticketData = getMyTicketMutation.data?.ticket || 0;
+    setMyTicket(ticketData);
+    console.log('내 티켓 가져오기: ', ticketData);
+  }, [getAllPigMutation.data, getMyTicketMutation.data, setPigs, setMyTicket]);
 
   // 1회 뽑기
   const drawCard = async () => {
@@ -72,21 +77,22 @@ function DrawMachineScreen({}) {
         silhouetteImageUrl: drawnPigs[0].silhouetteImageUrl,
         createdAt: drawnPigs[0].createdAt || null,
       };
-      console.log('이거 뽑았어! ', selected);
+      // console.log('이거 뽑았어! ', selected);
       setSelectedCard(selected);
       addPigHistory(selected);
 
       const isNew = !selected.owned;
       setIsNewCard(isNew);
       if (isNew) addOwnedPig(selected);
-      console.log('selectedCard: ', selectedCard);
-      console.log('imageUrl: ', selectedCard?.imageUrl);
+      // console.log('selectedCard: ', selectedCard);
+      // console.log('imageUrl: ', selectedCard?.imageUrl);
       // 1회 뽑기 모달창 열기
       setIsManyDraws(false);
       setModalVisible(true);
       Vibration.vibrate(100);
+      setMyTicket(prev => prev - 1);
     } catch (error) {
-      console.error('돼지 1회 뽑기 실패:', error);
+      Alert.alert('티켓이 부족합니다!');
     }
   };
 
@@ -108,11 +114,12 @@ function DrawMachineScreen({}) {
 
       drawnCards.forEach(card => {
         const isNew = card.createdAt === null;
-        console.log('isNew: ', isNew);
+        // console.log('isNew: ', isNew);
         newCards.push(isNew);
         if (isNew) addOwnedPig(card);
         addPigHistory(card);
       });
+      setMyTicket(prev => prev - 5);
 
       setSelectedManyCards(drawnCards);
       setIsNewCards(newCards);
@@ -120,7 +127,7 @@ function DrawMachineScreen({}) {
       setModalVisible(true);
       Vibration.vibrate(500);
     } catch (error) {
-      console.error('돼지 5회 뽑기 실패:', error);
+      Alert.alert('티켓이 부족합니다!');
     }
   };
 
@@ -145,26 +152,45 @@ function DrawMachineScreen({}) {
   };
 
   const changeCoinToTicket = () => {
-    Alert.alert('교환해?');
-    changeCoinToTicketMutation.mutateAsync(ticketValue);
+    if (changeCoinToTicketMutation.isSuccess) {
+      Alert.alert('티켓 구매 성공!');
+      changeCoinToTicketMutation.mutateAsync(ticketValue);
+      setTicketModalVisible(false);
+    } else {
+      Alert.alert('코인이 부족합니다.');
+    }
   };
 
   return (
     <ScrollView>
       <View style={styles.container}>
         <DrawMachineSVG style={styles.drawMachine} />
+        <View style={styles.hasTicketContainer}>
+          <Text style={styles.hasTicketText}>내 티켓: {myTicket}</Text>
+        </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={drawCard}>
-            <Text style={styles.buttonText}>1회 뽑기</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={drawManyCard}>
-            <Text style={styles.buttonText}>5회 뽑기</Text>
-          </TouchableOpacity>
+          <View style={{justifyContent: 'center', alignItems: 'center'}}>
+            <TouchableOpacity style={styles.button} onPress={drawCard}>
+              <Text style={styles.buttonText}>1회 뽑기</Text>
+            </TouchableOpacity>
+            <View style={{flexDirection: 'row'}}>
+              <Ticket name="ticket-outline" size={20} color={colors.BLACK} />
+              <Text style={{color: colors.BLACK}}> x 1</Text>
+            </View>
+          </View>
+          <View style={{justifyContent: 'center', alignItems: 'center'}}>
+            <TouchableOpacity style={styles.button} onPress={drawManyCard}>
+              <Text style={styles.buttonText}>5회 뽑기</Text>
+            </TouchableOpacity>
+            <View style={{flexDirection: 'row'}}>
+              <Ticket name="ticket-outline" size={20} color={colors.BLACK} />
+              <Text style={{color: colors.BLACK}}> x 5</Text>
+            </View>
+          </View>
         </View>
         <TouchableOpacity style={styles.changeTicket} onPress={openTicketModal}>
           <Ticket name="ticket-outline" size={40} color={colors.BLACK} />
-          <Text style={styles.tempText}>티켓 교환하기</Text>
-          <Ticket name="ticket-outline" size={40} color={colors.BLACK} />
+          <Text style={styles.tempText}>티켓 교환하러가기 {'>>'}</Text>
         </TouchableOpacity>
       </View>
       {/* <View style={styles.listContainer}>
@@ -307,7 +333,16 @@ const styles = StyleSheet.create({
   },
   drawMachine: {
     justifyContent: 'center',
-    marginBottom: 40,
+    marginBottom: 20,
+  },
+  hasTicketContainer: {
+    flexDirection: 'row',
+    marginBottom: 15,
+  },
+  hasTicketText: {
+    color: colors.BLACK,
+    fontSize: 16,
+    fontFamily: fonts.MEDIUM,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -326,6 +361,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 20,
     marginRight: 20,
+    marginBottom: 5,
   },
   buttonText: {
     color: colors.BLACK,
@@ -482,6 +518,7 @@ const styles = StyleSheet.create({
     fontFamily: 'GmarketSansTTFMedium',
     fontSize: 14,
     lineHeight: 20,
+    textAlign: 'justify',
   },
 });
 

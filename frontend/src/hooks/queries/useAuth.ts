@@ -3,6 +3,7 @@ import {
   getProfile,
   logout,
   postAutoLogin,
+  postChildAdd,
   postLogin,
   postProfileImage,
   postSignup,
@@ -76,6 +77,13 @@ function useProfileImage(mutationOptions?: UseMutationCustomOptions) {
   });
 }
 
+function useChildAdd(mutationOptions?: UseMutationCustomOptions) {
+  return useMutation({
+    mutationFn: postChildAdd,
+    ...mutationOptions,
+  });
+}
+
 function useAuth() {
   const signupMutation = useSignup();
   const getProfileQuery = useGetProfile();
@@ -84,6 +92,7 @@ function useAuth() {
   const logoutMutation = useLogout();
   const autoLoginMutation = useAutoLogin();
   const profileImageMutation = useProfileImage();
+  const childAddMutation = useChildAdd();
 
   return {
     signupMutation,
@@ -93,6 +102,7 @@ function useAuth() {
     logoutMutation,
     autoLoginMutation,
     profileImageMutation,
+    childAddMutation,
   };
 }
 

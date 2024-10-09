@@ -3,6 +3,7 @@ import {
   ResponseMyHistoryList,
   ResponseMyStock,
   ResponseNews,
+  ResponseReports,
   ResponseStock,
   ResponseStockList,
   getMyHistory,
@@ -11,6 +12,7 @@ import {
   getNews,
   getStock,
   getStockList,
+  getTodaysNews,
   postBuyStock,
   postSellStock,
 } from '@/api/stock';
@@ -86,12 +88,45 @@ function usePostSellStock(mutationOptions?: UseMutationCustomOptions) {
 }
 
 function useGetNews(
-  stockId: string,
+  stockId: number,
   queryOptions?: UseQueryCustomOptions<ResponseNews>,
 ) {
   return useQuery({
     queryKey: [queryKeys.STOCK, stockId],
     queryFn: () => getNews(stockId),
+    ...queryOptions,
+  });
+}
+//
+function useGetTodaysNews(
+  stockId: number,
+  queryOptions?: UseQueryCustomOptions<ResponseNews>,
+) {
+  return useQuery({
+    queryKey: [queryKeys.STOCK, stockId],
+    queryFn: () => getTodaysNews(stockId),
+    ...queryOptions,
+  });
+}
+
+function useGetReports(
+  stockId: number,
+  queryOptions?: UseQueryCustomOptions<ResponseReports>,
+) {
+  return useQuery({
+    queryKey: [queryKeys.STOCK, stockId],
+    queryFn: () => getNews(stockId),
+    ...queryOptions,
+  });
+}
+//
+function useGetTodaysReports(
+  stockId: number,
+  queryOptions?: UseQueryCustomOptions<ResponseReports>,
+) {
+  return useQuery({
+    queryKey: [queryKeys.STOCK, stockId],
+    queryFn: () => getTodaysNews(stockId),
     ...queryOptions,
   });
 }
@@ -108,6 +143,9 @@ function useStock() {
     buyStockMutation,
     sellStockMutation,
     useGetNews,
+    useGetTodaysNews,
+    useGetReports,
+    useGetTodaysReports,
   };
 }
 

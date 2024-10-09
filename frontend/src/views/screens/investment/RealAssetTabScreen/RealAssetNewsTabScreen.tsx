@@ -11,42 +11,40 @@ import {
   ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import axiosInstance from '@/api/axios';
-import {useFocusEffect} from '@react-navigation/native';
+import useStock from '@/hooks/queries/useStock';
+import { ResponseNews } from '@/api/stock';
 
-interface News {
-  newsId: number;
+type News = {
+  Id: number;
   title: string;
   contents: string;
-  createdAt: string;
+  createdAt: Date;
   source: string;
-}
+};
 
 const RealAssetNewsTabScreen = ({navigation}: any) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedNews, setSelectedNews] = useState<News | null>(null);
-  const [todaysNews, setTodaysNews] = useState<News[]>([]);
+  const {useGetTodaysNews} = useStock();
 
-  useFocusEffect(
-    useCallback(() => {
-      const getData = async () => {
-        try {
-          const response = await axiosInstance.get(`/news/5/today`);
-          const news = response.data;
-          setTodaysNews(news);
-        } catch (error) {
-          console.log(error);
-        }
-      };
-      getData();
-    }, []),
-  );
+  const {
+    data: todaysNews = [] as ResponseNews,
+    isLoading,
+    error,
+  } = useGetTodaysNews(5);
 
   const openModal = (news: News) => {
     setSelectedNews(news);
     setModalVisible(true);
   };
 
+  // 날짜 형식 바꾸기
+  // date를 YYYY.MM.DD로 포맷팅
+  const formatDate = (dateStr: Date) => {
+    return new Date(dateStr).toISOString().slice(0, 10).replaceAll('-', '.');
+  };
+
+  //  타이틀 적당히 자르기
   const formatTitle = (title: string) => {
     const words = title.split(' ');
     let formattedTitle = '';
@@ -67,39 +65,38 @@ const RealAssetNewsTabScreen = ({navigation}: any) => {
     return formattedTitle.trim();
   };
 
-   if (todaysNews.length < 1) {
-     return (
-       <View style={styles.container}>
-         <Text>오늘의 뉴스가 없습니다</Text>
-         <TouchableOpacity
-           onPress={() => navigation.navigate('RealAssetPastNews')}>
-           <View style={styles.button}>
-             <Text style={{fontFamily: fonts.MEDIUM, color: colors.BLACK}}>
-               지난 뉴스 보기
-             </Text>
-             <Icon name="chevron-right" size={25} />
-           </View>
-         </TouchableOpacity>
-       </View>
-     );
-   }
+  if (todaysNews.length < 1) {
+    return (
+      <View style={styles.container}>
+        <Text> 오늘의 뉴스가 없습니다</Text>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('RealAssetPastNews')}>
+          <View style={styles.button}>
+            <Text style={{fontFamily: fonts.MEDIUM, color: colors.BLACK}}>
+              지난 뉴스 보기
+            </Text>
+            <Icon name="chevron-right" size={25} />
+          </View>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      {todaysNews.map(news => (
-        <TouchableOpacity
-          onPress={() => openModal(news)}
-          key={news.newsId}
-          style={styles.newsContainer}>
-          <Text style={styles.headText}> {formatTitle(news.title)}</Text>
-          <View style={{marginLeft: 210}}>
-            <Text style={styles.headContentText}> {news.source}</Text>
-            <Text style={styles.headContentText}>
-              {news.createdAt.substring(0, 10).replaceAll('-', '.')}
-            </Text>
-          </View>
-        </TouchableOpacity>
-      ))}
+      {todaysNews.length >= 1 &&
+        todaysNews?.map(news => (
+          <TouchableOpacity
+            onPress={() => openModal(news)}
+            key={news.Id}
+            style={styles.newsContainer}>
+            <Text style={styles.headText}> {formatTitle(news.title)}</Text>
+            <View style={{marginLeft: 210}}>
+              <Text style={styles.headContentText}> {news.source}</Text>
+              <Text style={styles.headContentText}>{formatDate(news.createdAt)}</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
       <View>
         <Modal animationType="fade" visible={modalVisible} transparent={true}>
           <TouchableWithoutFeedback
@@ -123,7 +120,8 @@ const RealAssetNewsTabScreen = ({navigation}: any) => {
           </TouchableWithoutFeedback>
         </Modal>
       </View>
-      <TouchableOpacity onPress={() => navigation.navigate('RealAssetPastNews')}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('RealAssetPastNews')}>
         <View style={styles.button}>
           <Text style={{fontFamily: fonts.MEDIUM, color: colors.BLACK}}>
             지난 뉴스 보기

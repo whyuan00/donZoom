@@ -27,6 +27,7 @@ function QuizHomeScreen({navigation}: any) {
   const setTodaysQuizQuestions = useQuizStore(
     state => state.setTodaysQuizQuestions,
   );
+  const {setReviewQuizQuestions, reviewQuizQuestions} = useQuizStore();
   const {todayQuizMutation, solvedQuizMutation} = useQuiz();
 
   const formatDate = (dateString: string): string => {
@@ -44,13 +45,15 @@ function QuizHomeScreen({navigation}: any) {
       answers: [quiz.option1, quiz.option2, quiz.option3, quiz.option4],
       correctAnswer: quiz.answer,
       explanations: quiz.explanations.split('\n'),
-      correctExplanation: quiz.answer_explanation,
+      correctExplanation: quiz.answerExplanation,
     }));
   };
 
   useEffect(() => {
     if (solvedQuizMutation.data) {
+      startReviewQuiz();
       const solvedQuizDates = solvedQuizMutation.data;
+      console.log('solvedQD: ', solvedQuizDates);
 
       const markedDates = solvedQuizDates.reduce(
         (acc: MarkedDates, quiz: {createdAt: string}) => {
@@ -65,18 +68,42 @@ function QuizHomeScreen({navigation}: any) {
     }
   }, [solvedQuizMutation.data]);
 
-  const startTodayQuiz = () => {
-    const quizes = todayQuizMutation.data;
-    const transformedQuizes = transformQuizData(quizes);
-    setQuizData(transformedQuizes);
-    setTodaysQuizQuestions(transformedQuizes, quizes[0].quiz_id);
-
-    console.log("quizData: ",quizData);
-
-    if (quizData.length > 0) {
+  // 오늘의 퀴즈 시작하기
+  const startTodayQuiz = async () => {
+    const {data: quizes} = await todayQuizMutation.refetch();
+    // console.log('quizes: ', quizes);
+    if (quizes && quizes.length > 0) {
+      const transformedQuizes = transformQuizData(quizes);
+      setQuizData(transformedQuizes);
+      setTodaysQuizQuestions(transformedQuizes, quizes[0].quiz_id);
       navigation.navigate('오늘의 퀴즈');
     } else {
       setIsModalVisible(true);
+    }
+  };
+
+  // 다시풀기
+  const startReviewQuiz = () => {
+    const solvedQuizes = solvedQuizMutation.data;
+
+    if (solvedQuizes && solvedQuizes.length > 0) {
+      let selectedQuizes = [];
+
+      if (solvedQuizes.length > 9) {
+        selectedQuizes = solvedQuizes
+          .sort(() => 0.5 - Math.random())
+          .slice(0, 9);
+      } else {
+        selectedQuizes = solvedQuizes;
+      }
+      const transformedQuizes = transformQuizData(selectedQuizes);
+      const quizGroups = [];
+      for (let i = 0; i < transformedQuizes.length; i += 3) {
+        quizGroups.push(transformedQuizes.slice(i, i + 3));
+      }
+      // console.log('quizGroups: ', quizGroups);
+      console.log('quizGroups[0]: ', quizGroups[0]);
+      setReviewQuizQuestions(quizGroups);
     }
   };
 
@@ -159,7 +186,7 @@ function QuizHomeScreen({navigation}: any) {
                 새로운 퀴즈가 도착했어요!
               </Text>
               <Text style={styles.todayContentDescription}>
-                3문제 약 3분 소요
+                3문제
               </Text>
             </View>
             <TouchableOpacity
@@ -194,40 +221,30 @@ function QuizHomeScreen({navigation}: any) {
               풀었던 퀴즈를 다시 풀면서 나의 경제 지식을 점검해보세요!
             </Text>
           </View>
+
           <View style={styles.reviewContentContainer}>
-            <View style={styles.reviewContentsBox}>
-              <View style={styles.reviewContentText}>
-                <Text style={styles.reviewContentTitle}>기본 경제 개념</Text>
-                <Text style={styles.reviewContentDescription}>
-                  3문제 약 3분 소요
-                </Text>
-              </View>
-              <TouchableOpacity style={styles.reviewContentButton}>
-                <Text style={styles.reviewContentButtonText}>다시풀기</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.reviewContentsBox}>
-              <View style={styles.reviewContentText}>
-                <Text style={styles.reviewContentTitle}>기본 경제 개념</Text>
-                <Text style={styles.reviewContentDescription}>
-                  3문제 약 3분 소요
-                </Text>
-              </View>
-              <TouchableOpacity style={styles.reviewContentButton}>
-                <Text style={styles.reviewContentButtonText}>다시풀기</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.reviewContentsBox}>
-              <View style={styles.reviewContentText}>
-                <Text style={styles.reviewContentTitle}>기본 경제 개념</Text>
-                <Text style={styles.reviewContentDescription}>
-                  3문제 약 3분 소요
-                </Text>
-              </View>
-              <TouchableOpacity style={styles.reviewContentButton}>
-                <Text style={styles.reviewContentButtonText}>다시풀기</Text>
-              </TouchableOpacity>
-            </View>
+            {reviewQuizQuestions.length > 0 &&
+              reviewQuizQuestions.map((group, groupIndex) => (
+                <View key={groupIndex} style={styles.reviewContentsBox}>
+                  <View style={styles.reviewContentText}>
+                    <Text style={styles.reviewContentTitle}>
+                      다시풀기 {groupIndex + 1}
+                    </Text>
+                    <Text style={styles.reviewContentDescription}>
+                      {group.length}문제
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    style={styles.reviewContentButton}
+                    onPress={() => {
+                      navigation.navigate('퀴즈 리뷰', {
+                        groupIndex: groupIndex,
+                      });
+                    }}>
+                    <Text style={styles.reviewContentButtonText}>다시풀기</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
           </View>
         </View>
       </View>
