@@ -1,15 +1,25 @@
 package com.example.donzoom.service;
 
+import com.example.donzoom.entity.Alarm;
+import com.example.donzoom.entity.User;
+import com.example.donzoom.repository.AlarmRepository;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class FCMService {
+
+  private final AlarmRepository alarmRepository;
+  private final UserService userService;
 
   public String sendNotification(String token, String title, String body)
       throws FirebaseMessagingException {
@@ -23,6 +33,25 @@ public class FCMService {
             .build()).build();
 
     // 메시지 전송
-    return FirebaseMessaging.getInstance().send(message);
+    String result = FirebaseMessaging.getInstance().send(message);
+    User user = userService.findUserByDeviceToken(token);
+    Alarm alarm = Alarm.builder().user(user).title(title).body(body).build();
+    alarmRepository.save(alarm);
+    return result;
   }
+
+  public List<Alarm> getAllAlarms(){
+    User user = userService.findCurrentUser();
+    return alarmRepository.findAllAlarmsByUserId(user.getId());
+  }
+
+  public Alarm updateAlarmStatus(Long alarmId, String status){
+    Alarm alarm = alarmRepository.findById(alarmId).orElse(null);
+    if(alarm != null){
+      alarm.updateStatus(status);
+      alarmRepository.save(alarm);
+    }
+    return alarm;
+  }
+
 }

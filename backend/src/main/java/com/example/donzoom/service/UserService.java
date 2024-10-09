@@ -144,6 +144,10 @@ public class UserService {
         .orElseThrow(() -> new IllegalArgumentException("해당 계좌번호의 유저를 찾을 수 없습니다."));
   }
 
+  public User findUserByDeviceToken(String token){
+    return userRepository.findByDeviceToken(token).orElseThrow(()-> new IllegalArgumentException("해당 토큰의 유저를 찾을 수 없습니다."));
+  }
+
   public void updatePaymentPassword(String paymentPassword) {
     User user = findCurrentUser();
     user.updatePaymentPassword(paymentPassword);
