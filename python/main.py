@@ -357,7 +357,7 @@ scheduler.add_job(fetch_and_send_data_all, 'cron', day_of_week='mon', hour=0, mi
 scheduler.add_job(fetch_and_send_data_all, 'cron', day=1, hour=0, minute=0, args=["1mo"])
 
 # 국내주식 뉴스 기사를 가져오고 바로 본문을 가져오도록 스케줄러 설정
-scheduler.add_job(send_news_data,  trigger=CronTrigger(hour=8, minute=36))
+scheduler.add_job(send_news_data,  trigger=CronTrigger(hour=9, minute=5))
 #scheduler.add_job(send_news_data, trigger=DateTrigger(run_date=now))
 
 # 리포트를 가져오고 바로 본문을 가져오도록 스케줄러 설정
