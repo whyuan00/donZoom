@@ -357,19 +357,19 @@ scheduler.add_job(fetch_and_send_data_all, 'cron', day_of_week='mon', hour=0, mi
 scheduler.add_job(fetch_and_send_data_all, 'cron', day=1, hour=0, minute=0, args=["1mo"])
 
 # 국내주식 뉴스 기사를 가져오고 바로 본문을 가져오도록 스케줄러 설정
-scheduler.add_job(send_news_data,  trigger=CronTrigger(hour=14, minute=45))
+scheduler.add_job(send_news_data,  trigger=CronTrigger(hour=9, minute=5))
 #scheduler.add_job(send_news_data, trigger=DateTrigger(run_date=now))
 
 # 리포트를 가져오고 바로 본문을 가져오도록 스케줄러 설정
-scheduler.add_job(send_reports_to_springboot,  trigger=CronTrigger(hour=14, minute=55)) #'cron', hour=13, minute=24, timezone=KST)
+scheduler.add_job(send_reports_to_springboot,  trigger=CronTrigger(hour=9, minute=10)) #'cron', hour=13, minute=24, timezone=KST)
 #scheduler.add_job(send_reports_to_springboot, trigger=DateTrigger(run_date=now))
 
 # 해외주식 뉴스기사를 가져오고 바로 본문을 가져오도록 스케줄러 설정
 #scheduler.add_job(send_reports_to_springboot, trigger=DateTrigger(run_date=now))
-scheduler.add_job(send_worldNews_data,  trigger=CronTrigger(hour=14, minute=50))
+scheduler.add_job(send_worldNews_data,  trigger=CronTrigger(hour=9, minute=15))
 
 #금 뉴스 기사를 가져오고 바로 본문을 가져오도록 스케줄러 설정
-scheduler.add_job(send_goldNews_data,  trigger=CronTrigger(hour=14, minute=40))
+scheduler.add_job(send_goldNews_data,  trigger=CronTrigger(hour=9, minute=20))
 
 # Lifespan 이벤트 핸들러 사용
 @asynccontextmanager
