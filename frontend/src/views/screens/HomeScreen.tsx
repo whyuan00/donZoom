@@ -7,13 +7,12 @@ import ParentsMainScreen from './main/ParentsMainScreen';
 import ChildrenMainScreen from './main/ChildrenMainScreen';
 
 function HomeScreen() {
-  const role = useSignupStore(state => state.role);
-
+  const {isParent} = useSignupStore();
   return (
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.contentsContainer}>
-          {role === '부모' ? <ParentsMainScreen /> : <ChildrenMainScreen />}
+          {isParent ? <ParentsMainScreen /> : <ChildrenMainScreen />}
         </View>
       </View>
     </ScrollView>

@@ -6,7 +6,10 @@ import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 import {StyleSheet} from 'react-native';
 
-const InvestUnsafeAssetTabNavigator = ({selectedStock}: any) => {
+const InvestUnsafeAssetTabNavigator = ({
+  selectedStock,
+  selectedStockIndex,
+}: any) => {
   const Tab = createMaterialTopTabNavigator();
 
   return (
@@ -14,7 +17,10 @@ const InvestUnsafeAssetTabNavigator = ({selectedStock}: any) => {
       initialRouteName="차트"
       screenOptions={{
         tabBarActiveTintColor: colors.BLACK,
-        tabBarLabelStyle: {fontFamily: fonts.MEDIUM, fontSize: 16},
+        tabBarLabelStyle: {
+          fontFamily: fonts.BOLD,
+          fontSize: 16,
+        },
         tabBarIndicatorStyle: {backgroundColor: colors.YELLOW_100},
       }}
       style={styles.tabNavigator}>
@@ -24,17 +30,29 @@ const InvestUnsafeAssetTabNavigator = ({selectedStock}: any) => {
           tabBarLabel: '차트',
         }}>
         {props => (
-          <UnsafeChartTabScreen {...props} selectedStock={selectedStock} />
+          <UnsafeChartTabScreen
+            {...props}
+            selectedStock={selectedStock}
+            selectedStockIndex={selectedStockIndex}
+          />
         )}
       </Tab.Screen>
       <Tab.Screen name="뉴스">
         {props => (
-          <UnsafeNewsTabScreen {...props} selectedStock={selectedStock} />
+          <UnsafeNewsTabScreen
+            {...props}
+            selectedStock={selectedStock}
+            selectedStockIndex={selectedStockIndex}
+          />
         )}
       </Tab.Screen>
       <Tab.Screen name="리포트">
         {props => (
-          <UnsafeReportTabScreen {...props} selectedStock={selectedStock} />
+          <UnsafeReportTabScreen
+            {...props}
+            selectedStock={selectedStock}
+            selectedStockIndex={selectedStockIndex}
+          />
         )}
       </Tab.Screen>
     </Tab.Navigator>
@@ -46,7 +64,6 @@ export default InvestUnsafeAssetTabNavigator;
 const styles = StyleSheet.create({
   tabNavigator: {
     flex: 1,
-    borderWidth: 3,
     height: 1000,
     backgroundColor: colors.BLACK,
   },

@@ -32,11 +32,12 @@ function useGetStockList(
 
 function useGetStock(
   stockId: number,
+  interval: string,
   queryOptions?: UseQueryCustomOptions<ResponseStock>,
 ) {
   return useQuery({
-    queryKey: [queryKeys.STOCK, stockId],
-    queryFn: () => getStock(stockId),
+    queryKey: [queryKeys.STOCK, stockId, interval],
+    queryFn: () => getStock(stockId, interval),
     ...queryOptions,
   });
 }

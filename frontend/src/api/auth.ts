@@ -19,7 +19,7 @@ interface RequestSignup {
   passwordConfirm: string;
   name: string;
   nickname: string;
-  role: string;
+  isParent: boolean;
   image?: File;
 }
 
@@ -44,7 +44,7 @@ const postSignup = async ({
   passwordConfirm,
   name,
   nickname,
-  role,
+  isParent,
 }: RequestSignup): Promise<void> => {
   console.log('signup values', {
     email,
@@ -52,7 +52,7 @@ const postSignup = async ({
     passwordConfirm,
     name,
     nickname,
-    role,
+    isParent,
   });
   const {data} = await axiosInstance.post('/user', {
     email,
@@ -60,7 +60,7 @@ const postSignup = async ({
     passwordConfirm,
     name,
     nickname,
-    role,
+    isParent,
   });
   console.log(data);
   return data;
@@ -171,6 +171,11 @@ const postProfileImage = async (profileImage: Asset) => {
   }
 };
 
+const postSetRelation = async () => {
+  const response = await axiosInstance.post('/set-relationship');
+  console.log('부모 아이 연결:', response);
+};
+
 export {
   postSignup,
   postLogin,
@@ -179,5 +184,6 @@ export {
   postAutoLogin,
   postProfileImage,
   postChildAdd,
+  postSetRelation,
 };
 export type {User as RequestUser, ResponseToken, ResponseProfile};

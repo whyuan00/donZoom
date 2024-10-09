@@ -43,7 +43,12 @@ function NickNameScreen() {
   } = useAuth();
   const {values, errors, touched, getTextInputProps} = useSignupForm();
   const [profileImage, setProfileImage] = useState<Asset | null>(null);
-  const {role, setName, setId, setProfileImage: setImage} = useSignupStore();
+  const {
+    isParent,
+    setName,
+    setId,
+    setProfileImage: setImage,
+  } = useSignupStore();
   const [modal, setModal] = useState(false);
   const [text, setText] = useState<string>('');
   const [emailData, setEmailData] = useState<emailData[]>([]); //아이 email데이터
@@ -56,7 +61,7 @@ function NickNameScreen() {
       passwordConfirm: values.passwordConfirm,
       name: '',
       nickname: '',
-      role: role,
+      isParent: isParent,
     },
     validate: validateInit,
   });
@@ -184,14 +189,16 @@ function NickNameScreen() {
             placeholder="이름"
             style={styles.input}
             {...account.getTextInputProps('name')}
+            value={String(account.getTextInputProps('name').value)}
           />
           <InputField
             placeholder="닉네임"
             style={styles.input}
             {...account.getTextInputProps('nickname')}
+            value={String(account.getTextInputProps('nickname').value)}
           />
           {/* 아이 추가 모달 버튼*/}
-          {role === '부모' ? (
+          {isParent ? (
             <TouchableOpacity
               onPress={() => setModal(true)}
               style={{
@@ -216,7 +223,7 @@ function NickNameScreen() {
         <CustomButton
           style={{marginTop: 30}}
           label="시작하기"
-          role={role}
+          isParent={isParent}
           onPress={handleSubmit}
         />
       </TouchableOpacity>
@@ -279,7 +286,7 @@ function NickNameScreen() {
             <CustomButton
               style={{marginTop: 50, marginBottom: 25}}
               label="확인"
-              role="부모"
+              isParent={isParent}
               onPress={() => setModal(false)}
             />
           </View>

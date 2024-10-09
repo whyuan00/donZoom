@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   ScrollView,
   Modal,
   Button,
-  SafeAreaView
+  SafeAreaView,
 } from 'react-native';
 import RiskAssetScreen from './UnsafeAssetDetailScreen';
 import Icon from 'react-native-vector-icons/AntDesign';
@@ -17,7 +17,7 @@ import RealAssetDetailScreen from './RealAssetDetailScreen';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 
-export default function DetailScreen({route}:any) {
+export default function DetailScreen({route}: any) {
   const {selectedAsset: initialAsset} = route.params; // 전달된 자산 받기
   const [selectedAsset, setSelectedAsset] = useState(initialAsset); // 초기 선택 자산 설정
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false); // 모달 상태
@@ -66,7 +66,7 @@ export default function DetailScreen({route}:any) {
       case '실물자산':
         return <RealAssetDetailScreen />;
       case '위험자산':
-        return <UnsafeAssetDetailScreen  />;
+        return <UnsafeAssetDetailScreen />;
       default:
         return null;
     }
@@ -124,23 +124,25 @@ export default function DetailScreen({route}:any) {
         </TouchableOpacity>
 
         {/* 아이콘 */}
-        <TouchableOpacity
-          style={styles.icon}
-          onPress={() => openDescriptionModal(selectedAsset)}>
+        <TouchableOpacity onPress={() => openDescriptionModal(selectedAsset)}>
           <Icon name="infocirlceo" size={25} color="black" />
         </TouchableOpacity>
       </View>
 
       {/* 선택된 자산에 따른 페이지 렌더링 */}
-      <View style={{flex:1}}>{renderSelectedAssetScreen()}</View>
+      <View style={{flex: 1}}>{renderSelectedAssetScreen()}</View>
 
       {/* 설명 모달 */}
       <Modal visible={isModalVisible} transparent={true} animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{selectedAsset} 설명</Text>
+            <Text style={styles.modalTitle}>{selectedAsset}이란?</Text>
             <Text style={styles.modalDescription}>{selectedDescription}</Text>
-            <Button title="닫기" onPress={closeModal} />
+            <TouchableOpacity
+              onPress={closeModal}
+              style={styles.modalCloseButton}>
+              <Text style={styles.modalCloseText}>닫기</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -151,18 +153,16 @@ export default function DetailScreen({route}:any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    borderWidth:3,
     backgroundColor: '#fff',
   },
   assetButtonContainer: {
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
-    margin: 10,
-    marginLeft: 25,
+    justifyContent: 'space-evenly',
+    marginVertical: 10,
   },
   assetButton: {
-    margin: 7,
     width: 100,
     height: 35,
     borderRadius: 10,
@@ -171,9 +171,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderColor: '#ccc',
     borderWidth: 1,
-  },
-  icon: {
-    margin: 5,
   },
   selectedButton: {
     backgroundColor: colors.YELLOW_100,
@@ -214,5 +211,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 20,
     textAlign: 'center',
+  },
+  modalCloseButton: {
+    flexDirection: 'row',
+    backgroundColor: colors.YELLOW_100,
+    width: 50,
+    height: 30,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalCloseText: {
+    textAlign: 'center',
+    fontFamily: fonts.MEDIUM,
+    color: colors.WHITE,
   },
 });

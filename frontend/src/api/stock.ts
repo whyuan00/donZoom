@@ -28,9 +28,12 @@ type ResponseStock = {
   stockName: string;
 };
 
-const getStock = async (stockId: number): Promise<ResponseStock> => {
-  const {data} = await axiosInstance.get(`/stock/${stockId}`);
-  // // console.log(data);
+const getStock = async (
+  stockId: number,
+  interval: string,
+): Promise<ResponseStock> => {
+  const {data} = await axiosInstance.get(`/stock/${stockId}/${interval}`);
+  // console.log(data);
   return data;
 };
 

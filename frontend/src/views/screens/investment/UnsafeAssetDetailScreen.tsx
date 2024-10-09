@@ -1,6 +1,6 @@
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
@@ -33,10 +33,11 @@ export default function UnsafeAssetDetailScreen({navigation}: any) {
   const [selectedPeriod, setSelectedPeriod] = useState<string>('1일'); // 기본 기간 선택
   const [isDropdownVisible, setIsDropdownVisible] = useState(false); // 드롭다운 메뉴 표시 상태
   const [selectedStock, setSelectedStock] = useState<string>('삼성전자'); // 기본 종목 선택 상태
-  const [realAssetMoney, setRealAssetMoney] = useState(0); // 현재 보유한 금을 머니로 환산한 값
+  const [realAssetMoney, setRealAssetMoney] = useState<number | undefined>(0); // 현재 보유한 금을 머니로 환산한 값
   const [realAssetDollar, setRealAssetDollar] = useState<number>(0); // 현재 보유한 금을 머니로 환산한 값
   const {getMyCoinMutation} = usePig();
   const {useGetStock} = useStock();
+
   // 종목 선택 옵션
   const domesticStocks = ['삼성전자', 'LG전자', '네이버', '카카오'];
   const foreignStocks = ['Apple', 'Google', 'Tesla'];
@@ -47,9 +48,21 @@ export default function UnsafeAssetDetailScreen({navigation}: any) {
 
   const [stockMessage, setStockMessage] = useState<string>('');
 
-  // useWebSocket([getSelectedStockIndex()], message => {
+  // useWebSocket([5], message => {
   //   setStockMessage(message);
   // });
+
+  useEffect(() => {
+    console.log('-------------------------------------------------');
+    console.log(stockMessage);
+  }, [stockMessage]);
+  const {data: stockData} = useGetStock(getSelectedStockIndex(), 'min');
+
+  useEffect(() => {
+    const stockprice = stockData?.stockHistories[0].open;
+    setRealAssetMoney(stockprice);
+    setRealAssetDollar(Number((stockprice ? stockprice / 1200 : 0).toFixed(2)));
+  }, [selectedStock]);
 
   useFocusEffect(
     useCallback(() => {
@@ -65,16 +78,6 @@ export default function UnsafeAssetDetailScreen({navigation}: any) {
         }
       };
       getData();
-      setRealAssetMoney(getMyCoinMutation.data?.coin ?? 0);
-      setRealAssetDollar(
-        Number(
-          (getMyCoinMutation.data
-            ? getMyCoinMutation.data.coin / 1200
-            : 0
-          ).toFixed(2),
-        ),
-      );
-      // useGetStock(getSelectedStockIndex()).data?.stockHistories[0].open;
     }, []),
   );
 
@@ -116,7 +119,7 @@ export default function UnsafeAssetDetailScreen({navigation}: any) {
             <Text style={styles.assetTitle}>{selectedStock}</Text>
             <View style={{flexDirection: 'row'}}>
               <Text style={styles.moneyTitle}>
-                {realAssetMoney.toLocaleString()}머니
+                {realAssetMoney?.toLocaleString()}머니
               </Text>
               <Text style={styles.dollarTitle}>${realAssetDollar}달러</Text>
             </View>
@@ -194,7 +197,6 @@ export default function UnsafeAssetDetailScreen({navigation}: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    borderWidth: 2,
   },
   headerContainer: {
     justifyContent: 'flex-start',
@@ -202,21 +204,18 @@ const styles = StyleSheet.create({
   },
   tabNavigator: {
     flex: 1,
-    borderWidth: 3,
     height: 1000,
     backgroundColor: colors.BLACK,
   },
   assetTitle: {
     fontSize: 23,
     fontFamily: fonts.BOLD,
-    fontWeight: '700',
     color: colors.BLACK,
   },
   moneyTitle: {
     fontSize: 25,
     color: colors.BLACK,
     fontFamily: fonts.BOLD,
-    fontWeight: '700',
   },
   dollarTitle: {
     marginLeft: 10,
@@ -224,10 +223,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.BLACK,
     fontFamily: fonts.LIGHT,
-    fontWeight: '300',
   },
   dropdownWrapper: {
-    borderWidth: 3,
     position: 'relative',
     zIndex: 1,
   },

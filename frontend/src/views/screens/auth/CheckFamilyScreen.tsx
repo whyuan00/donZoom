@@ -6,7 +6,7 @@ import CustomButton from '@/views/components/CustomButton';
 import {useSignupStore} from '@/stores/useAuthStore';
 
 function CheckFamilyScreen({navigation}: any) {
-  const {role, setRole} = useSignupStore();
+  const {isParent, setIsParent} = useSignupStore();
 
   return (
     <View style={styles.container}>
@@ -18,28 +18,20 @@ function CheckFamilyScreen({navigation}: any) {
       </View>
       <View style={styles.optionContainer}>
         <TouchableOpacity
-          style={[styles.option, role === '아이' && styles.selectedOptionChild]}
-          onPress={() => setRole('아이')}>
-          <View
-            style={[
-              styles.radioOuter,
-              role === '아이' && styles.selectedRadio,
-            ]}>
-            {role === '아이' && <View style={styles.radioInner} />}
+          style={[styles.option, !isParent && styles.selectedOptionChild]}
+          onPress={() => setIsParent(false)}>
+          <View style={[styles.radioOuter, !isParent && styles.selectedRadio]}>
+            {!isParent && <View style={styles.radioInner} />}
           </View>
           <Text style={styles.childOptionText}>아이 </Text>
           <Text style={styles.optionText}>입니다.</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.option, role === '부모' && styles.selectedOptionParent]}
-          onPress={() => setRole('부모')}>
-          <View
-            style={[
-              styles.radioOuter,
-              role === '부모' && styles.selectedRadio,
-            ]}>
-            {role === '부모' && <View style={styles.radioInner} />}
+          style={[styles.option, isParent && styles.selectedOptionParent]}
+          onPress={() => setIsParent(true)}>
+          <View style={[styles.radioOuter, isParent && styles.selectedRadio]}>
+            {isParent && <View style={styles.radioInner} />}
           </View>
           <Text style={styles.parentOptionText}>부모 </Text>
           <Text style={styles.optionText}>입니다.</Text>
@@ -49,7 +41,7 @@ function CheckFamilyScreen({navigation}: any) {
         <CustomButton
           label="다음으로"
           variant="auth"
-          role={role}
+          isParent={isParent}
           onPress={() => navigation.navigate('닉네임 설정')}
         />
       </View>
