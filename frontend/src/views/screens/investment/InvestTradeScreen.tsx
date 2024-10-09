@@ -16,7 +16,7 @@ import useStock from '@/hooks/queries/useStock';
 const InvestTradeScreen = ({route, navigation}: any) => {
   const trade = route.params.trade || '';
   const type = route.params.type || '';
-  const [cost, setCost] = useState<number>(159335);
+  const price = route.params.price || '';
   const [dollar, setDollar] = useState<number>(119.37);
   const [ableBuyNum, setAbleBuyNum] = useState<number>(0);
   const [ableSellNum, setAbleSellNum] = useState<number>(0);
@@ -57,7 +57,7 @@ const InvestTradeScreen = ({route, navigation}: any) => {
         )}
         <View style={{flexDirection: 'row'}}>
           <Text style={[styles.contentText, styles.textColorBlack]}>
-            {cost.toLocaleString()} 머니
+            {price.toLocaleString()} 머니
           </Text>
           <Text
             style={{
@@ -65,7 +65,7 @@ const InvestTradeScreen = ({route, navigation}: any) => {
               fontFamily: fonts.LIGHT,
               color: colors.BLACK,
             }}>
-            ${dollar.toLocaleString()}
+            ${(price / 1200).toFixed(2).toLocaleString()}
           </Text>
         </View>
       </View>

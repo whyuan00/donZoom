@@ -76,9 +76,7 @@ function ChildrenMainScreen() {
                     ).toLocaleString()}원`}</Text>
                     <TouchableOpacity
                       onPress={() => navigation.navigate('계좌관리')}>
-                      <Text style={styles.moneyAccountText}>
-                        내 계좌 관리하기
-                      </Text>
+                      <Text style={styles.accountText}>내 계좌 관리하기</Text>
                     </TouchableOpacity>
                   </View>
                   <View style={styles.iconContainer}>
@@ -95,18 +93,20 @@ function ChildrenMainScreen() {
                       <Text style={styles.payText}>결제</Text>
                     </View>
                   </TouchableOpacity>
-                  <TouchableOpacity onPress={refresh}>
+                  {/* <TouchableOpacity onPress={refresh}>
                     <Text>새로고침</Text>
-                  </TouchableOpacity>
+                  </TouchableOpacity> */}
                 </View>
               </View>
             ) : (
-              <View>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('계좌개설')}>
-                  <Text style={styles.moneyAccountText}>계좌 개설하기</Text>
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('계좌개설')}
+                style={styles.initAccountButton}>
+                <Text style={styles.moneyAccountText2}>
+                  아직 계좌가 없으시네요!
+                </Text>
+                <Text style={styles.moneyAccountText}>계좌 개설하기</Text>
+              </TouchableOpacity>
             )}
           </View>
           <TouchableOpacity
@@ -217,9 +217,14 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontFamily: fonts.BOLD,
     color: colors.BLACK,
-    marginBottom: 5,
+    marginBottom: 15,
   },
   moneyAccountText: {
+    fontSize: 30,
+    fontFamily: fonts.BOLD,
+    color: colors.BLACK,
+  },
+  accountText: {
     fontSize: 12,
     fontFamily: fonts.MEDIUM,
     color: colors.BLACK,
@@ -299,6 +304,20 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     marginBottom: 20,
+  },
+  initAccountButton: {
+    backgroundColor: colors.WHITE,
+    padding: 10,
+    borderRadius: 5,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  moneyAccountText2: {
+    fontSize: 20,
+    fontFamily: fonts.BOLD,
+    color: colors.BLACK,
   },
 });
 

@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 import {
@@ -13,21 +13,42 @@ import useStock from '@/hooks/queries/useStock';
 import useWebSocket from '@/hooks/useWebSocket';
 import transformStockData from '../StockDataConvertor';
 
-const UnsafeAssetChartTabScreen = ({navigation, selectedStock}: any) => {
+const UnsafeAssetChartTabScreen = ({
+  navigation,
+  selectedStock,
+  selectedStockIndex,
+}: any) => {
   const {useGetStock} = useStock();
   const [stockMessage, setStockMessage] = useState<string>('');
-  const [selectedPeriod, setSelectedPeriod] = useState<string>('1일'); // 기본 기간 선택
+  const [selectedPeriod, setSelectedPeriod] = useState<string>('1달'); // 기본 기간 선택
+  const [currentPrice, setCurrentPrice] = useState<number | null>(null);
+
   const handlePeriodChange = (period: string) => {
     setSelectedPeriod(period);
   };
 
-  useWebSocket([4], message => {
-    setStockMessage(message);
-  });
+  const mapPeriodToApiParam = (period: string): string => {
+    switch (period) {
+      case '1분':
+        return 'min';
+      case '1일':
+        return 'day';
+      case '1주':
+        return 'week';
+      case '1달':
+        return 'month';
+      default:
+        return 'month'; // 기본값
+    }
+  };
 
   let candleData: CandleData[] = [];
 
-  const {data: rawData, isLoading, error} = useGetStock(4);
+  const {
+    data: rawData,
+    isLoading,
+    error,
+  } = useGetStock(selectedStockIndex, mapPeriodToApiParam(selectedPeriod));
 
   if (isLoading) {
     console.log('Loading stock data...');
@@ -39,20 +60,37 @@ const UnsafeAssetChartTabScreen = ({navigation, selectedStock}: any) => {
     console.log('No stock data available');
   }
 
+  const {
+    data: currentPriceData,
+    isLoading: isLoadingCurrentPrice,
+    error: currentPriceError,
+  } = useGetStock(selectedStockIndex, 'min');
+
+  useEffect(() => {
+    if (currentPriceData && currentPriceData.stockHistories.length > 0) {
+      setCurrentPrice(currentPriceData.stockHistories[0].open);
+    }
+  }, [currentPriceData]);
+
+  const handleBuyStock = () => {
+    navigation.navigate('Trade', {
+      trade: 'buy',
+      type: 'Unsafe',
+      price: currentPrice,
+    });
+  };
+
   return (
     <View style={styles.container}>
       {
         <View style={{width: 350, height: 330, borderWidth: 1}}>
-          {/* <Text style={styles.text}>{selectedPeriod}</Text> */}
-          {/* <Text style={styles.text}>{selectedStock}</Text> */}
-          {/* <Text style={styles.text}>hi unsafe UnsafeAssetChartTabScreen</Text> */}
           <CandlestickChartComponent data={candleData} />
         </View>
       }
 
       {/* 기간 선택 */}
       <View style={styles.periodButtonContainer}>
-        {['1일', '1주', '3달', '1년', '5년', '전체'].map(period => (
+        {['1분', '1일', '1주', '1달'].map(period => (
           <TouchableOpacity
             key={period}
             style={[
@@ -76,9 +114,7 @@ const UnsafeAssetChartTabScreen = ({navigation, selectedStock}: any) => {
       <View style={styles.actionButtonContainer}>
         <TouchableOpacity
           style={[styles.actionButton, styles.buyButton]}
-          onPress={() =>
-            navigation.navigate('Trade', {trade: 'buy', type: 'Unsafe'})
-          }>
+          onPress={handleBuyStock}>
           <Text
             style={{
               color: colors.WHITE,
@@ -123,46 +159,41 @@ const styles = StyleSheet.create({
   },
   periodButtonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
     alignContent: 'center',
-    marginTop: 10,
-    borderWidth: 1,
+    width: '100%',
+    padding: 10,
   },
   //이하 기간버튼디자인
   periodButton: {
-    width: 55,
+    width: '25%',
     height: 40,
     borderRadius: 5,
-    margin: 5,
   },
   selectedPeriodButton: {
     backgroundColor: colors.GRAY_25,
   },
   selectedPeriodText: {
-    fontFamily: fonts.MEDIUM,
+    fontFamily: fonts.BOLD,
     color: colors.GRAY_100,
     fontSize: 15,
-    fontWeight: '700',
     margin: 'auto',
   },
   unselectedPeriodText: {
     color: colors.GRAY_75,
     fontFamily: fonts.MEDIUM,
     fontSize: 15,
-    fontWeight: '500',
     margin: 'auto',
   },
   // 매수매도버튼
   actionButtonContainer: {
     flexDirection: 'row',
-    borderWidth: 3,
-    marginTop: 10,
+    paddingHorizontal: 10,
+    gap: 10,
   },
   actionButton: {
-    width: 155,
-    height: 35,
-    marginHorizontal: 14,
-    paddingVertical: 10,
+    width: '50%',
+    height: 40,
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',

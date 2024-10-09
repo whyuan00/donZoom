@@ -34,10 +34,11 @@ import useAccountBalance from '@/hooks/useAccountInfo';
 
 function LoginScreen({navigation}: any) {
   const passwordRef = useRef<TextInput | null>(null);
-  const {loginMutation, getProfileQuery, isLogin} = useAuth();
+  const {loginMutation, getProfileQuery, isLogin, setRelationMutation} =
+    useAuth();
   const [selected, setSelected] = useState('');
   const {errorMessage, clearErrorMessage} = useErrorStore();
-  const {setName, setId, setProfileImage} = useSignupStore();
+  const {setName, setId, setProfileImage, setIsParent} = useSignupStore();
   const login = useForm({
     initialValue: {
       email: '',
@@ -146,11 +147,16 @@ function LoginScreen({navigation}: any) {
   };
   const handleSubmit = async () => {
     try {
-      await loginMutation.mutateAsync(login.values);
+      await loginMutation.mutateAsync(login.values, {
+        onSuccess: () => {
+          setRelationMutation.mutate(null);
+        },
+      });
       const profileData = await getProfileQuery.refetch();
-      if (profileData.data) {
+      if (profileData.data !== null && profileData.data !== undefined) {
         setName(profileData.data.name);
         setId(profileData.data.id);
+        setIsParent(profileData.data.isParent); //오류나는데 일단 괜찮음
         if (profileData.data.profileImage !== '') {
           setProfileImage(profileData.data.profileImage);
         }

@@ -15,23 +15,25 @@ interface CustomButtonProps extends PressableProps {
   label: string;
   variant?: 'sns' | 'auth';
   inValid?: boolean;
-  role?:'부모'|'아이';
+  isParent?: boolean;
 }
 
 function CustomButton({
   label,
   variant = 'auth',
   inValid = false,
-  role,
+  isParent,
   ...props
 }: CustomButtonProps) {
-  const backgroundColor = role === '부모' ? colors.BLUE_100 : colors.YELLOW_100;
-  const textColor = role === '부모' ? colors.WHITE : colors.BLACK;
+  const backgroundColor = isParent ? colors.BLUE_100 : colors.YELLOW_100;
+  const textColor = isParent ? colors.WHITE : colors.BLACK;
 
   return (
     <Pressable style={styles.container} {...props}>
-      <View style={[styles[variant],{backgroundColor}]}>
-        <Text style={[styles[`${variant}Text`],{color:textColor}]}>{label}</Text>
+      <View style={[styles[variant], {backgroundColor}]}>
+        <Text style={[styles[`${variant}Text`], {color: textColor}]}>
+          {label}
+        </Text>
       </View>
     </Pressable>
   );

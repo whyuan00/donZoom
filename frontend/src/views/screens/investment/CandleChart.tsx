@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {View, Text, processColor, ProcessedColorValue} from 'react-native';
+import {View, Text, processColor, Dimensions} from 'react-native';
 import {
   CandleStickChart,
   CandleStickData,
@@ -35,84 +35,86 @@ const CandlestickChartComponent: React.FC<CandlestickChartComponentProps> = ({
   };
 
   const {processedData, dateLabels} = useMemo(() => {
-    const processed = data.slice(-100).map((item, index) => ({
+    const processed = data.map((item, index) => ({
       x: index,
       shadowH: item.shadowH,
       shadowL: item.shadowL,
       open: item.open,
       close: item.close,
     }));
-    const labels = data.slice(-100).map(item => formatDate(item.x));
+    const labels = data.map(item => formatDate(item.x));
     return {processedData: processed, dateLabels: labels};
   }, [data]);
 
-  try {
-    const chartData: CandleStickData = {
-      dataSets: [
-        {
-          values: processedData,
-          label: 'Stock Data',
-          config: {
-            highlightColor: processColor('darkgray'),
-            shadowColor: processColor('black'),
-            shadowWidth: 1,
-            shadowColorSameAsCandle: true,
-            increasingColor: processColor('blue'),
-            increasingPaintStyle: 'FILL',
-            decreasingColor: processColor('red'),
-            drawValues: false,
-          },
-        } as CandleStickDataset,
-      ],
-    };
+  const chartData: CandleStickData = {
+    dataSets: [
+      {
+        values: processedData,
+        label: 'Stock Data',
+        config: {
+          highlightColor: processColor('darkgray'),
+          shadowColor: processColor('black'),
+          shadowWidth: 1,
+          shadowColorSameAsCandle: true,
+          increasingColor: processColor('blue'),
+          increasingPaintStyle: 'FILL',
+          decreasingColor: processColor('red'),
+          drawValues: false,
+        },
+      } as CandleStickDataset,
+    ],
+  };
 
-    return (
-      <View style={{flex: 1}}>
-        <CandleStickChart
-          style={{flex: 1}}
-          data={chartData}
-          xAxis={{
-            valueFormatter: dateLabels,
-            position: 'BOTTOM',
-            granularityEnabled: true,
-            granularity: 1,
-            labelCount: 5,
-            labelRotationAngle: 0, // 수평 라벨
-            avoidFirstLastClipping: true,
-            axisLineColor: processColor('rgba(0,0,0,0.5)'), // 연한 축 선 색상
+  const screenWidth = Dimensions.get('window').width;
+  const visibleRange = Math.floor(screenWidth / 10); // 화면 너비에 따라 보이는 데이터 포인트 수 조정
+
+  return (
+    <View style={{flex: 1}}>
+      <CandleStickChart
+        style={{flex: 1}}
+        data={chartData}
+        xAxis={{
+          valueFormatter: dateLabels,
+          position: 'BOTTOM',
+          granularityEnabled: true,
+          granularity: 1,
+          labelCount: 5,
+          labelRotationAngle: 0,
+          avoidFirstLastClipping: true,
+          axisLineColor: processColor('rgba(0,0,0,0.5)'),
+          textColor: processColor('gray'),
+          gridColor: processColor('rgba(0,0,0,0.1)'),
+        }}
+        yAxis={{
+          left: {enabled: false},
+          right: {
+            enabled: true,
+            axisLineColor: processColor('rgba(0,0,0,0.5)'),
             textColor: processColor('gray'),
-            gridColor: processColor('rgba(0,0,0,0.1)'), // 연한 그리드 색상
-          }}
-          yAxis={{
-            left: {enabled: false},
-            right: {
-              enabled: true,
-              axisLineColor: processColor('rgba(0,0,0,0.5)'), // 연한 축 선 색상
-              textColor: processColor('gray'),
-              gridColor: processColor('rgba(0,0,0,0.1)'), // 연한 그리드 색상
-            },
-          }}
-          animation={{durationX: 0}}
-          legend={{enabled: true}}
-          maxVisibleValueCount={50}
-          autoScaleMinMaxEnabled={true}
-          visibleRange={{x: {min: 0, max: 30}}}
-          zoom={{
-            scaleX: 1.5,
-            scaleY: 1,
-            xValue: processedData.length - 1,
-            yValue: 0,
-            axisDependency: 'RIGHT',
-          }}
-          dragDecelerationEnabled={true}
-          dragDecelerationFrictionCoef={0.99}
-        />
-      </View>
-    );
-  } catch (error) {
-    console.error('Error rendering chart:', error);
-    return <Text>Error rendering chart: {(error as Error).message}</Text>;
-  }
+            gridColor: processColor('rgba(0,0,0,0.1)'),
+          },
+        }}
+        maxVisibleValueCount={16}
+        autoScaleMinMaxEnabled={true}
+        visibleRange={{x: {min: visibleRange, max: visibleRange}}}
+        dragXEnabled={true}
+        scaleXEnabled={true}
+        scaleYEnabled={true}
+        pinchZoom={true}
+        doubleTapToZoomEnabled={false}
+        dragDecelerationEnabled={true}
+        dragDecelerationFrictionCoef={0.99}
+        keepPositionOnRotation={false}
+        zoom={{
+          scaleX: 1,
+          scaleY: 1,
+          xValue: processedData.length - 1,
+          yValue: 0,
+          axisDependency: 'RIGHT',
+        }}
+      />
+    </View>
+  );
 };
 
 export default CandlestickChartComponent;
