@@ -53,6 +53,7 @@ public class UserService {
 
     User user = User.builder().email(userCreateDto.getEmail())
         .pwdHash(passwordService.encode(userCreateDto.getPassword())).name(userCreateDto.getName())
+            .isParent(userCreateDto.getIsParent())
         .nickname(userCreateDto.getNickname()).wallet(wallet).build();
 
 
