@@ -21,6 +21,9 @@ import {
 } from 'react-native';
 import Svg, {Path} from 'react-native-svg';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
+import SetRelationModal from '@/views/components/SetRelationModal';
+
+interface NickNameScreenProps {}
 import {
   launchImageLibrary,
   ImageLibraryOptions,
@@ -69,13 +72,14 @@ function NickNameScreen() {
   const handleSubmit = () => {
     signupMutation.mutate(account.values, {
       onSuccess: async () => {
-        const childEmails = emailData.map(email => email.emailAddress);
-        console.log('아이 이메일 확인:', childEmails);
         loginMutation.mutate(
           {email, password},
           {
             onSuccess: () => {
-              childAddMutation.mutate(childEmails);
+              if (childrenEmails.length === 0) {
+                return;
+              }
+              childAddMutation.mutate(childrenEmails);
               if (profileImage !== null) {
                 console.log('이미지 있음:', profileImage);
                 profileImageMutation.mutate(profileImage);
@@ -100,202 +104,111 @@ function NickNameScreen() {
     });
   };
 
-  const handleImagePick = () => {
-    const options: ImageLibraryOptions = {
-      mediaType: 'photo',
-      includeBase64: false,
+  const [modalVisible, setModalVisible] = useState(false);
+  const [childrenEmails, setChildrenEmails] = useState<string[]>([]);
+
+  const handleModalClose = (emails: string[]) => {
+    setChildrenEmails(emails);
+    setModalVisible(false);
+
+    const handleImagePick = () => {
+      const options: ImageLibraryOptions = {
+        mediaType: 'photo',
+        includeBase64: false,
+      };
+
+      launchImageLibrary(options, response => {
+        if (response.didCancel) {
+          console.log('User cancelled image picker');
+        } else if (response.errorCode) {
+          console.log('ImagePicker Error: ', response.errorMessage);
+        } else if (response.assets && response.assets.length > 0) {
+          setProfileImage(response.assets[0]);
+        }
+      });
     };
 
-    launchImageLibrary(options, response => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.errorCode) {
-        console.log('ImagePicker Error: ', response.errorMessage);
-      } else if (response.assets && response.assets.length > 0) {
-        setProfileImage(response.assets[0]);
-      }
-    });
-  };
-
-  const toggleModal = () => {
-    setModal(!modal);
-  };
-
-  const onChangeText = (input: string) => {
-    setText(input);
-  };
-
-  // 이메일 형식 유효성 검사 (정규식)
-  const isValidEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  // 이메일 추가 함수
-  const handleUpdateEmail = (email: string) => {
-    if (!isValidEmail(email)) {
-      return;
-    }
-    const emailExists = emailData.some(item => item.emailAddress === email);
-    if (emailExists) {
-      return;
-    }
-    // 3. 유효성 검사를 통과한 경우 이메일 추가
-    const newEmail = {
-      emailId: Date.now(), // 고유한 id
-      emailAddress: email,
-    };
-    setEmailData([...emailData, newEmail]); // 이메일 리스트에 추가
-    setText(''); // 입력 필드를 초기화
-  };
-
-  const handleDelete = (id: number) => {
-    setEmailData(emailData.filter(email => email.emailId !== id));
-  };
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <TouchableOpacity
-        activeOpacity={1}
-        onPress={Keyboard.dismiss}
-        style={{alignItems: 'center'}}>
-        <View style={styles.textContainer}>
-          <Text style={styles.text}>정보를 입력해주세요.</Text>
-        </View>
+    return (
+      <SafeAreaView style={styles.container}>
         <TouchableOpacity
-          style={styles.profileImageContainer}
-          onPress={handleImagePick}>
-          {profileImage ? (
-            <Image
-              source={{uri: profileImage.uri}}
-              style={styles.profileImage}
-            />
-          ) : (
-            <Svg
-              width="30"
-              height="28"
-              viewBox="0 0 30 28"
-              fill="none"
-              style={styles.profileSvg}>
-              <Path
-                d="M26.5385 3.65217H22.5404L20.5745 0.541739C20.4692 0.375187 20.3266 0.238613 20.1593 0.144117C19.992 0.0496212 19.8052 0.000120225 19.6154 0H10.3846C10.1948 0.000120225 10.008 0.0496212 9.84073 0.144117C9.67343 0.238613 9.5308 0.375187 9.42548 0.541739L7.45817 3.65217H3.46154C2.54348 3.65217 1.66303 4.03696 1.01386 4.72187C0.364697 5.40679 0 6.33573 0 7.30435V24.3478C0 25.3164 0.364697 26.2454 1.01386 26.9303C1.66303 27.6152 2.54348 28 3.46154 28H26.5385C27.4565 28 28.337 27.6152 28.9861 26.9303C29.6353 26.2454 30 25.3164 30 24.3478V7.30435C30 6.33573 29.6353 5.40679 28.9861 4.72187C28.337 4.03696 27.4565 3.65217 26.5385 3.65217ZM20.1923 15.2174C20.1923 16.3009 19.8878 17.3601 19.3172 18.261C18.7467 19.1618 17.9358 19.864 16.987 20.2786C16.0382 20.6933 14.9942 20.8018 13.987 20.5904C12.9798 20.379 12.0546 19.8573 11.3285 19.0911C10.6023 18.325 10.1078 17.3488 9.90746 16.2861C9.70711 15.2235 9.80994 14.122 10.2029 13.121C10.5959 12.1199 11.2614 11.2643 12.1153 10.6624C12.9692 10.0604 13.9731 9.73913 15 9.73913C16.3771 9.73913 17.6978 10.3163 18.6715 11.3437C19.6453 12.371 20.1923 13.7645 20.1923 15.2174Z"
-                fill="#77787B"
-              />
-            </Svg>
-          )}
-        </TouchableOpacity>
-        <View style={styles.inputContainer}>
-          <InputField
-            placeholder="이름"
-            style={styles.input}
-            {...account.getTextInputProps('name')}
-            value={String(account.getTextInputProps('name').value)}
-          />
-          <InputField
-            placeholder="닉네임"
-            style={styles.input}
-            {...account.getTextInputProps('nickname')}
-            value={String(account.getTextInputProps('nickname').value)}
-          />
-          {/* 아이 추가 모달 버튼*/}
-          {isParent ? (
-            <TouchableOpacity
-              onPress={() => setModal(true)}
-              style={{
-                marginTop: 20,
-                marginBottom: 20,
-                alignItems: 'center',
-                flexDirection: 'row',
-              }}>
-              <Text style={{fontFamily: fonts.LIGHT, color: colors.BLUE_100}}>
-                아이 정보를 추가해 주세요
-              </Text>
-              <Icon
-                name="chevron-thin-right"
-                size={10}
-                color={colors.BLUE_100}
-              />
-            </TouchableOpacity>
-          ) : (
-            <></>
-          )}
-        </View>
-        <CustomButton
-          style={{marginTop: 30}}
-          label="시작하기"
-          isParent={isParent}
-          onPress={handleSubmit}
-        />
-      </TouchableOpacity>
-      {/* 아이 정보 추가 모달 */}
-      <Modal transparent={true} visible={modal} onRequestClose={toggleModal}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            {/* 텍스트 박스 */}
-            <View style={{marginTop: 50, marginBottom: 20}}>
-              <Text
-                style={{
-                  textAlign: 'center',
-                  fontFamily: fonts.MEDIUM,
-                  fontSize: 20,
-                  color: colors.BLACK,
-                }}>
-                아이 정보를 추가해주세요
-              </Text>
-              <Text
-                style={{
-                  marginVertical: 5,
-                  fontFamily: fonts.LIGHT,
-                  fontSize: 12,
-                  color: colors.BLACK,
-                }}>
-                회원가입 후 다시 수정 또는 추가할 수 있습니다
-              </Text>
-            </View>
-            <View
-              style={{
-                marginBottom: 10,
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
-              <InputField
-                style={styles.input}
-                inputMode="text"
-                placeholder="아이 이메일"
-                onChangeText={onChangeText}
-                value={text}
-              />
-              <TouchableOpacity
-                style={{alignItems: 'center'}}
-                onPress={() => handleUpdateEmail(text)}>
-                <Text style={[styles.textButton, {color: colors.BLUE_100}]}>
-                  추가
-                </Text>
-              </TouchableOpacity>
-            </View>
-            {emailData.map(email => (
-              <View key={email.emailId} style={styles.emailContainer}>
-                <View style={styles.emailBox}>
-                  <Text style={styles.emailText}> {email.emailAddress} </Text>
-                </View>
-                <TouchableOpacity onPress={() => handleDelete(email.emailId)}>
-                  <Text style={styles.textButton}>삭제</Text>
-                </TouchableOpacity>
-              </View>
-            ))}
-            <CustomButton
-              style={{marginTop: 50, marginBottom: 25}}
-              label="확인"
-              isParent={isParent}
-              onPress={() => setModal(false)}
-            />
+          activeOpacity={1}
+          onPress={Keyboard.dismiss}
+          style={{alignItems: 'center'}}>
+          <View style={styles.textContainer}>
+            <Text style={styles.text}>정보를 입력해주세요.</Text>
           </View>
-        </View>
-      </Modal>
-    </SafeAreaView>
-  );
+          <TouchableOpacity
+            style={styles.profileImageContainer}
+            onPress={handleImagePick}>
+            {profileImage ? (
+              <Image
+                source={{uri: profileImage.uri}}
+                style={styles.profileImage}
+              />
+            ) : (
+              <Svg
+                width="30"
+                height="28"
+                viewBox="0 0 30 28"
+                fill="none"
+                style={styles.profileSvg}>
+                <Path
+                  d="M26.5385 3.65217H22.5404L20.5745 0.541739C20.4692 0.375187 20.3266 0.238613 20.1593 0.144117C19.992 0.0496212 19.8052 0.000120225 19.6154 0H10.3846C10.1948 0.000120225 10.008 0.0496212 9.84073 0.144117C9.67343 0.238613 9.5308 0.375187 9.42548 0.541739L7.45817 3.65217H3.46154C2.54348 3.65217 1.66303 4.03696 1.01386 4.72187C0.364697 5.40679 0 6.33573 0 7.30435V24.3478C0 25.3164 0.364697 26.2454 1.01386 26.9303C1.66303 27.6152 2.54348 28 3.46154 28H26.5385C27.4565 28 28.337 27.6152 28.9861 26.9303C29.6353 26.2454 30 25.3164 30 24.3478V7.30435C30 6.33573 29.6353 5.40679 28.9861 4.72187C28.337 4.03696 27.4565 3.65217 26.5385 3.65217ZM20.1923 15.2174C20.1923 16.3009 19.8878 17.3601 19.3172 18.261C18.7467 19.1618 17.9358 19.864 16.987 20.2786C16.0382 20.6933 14.9942 20.8018 13.987 20.5904C12.9798 20.379 12.0546 19.8573 11.3285 19.0911C10.6023 18.325 10.1078 17.3488 9.90746 16.2861C9.70711 15.2235 9.80994 14.122 10.2029 13.121C10.5959 12.1199 11.2614 11.2643 12.1153 10.6624C12.9692 10.0604 13.9731 9.73913 15 9.73913C16.3771 9.73913 17.6978 10.3163 18.6715 11.3437C19.6453 12.371 20.1923 13.7645 20.1923 15.2174Z"
+                  fill="#77787B"
+                />
+              </Svg>
+            )}
+          </TouchableOpacity>
+          <View style={styles.inputContainer}>
+            <InputField
+              placeholder="이름"
+              style={styles.input}
+              {...account.getTextInputProps('name')}
+              value={String(account.getTextInputProps('name').value)}
+            />
+            <InputField
+              placeholder="닉네임"
+              style={styles.input}
+              {...account.getTextInputProps('nickname')}
+              value={String(account.getTextInputProps('nickname').value)}
+            />
+            {/* 아이 추가 모달 버튼*/}
+            {isParent ? (
+              <TouchableOpacity
+                onPress={() => setModal(true)}
+                style={{
+                  marginTop: 20,
+                  marginBottom: 20,
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                }}>
+                <Text style={{fontFamily: fonts.LIGHT, color: colors.BLUE_100}}>
+                  아이 정보를 추가해 주세요
+                </Text>
+                <Icon
+                  name="chevron-thin-right"
+                  size={10}
+                  color={colors.BLUE_100}
+                />
+              </TouchableOpacity>
+            ) : (
+              <></>
+            )}
+          </View>
+          <CustomButton
+            style={{marginTop: 30}}
+            label="시작하기"
+            Role={role}
+            isParent={isParent}
+            onPress={handleSubmit}
+          />
+        </TouchableOpacity>
+        {/* 아이 정보 추가 모달 */}
+        <SetRelationModal visible={modalVisible} onClose={handleModalClose} />
+      </SafeAreaView>
+    );
+  };
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -348,44 +261,6 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.GRAY_50,
     borderBottomWidth: 1,
     width: 215,
-  },
-  modalOverlay: {
-    flex: 1,
-    paddingTop: 180,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    alignItems: 'center',
-  },
-  modalContainer: {
-    width: 350,
-    borderRadius: 10,
-    alignItems: 'center',
-    backgroundColor: colors.WHITE,
-  },
-  emailContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    width: '68%',
-    marginTop: 10,
-  },
-  emailBox: {
-    flex: 1,
-    backgroundColor: colors.GRAY_25,
-    borderRadius: 5,
-    marginRight: 10,
-    paddingVertical: 5,
-    paddingLeft: 5,
-  },
-  emailText: {
-    fontSize: 12,
-    fontFamily: fonts.LIGHT,
-    color: colors.BLACK,
-    textAlign: 'left',
-  },
-  textButton: {
-    fontFamily: fonts.LIGHT,
-    fontSize: 10,
-    color: colors.BLACK,
   },
 });
 
