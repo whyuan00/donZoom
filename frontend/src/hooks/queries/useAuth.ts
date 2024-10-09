@@ -12,9 +12,10 @@ import {
 import queryClient from '@/api/queryClient';
 import {queryKeys, storageKeys} from '@/constants/keys';
 import {UseMutationCustomOptions, UseQueryCustomOptions} from '@/types/common';
+import {Child} from '@/types/domain';
 import {removeEncryptedStorage, setEncryptStorage} from '@/utils';
 import {removeHeader, setHeader} from '@/utils/header';
-import {useMutation, useQuery} from '@tanstack/react-query';
+import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
 
 function useSignup(mutationOptions?: UseMutationCustomOptions) {
   return useMutation({
@@ -48,6 +49,14 @@ function useGetProfile(queryOptions?: UseQueryCustomOptions<ResponseProfile>) {
     queryFn: getProfile,
     ...queryOptions,
   });
+}
+
+function useGetChildren() {
+  const {data: profile} = useGetProfile();
+  // console.log('프로필',profile?.children)
+  return {
+    children: profile?.children ?? [],
+  };
 }
 
 function useLogout(mutationOptions?: UseMutationCustomOptions) {
@@ -98,6 +107,7 @@ function useAuth() {
   const isLogin = getProfileQuery.isSuccess;
   const loginMutation = useLogin();
   const logoutMutation = useLogout();
+  const children = useGetChildren();
   const autoLoginMutation = useAutoLogin();
   const profileImageMutation = useProfileImage();
   const childAddMutation = useChildAdd();
@@ -112,6 +122,7 @@ function useAuth() {
     autoLoginMutation,
     profileImageMutation,
     childAddMutation,
+    children,
     setRelationMutation,
   };
 }

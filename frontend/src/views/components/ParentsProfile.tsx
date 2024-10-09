@@ -1,23 +1,34 @@
 import React from 'react';
 import {Image, Text, View, StyleSheet} from 'react-native';
 import {colors} from '../../constants/colors';
-import { fonts } from '@/constants/font';
+import {fonts} from '@/constants/font';
+import {Path, Svg} from 'react-native-svg';
+import Icon from 'react-native-vector-icons/Fontisto';
 
 interface Props {
-  name: string;
+  name?: string;
 }
 
 const HomeProfile = ({name}: Props) => {
   return (
     <View style={styles.container}>
       <View style={styles.profileContainer}>
-        <Image
-          source={require('../../assets/images/characterImage.webp')}
-          style={styles.image}
-        />
-        <Text style={styles.text}>
-          <Text style={styles.textName}>{name}</Text>님
-        </Text>
+        {name ? (
+          <View>
+            <Image
+              source={require('../../assets/images/characterImage.webp')}
+              style={styles.image}
+            />
+            <Text style={styles.text}>
+              <Text style={styles.textName}>{name}</Text>님
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.svgContainer}>
+            <Icon name="plus-a" />
+            {/* <Text style={{marginTop:5}}> 아이 찾기</Text> */}
+          </View>
+        )}
       </View>
     </View>
   );
@@ -34,6 +45,15 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.BLUE_100,
     borderRadius: 50,
+  },
+  svgContainer: {
+    // paddingTop:15,
+    width: 75,
+    height: 75,
+    backgroundColor:colors.GRAY_25,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   text: {
     fontSize: 12,

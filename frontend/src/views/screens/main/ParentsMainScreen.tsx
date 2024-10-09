@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
   Animated,
+  Modal,
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/Octicons';
@@ -18,45 +19,61 @@ import {useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import useAccountBalance from '@/hooks/useAccountInfo';
 
-const profiles = [
+import useAuth from '@/hooks/queries/useAuth';
+import SetRelationModal from '@/views/components/SetRelationModal';
+
+
+const childrenProfile = [
   {
+    id: 0,
     name: '사과',
+    email: '',
+    nickname: 'apple',
     balance: '5,217',
     ongoingMissions: ['마트에서 두부 사오기'],
     completeMissions: ['마트에서 참치 사오기'],
   },
   {
+    id: 1,
     name: '바나나',
+    email: '',
+    nickname: 'banana',
     balance: '3,112',
     ongoingMissions: ['마트에서 참치 사오기'],
     completeMissions: ['마트에서 우유 사오기'],
   },
   {
+    id: 2,
     name: '토마토',
+    email: '',
+    nickname: 'tomato',
     balance: '8,200',
     ongoingMissions: ['청소하기'],
     completeMissions: ['책읽기'],
   },
 ];
-
+interface emailData {
+  emailId: any;
+  emailAddress: string;
+}
 function ParentsMainScreen() {
   const [selectedProfileIndex, setSelectedProfileIndex] = useState(0);
-  const [profileOrder, setProfileOrder] = useState(profiles);
+  const [profileOrder, setProfileOrder] = useState(childrenProfile);
   const navigation = useNavigation() as any;
   const {balance} = useAccountBalance();
 
-  const animatedValues = profiles.map(() => new Animated.Value(0));
-  const animatedXValues = profiles.map(() => new Animated.Value(0));
+  const animatedValues = childrenProfile.map(() => new Animated.Value(0));
+  const animatedXValues = childrenProfile.map(() => new Animated.Value(0));
 
   useEffect(() => {
-    setProfileOrder(profiles);
+    setProfileOrder(childrenProfile);
   }, []);
 
   const selectProfile = (index: number) => {
     const reorderProfiles = [
-      profiles[index],
-      ...profiles.slice(0, index),
-      ...profiles.slice(index + 1),
+      childrenProfile[index],
+      ...childrenProfile.slice(0, index),
+      ...childrenProfile.slice(index + 1),
     ];
 
     setProfileOrder(reorderProfiles);
@@ -78,6 +95,23 @@ function ParentsMainScreen() {
     });
   };
 
+  const {children, childAddMutation} = useAuth();
+  // const { children: childrenProfile } = children 아이 프로필 불러오면됨
+  const [modalVisible, setModalVisible] = useState(false);
+
+  // 모달 닫기->아이 정보 추가
+  const handleModalClose = (emails: string[]) => {
+    setModalVisible(false);
+    if (emails.length === 0) {
+      return;
+    }
+    childAddMutation.mutate(emails, {
+      onSuccess: () => {
+        console.log('아이 이메일 전송 성공');
+      },
+    });
+  };
+
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -96,26 +130,40 @@ function ParentsMainScreen() {
                     }),
                   },
                 ],
-                zIndex: profiles.length - index,
+                zIndex: childrenProfile.length - index,
               };
               // console.log(animatedStyle.zIndex, profile.name);
 
               return (
                 <TouchableOpacity
-                  key={profile.name}
+                  key={profile.id}
                   onPress={() =>
                     selectProfile(
-                      profiles.findIndex(p => p.name === profile.name),
+                      childrenProfile.findIndex(p => p.name === profile.name),
                     )
                   }
                   style={styles.profileTouchable}>
                   <Animated.View
-                    style={[animatedStyle, {zIndex: profiles.length - index}]}>
+                    style={[
+                      animatedStyle,
+                      {zIndex: childrenProfile.length - index},
+                    ]}>
                     <Profile name={profile.name} />
                   </Animated.View>
                 </TouchableOpacity>
               );
             })}
+            {/* 아이 추가 모달 버튼*/}
+            <TouchableOpacity
+              onPress={() => setModalVisible(true)}
+              style={{marginLeft: -8, marginTop: 3, zIndex: -1}}>
+              <Profile />
+            </TouchableOpacity>
+            {/* 아이모달 */}
+            <SetRelationModal
+              visible={modalVisible}
+              onClose={handleModalClose}
+            />
           </View>
           <View style={styles.moneyContainer}>
             <View style={styles.mypageContainer}>
@@ -383,6 +431,51 @@ const styles = StyleSheet.create({
     color: colors.BLACK,
     fontFamily: fonts.MEDIUM,
     fontSize: 20,
+  },
+  input: {
+    fontFamily: fonts.LIGHT,
+    fontSize: 14,
+    borderBottomColor: colors.GRAY_50,
+    borderBottomWidth: 1,
+    width: 215,
+  },
+  modalOverlay: {
+    flex: 1,
+    paddingTop: 180,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    width: 350,
+    borderRadius: 10,
+    alignItems: 'center',
+    backgroundColor: colors.WHITE,
+  },
+  emailContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    width: '68%',
+    marginTop: 10,
+  },
+  emailBox: {
+    flex: 1,
+    backgroundColor: colors.GRAY_25,
+    borderRadius: 5,
+    marginRight: 10,
+    paddingVertical: 5,
+    paddingLeft: 5,
+  },
+  emailText: {
+    fontSize: 12,
+    fontFamily: fonts.LIGHT,
+    color: colors.BLACK,
+    textAlign: 'left',
+  },
+  textButton: {
+    fontFamily: fonts.LIGHT,
+    fontSize: 10,
+    color: colors.BLACK,
   },
 });
 
