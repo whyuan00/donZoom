@@ -6,6 +6,7 @@ import {
   postChildAdd,
   postLogin,
   postProfileImage,
+  postSetRelation,
   postSignup,
 } from '@/api/auth';
 import queryClient from '@/api/queryClient';
@@ -84,6 +85,13 @@ function useChildAdd(mutationOptions?: UseMutationCustomOptions) {
   });
 }
 
+function useSetRelation(mutationOptions?: UseMutationCustomOptions) {
+  return useMutation({
+    mutationFn: postSetRelation,
+    ...mutationOptions,
+  });
+}
+
 function useAuth() {
   const signupMutation = useSignup();
   const getProfileQuery = useGetProfile();
@@ -93,6 +101,7 @@ function useAuth() {
   const autoLoginMutation = useAutoLogin();
   const profileImageMutation = useProfileImage();
   const childAddMutation = useChildAdd();
+  const setRelationMutation = useSetRelation();
 
   return {
     signupMutation,
@@ -103,6 +112,7 @@ function useAuth() {
     autoLoginMutation,
     profileImageMutation,
     childAddMutation,
+    setRelationMutation,
   };
 }
 

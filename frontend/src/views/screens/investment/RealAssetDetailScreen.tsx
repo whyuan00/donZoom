@@ -27,7 +27,7 @@ export default function RealAssetDetailScreen({navigation}: any) {
   // const [realAssetDollar, setRealAssetDollar] = useState<number>(119.37); // 현재 보유한 금을 머니로 환산한 값
 
   const {useGetStock} = useStock();
-  const {data: stockData, isLoading, error} = useGetStock(5);
+  const {data: stockData, isLoading, error} = useGetStock(5, 'day');
   // console.log(stockData[0])
   const realAssetMoney = stockData?.price ?? 0;
   const realAssetDollar = realAssetMoney * 0.09;
@@ -46,7 +46,7 @@ export default function RealAssetDetailScreen({navigation}: any) {
           <Text style={styles.dollarTitle}>${realAssetDollar} 달러 </Text>
         </View>
       </View>
-      <InvestRealAssetTabNavigator/>
+      <InvestRealAssetTabNavigator />
     </View>
   );
 }

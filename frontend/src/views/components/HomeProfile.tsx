@@ -16,9 +16,9 @@ const HomeProfile = ({name}: Props) => {
         <Image
           source={{
             uri:
-              profileImage !== undefined
-                ? profileImage
-                : 'http://j11a108.p.ssafy.io:8081/api/uploads/1897a985-d18b-4a52-b7c4-0040b7453d29.png',
+              profileImage === undefined || profileImage === null
+                ? 'http://j11a108.p.ssafy.io:8081/api/uploads/1897a985-d18b-4a52-b7c4-0040b7453d29.png'
+                : profileImage,
           }}
           style={styles.image}
         />

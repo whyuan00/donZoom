@@ -35,7 +35,7 @@ function validateSignup(values: UserInfomation & {passwordConfirm: string}) {
 function validateInitAccount(
   values: UserInfomation & {passwordConfirm: string} & {name: string} & {
     nickname: string;
-  } & {role: string},
+  } & {isParent: boolean},
 ) {
   const errors = validateUser(values);
   const initAccountErrors = {
@@ -43,7 +43,7 @@ function validateInitAccount(
     passwordConfirm: '',
     name: '',
     nickname: '',
-    role: '',
+    isParent: '',
   };
 
   return initAccountErrors;
