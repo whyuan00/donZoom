@@ -13,6 +13,8 @@ import com.example.donzoom.util.TimeUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.google.firebase.messaging.FirebaseMessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -33,6 +35,7 @@ public class QuizService {
   private final UserRepository userRepository;
   private final UserQuizRepository userQuizRepository;
   private final UserService userService;
+  private final FCMService fcmService;
 
   public List<Quiz> getTodayQuizzes() {
     // 오늘의 퀴즈 안푼것중  (랜덤 3개) 가져오기
@@ -102,6 +105,12 @@ public class QuizService {
         .selectedAnswer(quizAnswerDto.getAnswer()).isCorrect(isCorrect).build();
 
     if (isCorrect) {
+      try {
+        fcmService.sendNotification(userService.findCurrentUser(),"코인 획득",1+"코인을 획득하였습니다."
+        ,"1","default");
+      } catch (FirebaseMessagingException e) {
+        log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
+      }
       walletService.updateCoin(1);
     }
 

@@ -41,15 +41,6 @@ public class WalletService {
   public void updateCoin(Integer amount) {
     Wallet wallet = findCurrentWallet();
     wallet.updateCoin(wallet.getCoin() + amount);
-    if(amount > 0){
-      log.info("코인을 획득했습니다.");
-      User user = userService.findCurrentUser();
-      try {
-        fcmService.sendNotification(user,"코인획득","먹고 가라");
-      } catch (FirebaseMessagingException e) {
-        log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
-      }
-    }
     walletRepository.save(wallet);
   }
 

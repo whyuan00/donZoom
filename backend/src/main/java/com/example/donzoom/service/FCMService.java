@@ -22,7 +22,7 @@ public class FCMService {
     private final AlarmRepository alarmRepository;
     private final UserService userService;
 
-    public String sendNotification(User user, String title, String body)
+    public String sendNotification(User user, String title, String body,String type,String status)
             throws FirebaseMessagingException {
         String token = user.getDeviceToken();
         log.info(token);
@@ -36,9 +36,14 @@ public class FCMService {
 
         // 메시지 전송
         String result = FirebaseMessaging.getInstance().send(message);
-        Alarm alarm = Alarm.builder().user(user).title(title).body(body).build();
+        Alarm alarm = Alarm.builder().user(user).title(title).body(body).type(type).status(status).build();
         alarmRepository.save(alarm);
         return result;
+    }
+
+    public String sendNotification(User user, String title, String body)
+            throws FirebaseMessagingException {
+        return sendNotification(user,title,body,"default_type","default_status");
     }
 
     public List<AlarmResponseDto> getAllAlarms() {
