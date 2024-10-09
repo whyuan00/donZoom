@@ -29,5 +29,7 @@ public class UserCreateDto {
   @Size(min = 1, max = 10)
   private String name;
 
+  private Boolean isParent;
+
 
 }

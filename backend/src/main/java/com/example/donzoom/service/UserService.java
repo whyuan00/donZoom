@@ -40,7 +40,7 @@ public class UserService {
   private final FileUploadUtil fileUploadUtil;
   private final PendingRepository pendingRepository;
 
-  public Long registerUser(UserCreateDto userCreateDto, String imgUrl) {
+  public Long registerUser(UserCreateDto userCreateDto) {
 
     //이메일 중복체크
     if (userRepository.existsByEmail(userCreateDto.getEmail())) {
@@ -55,7 +55,6 @@ public class UserService {
         .pwdHash(passwordService.encode(userCreateDto.getPassword())).name(userCreateDto.getName())
         .nickname(userCreateDto.getNickname()).wallet(wallet).build();
 
-    user.updateProfileImage(imgUrl);
 
     userRepository.save(user);
     wallet.updateUser(user);
@@ -100,15 +99,24 @@ public class UserService {
 
   public void updateUser(MultipartFile file, UserUpdateRequestDto userUpdateRequestDto)
       throws Exception {
-    String username = SecurityUtil.getAuthenticatedUsername();
-    User user = userRepository.findByEmail(username)
-        .orElseThrow(() -> new RuntimeException("User not found"));
+    User user = findCurrentUser();
     // 파일을 로컬/서버에 저장
     String fileUri = fileUploadUtil.saveFile(file);
 
     // 프로필 이미지 경로를 DB에 업데이트
     user.updateAdditionalInfo(userUpdateRequestDto.getName(), userUpdateRequestDto.getNickname(),
         fileUri, userUpdateRequestDto.getIsParent());
+    userRepository.save(user);
+  }
+
+  public void updateUser(MultipartFile file)
+          throws Exception {
+    User user = findCurrentUser();
+    // 파일을 로컬/서버에 저장
+    String fileUri = fileUploadUtil.saveFile(file);
+
+    // 프로필 이미지 경로를 DB에 업데이트
+    user.updateProfileImage(fileUri);
     userRepository.save(user);
   }
 
