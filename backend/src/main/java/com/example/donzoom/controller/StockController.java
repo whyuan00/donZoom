@@ -14,6 +14,7 @@ import com.example.donzoom.repository.StockHistoryRepository;
 import com.example.donzoom.service.StockService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/stock")
@@ -68,7 +70,7 @@ public class StockController {
       @RequestBody StockRequestDto stockRequestDto) {
     Long stockHistoryId = stockService.createStockHistory(stockId, stockRequestDto);
     String interval = stockRequestDto.getInterval();
-
+    log.info(interval);
     // 여기서 WebSocket 전송
     if(interval.equals("1m")) {
       StockHistory1m stockHistory = stockHistory1mRepository.findById(stockHistoryId).orElseThrow();
