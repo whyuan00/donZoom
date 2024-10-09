@@ -48,7 +48,7 @@ public class FCMService {
 
     public List<AlarmResponseDto> getAllAlarms() {
         User user = userService.findCurrentUser();
-        List<Alarm> alarms = alarmRepository.findAllAlarmsByUserId(user.getId());
+        List<Alarm> alarms = alarmRepository.findAllAlarmsByUserIdOrderByCreatedAtDesc(user.getId());
         return alarms.stream()
                 .map(alarm -> AlarmResponseDto.builder()
                         .id(alarm.getId())
@@ -56,6 +56,7 @@ public class FCMService {
                         .body(alarm.getBody())
                         .status(alarm.getStatus())
                         .type(alarm.getType())
+                        .createdAt(alarm.getCreatedAt())
                         .build()).toList();
     }
 

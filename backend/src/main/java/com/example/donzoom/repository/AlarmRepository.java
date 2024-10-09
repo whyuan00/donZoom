@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface AlarmRepository extends JpaRepository<Alarm, Long> {
 
-  List<Alarm> findAllAlarmsByUserId(Long userId);
+  List<Alarm> findAllAlarmsByUserIdOrderByCreatedAtDesc(Long userId);
 
   Optional<Alarm> findById(Long id);
 }
