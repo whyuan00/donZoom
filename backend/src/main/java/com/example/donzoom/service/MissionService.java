@@ -69,7 +69,7 @@ public class MissionService {
         .build();
     missionRepository.save(mission);
     try {
-      fcmService.sendNotification(child.getDeviceToken(),"미션생성","미션...만듬...");
+      fcmService.sendNotification(child,"미션생성","미션...만듬...");
     } catch (FirebaseMessagingException e) {
       log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
     }

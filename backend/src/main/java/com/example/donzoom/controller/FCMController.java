@@ -1,6 +1,8 @@
 package com.example.donzoom.controller;
 
+import com.example.donzoom.entity.User;
 import com.example.donzoom.service.FCMService;
+import com.example.donzoom.service.UserService;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class FCMController {
 
   private final FCMService fcmService;
+  private final UserService userService;
 
   // FCMService 의존성 주입
-  public FCMController(FCMService fcmService) {
+  public FCMController(FCMService fcmService, UserService userService) {
     this.fcmService = fcmService;
+    this.userService = userService;
   }
 
   @PostMapping("/send")
@@ -27,7 +31,8 @@ public class FCMController {
 
     try {
       // FCM 서비스 호출
-      String response = fcmService.sendNotification(token, title, body);
+      User user = userService.findCurrentUser();
+      String response = fcmService.sendNotification(user, title, body);
       return ResponseEntity.ok("알림 전송 성공: " + response);
     } catch (FirebaseMessagingException e) {
       log.error(e.getMessage());

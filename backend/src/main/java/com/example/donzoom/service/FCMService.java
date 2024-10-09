@@ -21,8 +21,9 @@ public class FCMService {
   private final AlarmRepository alarmRepository;
   private final UserService userService;
 
-  public String sendNotification(String token, String title, String body)
+  public String sendNotification(User user, String title, String body)
       throws FirebaseMessagingException {
+    String token = user.getDeviceToken();
     log.info(token);
     log.info(title);
     log.info(body);
@@ -34,7 +35,6 @@ public class FCMService {
 
     // 메시지 전송
     String result = FirebaseMessaging.getInstance().send(message);
-    User user = userService.findUserByDeviceToken(token);
     Alarm alarm = Alarm.builder().user(user).title(title).body(body).build();
     alarmRepository.save(alarm);
     return result;

@@ -137,7 +137,7 @@ public class AccountService {
     child.updateDailyLimit(Long.parseLong(updateLimitRequestDto.getLimit()));
     userRepository.save(child);
     try {
-      fcmService.sendNotification(child.getDeviceToken(),"1일결제한도수정","한도수정...");
+      fcmService.sendNotification(child,"1일결제한도수정","한도수정...");
     } catch (FirebaseMessagingException e) {
       log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
     }
@@ -150,7 +150,7 @@ public class AccountService {
     child.updatePerTransactionLimit(Long.parseLong(updateLimitRequestDto.getLimit()));
     userRepository.save(child);
     try {
-      fcmService.sendNotification(child.getDeviceToken(),"1회결제한도수정","한도수정...");
+      fcmService.sendNotification(child,"1회결제한도수정","한도수정...");
     } catch (FirebaseMessagingException e) {
       log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
     }
@@ -193,7 +193,7 @@ public class AccountService {
         autoTransferRequestDto.getDepositAccountNo(),
         autoTransferRequestDto.getTransactionBalance(), autoTransferRequestDto.getTransferDate());
     try {
-      fcmService.sendNotification(user.getDeviceToken(),"자동이체 설정..","자동이체설정....");
+      fcmService.sendNotification(user,"자동이체 설정..","자동이체설정....");
     } catch (FirebaseMessagingException e) {
       log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
     }
@@ -225,7 +225,7 @@ public class AccountService {
         updateRequestDto.getWithdrawalAccountNo(), updateRequestDto.getDepositAccountNo(),
         updateRequestDto.getTransactionBalance(), updateRequestDto.getTransferDate());
     try {
-      fcmService.sendNotification(user.getDeviceToken(),"자동이체 수정..","자동이체수정....");
+      fcmService.sendNotification(user,"자동이체 수정..","자동이체수정....");
     } catch (FirebaseMessagingException e) {
       log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
     }
@@ -274,7 +274,7 @@ public class AccountService {
 
     // 유저의 1일 한도 넘게되면 추가 처리 (예: 알림, 로깅 등)
     try {
-      fcmService.sendNotification(user.getDeviceToken(),"결제..","결제....");
+      fcmService.sendNotification(user,"결제..","결제....");
     } catch (FirebaseMessagingException e) {
       log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
     }

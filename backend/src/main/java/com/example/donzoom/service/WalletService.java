@@ -45,7 +45,7 @@ public class WalletService {
       log.info("코인을 획득했습니다.");
       User user = userService.findCurrentUser();
       try {
-        fcmService.sendNotification(user.getDeviceToken(),"코인획득","먹고 가라");
+        fcmService.sendNotification(user,"코인획득","먹고 가라");
       } catch (FirebaseMessagingException e) {
         log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
       }

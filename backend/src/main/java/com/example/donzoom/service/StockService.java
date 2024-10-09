@@ -257,7 +257,7 @@ public class StockService {
         transactionHistoryId).orElseThrow();
     User user = userService.findCurrentUser();
     try {
-      fcmService.sendNotification(user.getDeviceToken(),"매수","ㅠㅠ");
+      fcmService.sendNotification(user,"매수","ㅠㅠ");
     } catch (FirebaseMessagingException e) {
       log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
     }
@@ -327,7 +327,7 @@ public class StockService {
 
     User user = userService.findCurrentUser();
     try {
-      fcmService.sendNotification(user.getDeviceToken(),"매도","ㅗ");
+      fcmService.sendNotification(user,"매도","ㅗ");
     } catch (FirebaseMessagingException e) {
       log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
     }
