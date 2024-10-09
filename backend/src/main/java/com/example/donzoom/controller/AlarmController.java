@@ -4,6 +4,7 @@ import com.example.donzoom.dto.account.request.*;
 import com.example.donzoom.dto.account.response.BankUserResponseDto;
 import com.example.donzoom.dto.account.response.CreateCardResponseDto;
 import com.example.donzoom.dto.account.response.GetUserByAccountNoResponseDto;
+import com.example.donzoom.dto.alarm.response.AlarmResponseDto;
 import com.example.donzoom.entity.Alarm;
 import com.example.donzoom.exception.NoUserKeyException;
 import com.example.donzoom.service.AccountService;
@@ -27,7 +28,7 @@ public class AlarmController {
 
   @GetMapping
   public ResponseEntity<?> getTotalAlarms(){
-    List<Alarm> alarms = fcmService.getAllAlarms();
+    List<AlarmResponseDto> alarms = fcmService.getAllAlarms();
     return new ResponseEntity<>(alarms, HttpStatus.OK);
   }
 
