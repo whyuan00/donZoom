@@ -202,9 +202,7 @@ public class UserController {
       if (file == null || file.isEmpty()) {
         return new ResponseEntity<>("파일이 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
       }
-      userService.updateUser(file);
-      // 파일 처리 로직 추가 (예: 파일 저장, URL 반환 등)
-      String imageUrl = fileUploadUtil.saveFile(file);  // 가정: 이미지 저장 후 URL 반환
+      String imageUrl = userService.updateUser(file);
 
       return new ResponseEntity<>(imageUrl, HttpStatus.OK);
     } catch (Exception e) {

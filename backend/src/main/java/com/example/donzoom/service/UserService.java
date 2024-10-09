@@ -109,7 +109,7 @@ public class UserService {
     userRepository.save(user);
   }
 
-  public void updateUser(MultipartFile file)
+  public String updateUser(MultipartFile file)
           throws Exception {
     User user = findCurrentUser();
     // 파일을 로컬/서버에 저장
@@ -118,6 +118,7 @@ public class UserService {
     // 프로필 이미지 경로를 DB에 업데이트
     user.updateProfileImage(fileUri);
     userRepository.save(user);
+    return fileUri;
   }
 
   public User findCurrentUser() {
