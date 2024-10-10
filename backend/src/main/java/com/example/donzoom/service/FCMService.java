@@ -20,7 +20,6 @@ import java.util.List;
 public class FCMService {
 
     private final AlarmRepository alarmRepository;
-    private final UserService userService;
 
     public String sendNotification(User user, String title, String body,String type,String status)
             throws FirebaseMessagingException {
@@ -46,8 +45,7 @@ public class FCMService {
         return sendNotification(user,title,body,"default_type","default_status");
     }
 
-    public List<AlarmResponseDto> getAllAlarms() {
-        User user = userService.findCurrentUser();
+    public List<AlarmResponseDto> getAllAlarms(User user) {
         List<Alarm> alarms = alarmRepository.findAllAlarmsByUserIdOrderByCreatedAtDesc(user.getId());
         return alarms.stream()
                 .map(alarm -> AlarmResponseDto.builder()
