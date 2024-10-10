@@ -29,6 +29,7 @@ import TransferScreen3 from '@/views/screens/account/TransferScreen3';
 import TransferScreen4 from '@/views/screens/account/TransferScreen4';
 import QuizReviewScreen from '@/views/screens/quiz/QuizReviewScreen';
 import QuizReviewExplanationScreen from '@/views/screens/quiz/QuizReviewExplanationScreen';
+import AccountHistoryEmailScreen from '@/views/screens/account/AccountHistoryEmailScreen';
 
 const HomeStackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -49,6 +50,21 @@ const HomeStackNavigator = () => {
         name="계좌관리"
         component={TransferNavigator}
         options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="아이 거래내역"
+        component={AccountHistoryEmailScreen}
+        options={{
+          title: '아이 거래내역 조회',
+          headerStyle: {
+            backgroundColor: colors.YELLOW_100,
+          },
+          headerTintColor: colors.BLACK,
+          headerTitleStyle: {
+            fontFamily: fonts.MEDIUM,
+          },
+          headerShadowVisible: false,
+        }}
       />
       <Stack.Screen
         name="계좌개설"

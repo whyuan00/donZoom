@@ -25,12 +25,14 @@ import SetRelationModal from '@/views/components/SetRelationModal';
 import {useChildrenStore} from '@/stores/useChildrenStore';
 import {Child} from '@/types/domain';
 import useAccount from '@/hooks/queries/useAccount';
+import {getChildrenAccount, getChildrenBalance} from '@/api/account';
 
 interface ChildProfile {
   id: number;
   name: string;
   email: string;
   nickname: string;
+  accountNumber: string;
   balance: number;
   ongoingMissions: string;
   completeMissions: string;
@@ -41,7 +43,7 @@ interface emailData {
   emailAddress: string;
 }
 function ParentsMainScreen() {
-  const {myChildren} = useChildrenStore();
+  const {myChildren, setSelectedChild: setCurrentChild} = useChildrenStore();
   const [selectedProfileIndex, setSelectedProfileIndex] = useState(0);
   const [profileOrder, setProfileOrder] = useState(childrenProfile);
   const navigation = useNavigation() as any;
@@ -49,7 +51,9 @@ function ParentsMainScreen() {
   const [isMyScreen, setIsMyScreen] = useState(true);
   const {getAccount} = useAccount();
   const [refreshing, setRefreshing] = useState(false);
-
+  const {useGetChildrenAccountWithParams, useGetChildrenBalanceWithParams} =
+    useAccount();
+  const [selectedChild, setSelectedChild] = useState<ChildProfile | null>(null);
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
@@ -60,12 +64,13 @@ function ParentsMainScreen() {
   // 아이 정보 가져오기
   useEffect(() => {
     refetch();
-    console.log('myCHildren: ', myChildren);
+    // console.log('myCHildren: ', myChildren);
     if (myChildren.length > 0) {
-      console.log('myCHildren2: ', myChildren);
+      // console.log('myCHildren2: ', myChildren);
       const updatedChildren = myChildren.map((child, index) => ({
         ...child,
-        balance: 10,
+        accountNumber: '',
+        balance: 0,
         ongoingMissions: '안녕1',
         completeMissions: '안녕2',
       }));
@@ -76,31 +81,61 @@ function ParentsMainScreen() {
   const animatedValues = profileOrder.map(() => new Animated.Value(0));
   const animatedXValues = profileOrder.map(() => new Animated.Value(0));
 
-  const selectProfile = (index: number) => {
+  // 해당 프로필로 정보 설정
+  const selectProfile = async (index: number) => {
     setIsMyScreen(false);
-    const reorderProfiles = [
-      profileOrder[index],
-      ...profileOrder.slice(0, index),
-      ...profileOrder.slice(index + 1),
-    ];
 
-    setProfileOrder(reorderProfiles);
+    const selectedChild = profileOrder[index];
+
+    try {
+      const accountResult = await getChildrenAccount(selectedChild.email);
+      const balanceResult = await getChildrenBalance(selectedChild.email);
+
+      const updatedChild = {
+        ...selectedChild,
+        accountNumber: accountResult,
+        balance: balanceResult,
+      };
+
+      const reorderProfiles = [
+        updatedChild,
+        ...profileOrder.slice(0, index),
+        ...profileOrder.slice(index + 1),
+      ];
+
+      reorderProfiles.forEach((_, i) => {
+        const xPosition = i * 50;
+        Animated.timing(animatedXValues[i], {
+          toValue: xPosition,
+          duration: 300,
+          useNativeDriver: false,
+        }).start();
+
+        Animated.timing(animatedValues[i], {
+          toValue: i === 0 ? 1 : 0,
+          duration: 300,
+          useNativeDriver: false,
+        }).start();
+      });
+      setProfileOrder(reorderProfiles);
+      setSelectedChild(updatedChild);
+
+      setCurrentChild({
+        id: updatedChild.id,
+        name: updatedChild.name,
+        email: updatedChild.email,
+        nickname: updatedChild.nickname,
+        accountNumber: updatedChild.accountNumber,
+        balance: updatedChild.balance,
+        ongoingMissions: updatedChild.ongoingMissions,
+        completeMissions: updatedChild.completeMissions,
+      });
+      console.log('setCurrentChild: ', setCurrentChild);
+    } catch (error) {
+      console.error('Error fetching child data:', error);
+    }
+
     setSelectedProfileIndex(0);
-
-    reorderProfiles.forEach((_, i) => {
-      const xPosition = i * 50;
-      Animated.timing(animatedXValues[i], {
-        toValue: xPosition,
-        duration: 300,
-        useNativeDriver: false,
-      }).start();
-
-      Animated.timing(animatedValues[i], {
-        toValue: i === 0 ? 1 : 0,
-        duration: 300,
-        useNativeDriver: false,
-      }).start();
-    });
   };
 
   const {children, childAddMutation} = useAuth();
@@ -153,7 +188,7 @@ function ParentsMainScreen() {
                 zIndex: profileOrder.length - index,
               };
               // console.log(animatedStyle.zIndex, profile.name);
-              console.log('profile: ', profile);
+              // console.log('profile: ', profile);
 
               return (
                 <TouchableOpacity
@@ -241,12 +276,9 @@ function ParentsMainScreen() {
             </View>
             <TouchableOpacity
               style={styles.myMissionContainer}
-              onPress={() => navigation.navigate('부모미션',{
-                screen:'부모미션'
-              })}>
+              onPress={() => navigation.navigate('아이미션')}>
               <Text style={styles.myMissionText}>
-                오늘의 <Text style={{fontFamily: fonts.BOLD}}>미션</Text>{' '}
-                생성하러 가기
+                <Text style={{fontFamily: fonts.BOLD}}>미션</Text> 생성하러 가기
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -280,7 +312,7 @@ function ParentsMainScreen() {
                       <Text style={styles.mypageText}>우리 아이 알림</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      style={styles.mypageSetting}
+                      style={styles.mypageSetting}.
                       onPress={() => navigation.navigate('설정')}>
                       <SettingIcon
                         name="settings"
@@ -299,21 +331,34 @@ function ParentsMainScreen() {
                       <View style={styles.moneyAccountContainer}>
                         <View style={styles.balance}>
                           <Text style={styles.balanceText}>남은 금액</Text>
-                          <Text style={styles.moneyText}>
-                            {profileOrder[0].balance}원
+                          <Text
+                            style={styles.moneyText}
+                            adjustsFontSizeToFit={true}
+                            numberOfLines={1}>
+                            {String(profileOrder[0]?.balance).toLocaleString()}
+                            원
                           </Text>
                         </View>
                         <View style={styles.accountText}>
                           <TouchableOpacity
-                            onPress={() => navigation.navigate('계좌관리')}>
+                            onPress={() =>
+                              navigation.navigate('아이 거래내역', {
+                                accountParam: profileOrder[0].accountNumber,
+                                balanceParam: profileOrder[0].balance,
+                                emailParam: profileOrder[0].email,
+                              })
+                            }>
                             <Text style={styles.moneyAccountText}>
                               우리 아이 소비 내역 조회
                             </Text>
                           </TouchableOpacity>
+
                           <Text style={styles.moneyAccountText}>ㅣ</Text>
                           <TouchableOpacity
                             onPress={() =>
-                              navigation.navigate('송금', {accountNo: account})
+                              navigation.navigate('송금', {
+                                accountNo: profileOrder[0].accountNumber,
+                              })
                             }>
                             <Text style={styles.moneyAccountText}>
                               용돈 보내기
@@ -344,9 +389,7 @@ function ParentsMainScreen() {
                   </View>
                   <TouchableOpacity
                     style={styles.nextButton}
-                    onPress={() => navigation.navigate('부모미션',{
-                      screen:'부모미션'
-                    })}>
+                    onPress={() => navigation.navigate('부모미션')}>
                     <Text style={styles.detailMission}>자세히 보기</Text>
                     <NextIcon
                       name="navigate-next"
@@ -411,7 +454,7 @@ const styles = StyleSheet.create({
     marginRight: 20,
   },
   profileTouchable: {
-    marginHorizontal: -12,
+    marginHorizontal: -15,
   },
   myMypageContainer: {
     width: 320,
