@@ -62,9 +62,13 @@ public class UserService {
 
     log.info(user.getIsParent().toString());
     userRepository.save(user);
-    wallet.updateUser(user);
+
+    Wallet myWallet = user.getWallet();
+
+    myWallet.updateUser(user);
 
     walletRepository.save(wallet);
+
     return user.getId();
   }
 
