@@ -17,6 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.minidev.json.annotate.JsonIgnore;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -42,8 +43,8 @@ public class Wallet {
 
   @Builder
   public Wallet(User user) {
-    this.coin = 0;
-    this.ticket = 0;
+    this.coin = this.coin != null ? this.coin : 10000000;  // coin이 null이면 1000만 머니로 설정
+    this.ticket = this.ticket != null ? this.ticket : 1;  // ticket이 null이면 1로 설정
     this.mypigs = new ArrayList<>();
     this.user = user;
   }

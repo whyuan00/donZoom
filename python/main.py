@@ -161,6 +161,9 @@ def fetch_and_send_data(ticker, stockId, interval):
     
     # 타임존에 맞게 시간 변환
     new_data.index = new_data.index.tz_convert(KST)
+
+    # 가격 변환 (해외 주식과 금 선물은 원화로 변환)
+    conversion_rate = 1200 if ticker in ["AAPL", "GOOGL", "TSLA", "GC=F"] else 1
     
     # 가장 최신 데이터 가져오기
     if ticker in ["AAPL", "GOOGL", "TSLA","GC=F"]:
@@ -171,10 +174,10 @@ def fetch_and_send_data(ticker, stockId, interval):
     
     # 데이터를 전송할 준비
     data = {
-        "open": float(latest_data['Open']),
-        "close": float(latest_data['Close']),
-        "high": float(latest_data['High']),
-        "low": float(latest_data['Low']),
+        "open": float(latest_data['Open']) * conversion_rate,
+        "close": float(latest_data['Close']) * conversion_rate,
+        "high": float(latest_data['High']) * conversion_rate,
+        "low": float(latest_data['Low']) * conversion_rate,
         "createdAt": latest_timestamp.strftime('%Y-%m-%dT%H:%M:%S'),
         "interval":interval,
     }
