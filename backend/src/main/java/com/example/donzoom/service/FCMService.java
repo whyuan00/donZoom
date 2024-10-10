@@ -20,7 +20,6 @@ import java.util.List;
 public class FCMService {
 
     private final AlarmRepository alarmRepository;
-    private final UserService userService;
 
     public String sendNotification(User user, String title, String body,String type,String status)
             throws FirebaseMessagingException {
