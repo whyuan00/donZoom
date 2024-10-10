@@ -46,8 +46,7 @@ public class FCMService {
         return sendNotification(user,title,body,"default_type","default_status");
     }
 
-    public List<AlarmResponseDto> getAllAlarms() {
-        User user = userService.findCurrentUser();
+    public List<AlarmResponseDto> getAllAlarms(User user) {
         List<Alarm> alarms = alarmRepository.findAllAlarmsByUserIdOrderByCreatedAtDesc(user.getId());
         return alarms.stream()
                 .map(alarm -> AlarmResponseDto.builder()

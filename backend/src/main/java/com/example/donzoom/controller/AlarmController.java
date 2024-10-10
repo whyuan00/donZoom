@@ -9,6 +9,7 @@ import com.example.donzoom.entity.Alarm;
 import com.example.donzoom.exception.NoUserKeyException;
 import com.example.donzoom.service.AccountService;
 import com.example.donzoom.service.FCMService;
+import com.example.donzoom.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -25,10 +26,12 @@ import java.util.List;
 public class AlarmController {
 
   private final FCMService fcmService;
+  private final UserService userService;
+
 
   @GetMapping
   public ResponseEntity<?> getTotalAlarms(){
-    List<AlarmResponseDto> alarms = fcmService.getAllAlarms();
+    List<AlarmResponseDto> alarms = fcmService.getAllAlarms(userService.findCurrentUser());
     return new ResponseEntity<>(alarms, HttpStatus.OK);
   }
 
