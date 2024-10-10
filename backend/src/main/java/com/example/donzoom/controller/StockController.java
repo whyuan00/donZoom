@@ -10,7 +10,6 @@ import com.example.donzoom.dto.stock.response.StockWalletSimpleResponseDto;
 import com.example.donzoom.entity.StockHistory;
 import com.example.donzoom.entity.StockHistory1m;
 import com.example.donzoom.repository.StockHistory1mRepository;
-import com.example.donzoom.repository.StockHistoryRepository;
 import com.example.donzoom.service.StockService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

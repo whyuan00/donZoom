@@ -286,7 +286,7 @@ public class StockService {
         .orElseThrow(() -> new NoSuchElementException("Stock not found"));
 
     // 주식 현재가 들고오기
-    StockHistory recentPrice = stockHistory1mRepository.findTop1ByStockIdOrderByCreatedAtDesc(
+    StockHistory1m recentPrice = stockHistory1mRepository.findTop1ByStockIdOrderByCreatedAtDesc(
         stockId);
 
     // 내가 보유중인 주식인지 확인
