@@ -139,7 +139,17 @@ public class AccountService {
     String userKey = getCurrentUserKey();
     return bankApi.getHistory(transactionRequestDto, userKey);
   }
+  public BalanceResponseDto getBalanceByEmail(String email) {
+    //현재 유저 키 가져오기
 
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+    // 계좌번호가 있는지 확인하고 반환
+    if (user.getAccountNo() == null || user.getAccountNo().isEmpty()) {
+      throw new RuntimeException("No account number found for user with email: " + email);
+    }
+    return bankApi.getBalance(user.getAccountNo(), user.getUserKey());
+  }
   public TransactionResponseDto getHistoryByEmail(TransactionRequestDto transactionRequestDto,String email) {
     User user = userRepository.findByEmail(email)
         .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
