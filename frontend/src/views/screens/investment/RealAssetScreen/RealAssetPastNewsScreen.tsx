@@ -11,17 +11,17 @@ import {
   ScrollView,
 } from 'react-native';
 import useStock from '@/hooks/queries/useStock';
-import {ResponseNews} from '@/api/stock';
 
-const RealAssetPastNewsScreen = () => {
+const RealAssetPastNewsScreen = ({navigation}:any) => {
   const [sortedByCreatedAt, setSortedByCreatedAt] = useState(true);
   const {useGetNews} = useStock();
-  const {data: newsData = [] as ResponseNews, isLoading, error} = useGetNews(5);
+  const {data: pastNewsData = [] } = useGetNews(5);
+console.log(pastNewsData)
 
   const sortedNews = useMemo(() => {
-    if (newsData.length >= 1)
-      return sortedByCreatedAt ? [...newsData] : [...newsData].reverse();
-  }, [newsData, sortedByCreatedAt]);
+    if (pastNewsData.length >= 1)
+      return sortedByCreatedAt ? [...pastNewsData] : [...pastNewsData].reverse();
+  }, [pastNewsData, sortedByCreatedAt]);
 
   const switchSortOrder = () => {
     setSortedByCreatedAt(prev => !prev);
@@ -33,7 +33,7 @@ const RealAssetPastNewsScreen = () => {
     return new Date(dateStr).toISOString().slice(0, 10).replaceAll('-', '.');
   };
 
-  if (newsData.length < 1) {
+  if (pastNewsData.length < 1) {
     return (
       <View style={styles.container}>
         <Text style={{marginTop: 30, textAlign: 'center'}}>
@@ -62,9 +62,14 @@ const RealAssetPastNewsScreen = () => {
         )}
       </TouchableOpacity>
       <ScrollView>
-        {newsData.length >= 1 &&
+        {pastNewsData.length >= 1 &&
           sortedNews?.map(news => (
-            <TouchableOpacity key={news.Id} style={styles.newsContainer}>
+            <TouchableOpacity
+              key={news.Id}
+              style={styles.newsContainer}
+              onPress={()=>navigation.navigate('NewsDetail',{
+                news
+              })}>
               <View style={{flex: 0.8, marginRight: 15}}>
                 <Text style={styles.headText}>{news.title}</Text>
                 <Text style={styles.sourceText}>

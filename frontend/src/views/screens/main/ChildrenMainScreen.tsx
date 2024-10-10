@@ -111,7 +111,9 @@ function ChildrenMainScreen() {
           </View>
           <TouchableOpacity
             style={styles.missionContainer}
-            onPress={() => navigation.navigate('아이미션')}>
+            onPress={() => navigation.navigate('아이미션',{
+              screen:'아이미션'
+            })}>
             <Text style={styles.missionText}>
               오늘의 <Text style={{fontFamily: fonts.BOLD}}>미션</Text> 수행하러
               가기

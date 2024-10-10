@@ -3,15 +3,17 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {fonts} from '@/constants/font';
 import DetailScreen from '@/views/screens/investment/DetailScreen';
 import InvestmentHomeScreen from '@/views/screens/investment/InvestmentHomeScreen';
-import RealAssetDetailScreen from '@/views/screens/investment/RealAssetDetailScreen';
-import UnsafeAssetDetailScreen from '@/views/screens/investment/UnsafeAssetDetailScreen';
+import RealAssetDetailScreen from '@/views/screens/investment/RealAssetScreen/RealAssetDetailScreen';
+import UnsafeAssetDetailScreen from '@/views/screens/investment/UnsafeAssetScreen/UnsafeAssetDetailScreen';
 import SafeAssetDetailScreen from '@/views/screens/investment/SafeAssetDetailScreen';
 import InvestTradeScreen from '@/views/screens/investment/InvestTradeScreen';
 import InvestTabNavigator from './InvestRealAssetTabNavigator';
-import RealAssetPastReportScreen from '@/views/screens/investment/RealAssetPastReportScreen';
-import RealAssetPastNewsScreen from '@/views/screens/investment/RealAssetPastNewsScreen';
-import UnsafeAssetPastNewsScreen from '@/views/screens/investment/UnsafeAssetPastNewsScreen';
-import UnsafeAssetPastReportScreen from '@/views/screens/investment/UnsafeAssetPastReportScreen';
+import RealAssetPastReportScreen from '@/views/screens/investment/RealAssetScreen/RealAssetPastReportScreen';
+import RealAssetPastNewsScreen from '@/views/screens/investment/RealAssetScreen/RealAssetPastNewsScreen';
+import UnsafeAssetPastNewsScreen from '@/views/screens/investment/UnsafeAssetScreen/UnsafeAssetPastNewsScreen';
+import UnsafeAssetPastReportScreen from '@/views/screens/investment/UnsafeAssetScreen/UnsafeAssetPastReportScreen';
+import NewDetailScreen from '@/views/screens/investment/NewsDetailScreen';
+import ReportDetailScreen from '@/views/screens/investment/ReportDetailScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -53,6 +55,16 @@ const InvestStackNavigator = () => {
         name="RealAssetPastReport"
         component={RealAssetPastReportScreen}
         options={{title: '금 현물 리포트'}}
+      />
+      <Stack.Screen
+        name="NewsDetail"
+        component={NewDetailScreen}
+        options={{title: '뉴스 상세'}}
+      />
+      <Stack.Screen
+        name="ReportDetail"
+        component={ReportDetailScreen}
+        options={{title: '리포트 상세'}}
       />
       <Stack.Screen
         name="UnsafeAssetPastNews"

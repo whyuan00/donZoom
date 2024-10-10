@@ -5,7 +5,7 @@ import useAccount from '@/hooks/queries/useAccount';
 import useAccountBalance from '@/hooks/useAccountInfo';
 import {useSignupStore} from '@/stores/useAuthStore';
 import useTransferStore from '@/stores/useTransferStore';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
 export default function TransferScreen3({navigation}: any) {
   const {
@@ -27,11 +27,13 @@ export default function TransferScreen3({navigation}: any) {
   };
 
   const onPressNext = () => {
-    navigation.navigate('송금4');
+    // navigation.navigate('송금4');
     transferMutation.mutate(transfer, {
       onSuccess: () => {
         console.log('success');
         refetch();
+        Alert.alert('이체 되었습니다.');
+        navigation.navigate('홈화면');
       },
     });
   };

@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import useStock from '@/hooks/queries/useStock';
-import { ResponseNews } from '@/api/stock';
 
 type News = {
   Id: number;
@@ -27,11 +26,7 @@ const RealAssetNewsTabScreen = ({navigation}: any) => {
   const [selectedNews, setSelectedNews] = useState<News | null>(null);
   const {useGetTodaysNews} = useStock();
 
-  const {
-    data: todaysNews = [] as ResponseNews,
-    isLoading,
-    error,
-  } = useGetTodaysNews(5);
+  const {data: todaysNews = []} = useGetTodaysNews(5);
 
   const openModal = (news: News) => {
     setSelectedNews(news);
@@ -43,7 +38,7 @@ const RealAssetNewsTabScreen = ({navigation}: any) => {
   const formatDate = (dateStr: Date) => {
     return new Date(dateStr).toISOString().slice(0, 10).replaceAll('-', '.');
   };
-
+  
   //  타이틀 적당히 자르기
   const formatTitle = (title: string) => {
     const words = title.split(' ');
@@ -68,7 +63,7 @@ const RealAssetNewsTabScreen = ({navigation}: any) => {
   if (todaysNews.length < 1) {
     return (
       <View style={styles.container}>
-        <Text> 오늘의 뉴스가 없습니다</Text>
+        <Text> 오늘의 새로운 뉴스가 없습니다</Text>
         <TouchableOpacity
           onPress={() => navigation.navigate('RealAssetPastNews')}>
           <View style={styles.button}>
