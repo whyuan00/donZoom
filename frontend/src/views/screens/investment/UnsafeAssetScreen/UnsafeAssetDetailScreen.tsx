@@ -22,9 +22,9 @@ const stockIndices = {
   LG전자: 2,
   네이버: 3,
   카카오: 4,
-  Apple: 5,
-  Google: 6,
-  Tesla: 7,
+  Apple: 6,
+  Google: 7,
+  Tesla: 8,
 };
 
 const Tab = createMaterialTopTabNavigator();
