@@ -138,9 +138,9 @@ function DrawMachineScreen({}) {
     setMyCoin(coinAmount);
     console.log('내코인 가져오기: ', myCoin);
     console.log('내코인 가져오기: ', getMyCoinMutation.data?.coin);
-    myCoin / 5 > 100
-      ? setMaximumTicketValue(100)
-      : setMaximumTicketValue(Math.floor(myCoin / 5));
+
+    setMaximumTicketValue(Math.floor(myCoin / 5));
+    console.log('maximumTicketValue: ', maximumTicketValue);
     setTicketModalVisible(true);
   };
 
@@ -152,7 +152,7 @@ function DrawMachineScreen({}) {
   };
 
   const changeCoinToTicket = () => {
-    if (changeCoinToTicketMutation.isSuccess) {
+    if (myCoin >= 5) {
       Alert.alert('티켓 구매 성공!');
       changeCoinToTicketMutation.mutateAsync(ticketValue);
       setTicketModalVisible(false);
@@ -325,11 +325,12 @@ function DrawMachineScreen({}) {
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
-    minHeight: '100%',
+    flex: 1,
     backgroundColor: colors.YELLOW_100,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingTop: 60,
+    paddingBottom: 60,
   },
   drawMachine: {
     justifyContent: 'center',

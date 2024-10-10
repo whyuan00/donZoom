@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {QueryClientProvider} from '@tanstack/react-query';
 import messaging from '@react-native-firebase/messaging';
@@ -7,6 +7,7 @@ import firebase from '@react-native-firebase/app';
 import queryClient from '@/api/queryClient';
 import RootNavigator from '@/navigation/root/RootNavigator';
 import {useSignupStore} from '@/stores/useAuthStore';
+import {RefreshControl, ScrollView} from 'react-native';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDSUTJysXrGAo2kxrgyEAVNiiVcr4Xfj40',
@@ -24,6 +25,15 @@ if (!firebase.apps.length) {
 }
 
 function App() {
+  // const [refreshing, setRefreshing] = useState(false);
+
+  // const onRefresh = useCallback(() => {
+  //   setRefreshing(true);
+  //   setTimeout(() => {
+  //     setRefreshing(false);
+  //   }, 200);
+  // }, []);
+
   const getToken = async () => {
     try {
       const token = await messaging().getToken();
@@ -88,6 +98,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <NavigationContainer>
+        {/* <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }>
+          <RootNavigator />
+        </ScrollView> */}
         <RootNavigator />
       </NavigationContainer>
     </QueryClientProvider>

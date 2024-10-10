@@ -2,13 +2,14 @@ import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 import useAccount from '@/hooks/queries/useAccount';
 import useAccountBalance from '@/hooks/useAccountInfo';
+import {useSignupStore} from '@/stores/useAuthStore';
 import React, {useEffect, useState} from 'react';
 import {Pressable, ScrollView} from 'react-native';
 import {StyleSheet, Text, View} from 'react-native';
 import Svg, {Path} from 'react-native-svg';
 
 function AccountHistoryScreen({navigation}: any) {
-  const isParent = true;
+  const {isParent} = useSignupStore();
   const [selected, setSelected] = useState('아이');
   const {account, balance, error, refetch} = useAccountBalance();
   const {useGetAccountHistory} = useAccount();

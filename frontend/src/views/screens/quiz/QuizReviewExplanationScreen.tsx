@@ -79,7 +79,6 @@ const styles = StyleSheet.create({
     fontSize: 30,
     marginBottom: 50,
     lineHeight: 38,
-    textAlign: 'justify',
   },
   answerText: {
     fontFamily: fonts.MEDIUM,
@@ -96,7 +95,6 @@ const styles = StyleSheet.create({
     marginRight: 10,
     marginBottom: 40,
     lineHeight: 22,
-    textAlign: 'justify',
   },
   conclusionContainer: {
     justifyContent: 'center',
@@ -113,7 +111,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.MEDIUM,
     fontSize: 16,
     lineHeight: 22,
-    textAlign: 'justify',
   },
   conclusion: {
     width: 360,

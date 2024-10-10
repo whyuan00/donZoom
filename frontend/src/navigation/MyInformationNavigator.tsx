@@ -29,7 +29,7 @@ const MyInformationNavigator = () => {
         options={{headerShown: false}}
       />
       <Stack.Screen
-        name="ConfirmPassWordScreen"
+        name="비밀번호확인"
         component={ConfirmPassWordScreen}
         options={{headerShown: false}}
       />

@@ -172,8 +172,13 @@ const postProfileImage = async (profileImage: Asset) => {
 };
 
 const postSetRelation = async () => {
-  const response = await axiosInstance.post('/set-relationship');
-  console.log('부모 아이 연결:', response);
+  console.log('부모 아이 연결 요청이야');
+  try {
+    const response = await axiosInstance.post('/set-relationship');
+    console.log('부모 아이 연결:', response);
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export {

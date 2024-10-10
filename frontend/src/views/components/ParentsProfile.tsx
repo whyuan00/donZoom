@@ -4,19 +4,27 @@ import {colors} from '../../constants/colors';
 import {fonts} from '@/constants/font';
 import {Path, Svg} from 'react-native-svg';
 import Icon from 'react-native-vector-icons/Fontisto';
+import {useSignupStore} from '@/stores/useAuthStore';
 
 interface Props {
   name?: string;
 }
 
-const HomeProfile = ({name}: Props) => {
+const ParentsProfile = ({name}: Props) => {
+  const {profileImage} = useSignupStore();
+
   return (
     <View style={styles.container}>
       <View style={styles.profileContainer}>
         {name ? (
           <View>
             <Image
-              source={require('../../assets/images/characterImage.webp')}
+              source={{
+                uri:
+                  profileImage === undefined || profileImage === null
+                    ? 'http://j11a108.p.ssafy.io:8081/api/uploads/676e51cb-fcd0-41fc-a07c-f8fea8e99f4f.png'
+                    : profileImage,
+              }}
               style={styles.image}
             />
             <Text style={styles.text}>
@@ -50,7 +58,7 @@ const styles = StyleSheet.create({
     // paddingTop:15,
     width: 75,
     height: 75,
-    backgroundColor:colors.GRAY_25,
+    backgroundColor: colors.GRAY_25,
     borderRadius: 50,
     justifyContent: 'center',
     alignItems: 'center',
@@ -74,4 +82,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeProfile;
+export default ParentsProfile;
