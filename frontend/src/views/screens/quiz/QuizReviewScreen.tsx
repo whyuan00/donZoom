@@ -208,7 +208,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     marginBottom: 20,
-    textAlign: 'justify',
   },
 });
 

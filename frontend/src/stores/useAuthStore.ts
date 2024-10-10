@@ -1,5 +1,6 @@
 import {create} from 'zustand';
 import {validateSignup} from '@/utils/validate';
+import { Child } from '@/types/domain';
 
 interface SignupState {
   id: number;
@@ -7,6 +8,7 @@ interface SignupState {
   password: string;
   passwordConfirm: string;
   isParent: boolean;
+  children: Child[];
   name: string;
   nickname: string;
   profileImage?: string;
@@ -15,6 +17,7 @@ interface SignupState {
   setPassword: (password: string) => void;
   setPasswordConfirm: (passwordConfirm: string) => void;
   setIsParent: (isParent: boolean) => void;
+  setChildren: (children: Child[]) => void;
   setName: (name: string) => void;
   setNickname: (nickname: string) => void;
   setProfileImage: (profileImage: string) => void;
@@ -28,9 +31,10 @@ const initialState = {
   password: '',
   passwordConfirm: '',
   isParent: false,
+  children: [],
   name: '',
   nickname: '',
-  prifileImage: null,
+  profileImage: undefined,
 };
 
 export const useSignupStore = create<SignupState>((set, get) => ({
@@ -40,6 +44,7 @@ export const useSignupStore = create<SignupState>((set, get) => ({
   setPassword: password => set({password}),
   setPasswordConfirm: passwordConfirm => set({passwordConfirm}),
   setIsParent: isParent => set({isParent}),
+  setChildren: children => set({children}),
   setName: name => set({name}),
   setNickname: nickname => set({nickname}),
   setProfileImage: profileImage => set({profileImage}),

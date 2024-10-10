@@ -57,10 +57,15 @@ const getMyTicket = async (): Promise<MyTicket> => {
 
 // 티켓 구매하기
 const changeCoinToTicket = async (amount: number): Promise<any> => {
-  const response = await axiosInstance.post('/pig/ticket', null, {
-    params: {amount},
-  });
-  console.log('샀어 ', response.data);
+  try {
+    const response = await axiosInstance.post('/pig/ticket', null, {
+      params: {amount},
+    });
+    console.log('샀어 ', response.data);
+  } catch (error) {
+    console.log('여기도 안오니');
+    console.log('Error in CTT: ', error);
+  }
 };
 
 export {

@@ -31,6 +31,7 @@ import axiosInstance from '@/api/axios';
 import NaverLogin from '@react-native-seoul/naver-login';
 import {useSignupStore} from '@/stores/useAuthStore';
 import useAccountBalance from '@/hooks/useAccountInfo';
+import {useChildrenStore} from '@/stores/useChildrenStore';
 
 function LoginScreen({navigation}: any) {
   const passwordRef = useRef<TextInput | null>(null);
@@ -39,6 +40,7 @@ function LoginScreen({navigation}: any) {
   const [selected, setSelected] = useState('');
   const {errorMessage, clearErrorMessage} = useErrorStore();
   const {setName, setId, setProfileImage, setIsParent} = useSignupStore();
+  const {myChildren, setMyChildren} = useChildrenStore();
   const login = useForm({
     initialValue: {
       email: '',
@@ -160,6 +162,8 @@ function LoginScreen({navigation}: any) {
         if (profileData.data.profileImage !== '') {
           setProfileImage(profileData.data.profileImage);
         }
+        setMyChildren(profileData.data.children);
+        console.log('myCHildren in Login: ', profileData.data.children);
         // console.log('profile:', profileData.data);
         console.log(isLogin);
       } else {

@@ -8,6 +8,7 @@ import ChildrenMainScreen from './main/ChildrenMainScreen';
 
 function HomeScreen() {
   const {isParent} = useSignupStore();
+  // const isParent = false;
   return (
     <ScrollView>
       <View style={styles.container}>
