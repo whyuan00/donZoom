@@ -134,14 +134,14 @@ function DrawMachineScreen({}) {
   // 티켓 교환 모달창
   const openTicketModal = () => {
     setTicketValue(1);
-    const coinAmount = getMyCoinMutation.data ? getMyCoinMutation.data.coin : 0;
-    setMyCoin(coinAmount);
-    console.log('내코인 가져오기: ', myCoin);
-    console.log('내코인 가져오기: ', getMyCoinMutation.data?.coin);
-
-    setMaximumTicketValue(Math.floor(myCoin / 5));
-    console.log('maximumTicketValue: ', maximumTicketValue);
-    setTicketModalVisible(true);
+    getMyCoinMutation.refetch().then((body : any)=>{
+      const {data} = body;
+      const coin = data ? data.coin : 0;
+      setMyCoin(coin);
+      setMaximumTicketValue(Math.floor(myCoin / 5));
+      console.log('maximumTicketValue: ', maximumTicketValue);
+      setTicketModalVisible(true);
+    });
   };
 
   const plusTicketValue = () => {
@@ -154,7 +154,10 @@ function DrawMachineScreen({}) {
   const changeCoinToTicket = () => {
     if (myCoin >= 5) {
       Alert.alert('티켓 구매 성공!');
-      changeCoinToTicketMutation.mutateAsync(ticketValue);
+      changeCoinToTicketMutation.mutateAsync(ticketValue,{onSuccess:(data :any)=>{
+        setMyCoin(data.lastCoin);
+        setMyTicket(data.lastTicket)
+      }});
       setTicketModalVisible(false);
     } else {
       Alert.alert('코인이 부족합니다.');

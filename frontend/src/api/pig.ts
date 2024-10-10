@@ -44,7 +44,7 @@ const drawPig = async (amount: number): Promise<Pig[]> => {
 // 가지고 있는 코인 개수 가져오기
 const getMyCoin = async (): Promise<MyCoin> => {
   const response = await axiosInstance.get('/coin');
-  console.log('내 코인은 이만큼있어: ', response.data);
+  console.log("GET  AXIOS GETMYCOIN ",response.data);
   return response.data;
 };
 
@@ -62,6 +62,7 @@ const changeCoinToTicket = async (amount: number): Promise<any> => {
       params: {amount},
     });
     console.log('샀어 ', response.data);
+    return response.data;
   } catch (error) {
     console.log('여기도 안오니');
     console.log('Error in CTT: ', error);
