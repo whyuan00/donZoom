@@ -1,4 +1,5 @@
 ###### 내가 따로 추가 ######
+.env
 application.properties
 /src/main/generated/**
 #########################
