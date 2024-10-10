@@ -81,7 +81,7 @@ function DrawMachineScreen({}) {
       setSelectedCard(selected);
       addPigHistory(selected);
 
-      const isNew = !selected.owned;
+      const isNew = selected.createdAt === null;
       setIsNewCard(isNew);
       if (isNew) addOwnedPig(selected);
       // console.log('selectedCard: ', selectedCard);

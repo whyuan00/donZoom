@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Button,
   Pressable,
+  RefreshControl,
 } from 'react-native';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
@@ -18,6 +19,14 @@ import usePig from '@/hooks/queries/usePig';
 import {MyStock, ResponseMyStock} from '@/api/stock';
 
 export default function InvestmentHomeScreen({navigation}: any) {
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
   const {useGetMyStock} = useStock();
   const {id} = useSignupStore();
   const {getMyCoinMutation} = usePig();
@@ -44,7 +53,10 @@ export default function InvestmentHomeScreen({navigation}: any) {
     : [];
 
   return (
-    <ScrollView>
+    <ScrollView
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
       <View style={styles.container}>
         <View style={styles.menuContainer}>
           <View style={styles.assetHeaderContainer}>

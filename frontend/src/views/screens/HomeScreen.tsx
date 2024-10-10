@@ -5,12 +5,26 @@ import {ScrollView, StyleSheet, View} from 'react-native';
 import {useSignupStore} from '@/stores/useAuthStore';
 import ParentsMainScreen from './main/ParentsMainScreen';
 import ChildrenMainScreen from './main/ChildrenMainScreen';
+import {useCallback, useState} from 'react';
+import {RefreshControl} from 'react-native';
 
 function HomeScreen() {
   const {isParent} = useSignupStore();
   // const isParent = false;
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  }, []);
   return (
-    <ScrollView>
+    <ScrollView
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
       <View style={styles.container}>
         <View style={styles.contentsContainer}>
           {isParent ? <ParentsMainScreen /> : <ChildrenMainScreen />}

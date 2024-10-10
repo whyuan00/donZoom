@@ -1,6 +1,6 @@
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {useQuizStore} from '@/stores/useQuizStore';
 import {
   View,
@@ -9,6 +9,7 @@ import {
   StyleSheet,
   ScrollView,
   Modal,
+  RefreshControl,
 } from 'react-native';
 import {Calendar, DateData} from 'react-native-calendars';
 import CheckCalendar from '@/assets/CheckCalendar.svg';
@@ -21,6 +22,15 @@ interface MarkedDates {
 }
 
 function QuizHomeScreen({navigation}: any) {
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
   const [quizData, setQuizData] = useState<any[]>([]);
   const [quizCompletedDates, setQuizCompletedDates] = useState<MarkedDates>({});
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -116,7 +126,10 @@ function QuizHomeScreen({navigation}: any) {
   };
 
   return (
-    <ScrollView>
+    <ScrollView
+      refreshControl={
+        <RefreshControl onRefresh={onRefresh} refreshing={refreshing} />
+      }>
       <View style={styles.container}>
         <View style={styles.calendarContainer}>
           <View style={styles.calendarTextContainer}>
@@ -185,9 +198,7 @@ function QuizHomeScreen({navigation}: any) {
               <Text style={styles.todayContentTitle}>
                 새로운 퀴즈가 도착했어요!
               </Text>
-              <Text style={styles.todayContentDescription}>
-                3문제
-              </Text>
+              <Text style={styles.todayContentDescription}>3문제</Text>
             </View>
             <TouchableOpacity
               style={styles.todayContentButton}
