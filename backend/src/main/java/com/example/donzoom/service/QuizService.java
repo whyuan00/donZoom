@@ -106,12 +106,12 @@ public class QuizService {
 
     if (isCorrect) {
       try {
-        fcmService.sendNotification(userService.findCurrentUser(),"코인 획득",1+"코인을 획득하였습니다."
+        fcmService.sendNotification(userService.findCurrentUser(),"코인 획득",500000+"코인을 획득하였습니다."
         ,"1","default");
       } catch (FirebaseMessagingException e) {
         log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
       }
-      walletService.updateCoin(1);
+      walletService.updateCoin(500000);
     }
 
     userQuizRepository.save(userQuiz);
