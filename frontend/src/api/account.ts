@@ -163,6 +163,33 @@ const getBalance = async (accountNo: string): Promise<ResponseBalance> => {
   return data;
 };
 
+// 이메일로 계좌번호 조회
+const getChildrenAccount = async (email: string): Promise<any> => {
+  const response = await axiosInstance.get('/account/account-number', {
+    params: {
+      email,
+    },
+  });
+  console.log(email, '의 계좌번호는 이거야: ', response.data.accountNumber);
+  return response.data.accountNumber;
+};
+
+// 이메일로 잔액 조회
+const getChildrenBalance = async (email: string): Promise<any> => {
+  const response = await axiosInstance.get('/account/balance-email', {
+    params: {
+      email,
+    },
+  });
+  console.log(
+    email,
+    '의 잔액은 이만큼 남았어: ',
+    response.data.rec.accountBalance,
+    typeof response.data.rec.accountBalance,
+  );
+  return response.data.rec.accountBalance;
+};
+
 type RequestAccountHistory = {
   accountNo: string;
   startDate: string;
@@ -283,6 +310,8 @@ export {
   postAccountAuto,
   patchAccountAuto,
   getAccountHolder,
+  getChildrenAccount,
+  getChildrenBalance,
 };
 
 export type {
