@@ -25,6 +25,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
@@ -231,6 +232,32 @@ public class UserService {
       pendingRepository.delete(pendingRecord.get());
     } else {
       throw new RuntimeException("Pending record not found for the user.");
+    }
+  }
+
+  @Transactional(readOnly = true)
+  public Object getParent() {
+    // 현재 인증된 사용자 정보 가져오기
+    String username = SecurityUtil.getAuthenticatedUsername();
+    User user = userRepository.findByEmail(username)
+        .orElseThrow(() -> new RuntimeException("User not found"));
+
+    // 부모 ID가 null인지 체크
+    if (user.getParent() == null) {
+      return false; // 부모가 없으면 false 반환
+    } else {
+      // 부모 정보 가져오기
+      User parent = user.getParent();
+      // ParentInfoResponseDto로 부모 정보 반환
+      ParentInfoResponseDto parentInfo = ParentInfoResponseDto.builder()
+          .id(parent.getId())
+          .name(parent.getName())
+          .email(parent.getEmail())
+          .nickname(parent.getNickname())
+          .name(parent.getName())
+          .profileImage(parent.getProfileImage())
+          .build();
+      return parentInfo;
     }
   }
 }
