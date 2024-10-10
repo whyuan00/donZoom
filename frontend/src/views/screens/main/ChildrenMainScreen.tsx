@@ -152,6 +152,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.WHITE,
+    justifyContent: 'center',
     alignItems: 'center',
   },
   contentsContainer: {
@@ -159,7 +160,7 @@ const styles = StyleSheet.create({
   },
   profileContainer: {},
   mypageContainer: {
-    width: 350,
+    width: 340,
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
@@ -181,7 +182,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   moneyContainer: {
-    width: 360,
+    width: 340,
     height: 220,
     justifyContent: 'center',
     alignItems: 'center',
@@ -243,7 +244,7 @@ const styles = StyleSheet.create({
     marginTop: 3,
   },
   missionContainer: {
-    width: 360,
+    width: 340,
     height: 96,
     borderRadius: 10,
     backgroundColor: colors.YELLOW_50,
@@ -257,7 +258,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   quizContainer: {
-    width: 360,
+    width: 340,
     height: 96,
     borderRadius: 10,
     backgroundColor: colors.YELLOW_50,

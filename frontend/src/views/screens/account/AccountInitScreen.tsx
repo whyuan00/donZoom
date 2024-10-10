@@ -1,3 +1,4 @@
+import {colors} from '@/constants/colors';
 import useAccount from '@/hooks/queries/useAccount';
 import useAccountBalance from '@/hooks/useAccountInfo';
 import useForm from '@/hooks/useForm';
@@ -5,7 +6,8 @@ import usePasswordStore from '@/stores/usePasswordStore';
 import {validateAccount} from '@/utils';
 import CustomButton from '@/views/components/CustomButton';
 import React from 'react';
-import {Alert, StyleSheet, Text, View} from 'react-native';
+import {Alert, Image, StyleSheet, Text, View} from 'react-native';
+import PigIcon from 'react-native-vector-icons/FontAwesome6';
 
 function AccountInitScreen({navigation}: any) {
   const {initAccountMutation} = useAccount();
@@ -25,12 +27,27 @@ function AccountInitScreen({navigation}: any) {
   };
 
   return (
-    <View>
-      <CustomButton label="계좌개설" onPress={handelInitAccount}></CustomButton>
+    <View style={styles.container}>
+      <PigIcon name="piggy-bank" size={150} color={'pink'} />
+      <CustomButton
+        style={styles.button}
+        label="계좌 개설하기"
+        onPress={handelInitAccount}
+      />
     </View>
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.WHITE,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  button: {
+    marginTop: 50,
+  },
+});
 
 export default AccountInitScreen;
