@@ -1,4 +1,4 @@
-import React, {useCallback, useState, useMemo} from 'react';
+import React, {useCallback, useState, useEffect, useMemo} from 'react';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -11,16 +11,14 @@ import {
   ScrollView,
 } from 'react-native';
 import useStock from '@/hooks/queries/useStock';
-import {ResponseReports} from '@/api/stock';
 
-const RealAssetPastReportScreen = () => {
+const UnsafeAssetPastReportScreen = ({navigation, route}: any) => {
+  const stockId = route.params.stockId;
   const [sortedByCreatedAt, setSortedByCreatedAt] = useState(true);
   const {useGetReports} = useStock();
   const {
-    data: reportData = [] as ResponseReports,
-    isLoading,
-    error,
-  } = useGetReports(3);
+    data: reportData = []
+  } = useGetReports(stockId);
 
   const sortedReports = useMemo(() => {
     if (reportData.length >= 1)
@@ -36,7 +34,14 @@ const RealAssetPastReportScreen = () => {
   const formatDate = (dateStr: Date) => {
     return new Date(dateStr).toISOString().slice(0, 10).replaceAll('-', '.');
   };
-
+  // 스톡아이디 없는경우
+  if (!stockId) {
+    return (
+      <View style={styles.container}>
+        <Text>종목을 선택해주세요</Text>
+      </View>
+    );
+  }
   if (reportData.length < 1) {
     return (
       <View style={styles.container}>
@@ -67,7 +72,11 @@ const RealAssetPastReportScreen = () => {
       <ScrollView>
         {reportData.length >= 1 &&
           sortedReports?.map(report => (
-            <TouchableOpacity key={report.Id} style={styles.reportContainer}>
+            <TouchableOpacity key={report.Id} style={styles.reportContainer}
+            onPress={()=>navigation.navigate('ReportDetail',{
+              report
+            })}
+            >
               <View style={{flex: 0.8, marginRight: 15}}>
                 <Text style={styles.headText}>{report.title}</Text>
                 <Text style={styles.sourceText}>
@@ -76,7 +85,7 @@ const RealAssetPastReportScreen = () => {
               </View>
               <Image
                 style={styles.image}
-                source={require('@/assets/gold.png')}></Image>
+                source={require('@/assets/report.png')}></Image>
             </TouchableOpacity>
           ))}
       </ScrollView>
@@ -84,7 +93,7 @@ const RealAssetPastReportScreen = () => {
   );
 };
 
-export default RealAssetPastReportScreen;
+export default UnsafeAssetPastReportScreen;
 
 const styles = StyleSheet.create({
   container: {

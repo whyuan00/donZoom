@@ -11,16 +11,13 @@ import {
   ScrollView,
 } from 'react-native';
 import useStock from '@/hooks/queries/useStock';
-import {ResponseNews} from '@/api/stock';
 
-const UnsafeAssetPastNewsScreen = ({route}: any) => {
+const UnsafeAssetPastNewsScreen = ({navigation, route}: any) => {
   const stockId = route.params.stockId;
   const [sortedByCreatedAt, setSortedByCreatedAt] = useState(true);
   const {useGetNews} = useStock();
   const {
-    data: newsData = [] as ResponseNews,
-    isLoading,
-    error,
+    data: newsData = []
   } = useGetNews(stockId);
 
   const sortedNews = useMemo(() => {
@@ -68,7 +65,9 @@ const UnsafeAssetPastNewsScreen = ({route}: any) => {
       <ScrollView>
         {newsData.length >= 1 &&
           sortedNews?.map(news => (
-            <TouchableOpacity key={news.Id} style={styles.newsContainer}>
+            <TouchableOpacity key={news.Id} style={styles.newsContainer}
+            onPress={()=>navigation.navigate('NewsDetail',{news})}
+            >
               <View style={{flex: 0.8, marginRight: 15}}>
                 <Text style={styles.headText}>{news.title}</Text>
                 <Text style={styles.sourceText}>

@@ -50,7 +50,6 @@ export default InvestRealAssetTabNavigator;
 const styles = StyleSheet.create({
   tabNavigator: {
     flex: 1,
-    borderWidth: 3,
     height: 1000,
     backgroundColor: colors.BLACK,
   },

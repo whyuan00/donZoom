@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 20,
     borderColor: '#ccc',
-    borderWidth: 1,
+    // borderWidth: 1,
   },
   selectedPeriodButton: {
     backgroundColor: '#FFE999',

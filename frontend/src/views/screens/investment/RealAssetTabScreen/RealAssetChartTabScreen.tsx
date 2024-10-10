@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignContent: 'center',
     marginTop: 10,
-    borderWidth: 1,
+    // borderWidth: 1,
   },
   //이하 기간버튼디자인
   periodButton: {
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   // 매수매도버튼
   actionButtonContainer: {
     flexDirection: 'row',
-    borderWidth: 3,
+    // borderWidth: 3,
     marginTop: 10,
   },
   actionButton: {

@@ -1,18 +1,23 @@
 import {
+  AllNewsResponse,
+  AllReportResponse,
+  ResponseContents,
   ResponseMyHistory,
   ResponseMyHistoryList,
   ResponseMyStock,
-  ResponseNews,
-  ResponseReports,
   ResponseStock,
   ResponseStockList,
+  TodayNewsResponse,
+  TodayReportResponse,
   getMyHistory,
   getMyHistoryList,
   getMyStock,
   getNews,
+  getReports,
   getStock,
   getStockList,
   getTodaysNews,
+  getTodaysReports,
   postBuyStock,
   postSellStock,
 } from '@/api/stock';
@@ -90,10 +95,10 @@ function usePostSellStock(mutationOptions?: UseMutationCustomOptions) {
 
 function useGetNews(
   stockId: number,
-  queryOptions?: UseQueryCustomOptions<ResponseNews>,
+  queryOptions?: UseQueryCustomOptions<AllNewsResponse>,
 ) {
   return useQuery({
-    queryKey: [queryKeys.STOCK, stockId],
+    queryKey: ['news', 'all', stockId],
     queryFn: () => getNews(stockId),
     ...queryOptions,
   });
@@ -101,10 +106,10 @@ function useGetNews(
 //
 function useGetTodaysNews(
   stockId: number,
-  queryOptions?: UseQueryCustomOptions<ResponseNews>,
+  queryOptions?: UseQueryCustomOptions<TodayNewsResponse>,
 ) {
   return useQuery({
-    queryKey: [queryKeys.STOCK, stockId],
+    queryKey: ['news', 'today', stockId],
     queryFn: () => getTodaysNews(stockId),
     ...queryOptions,
   });
@@ -112,22 +117,22 @@ function useGetTodaysNews(
 
 function useGetReports(
   stockId: number,
-  queryOptions?: UseQueryCustomOptions<ResponseReports>,
+  queryOptions?: UseQueryCustomOptions<AllReportResponse>,
 ) {
   return useQuery({
-    queryKey: [queryKeys.STOCK, stockId],
-    queryFn: () => getNews(stockId),
+    queryKey: ['reports', 'all', stockId],
+    queryFn: () => getReports(stockId),
     ...queryOptions,
   });
 }
 //
 function useGetTodaysReports(
   stockId: number,
-  queryOptions?: UseQueryCustomOptions<ResponseReports>,
+  queryOptions?: UseQueryCustomOptions<TodayReportResponse>,
 ) {
   return useQuery({
-    queryKey: [queryKeys.STOCK, stockId],
-    queryFn: () => getTodaysNews(stockId),
+    queryKey: ['reports', 'today', stockId],
+    queryFn: () => getTodaysReports(stockId),
     ...queryOptions,
   });
 }

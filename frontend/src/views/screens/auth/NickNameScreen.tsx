@@ -81,11 +81,11 @@ function NickNameScreen() {
               if (childrenEmails.length === 0) {
                 return;
               } else {
-                console.log('아이정보:',childrenEmails)
-                childAddMutation.mutate(childrenEmails,{
-                  onSuccess:()=>{
-                    console.log('아이 정보전송 성공')
-                  }
+                console.log('아이정보:', childrenEmails);
+                childAddMutation.mutate(childrenEmails, {
+                  onSuccess: () => {
+                    console.log('아이 정보전송 성공');
+                  },
                 });
               }
             },
