@@ -87,7 +87,7 @@ function AccountHistoryScreen({navigation}: any) {
 
   return (
     <View style={styles.container}>
-      {true ? (
+      {isParent ? (
         <View style={styles.accountInfoContainer}>
           <View style={styles.parentAccountInfoContainer}>
             <View style={styles.parentInfoTop}>
@@ -115,16 +115,19 @@ function AccountHistoryScreen({navigation}: any) {
           <View style={styles.infoTop}>
             <View style={styles.infoTopTop}>
               <View style={styles.accountNumberHeaderContainer}>
-                <Text>계좌 번호</Text>
+                <Text style={styles.parentInfoTopBankInfo}>계좌 번호</Text>
               </View>
             </View>
             <View style={styles.infoTopBottom}>
               <View style={styles.accountNumberContentsContainer}>
-                <View>
-                  <Text>싸피은행</Text>
-                </View>
-                <View style={styles.accountNumber}>
-                  <Text>110-449-965876</Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    gap: 5,
+                    backgroundColor: colors.YELLOW_100,
+                  }}>
+                  <Text style={styles.parentInfoTopBankInfo}>싸피은행</Text>
+                  <Text style={styles.parentInfoTopBankInfo}>{account}</Text>
                 </View>
               </View>
             </View>
@@ -135,7 +138,7 @@ function AccountHistoryScreen({navigation}: any) {
                 <Text style={styles.balanceHeader}>남은 금액</Text>
               </View>
               <View style={styles.balanceTextContainer}>
-                <Text style={styles.balanceText}>1,234,567 원</Text>
+                <Text style={styles.balanceText}>{balance}원</Text>
               </View>
             </View>
           </View>
@@ -300,23 +303,25 @@ const styles = StyleSheet.create({
   infoTop: {
     width: '100%',
     flexGrow: 1,
-    backgroundColor: 'red',
+    backgroundColor: colors.YELLOW_100,
+    marginLeft: 60,
   },
   infoTopTop: {
     width: '100%',
     flexGrow: 1,
     justifyContent: 'center',
-    backgroundColor: 'red',
+    backgroundColor: colors.YELLOW_100,
   },
   accountNumberHeaderContainer: {
-    width: 66,
+    width: 74,
     height: 22,
     // backgroundColor: colors.YELLOW_50,
     borderRadius: 6,
     marginTop: 'auto',
     textAlign: 'center',
     alignItems: 'center',
-    backgroundColor: 'red',
+    justifyContent: 'center',
+    backgroundColor: colors.YELLOW_50,
   },
   infoTopBottom: {
     width: '100%',
@@ -325,6 +330,8 @@ const styles = StyleSheet.create({
   },
   accountNumberContentsContainer: {
     flexDirection: 'row',
+    backgroundColor: colors.YELLOW_100,
+    marginLeft: 10,
   },
   accountNumber: {
     fontFamily: 'GmarketSansTTFBold',
@@ -347,14 +354,16 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   balanceHeader: {
-    fontFamily: fonts.LIGHT,
+    fontFamily: fonts.MEDIUM,
     fontSize: 16,
     color: colors.BLACK,
   },
   balanceText: {
-    fontFamily: fonts.LIGHT,
+    fontFamily: fonts.MEDIUM,
     fontSize: 25,
     color: colors.BLACK,
+    marginLeft: 30,
+    marginRight: 30,
   },
   accountHistoryContainer: {
     flex: 1,
