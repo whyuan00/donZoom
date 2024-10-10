@@ -61,7 +61,7 @@ type ReauestDailyLimit = {
 
 const postinitAccount = async (paymentPassword: string): Promise<void> => {
   try {
-    console.log(paymentPassword);
+    console.log('결제 비밀번호:', paymentPassword);
     const response = await axiosInstance.post('/account', {paymentPassword});
     console.log(response);
   } catch (error) {
