@@ -127,7 +127,11 @@ const UnsafeAssetChartTabScreen = ({
         <TouchableOpacity
           style={[styles.actionButton, styles.sellButton]}
           onPress={() =>
-            navigation.navigate('Trade', {trade: 'sell', type: 'Unsafe'})
+            navigation.navigate('Trade', {
+              trade: 'sell',
+              type: 'Unsafe',
+              selectedStockIndex: selectedStockIndex,
+            })
           }>
           <Text
             style={{

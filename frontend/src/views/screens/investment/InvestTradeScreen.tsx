@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {colors} from '@/constants/colors';
 import {
   SafeAreaView,
@@ -8,24 +8,40 @@ import {
   TouchableOpacity,
   Modal,
   ScrollView,
+  Alert,
 } from 'react-native';
 import KeyPad from '@/views/components/KeyPad';
 import {fonts} from '@/constants/font';
 import useWebSocket from '@/hooks/useWebSocket';
 import useStock from '@/hooks/queries/useStock';
+import usePig from '@/hooks/queries/usePig';
 
 const InvestTradeScreen = ({route, navigation}: any) => {
   const trade = route.params.trade || '';
   const type = route.params.type || '';
   const price = route.params.price || '';
+  const selectedStockIndex = route.params.selectedStockIndex || 0;
   const [dollar, setDollar] = useState<number>(119.37);
   const [ableBuyNum, setAbleBuyNum] = useState<number>(0);
   const [ableSellNum, setAbleSellNum] = useState<number>(0);
   const [currentValue, setCurrentValue] = useState<number>(0);
   const [modalVisible, setModalVisible] = useState(false);
+  const {getMyCoinMutation} = usePig();
+  const [myMoney, setMyMoney] = useState(0);
 
   const [stockMessage, setStockMessage] = useState<string>('');
   const {useGetStock, buyStockMutation} = useStock();
+
+  useEffect(() => {
+    const myCoin = getMyCoinMutation?.data ? getMyCoinMutation?.data.coin : 0;
+    console.log('myCoin:', myCoin);
+    if (myCoin === 0) {
+      setAbleBuyNum(0);
+    } else {
+      setAbleBuyNum(Math.floor(myCoin / price));
+    }
+    setMyMoney(myCoin);
+  }, []);
 
   // useWebSocket([5], message => {
   //   setStockMessage(message);
@@ -33,16 +49,20 @@ const InvestTradeScreen = ({route, navigation}: any) => {
 
   // console.log(useGetStock(5).data);
 
-  const stockId = '4';
-  const amount = 1;
+  const stockId = String(selectedStockIndex);
+  console.log('selectedStockIndex:', selectedStockIndex);
 
   const setModalState = () => {
-    buyStockMutation.mutate({stockId, amount});
-    setModalVisible(true);
-    setTimeout(() => {
-      setModalVisible(false);
-      navigation.goBack();
-    }, 1000);
+    if (currentValue <= ableBuyNum) {
+      buyStockMutation.mutate({stockId, currentValue});
+      setModalVisible(true);
+      setTimeout(() => {
+        setModalVisible(false);
+        navigation.goBack();
+      }, 1000);
+    } else {
+      Alert.alert('잔액이 부족합니다.');
+    }
   };
   const updateValue = (newValue: number) => {
     setCurrentValue(newValue);
@@ -93,7 +113,7 @@ const InvestTradeScreen = ({route, navigation}: any) => {
                   color: colors.BLACK,
                 }}>
                 구매 가능 최대 {ableBuyNum} {type === 'Real' ? '온스' : '주'} |{' '}
-                {currentValue * ableBuyNum} 머니
+                {myMoney} 머니
               </Text>
             </View>
           ) : (

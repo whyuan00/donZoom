@@ -120,10 +120,10 @@ const UnsafeAssetReportTabScreen = ({navigation, selectedStock}: any) => {
   }
   return (
     <View style={styles.container}>
-      {todaysReports.map(report => (
+      {todaysReports.map((report: Report, index: number) => (
         <TouchableOpacity
           onPress={() => openModal(report)}
-          key={report.Id}
+          key={report.Id || index}
           style={styles.reportContainer}>
           <Text style={styles.headText}> {formatTitle(report.title)}</Text>
           <View style={{marginLeft: 210}}>

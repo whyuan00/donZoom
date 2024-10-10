@@ -51,7 +51,7 @@ type ResponseMyStock = {
 };
 
 const getMyStock = async (userId: number): Promise<ResponseMyStock> => {
-  console.log(userId);
+  console.log('userId:', userId);
   const {data} = await axiosInstance.get(`/stock/my/${userId}`);
   console.log('data:', data);
   return data;
@@ -86,21 +86,21 @@ type ResponseBuyStock = ResponseMyHistoryList;
 
 type RequestBuyStock = {
   stockId: string;
-  amount: number;
+  currentValue: number;
 };
 
 const postBuyStock = async ({
   stockId,
-  amount,
+  currentValue,
 }: RequestBuyStock): Promise<ResponseBuyStock> => {
-  console.log(stockId);
-  console.log(amount);
+  console.log('stockId:', stockId);
+  console.log('currentValue:', currentValue);
   const response = await axiosInstance.post(`/stock/${stockId}/buy`, null, {
     params: {
-      amount: amount,
+      amount: currentValue,
     },
   });
-  console.log(response.data);
+  console.log('buy stock response:', response.data);
   return response.data;
 };
 
@@ -143,10 +143,10 @@ const getTodaysNews = async (stockId: number): Promise<TodayNewsResponse> => {
     // console.log('sliced오늘뉴스:', slicedData);
     return slicedData; // 3개만 반환
   } catch {
-        return {
-          type: 'today-news',
-          data: [],
-        };
+    return {
+      type: 'today-news',
+      data: [],
+    };
   }
 };
 
@@ -176,9 +176,9 @@ const getTodaysReports = async (
     return slicedData; // 3개만 반환
   } catch {
     return {
-      type:'today-reports',
-      data:[]
-    }
+      type: 'today-reports',
+      data: [],
+    };
   }
 };
 

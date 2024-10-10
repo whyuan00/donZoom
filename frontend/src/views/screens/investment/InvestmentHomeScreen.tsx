@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -17,6 +17,7 @@ import useStock from '@/hooks/queries/useStock';
 import {useSignupStore} from '@/stores/useAuthStore';
 import usePig from '@/hooks/queries/usePig';
 import {MyStock, ResponseMyStock} from '@/api/stock';
+import {useErrorStore} from '@/stores/errorMessagesStore';
 
 export default function InvestmentHomeScreen({navigation}: any) {
   const [refreshing, setRefreshing] = useState(false);
@@ -35,6 +36,7 @@ export default function InvestmentHomeScreen({navigation}: any) {
   // console.log(useGetMyStock(id).data);
 
   const myStockData = useGetMyStock(id).data?.myStocks;
+  console.log('myStockData:', myStockData);
   const stockData = Array.isArray(myStockData)
     ? myStockData.map(
         (item: {
@@ -51,6 +53,8 @@ export default function InvestmentHomeScreen({navigation}: any) {
         }),
       )
     : [];
+
+  useEffect(() => {}, [myStockData]);
 
   return (
     <ScrollView
