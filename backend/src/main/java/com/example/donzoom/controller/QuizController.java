@@ -1,6 +1,7 @@
 package com.example.donzoom.controller;
 
 import com.example.donzoom.dto.quiz.request.QuizAnswerDto;
+import com.example.donzoom.dto.quiz.response.QuizAnswerResponseDto;
 import com.example.donzoom.dto.quiz.response.UserQuizResponseDto;
 import com.example.donzoom.entity.Quiz;
 import com.example.donzoom.service.QuizService;
@@ -40,8 +41,8 @@ public class QuizController {
   public ResponseEntity<?> submitTodayAnswer(@PathVariable Long quizId,
       @RequestBody QuizAnswerDto quizAnswerDto) {
     //퀴즈 정답 제출하기
-    quizService.submitAnswer(quizId, quizAnswerDto);
-    return new ResponseEntity<>(HttpStatus.OK);
+    QuizAnswerResponseDto quizAnswerResponseDto = quizService.submitAnswer(quizId, quizAnswerDto);
+    return new ResponseEntity<>(quizAnswerResponseDto,HttpStatus.OK);
   }
 
 

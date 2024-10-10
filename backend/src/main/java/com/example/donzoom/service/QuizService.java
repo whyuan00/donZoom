@@ -1,6 +1,7 @@
 package com.example.donzoom.service;
 
 import com.example.donzoom.dto.quiz.request.QuizAnswerDto;
+import com.example.donzoom.dto.quiz.response.QuizAnswerResponseDto;
 import com.example.donzoom.dto.quiz.response.UserQuizResponseDto;
 import com.example.donzoom.entity.Quiz;
 import com.example.donzoom.entity.User;
@@ -89,7 +90,7 @@ public class QuizService {
         .build()).collect(Collectors.toList());
   }
 
-  public void submitAnswer(Long quizId, QuizAnswerDto quizAnswerDto) {
+  public QuizAnswerResponseDto submitAnswer(Long quizId, QuizAnswerDto quizAnswerDto) {
     // 정답 제출하기
 
     // 현재 로그인된 사용자 정보 가져오기
@@ -115,6 +116,7 @@ public class QuizService {
     }
 
     userQuizRepository.save(userQuiz);
+    return QuizAnswerResponseDto.builder().quiz(quiz).isCorrect(isCorrect).build();
   }
 
 }
