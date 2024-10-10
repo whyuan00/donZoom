@@ -257,7 +257,9 @@ public class StockService {
         transactionHistoryId).orElseThrow();
     User user = userService.findCurrentUser();
     try {
-      fcmService.sendNotification(user,"매수","ㅠㅠ");
+      String stockName = stock.getStockName();
+      Integer close = recentPrice.getClose();
+      fcmService.sendNotification(user,"매수 성공",stockName+" "+close+"머니"+" "+amount+"주 매수");
     } catch (FirebaseMessagingException e) {
       log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
     }
@@ -327,7 +329,9 @@ public class StockService {
 
     User user = userService.findCurrentUser();
     try {
-      fcmService.sendNotification(user,"매도","ㅗ");
+      String stockName = stock.getStockName();
+      Integer close = recentPrice.getClose();
+      fcmService.sendNotification(user,"매도 성공",stockName+" "+close+"머니"+" "+amount+"주 매도");
     } catch (FirebaseMessagingException e) {
       log.error("FCM 메세지를 보내는데 실패했습니다. {}", e.getMessage());
     }
