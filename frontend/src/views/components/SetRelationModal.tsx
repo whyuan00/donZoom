@@ -16,9 +16,8 @@ const SetRelationModal = ({
   onClose,
 }: {
   visible: boolean;
-  onClose: (emails:string[]) => void;
+  onClose: (emails: string[]) => void;
 }) => {
-
   const [text, setText] = useState<string>('');
   const [emailData, setEmailData] = useState<EmailData[]>([]);
 
@@ -58,12 +57,12 @@ const SetRelationModal = ({
     setEmailData(updatedEmails);
   };
 
- const sendEmail = () => {
-   // emailAddress만 있는 string[]로 변환
-   const emailAddresses = emailData.map(email => email.emailAddress);
-   // 이메일 전송 후 부모 컴포넌트에 string[] 전달
-   onClose(emailAddresses);
- };
+  const sendEmail = () => {
+    // emailAddress만 있는 string[]로 변환
+    const emailAddresses = emailData.map(email => email.emailAddress);
+    // 이메일 전송 후 부모 컴포넌트에 string[] 전달
+    onClose(emailAddresses);
+  };
 
   return (
     <Modal transparent={true} visible={visible} onRequestClose={sendEmail}>
@@ -176,7 +175,8 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontFamily: fonts.LIGHT,
-    fontSize: 10,
+    fontSize: 12,
     color: colors.BLACK,
+    marginLeft: 10,
   },
 });

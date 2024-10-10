@@ -17,6 +17,9 @@ import {
   postinitAccount,
   putDailyLimit,
   putPerTransactionLimit,
+  getChildrenAccount,
+  getChildrenBalance,
+  getAccountHistoryEmail,
 } from '@/api/account';
 import {queryKeys} from '@/constants/keys';
 import {UseMutationCustomOptions, UseQueryCustomOptions} from '@/types/common';
@@ -91,6 +94,38 @@ function useGetAccountHistory(
   });
 }
 
+function useGetAccountHistoryEmail(
+  accountNo: string,
+  startDate: string,
+  endDate: string,
+  transactionType: string,
+  orderByType: string,
+  email: string,
+  queryOptions?: UseQueryCustomOptions<ResponseAccountHistory>,
+) {
+  return useQuery({
+    queryKey: [
+      queryKeys.ACCOUNT,
+      accountNo,
+      startDate,
+      endDate,
+      transactionType,
+      orderByType,
+      email,
+    ],
+    queryFn: () =>
+      getAccountHistoryEmail({
+        accountNo,
+        startDate,
+        endDate,
+        transactionType,
+        orderByType,
+        email,
+      }),
+    ...queryOptions,
+  });
+}
+
 function usePatchAccountLimit(mutationOptions?: UseMutationCustomOptions) {
   return useMutation({
     mutationFn: patchAccountLimit,
@@ -137,6 +172,27 @@ function useGetAccountHolder(
   });
 }
 
+function useGetChildrenAccount(
+  email: string,
+  queryOptions?: UseQueryCustomOptions<any>,
+) {
+  return useQuery({
+    queryKey: ['getChildrenAccount', email],
+    queryFn: () => getChildrenAccount(email),
+    ...queryOptions,
+  });
+}
+function useGetChildrenBalance(
+  email: string,
+  queryOptions?: UseQueryCustomOptions<any>,
+) {
+  return useQuery({
+    queryKey: ['getChildrenBalance', email],
+    queryFn: () => getChildrenBalance(email),
+    ...queryOptions,
+  });
+}
+
 function useAccount() {
   const initAccountMutation = useInitAccount();
   const getAccount = useGetAccount();
@@ -147,6 +203,19 @@ function useAccount() {
   const perTransactionLimitMutation = usePutPerTransactionLimit();
   const accountAutoMutation = usePostAccountAuto();
   const patchAccountAutoMutation = usePatchAccountAuto();
+  const useGetChildrenAccountWithParams = (
+    email: string,
+    queryOptions?: UseQueryCustomOptions<any>,
+  ) => {
+    return useGetChildrenAccount(email, queryOptions);
+  };
+  const useGetChildrenBalanceWithParams = (
+    email: string,
+    queryOptions?: UseQueryCustomOptions<any>,
+  ) => {
+    return useGetChildrenBalance(email, queryOptions);
+  };
+
   return {
     initAccountMutation,
     getAccount,
@@ -154,12 +223,15 @@ function useAccount() {
     transferMutation,
     useGetBalance,
     useGetAccountHistory,
+    useGetAccountHistoryEmail,
     accountLimitMutation,
     dailyLimitMutation,
     perTransactionLimitMutation,
     accountAutoMutation,
     patchAccountAutoMutation,
     useGetAccountHolder,
+    useGetChildrenAccountWithParams,
+    useGetChildrenBalanceWithParams,
   };
 }
 
