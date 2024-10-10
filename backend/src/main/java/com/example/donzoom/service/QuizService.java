@@ -89,6 +89,25 @@ public class QuizService {
         .build()).collect(Collectors.toList());
   }
 
+  public List<UserQuizResponseDto> getUserQuizzesByEmail(String email) {
+    // 내가 푼 퀴즈 기록들 가져오기
+
+    // 이메일로 사용자 정보 가져오기
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+
+    // 유저가 푼 퀴즈 목록 가져오기
+    List<UserQuiz> userQuizzes = userQuizRepository.findAllByUserId(user.getId())
+        .orElseThrow(() -> new RuntimeException("Quiz Not Found"));
+    return userQuizzes.stream().map(uq -> UserQuizResponseDto.builder().id(uq.getQuiz().getId())
+        .quizType(uq.getQuiz().getQuizType()).question(uq.getQuiz().getQuestion())
+        .answer(uq.getQuiz().getAnswer()).option1(uq.getQuiz().getOption1())
+        .option2(uq.getQuiz().getOption2()).option3(uq.getQuiz().getOption3())
+        .option4(uq.getQuiz().getOption4()).explanations(uq.getQuiz().getExplanations())
+        .answerExplanation(uq.getQuiz().getAnswerExplanation()).createdAt(uq.getCreatedAt())
+        .build()).collect(Collectors.toList());
+  }
+
   public void submitAnswer(Long quizId, QuizAnswerDto quizAnswerDto) {
     // 정답 제출하기
 

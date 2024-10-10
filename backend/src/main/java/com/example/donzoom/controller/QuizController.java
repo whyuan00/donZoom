@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -26,6 +27,13 @@ public class QuizController {
   public ResponseEntity<?> getQuiz() {
     // 내가 푼 퀴즈 가져오기
     List<UserQuizResponseDto> myQuizzes = quizService.getUserQuizzes();
+    return new ResponseEntity<>(myQuizzes, HttpStatus.OK);
+  }
+
+  @GetMapping("/child")
+  public ResponseEntity<?> getQuizByEmail(@RequestParam String email) {
+    // 내가 푼 퀴즈 가져오기
+    List<UserQuizResponseDto> myQuizzes = quizService.getUserQuizzesByEmail(email);
     return new ResponseEntity<>(myQuizzes, HttpStatus.OK);
   }
 
