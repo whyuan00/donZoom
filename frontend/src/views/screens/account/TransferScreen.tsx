@@ -6,7 +6,7 @@ import useTransferStore from '@/stores/useTransferStore';
 import KeypadModal from '@/views/components/KeyPadModal';
 import TransferRecipientModal from '@/views/components/TransferModal';
 import {useFocusEffect} from '@react-navigation/native';
-import {useCallback, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {
   Alert,
   Pressable,
@@ -29,6 +29,17 @@ export default function TransferScreen({route, navigation}: any) {
   const {account, balance, error, refetch} = useAccountBalance();
   const {accountNo, amount, setAccountNo, setAmount} = useTransferStore();
   const {useGetAccountHolder} = useAccount();
+
+  useEffect(() => {
+    console.log(
+      'Received accountNo from QRCodeScanner:',
+      route.params?.accountNo,
+    );
+    if (route.params?.accountNo) {
+      setAccountNo(route.params.accountNo);
+    }
+    console.log('이거잉거이거이거ㅣ: ', accountNo);
+  }, [route.params?.accountNo, setAccountNo]);
 
   useFocusEffect(
     useCallback(() => {
@@ -100,7 +111,9 @@ export default function TransferScreen({route, navigation}: any) {
         style={styles.recipientAccountInfoContainer}
         onPress={handleOpenModal}>
         <Text style={styles.recipientAccountInfoText}>
-          {selectedRecipient ? `${accountNo}` : '받을 대상을 선택해 주세요'}
+          {route.params?.accountNo
+            ? `${route.params?.accountNo}`
+            : '받을 대상을 선택해 주세요'}
         </Text>
       </Pressable>
 
