@@ -47,6 +47,7 @@ function QRCodeScanner({navigation}: any) {
       {
         text: 'OK',
         onPress: () => {
+          console.log('Navigating to 송금 screen with accountNo:', account);
           setScaned(true);
           navigation.navigate('송금', {accountNo: account});
         },
