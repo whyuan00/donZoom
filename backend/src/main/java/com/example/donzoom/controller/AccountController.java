@@ -135,6 +135,16 @@ public class AccountController {
     }
   }
 
+  //이메일로 계좌잔액조회
+  @GetMapping(value = "/balance-email")
+  public ResponseEntity<?> getBalanceByEmail(@RequestParam("email") String email) {
+    try {
+      return ResponseEntity.ok(accountService.getBalanceByEmail(email));
+    } catch (NoUserKeyException e) {
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+  }
+
   // 이메일로 거래내역 조회
   @GetMapping(value = "/history-email")
   public ResponseEntity<?> getHistoryByEmail(@RequestParam String accountNo,
