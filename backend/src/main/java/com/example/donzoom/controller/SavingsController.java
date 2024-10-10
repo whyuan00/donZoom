@@ -45,8 +45,8 @@ public class SavingsController {
     return ResponseEntity.ok(responseDto);
   }
   @GetMapping("/detail")
-  public ResponseEntity<SavingsDetailResponseDto> getSavingsDetail() {
-    SavingsDetailResponseDto responseDto = savingsService.getSavingsDetail();
+  public ResponseEntity<SavingsDetailResponseDto> getSavingsDetail(@RequestParam Long userId) {
+    SavingsDetailResponseDto responseDto = savingsService.getSavingsDetail(userId);
     return ResponseEntity.ok(responseDto);
   }
 
