@@ -1,7 +1,6 @@
 package com.example.donzoom.controller;
 
 import com.example.donzoom.dto.pig.response.PigResponseDto;
-import com.example.donzoom.dto.ticket.response.BuyTicketResponse;
 import com.example.donzoom.dto.ticket.response.BuyTicketResponseDto;
 import com.example.donzoom.repository.PigRepository;
 import com.example.donzoom.service.PigService;
