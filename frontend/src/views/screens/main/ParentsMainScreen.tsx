@@ -26,6 +26,7 @@ import {useChildrenStore} from '@/stores/useChildrenStore';
 import {Child} from '@/types/domain';
 import useAccount from '@/hooks/queries/useAccount';
 import {getChildrenAccount, getChildrenBalance} from '@/api/account';
+import {useSignupStore} from '@/stores/useAuthStore';
 
 interface ChildProfile {
   id: number;
@@ -48,11 +49,9 @@ function ParentsMainScreen() {
   const [profileOrder, setProfileOrder] = useState(childrenProfile);
   const navigation = useNavigation() as any;
   const {account, balance, refetch} = useAccountBalance();
+  const {name} = useSignupStore();
   const [isMyScreen, setIsMyScreen] = useState(true);
-  const {getAccount} = useAccount();
   const [refreshing, setRefreshing] = useState(false);
-  const {useGetChildrenAccountWithParams, useGetChildrenBalanceWithParams} =
-    useAccount();
   const [selectedChild, setSelectedChild] = useState<ChildProfile | null>(null);
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -169,7 +168,7 @@ function ParentsMainScreen() {
           <TouchableOpacity
             style={styles.parentsProfileContainer}
             onPress={viewMyScreen}>
-            <Profile name={'나'} />
+            <Profile name={name} />
           </TouchableOpacity>
           <View style={styles.profileContainer}>
             {profileOrder.map((profile, index) => {

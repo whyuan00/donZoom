@@ -2,7 +2,6 @@ import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 import useAccount from '@/hooks/queries/useAccount';
 import {useChildrenStore} from '@/stores/useChildrenStore';
-import React, {useEffect, useState} from 'react';
 import {Pressable, ScrollView} from 'react-native';
 import {StyleSheet, Text, View} from 'react-native';
 import Svg, {Path} from 'react-native-svg';
