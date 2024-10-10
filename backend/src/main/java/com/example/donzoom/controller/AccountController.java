@@ -135,6 +135,23 @@ public class AccountController {
     }
   }
 
+  // 이메일로 거래내역 조회
+  @GetMapping(value = "/history-email")
+  public ResponseEntity<?> getHistoryByEmail(@RequestParam String accountNo,
+      @RequestParam String startDate, @RequestParam String endDate,
+      @RequestParam String transactionType, @RequestParam String orderByType
+      ,@RequestParam String email) {
+    try {
+      TransactionRequestDto transactionRequestDto = TransactionRequestDto.builder()
+          .accountNo(accountNo).startDate(startDate).endDate(endDate)
+          .transactionType(transactionType).orderByType(orderByType).build();
+
+      return ResponseEntity.ok(accountService.getHistoryByEmail(transactionRequestDto,email));
+    } catch (NoUserKeyException e) {
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+  }
+
   // 자녀의 1일 결제 한도 수정
   @PutMapping("/daily-limit")
   public ResponseEntity<Void> updateDailyLimit(

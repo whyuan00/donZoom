@@ -140,6 +140,18 @@ public class AccountService {
     return bankApi.getHistory(transactionRequestDto, userKey);
   }
 
+  public TransactionResponseDto getHistoryByEmail(TransactionRequestDto transactionRequestDto,String email) {
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+
+    // 계좌번호가 있는지 확인하고 반환
+    if (user.getAccountNo() == null || user.getAccountNo().isEmpty()) {
+      throw new RuntimeException("No account number found for user with email: " + email);
+    }
+
+    return bankApi.getHistory(transactionRequestDto, user.getUserKey());
+  }
+
   // 1일 결제 한도 수정
   public void updateDailyLimit(UpdateLimitRequestDto updateLimitRequestDto) {
     User child = userRepository.findById(Long.parseLong(updateLimitRequestDto.getChildId()))
