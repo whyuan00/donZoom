@@ -135,7 +135,13 @@ public class QuizService {
     }
 
     userQuizRepository.save(userQuiz);
-    return QuizAnswerResponseDto.builder().quiz(quiz).isCorrect(isCorrect).build();
+    return QuizAnswerResponseDto.builder().id(quiz.getId())
+        .quizType(quiz.getQuizType()).question(quiz.getQuestion())
+        .answer(quiz.getAnswer()).option1(quiz.getOption1())
+        .option2(quiz.getOption2()).option3(quiz.getOption3())
+        .option4(quiz.getOption4()).explanations(quiz.getExplanations())
+        .answerExplanation(quiz.getAnswerExplanation()).createdAt(userQuiz.getCreatedAt())
+        .isCorrect(isCorrect).build();
   }
 
 }
