@@ -67,7 +67,7 @@ const RealAssetReportTabScreen = ({navigation}: any) => {
   if (todaysReports.length < 1) {
     return (
       <View style={styles.container}>
-        <Text>오늘의 리포트가 없습니다</Text>
+        <Text>오늘의 새로운 리포트가 없습니다</Text>
         <TouchableOpacity
           onPress={() => navigation.navigate('RealAssetPastReport')}>
           <View style={styles.button}>

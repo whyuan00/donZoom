@@ -9,11 +9,11 @@ import {
   Button,
   SafeAreaView,
 } from 'react-native';
-import RiskAssetScreen from './UnsafeAssetDetailScreen';
+import RiskAssetScreen from './UnsafeAssetScreen/UnsafeAssetDetailScreen';
 import Icon from 'react-native-vector-icons/AntDesign';
-import UnsafeAssetDetailScreen from './UnsafeAssetDetailScreen';
+import UnsafeAssetDetailScreen from './UnsafeAssetScreen/UnsafeAssetDetailScreen';
 import SafeAssetDetailScreen from './SafeAssetDetailScreen';
-import RealAssetDetailScreen from './RealAssetDetailScreen';
+import RealAssetDetailScreen from './RealAssetScreen/RealAssetDetailScreen';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 

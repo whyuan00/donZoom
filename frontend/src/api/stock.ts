@@ -112,39 +112,74 @@ const postSellStock = async (stockId: string): Promise<ResponseSellStock> => {
   return response.data;
 };
 
-type ResponseContentsList = {
+type ResponseContents = {
   Id: number;
   title: string;
   contents: string;
   createdAt: Date;
   source: string;
-}[]; // 뉴스리스트 배열로 설정
+}; // 뉴스리스트 배열로 설정
 
-type ResponseNews = ResponseContentsList;
+type AllNewsResponse = {
+  type: 'all-news';
+  data: ResponseContents[];
+};
 
-const getNews = async (stockId: number): Promise<ResponseNews> => {
+type TodayNewsResponse = {
+  type: 'today-news';
+  data: ResponseContents[];
+};
+
+const getNews = async (stockId: number): Promise<AllNewsResponse> => {
   const {data} = await axiosInstance.get(`/news/${stockId}`);
+  // console.log('전체뉴스:',data)
   return data;
 };
 
-const getTodaysNews = async (stockId: number): Promise<ResponseNews> => {
-  const {data} = await axiosInstance.get(`/news/${stockId}/today`);
-  // console.log('오늘뉴스:',response.data);
-  return data;
+const getTodaysNews = async (stockId: number): Promise<TodayNewsResponse> => {
+  try {
+    const {data} = await axiosInstance.get(`/news/${stockId}/today`);
+    const slicedData = data.slice(0, 3);
+    // console.log('sliced오늘뉴스:', slicedData);
+    return slicedData; // 3개만 반환
+  } catch {
+        return {
+          type: 'today-news',
+          data: [],
+        };
+  }
 };
 
-type ResponseReports = ResponseContentsList;
+type AllReportResponse = {
+  type: 'all-reports';
+  data: ResponseContents[];
+};
 
-const getReports = async (stockId: number): Promise<ResponseReports> => {
+type TodayReportResponse = {
+  type: 'today-reports';
+  data: ResponseContents[];
+};
+
+const getReports = async (stockId: number): Promise<AllReportResponse> => {
   const {data} = await axiosInstance.get(`/report/${stockId}`);
   // console.log('리포트:',data);
   return data;
 };
 
-const getTodaysReports = async (stockId: number): Promise<ResponseReports> => {
-  const {data} = await axiosInstance.get(`/report/${stockId}/today`);
-  // console.log('오늘리포트:', data);
-  return data;
+const getTodaysReports = async (
+  stockId: number,
+): Promise<TodayReportResponse> => {
+  try {
+    const {data} = await axiosInstance.get(`/report/${stockId}/today`);
+    const slicedData = data.slice(0, 3);
+    // console.log('sliced오늘리포트:', slicedData);
+    return slicedData; // 3개만 반환
+  } catch {
+    return {
+      type:'today-reports',
+      data:[]
+    }
+  }
 };
 
 export {
@@ -160,6 +195,7 @@ export {
   getReports,
   getTodaysReports,
 };
+
 export type {
   ResponseStockList,
   ResponseStock,
@@ -168,9 +204,12 @@ export type {
   ResponseMyHistory,
   ResponseBuyStock,
   ResponseSellStock,
-  ResponseNews,
   RequestBuyStock,
   MyStock,
   stockPriceArr,
-  ResponseReports,
+  ResponseContents,
+  AllNewsResponse,
+  TodayNewsResponse,
+  AllReportResponse,
+  TodayReportResponse,
 };

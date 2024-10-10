@@ -54,7 +54,6 @@ export default function RealAssetDetailScreen({navigation}: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    borderWidth: 2,
   },
   headerContainer: {
     justifyContent: 'flex-start',
@@ -62,7 +61,7 @@ const styles = StyleSheet.create({
   },
   tabNavigator: {
     flex: 1,
-    borderWidth: 3,
+    // borderWidth: 3,
     height: 1000,
     backgroundColor: colors.BLACK,
   },
