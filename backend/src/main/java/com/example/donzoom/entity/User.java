@@ -145,6 +145,10 @@ public class User extends BaseEntity {
   public void updateProfileImage(String profileImage) {
     this.profileImage = profileImage;
   }
+  // 적금계좌 업데이트
+  public void updateSavingAccount(SavingAccount savingAccount) {
+    this.savingAccount = savingAccount;
+  }
 
   // 유저 추가정보 입력
   public void updateAdditionalInfo(String name, String nickname, String profileImage,
