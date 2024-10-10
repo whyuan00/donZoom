@@ -5,13 +5,15 @@ import useForm from '@/hooks/useForm';
 import usePasswordStore from '@/stores/usePasswordStore';
 import {validateAccount} from '@/utils';
 import CustomButton from '@/views/components/CustomButton';
+import {useRoute} from '@react-navigation/native';
 import React from 'react';
 import {Alert, Image, StyleSheet, Text, View} from 'react-native';
 import PigIcon from 'react-native-vector-icons/FontAwesome6';
 
-function AccountInitScreen({navigation}: any) {
+function AccountInitScreen({navigation, route}: any) {
   const {initAccountMutation} = useAccount();
-  const {password} = usePasswordStore();
+  // const {password} = usePasswordStore();
+  const {password} = route.params;
   const {refetch} = useAccountBalance();
   const handelInitAccount = () => {
     initAccountMutation.mutate(password, {
