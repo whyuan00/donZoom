@@ -15,7 +15,7 @@ const TransferNavigator = () => {
         name="거래내역"
         component={AccountHistoryScreen}
         options={{
-          title: '내 아이 거래내역 조회',
+          title: '거래내역 조회',
           headerStyle: {
             backgroundColor: colors.YELLOW_100,
           },
