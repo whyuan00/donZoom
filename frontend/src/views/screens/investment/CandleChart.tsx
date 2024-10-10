@@ -97,7 +97,7 @@ const CandlestickChartComponent: React.FC<CandlestickChartComponentProps> = ({
         maxVisibleValueCount={16}
         autoScaleMinMaxEnabled={true}
         visibleRange={{x: {min: visibleRange, max: visibleRange}}}
-        dragXEnabled={true}
+        // dragXEnabled={true}
         scaleXEnabled={true}
         scaleYEnabled={true}
         pinchZoom={true}
@@ -112,6 +112,9 @@ const CandlestickChartComponent: React.FC<CandlestickChartComponentProps> = ({
           yValue: 0,
           axisDependency: 'RIGHT',
         }}
+        chartDescription={{text: ''}} // 차트 설명 제거
+        legend={{enabled: false}} // 범례 제거
+        drawBorders={false} // 테두리 제거
       />
     </View>
   );
