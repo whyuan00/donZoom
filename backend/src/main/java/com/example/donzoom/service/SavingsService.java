@@ -136,6 +136,11 @@ public class SavingsService {
     Wallet wallet = user.getWallet();
     wallet.updateCoin(wallet.getCoin() + (int) Math.ceil(totalAmount));
 
+    // User와의 관계 해제
+    user.updateSavingAccount(null);
+    userRepository.save(user);
+
+    // SavingAccount 삭제
     savingAccountRepository.delete(account);
     savingAccountRepository.flush();
 
