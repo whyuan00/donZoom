@@ -14,11 +14,8 @@ import { fonts } from '@/constants/font';
 const Stack = createNativeStackNavigator();
 
 const MissionStackNavigator = ({route}:any) => {
-  const initialRouteName =
-    route.name === '아이미션' ? 'MissionChild' : 'MissionParent';
   return (
     <Stack.Navigator
-      initialRouteName={initialRouteName}
       screenOptions={{
         headerTitleStyle: {
           fontFamily: fonts.MEDIUM,
@@ -28,7 +25,7 @@ const MissionStackNavigator = ({route}:any) => {
         headerTitleAlign: 'center', // 헤더 제목 정렬
       }}>
       <Stack.Screen
-        name="MissionChild"
+        name="아이미션"
         component={MissionHomeChildScreen}
         options={({navigation}) => ({
           title: '미션',
@@ -44,7 +41,7 @@ const MissionStackNavigator = ({route}:any) => {
         })}
       />
       <Stack.Screen
-        name="MissionParent"
+        name="부모미션"
         component={MissionHomeScreen}
         options={({navigation}) => ({
           title: '미션',

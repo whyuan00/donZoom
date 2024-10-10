@@ -229,7 +229,9 @@ function ParentsMainScreen() {
             </View>
             <TouchableOpacity
               style={styles.myMissionContainer}
-              onPress={() => navigation.navigate('아이미션')}>
+              onPress={() => navigation.navigate('부모미션',{
+                screen:'부모미션'
+              })}>
               <Text style={styles.myMissionText}>
                 오늘의 <Text style={{fontFamily: fonts.BOLD}}>미션</Text>{' '}
                 생성하러 가기
@@ -330,7 +332,9 @@ function ParentsMainScreen() {
                   </View>
                   <TouchableOpacity
                     style={styles.nextButton}
-                    onPress={() => navigation.navigate('부모미션')}>
+                    onPress={() => navigation.navigate('부모미션',{
+                      screen:'부모미션'
+                    })}>
                     <Text style={styles.detailMission}>자세히 보기</Text>
                     <NextIcon
                       name="navigate-next"
