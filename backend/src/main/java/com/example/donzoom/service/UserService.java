@@ -17,6 +17,7 @@ import com.example.donzoom.repository.WalletRepository;
 import com.example.donzoom.util.FileUploadUtil;
 import com.example.donzoom.util.JWTUtil;
 import com.example.donzoom.util.SecurityUtil;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class UserService {
 
+  private final FCMService fcmService;
   private final AuthenticationManager authenticationManager;
   private final PasswordService passwordService;
   private final UserRepository userRepository;
@@ -230,6 +232,13 @@ public class UserService {
 
       // Pending 테이블에서 해당 레코드 삭제
       pendingRepository.delete(pendingRecord.get());
+
+      try {
+        fcmService.sendNotification(parent, "아이 등록", "내 아이로 등록이 완료되었습니다.");
+      } catch (FirebaseMessagingException e) {
+        throw new RuntimeException("연결이 실패되었습니다.");
+      }
+
     } else {
       throw new RuntimeException("Pending record not found for the user.");
     }
