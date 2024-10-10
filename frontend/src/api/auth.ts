@@ -103,7 +103,7 @@ const postLogin = async ({email, password}: User): Promise<Response> => {
 
 const getProfile = async (): Promise<ResponseProfile> => {
   const {data} = await axiosInstance.get('/user');
-  console.log('data:', data);
+  console.log('user data:', data);
   return data;
 };
 
@@ -172,7 +172,8 @@ const postProfileImage = async (profileImage: Asset) => {
 };
 
 const postSetRelation = async () => {
-  const response = await axiosInstance.post('/set-relationship');
+  console.log('연결 시도');
+  const response = await axiosInstance.post('/user/set-relationship');
   console.log('부모 아이 연결:', response);
 };
 

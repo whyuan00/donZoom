@@ -37,7 +37,8 @@ function ConfirmPassWordScreen({navigation}: any) {
     if (newValue.length === 6) {
       if (newValue === newPassword) {
         setError(''); // 오류 메시지 초기화
-        navigation.navigate('계좌개설');
+        setPassword(newPassword);
+        navigation.navigate('계좌개설', {password: newPassword});
         Alert.alert('비밀번호 변경이 완료되었습니다.');
       } else {
         setError('비밀번호가 일치하지 않습니다.');
