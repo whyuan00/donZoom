@@ -11,6 +11,7 @@ import com.example.donzoom.dto.account.request.UpdateLimitRequestDto;
 import com.example.donzoom.dto.account.request.ValidatePaymentPasswordRequestDto;
 import com.example.donzoom.dto.account.response.BankUserResponseDto;
 import com.example.donzoom.dto.account.response.CreateCardResponseDto;
+import com.example.donzoom.dto.account.response.GetAccountNumberByEmailResponseDto;
 import com.example.donzoom.dto.account.response.GetUserByAccountNoResponseDto;
 import com.example.donzoom.exception.NoUserKeyException;
 import com.example.donzoom.service.AccountService;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @RestController
@@ -70,6 +72,26 @@ public class AccountController {
     log.info(accountNo);
     GetUserByAccountNoResponseDto response = accountService.getUserByAccountNumber(accountNo);
     return ResponseEntity.ok(response);
+  }
+
+
+  // 이메일로 계좌번호 조회
+  @GetMapping(value = "/account-number")
+  public ResponseEntity<?> getAccountNumberByEmail(
+      @RequestParam("email") String email) {
+    log.info("Retrieving account number for email: {}", email);
+    try {
+      GetAccountNumberByEmailResponseDto response = accountService.getAccountNumberByEmail(email);
+      return ResponseEntity.ok(response);
+    } catch (RuntimeException e) {
+      if (e.getMessage().contains("No account number found")) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+      } else if (e.getMessage().contains("User not found")) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+      } else {
+        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred.");
+      }
+    }
   }
 
   // 자동이체 설정
