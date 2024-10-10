@@ -100,7 +100,7 @@ const UnsafeAssetNewsTabScreen = ({navigation, selectedStock}: any) => {
       </View>
     );
   }
-  
+
   if (todaysNews.length < 1) {
     return (
       <View style={styles.container}>
@@ -120,10 +120,10 @@ const UnsafeAssetNewsTabScreen = ({navigation, selectedStock}: any) => {
 
   return (
     <View style={styles.container}>
-      {todaysNews.map(news => (
+      {todaysNews.map((news: News, index: number) => (
         <TouchableOpacity
           onPress={() => openModal(news)}
-          key={news.Id}
+          key={news.Id || index}
           style={styles.newsContainer}>
           <Text style={styles.headText}> {formatTitle(news.title)}</Text>
           <View style={{marginLeft: 210}}>

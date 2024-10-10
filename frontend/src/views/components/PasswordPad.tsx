@@ -39,10 +39,12 @@ const PasswordPad = ({onInput, currentValue}: PasswordPadProps) => {
   return (
     <View>
       <View style={styles.keypadContainer}>
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9, ' ', 0].map(num =>
-          renderButton(num.toString()),
-        )}
-        <View>{renderButton('←')}</View>
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9, ' ', 0].map((num, index) => (
+          <React.Fragment key={`button-${num}-${index}`}>
+            {renderButton(num.toString())}
+          </React.Fragment>
+        ))}
+        <View key="delete-button">{renderButton('←')}</View>
       </View>
     </View>
   );

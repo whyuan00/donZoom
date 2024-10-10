@@ -38,8 +38,8 @@ function ConfirmPassWordScreen({navigation}: any) {
       if (newValue === newPassword) {
         setError(''); // 오류 메시지 초기화
         setPassword(newPassword);
-        navigation.navigate('계좌개설', {password: newPassword});
-        Alert.alert('비밀번호 변경이 완료되었습니다.');
+        navigation.navigate('계좌시작하기', {password: newPassword});
+        Alert.alert('비밀번호 설정이 완료되었습니다.');
       } else {
         setError('비밀번호가 일치하지 않습니다.');
         setPassword(''); // 비밀번호를 틀리면 입력 초기화

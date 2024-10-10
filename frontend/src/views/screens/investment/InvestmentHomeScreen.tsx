@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
   View,
   Text,
@@ -17,6 +17,8 @@ import useStock from '@/hooks/queries/useStock';
 import {useSignupStore} from '@/stores/useAuthStore';
 import usePig from '@/hooks/queries/usePig';
 import {MyStock, ResponseMyStock} from '@/api/stock';
+import {useErrorStore} from '@/stores/errorMessagesStore';
+import {useFocusEffect} from '@react-navigation/native';
 
 export default function InvestmentHomeScreen({navigation}: any) {
   const [refreshing, setRefreshing] = useState(false);
@@ -27,16 +29,21 @@ export default function InvestmentHomeScreen({navigation}: any) {
       setRefreshing(false);
     }, 2000);
   }, []);
-  const {useGetMyStock} = useStock();
+  const {useGetMyStock, useGetStock} = useStock();
   const {id} = useSignupStore();
   const {getMyCoinMutation} = usePig();
   const money = getMyCoinMutation.data?.coin;
+  const {data: myStockData, refetch} = useGetMyStock(id);
 
-  // console.log(useGetMyStock(id).data);
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch]),
+  );
 
-  const myStockData = useGetMyStock(id).data?.myStocks;
-  const stockData = Array.isArray(myStockData)
-    ? myStockData.map(
+  const stockData = useMemo(() => {
+    if (Array.isArray(myStockData)) {
+      return myStockData.map(
         (item: {
           stockWalletId: number;
           stockId: number;
@@ -49,8 +56,12 @@ export default function InvestmentHomeScreen({navigation}: any) {
           currentPrice: item.averagePrice,
           change: '10%',
         }),
-      )
-    : [];
+      );
+    }
+    return [];
+  }, [myStockData]);
+
+  console.log('stockData:', stockData);
 
   return (
     <ScrollView
@@ -83,7 +94,7 @@ export default function InvestmentHomeScreen({navigation}: any) {
             </View>
           </View>
         </View>
-        <View>
+        <View style={{width: '100%'}}>
           {/* 안전자산버튼 */}
           <TouchableOpacity>
             <Pressable
@@ -190,7 +201,7 @@ export default function InvestmentHomeScreen({navigation}: any) {
             </View>
           </View>
         </View>
-        <View>
+        <View style={{width: '100%'}}>
           {/* 위험 자산 버튼 */}
           <TouchableOpacity style={{marginTop: 20}}>
             <Pressable
@@ -323,21 +334,21 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: '#FFE37F',
     borderWidth: 1,
-    margin: 10,
-    width: 307,
+    width: '100%',
+    marginTop: 10,
   },
   titleText: {
     fontSize: 16,
     fontFamily: fonts.MEDIUM,
     color: colors.BLACK,
+    marginLeft: 15,
   },
   row: {
     flexDirection: 'row',
   },
   titleCell: {
-    width: 264,
+    width: '100%',
     height: 38,
-    marginLeft: 18,
     borderRadius: 10,
     flexDirection: 'row',
     alignItems: 'center',
@@ -349,7 +360,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.WHITE,
-    borderColor: '#FFE37F',
+    borderColor: colors.YELLOW_50,
   },
   borderBottom: {
     borderBottomWidth: 1,
@@ -390,7 +401,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   safeAssetHeaderContainer: {
-    width: 308,
+    width: '100%',
     marginLeft: 5,
   },
   safeAssetHeaderText: {
@@ -409,9 +420,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   assetHeaderContainer: {
-    width: 286,
+    width: '100%',
     height: 40,
     marginTop: 8,
+    paddingHorizontal: 20,
   },
   headerText: {
     fontFamily: fonts.BOLD,
@@ -432,13 +444,14 @@ const styles = StyleSheet.create({
   notificationText: {
     marginLeft: 5,
     fontSize: 14,
+    fontFamily: fonts.MEDIUM,
+    color: colors.BLACK,
   },
   assetInfoContainer: {
-    backgroundColor: '#fff',
-    padding: 20,
+    backgroundColor: colors.WHITE,
     height: 69,
-    width: 279,
-    margin: 0,
+    width: '100%',
+    paddingHorizontal: 20,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -465,7 +478,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.MEDIUM,
     color: colors.BLACK,
     fontSize: 10,
-    fontWeight: '500',
   },
   profitAmount: {
     fontSize: 10,
@@ -476,11 +488,12 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
     backgroundColor: colors.WHITE,
+    width: '100%',
   },
   menuContainer: {
-    backgroundColor: '#FFE999',
-    width: 307,
-    height: 127,
+    backgroundColor: colors.YELLOW_100,
+    width: '100%',
+    height: 130,
     borderRadius: 10,
     marginBottom: 20,
     alignItems: 'center',

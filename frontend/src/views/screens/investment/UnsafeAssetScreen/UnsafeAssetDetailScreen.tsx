@@ -56,13 +56,10 @@ export default function UnsafeAssetDetailScreen({navigation}: any) {
     console.log('-------------------------------------------------');
     console.log(stockMessage);
   }, [stockMessage]);
-  const {data: stockData} = useGetStock(getSelectedStockIndex(), 'min');
-
-  useEffect(() => {
-    const stockprice = stockData?.stockHistories[0].open;
-    setRealAssetMoney(stockprice);
-    setRealAssetDollar(Number((stockprice ? stockprice / 1200 : 0).toFixed(2)));
-  }, [selectedStock]);
+  const {data: stockData, isLoading} = useGetStock(
+    getSelectedStockIndex(),
+    'min',
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -81,11 +78,24 @@ export default function UnsafeAssetDetailScreen({navigation}: any) {
     }, []),
   );
 
+  useEffect(() => {
+    console.log(
+      `Selected stock: ${selectedStock}, Index: ${getSelectedStockIndex()}`,
+    );
+    if (!isLoading && stockData) {
+      const stockprice = stockData.stockHistories[0]?.close;
+      setRealAssetMoney(stockprice);
+      setRealAssetDollar(
+        Number((stockprice ? stockprice / 1200 : 0).toFixed(2)),
+      );
+    }
+  }, [selectedStock]);
+
   // 종목 선택 시
   const handleStockChange = (stock: string) => {
     setSelectedStock(stock);
+    console.log('여기');
     setIsDropdownVisible(false);
-    console.log(`Selected stock: ${stock}, Index: ${getSelectedStockIndex()}`);
   };
 
   // 드롭다운 버튼 토글

@@ -14,7 +14,7 @@ const MyInformationNavigator = () => {
   const Stack = createNativeStackNavigator();
   return (
     <Stack.Navigator screenOptions={{headerTitleAlign: 'center'}}>
-      <Stack.Screen name="설정" component={MyInformationScreen} />
+      <Stack.Screen name="설정화면" component={MyInformationScreen} />
       <Stack.Screen name="보안 설정" component={SecuritySettingScreen} />
       <Stack.Screen name="QR 생성" component={QRCodeGenerator} />
       <Stack.Screen name="계좌 생성" component={AccountInitScreen} />
