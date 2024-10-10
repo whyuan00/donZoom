@@ -27,7 +27,7 @@ public class MissionController {
 
   private final MissionService missionService;
 
-  @GetMapping
+  @GetMapping("/{userId}/{status}")
   public ResponseEntity<?> getAllMissions(@PathVariable Long userId,
       @PathVariable MissionStatus status) {
     // 내 미션 전체 조회
