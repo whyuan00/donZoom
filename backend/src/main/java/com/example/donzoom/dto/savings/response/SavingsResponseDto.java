@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class SavingsResponseDto {
-  private final int principal;   // 원금
-  private final int interest;    // 예상 이자
-  private final int totalAmount; // 총 예상 금액
+  private final double principal;   // 원금
+  private final double interest;    // 예상 이자
+  private final double totalAmount; // 총 예상 금액
 }
