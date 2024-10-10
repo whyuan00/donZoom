@@ -1,7 +1,7 @@
-import {colors} from '@/constants/colors';
-import {fonts} from '@/constants/font';
-import {useCallback, useEffect, useState} from 'react';
-import {useQuizStore} from '@/stores/useQuizStore';
+import { colors } from '@/constants/colors';
+import { fonts } from '@/constants/font';
+import { useCallback, useEffect, useState } from 'react';
+import { useQuizStore } from '@/stores/useQuizStore';
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
   Modal,
   RefreshControl,
 } from 'react-native';
-import {Calendar, DateData} from 'react-native-calendars';
+import { Calendar, DateData } from 'react-native-calendars';
 import CheckCalendar from '@/assets/CheckCalendar.svg';
 import useQuiz from '@/hooks/queries/useQuiz';
 
@@ -21,7 +21,7 @@ interface MarkedDates {
   };
 }
 
-function QuizHomeScreen({navigation}: any) {
+function QuizHomeScreen({ navigation }: any) {
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(() => {
@@ -37,8 +37,8 @@ function QuizHomeScreen({navigation}: any) {
   const setTodaysQuizQuestions = useQuizStore(
     state => state.setTodaysQuizQuestions,
   );
-  const {setReviewQuizQuestions, reviewQuizQuestions} = useQuizStore();
-  const {todayQuizMutation, solvedQuizMutation} = useQuiz();
+  const { setReviewQuizQuestions, reviewQuizQuestions } = useQuizStore();
+  const { todayQuizMutation, solvedQuizMutation } = useQuiz();
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
@@ -55,7 +55,7 @@ function QuizHomeScreen({navigation}: any) {
       answers: [quiz.option1, quiz.option2, quiz.option3, quiz.option4],
       correctAnswer: quiz.answer,
       explanations: quiz.explanations.split('\n'),
-      correctExplanation: quiz.answerExplanation,
+      answerExplanation: quiz.answerExplanation,
     }));
   };
 
@@ -66,9 +66,9 @@ function QuizHomeScreen({navigation}: any) {
       console.log('solvedQD: ', solvedQuizDates);
 
       const markedDates = solvedQuizDates.reduce(
-        (acc: MarkedDates, quiz: {createdAt: string}) => {
+        (acc: MarkedDates, quiz: { createdAt: string }) => {
           const quizDate = formatDate(quiz.createdAt);
-          acc[quizDate] = {marked: true};
+          acc[quizDate] = { marked: true };
           return acc;
         },
         {} as MarkedDates,
@@ -80,7 +80,7 @@ function QuizHomeScreen({navigation}: any) {
 
   // 오늘의 퀴즈 시작하기
   const startTodayQuiz = async () => {
-    const {data: quizes} = await todayQuizMutation.refetch();
+    const { data: quizes } = await todayQuizMutation.refetch();
     // console.log('quizes: ', quizes);
     if (quizes && quizes.length > 0) {
       const transformedQuizes = transformQuizData(quizes);
@@ -107,13 +107,8 @@ function QuizHomeScreen({navigation}: any) {
         selectedQuizes = solvedQuizes;
       }
       const transformedQuizes = transformQuizData(selectedQuizes);
-      const quizGroups = [];
-      for (let i = 0; i < transformedQuizes.length; i += 3) {
-        quizGroups.push(transformedQuizes.slice(i, i + 3));
-      }
       // console.log('quizGroups: ', quizGroups);
-      console.log('quizGroups[0]: ', quizGroups[0]);
-      setReviewQuizQuestions(quizGroups);
+      setReviewQuizQuestions(transformedQuizes);
     }
   };
 
@@ -141,7 +136,7 @@ function QuizHomeScreen({navigation}: any) {
           <View style={styles.calendar}>
             <Calendar
               current={today}
-              dayComponent={({date}: {date: DateData}) => {
+              dayComponent={({ date }: { date: DateData }) => {
                 const dateKey = `${date.year}-${String(date.month).padStart(
                   2,
                   '0',
@@ -153,8 +148,8 @@ function QuizHomeScreen({navigation}: any) {
                   weekday === 0
                     ? styles.sundayText
                     : weekday === 6
-                    ? styles.saturdayText
-                    : styles.defaultText;
+                      ? styles.saturdayText
+                      : styles.defaultText;
 
                 return (
                   <TouchableOpacity style={styles.dayContainer}>
@@ -234,29 +229,36 @@ function QuizHomeScreen({navigation}: any) {
           </View>
 
           <View style={styles.reviewContentContainer}>
-            {reviewQuizQuestions.length > 0 &&
-              reviewQuizQuestions.map((group, groupIndex) => (
-                <View key={groupIndex} style={styles.reviewContentsBox}>
-                  <View style={styles.reviewContentText}>
-                    <Text style={styles.reviewContentTitle}>
-                      다시풀기 {groupIndex + 1}
-                    </Text>
-                    <Text style={styles.reviewContentDescription}>
-                      {group.length}문제
-                    </Text>
-                  </View>
-                  <TouchableOpacity
-                    style={styles.reviewContentButton}
-                    onPress={() => {
-                      navigation.navigate('퀴즈 리뷰', {
-                        groupIndex: groupIndex,
-                      });
-                    }}>
-                    <Text style={styles.reviewContentButtonText}>다시풀기</Text>
-                  </TouchableOpacity>
-                </View>
-              ))}
-          </View>
+  {reviewQuizQuestions.length > 0 &&
+    reviewQuizQuestions.reduce((groups:any[][], question, index) => {
+      // Group questions into sets of 3
+      if (index % 3 === 0) {
+        groups.push(reviewQuizQuestions.slice(index, index + 3));
+      }
+      return groups;
+    }, []).map((group, groupIndex) => (
+      <View key={groupIndex} style={styles.reviewContentsBox}>
+        <View style={styles.reviewContentText}>
+          <Text style={styles.reviewContentTitle}>
+            다시풀기 {groupIndex + 1}
+          </Text>
+          <Text style={styles.reviewContentDescription}>
+            {group.length}문제
+          </Text>
+        </View>
+        <TouchableOpacity
+          style={styles.reviewContentButton}
+          onPress={() => {
+            navigation.navigate('퀴즈 리뷰', {
+              groupIndex: groupIndex,
+            });
+          }}>
+          <Text style={styles.reviewContentButtonText}>다시풀기</Text>
+        </TouchableOpacity>
+      </View>
+    ))}
+</View>
+
         </View>
       </View>
     </ScrollView>
