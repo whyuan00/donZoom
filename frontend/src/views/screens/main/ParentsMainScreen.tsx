@@ -43,7 +43,7 @@ interface emailData {
   emailAddress: string;
 }
 function ParentsMainScreen() {
-  const {myChildren} = useChildrenStore();
+  const {myChildren, setSelectedChild: setCurrentChild} = useChildrenStore();
   const [selectedProfileIndex, setSelectedProfileIndex] = useState(0);
   const [profileOrder, setProfileOrder] = useState(childrenProfile);
   const navigation = useNavigation() as any;
@@ -64,9 +64,9 @@ function ParentsMainScreen() {
   // 아이 정보 가져오기
   useEffect(() => {
     refetch();
-    console.log('myCHildren: ', myChildren);
+    // console.log('myCHildren: ', myChildren);
     if (myChildren.length > 0) {
-      console.log('myCHildren2: ', myChildren);
+      // console.log('myCHildren2: ', myChildren);
       const updatedChildren = myChildren.map((child, index) => ({
         ...child,
         accountNumber: '',
@@ -119,6 +119,18 @@ function ParentsMainScreen() {
       });
       setProfileOrder(reorderProfiles);
       setSelectedChild(updatedChild);
+
+      setCurrentChild({
+        id: updatedChild.id,
+        name: updatedChild.name,
+        email: updatedChild.email,
+        nickname: updatedChild.nickname,
+        accountNumber: updatedChild.accountNumber,
+        balance: updatedChild.balance,
+        ongoingMissions: updatedChild.ongoingMissions,
+        completeMissions: updatedChild.completeMissions,
+      });
+      console.log('setCurrentChild: ', setCurrentChild);
     } catch (error) {
       console.error('Error fetching child data:', error);
     }
@@ -176,7 +188,7 @@ function ParentsMainScreen() {
                 zIndex: profileOrder.length - index,
               };
               // console.log(animatedStyle.zIndex, profile.name);
-              console.log('profile: ', profile);
+              // console.log('profile: ', profile);
 
               return (
                 <TouchableOpacity
@@ -319,17 +331,28 @@ function ParentsMainScreen() {
                       <View style={styles.moneyAccountContainer}>
                         <View style={styles.balance}>
                           <Text style={styles.balanceText}>남은 금액</Text>
-                          <Text style={styles.moneyText}>
-                            {profileOrder[0]?.balance.toLocaleString()}원
+                          <Text
+                            style={styles.moneyText}
+                            adjustsFontSizeToFit={true}
+                            numberOfLines={1}>
+                            {String(profileOrder[0]?.balance).toLocaleString()}
+                            원
                           </Text>
                         </View>
                         <View style={styles.accountText}>
                           <TouchableOpacity
-                            onPress={() => navigation.navigate('계좌관리')}>
+                            onPress={() =>
+                              navigation.navigate('아이 거래내역', {
+                                accountParam: profileOrder[0].accountNumber,
+                                balanceParam: profileOrder[0].balance,
+                                emailParam: profileOrder[0].email,
+                              })
+                            }>
                             <Text style={styles.moneyAccountText}>
                               우리 아이 소비 내역 조회
                             </Text>
                           </TouchableOpacity>
+
                           <Text style={styles.moneyAccountText}>ㅣ</Text>
                           <TouchableOpacity
                             onPress={() =>

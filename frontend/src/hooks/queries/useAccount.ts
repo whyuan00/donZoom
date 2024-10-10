@@ -19,6 +19,7 @@ import {
   putPerTransactionLimit,
   getChildrenAccount,
   getChildrenBalance,
+  getAccountHistoryEmail,
 } from '@/api/account';
 import {queryKeys} from '@/constants/keys';
 import {UseMutationCustomOptions, UseQueryCustomOptions} from '@/types/common';
@@ -88,6 +89,38 @@ function useGetAccountHistory(
         endDate,
         transactionType,
         orderByType,
+      }),
+    ...queryOptions,
+  });
+}
+
+function useGetAccountHistoryEmail(
+  accountNo: string,
+  startDate: string,
+  endDate: string,
+  transactionType: string,
+  orderByType: string,
+  email: string,
+  queryOptions?: UseQueryCustomOptions<ResponseAccountHistory>,
+) {
+  return useQuery({
+    queryKey: [
+      queryKeys.ACCOUNT,
+      accountNo,
+      startDate,
+      endDate,
+      transactionType,
+      orderByType,
+      email,
+    ],
+    queryFn: () =>
+      getAccountHistoryEmail({
+        accountNo,
+        startDate,
+        endDate,
+        transactionType,
+        orderByType,
+        email,
       }),
     ...queryOptions,
   });
@@ -190,6 +223,7 @@ function useAccount() {
     transferMutation,
     useGetBalance,
     useGetAccountHistory,
+    useGetAccountHistoryEmail,
     accountLimitMutation,
     dailyLimitMutation,
     perTransactionLimitMutation,

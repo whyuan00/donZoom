@@ -6,6 +6,7 @@ import TransferScreen from '@/views/screens/account/TransferScreen';
 import AccountHistoryScreen from '@/views/screens/account/AccountHistoryScreen';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
+import AccountHistoryEmailScreen from '@/views/screens/account/AccountHistoryEmailScreen';
 
 const TransferNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -16,6 +17,21 @@ const TransferNavigator = () => {
         component={AccountHistoryScreen}
         options={{
           title: '거래내역 조회',
+          headerStyle: {
+            backgroundColor: colors.YELLOW_100,
+          },
+          headerTintColor: colors.BLACK,
+          headerTitleStyle: {
+            fontFamily: fonts.MEDIUM,
+          },
+          headerShadowVisible: false,
+        }}
+      />
+      <Stack.Screen
+        name="아이 거래내역"
+        component={AccountHistoryEmailScreen}
+        options={{
+          title: '아이 거래내역 조회',
           headerStyle: {
             backgroundColor: colors.YELLOW_100,
           },

@@ -190,6 +190,35 @@ const getChildrenBalance = async (email: string): Promise<any> => {
   return response.data.rec.accountBalance;
 };
 
+// 이메일로 거래내역 조회
+const getAccountHistoryEmail = async ({
+  accountNo,
+  startDate,
+  endDate,
+  transactionType,
+  orderByType,
+  email,
+}: RequestAccountHistoryEmail): Promise<ResponseAccountHistory> => {
+  const {data} = await axiosInstance.get('/account/history-email', {
+    params: {
+      accountNo: accountNo,
+      startDate: startDate,
+      endDate: endDate,
+      transactionType: transactionType,
+      orderByType: orderByType,
+      email: email,
+    },
+  });
+  return data;
+};
+type RequestAccountHistoryEmail = {
+  accountNo: string;
+  startDate: string;
+  endDate: string;
+  transactionType: string;
+  orderByType: string;
+  email: string;
+};
 type RequestAccountHistory = {
   accountNo: string;
   startDate: string;
@@ -312,6 +341,7 @@ export {
   getAccountHolder,
   getChildrenAccount,
   getChildrenBalance,
+  getAccountHistoryEmail
 };
 
 export type {
