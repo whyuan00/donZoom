@@ -4,7 +4,7 @@ import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
 import InvestRealAssetTabNavigator from '@/navigation/InvestRealAssetTabNavigator';
 import {useFocusEffect} from '@react-navigation/native';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -29,7 +29,7 @@ export default function RealAssetDetailScreen({navigation}: any) {
   const {useGetStock} = useStock();
   const {data: stockData, isLoading, error} = useGetStock(5, 'day');
   // console.log(stockData[0])
-  const realAssetMoney = stockData?.price ?? 0;
+  const realAssetMoney = stockData?.stockHistories[0].open ?? 0;
   const realAssetDollar = realAssetMoney * 0.09;
 
   return (
@@ -61,21 +61,18 @@ const styles = StyleSheet.create({
   },
   tabNavigator: {
     flex: 1,
-    // borderWidth: 3,
     height: 1000,
     backgroundColor: colors.BLACK,
   },
   assetTitle: {
     fontSize: 23,
     fontFamily: fonts.BOLD,
-    fontWeight: '700',
     color: colors.BLACK,
   },
   moneyTitle: {
     fontSize: 25,
     color: colors.BLACK,
     fontFamily: fonts.BOLD,
-    fontWeight: '700',
   },
   dollarTitle: {
     marginLeft: 10,
@@ -83,6 +80,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.BLACK,
     fontFamily: fonts.LIGHT,
-    fontWeight: '300',
   },
 });

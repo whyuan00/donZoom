@@ -1,3 +1,4 @@
+import axios, {AxiosError} from 'axios';
 import axiosInstance from './axios';
 
 type ResponseStockList = {
@@ -44,16 +45,38 @@ type MyStock = {
   totalInvestedPrice: number;
   amount: number;
   averagePrice: number;
-}[];
+};
 
 type ResponseMyStock = {
-  myStocks: MyStock;
+  myStocks: MyStock[];
+};
+
+const getMyStockId = async (
+  userId: number,
+  stockId: number,
+): Promise<ResponseMyStock> => {
+  console.log('userId:', userId);
+  let response;
+  try {
+    response = await axiosInstance.get(`/stock/my/${userId}/${stockId}`);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError;
+      console.error('Error fetching stock:', axiosError.response?.data);
+      throw error;
+    } else {
+      console.error('Unexpected error:', error);
+      throw new Error('An unexpected error occurred');
+    }
+  }
+  // console.log('data:', response.data);
+  return response.data;
 };
 
 const getMyStock = async (userId: number): Promise<ResponseMyStock> => {
   console.log('userId:', userId);
   const {data} = await axiosInstance.get(`/stock/my/${userId}`);
-  console.log('data:', data);
+  // console.log('data:', data);
   return data;
 };
 
@@ -89,26 +112,61 @@ type RequestBuyStock = {
   currentValue: number;
 };
 
+type RequestSellStock = RequestBuyStock;
+
 const postBuyStock = async ({
   stockId,
   currentValue,
 }: RequestBuyStock): Promise<ResponseBuyStock> => {
   console.log('stockId:', stockId);
   console.log('currentValue:', currentValue);
-  const response = await axiosInstance.post(`/stock/${stockId}/buy`, null, {
-    params: {
-      amount: currentValue,
-    },
-  });
+  let response;
+  try {
+    response = await axiosInstance.post(`/stock/${stockId}/buy`, null, {
+      params: {
+        amount: currentValue,
+      },
+    });
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError;
+      console.error('Error fetching stock:', axiosError.response?.data);
+      throw error;
+    } else {
+      console.error('Unexpected error:', error);
+      throw new Error('An unexpected error occurred');
+    }
+  }
   console.log('buy stock response:', response.data);
   return response.data;
 };
 
 type ResponseSellStock = ResponseMyHistoryList;
 
-const postSellStock = async (stockId: string): Promise<ResponseSellStock> => {
-  const response = await axiosInstance.post(`/stock/${stockId}/sell`);
-  // console.log(response);
+const postSellStock = async ({
+  stockId,
+  currentValue,
+}: RequestSellStock): Promise<ResponseSellStock> => {
+  console.log('stockId:', stockId);
+  console.log('currentValue:', currentValue);
+  let response;
+  try {
+    response = await await axiosInstance.post(`/stock/${stockId}/sell`, null, {
+      params: {
+        amount: currentValue,
+      },
+    });
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError;
+      console.error('Error fetching stock:', axiosError.response?.data);
+      throw error;
+    } else {
+      console.error('Unexpected error:', error);
+      throw new Error('An unexpected error occurred');
+    }
+  }
+  console.log('buy stock response:', response.data);
   return response.data;
 };
 
@@ -194,6 +252,7 @@ export {
   getTodaysNews,
   getReports,
   getTodaysReports,
+  getMyStockId,
 };
 
 export type {

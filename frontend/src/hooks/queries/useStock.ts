@@ -1,6 +1,7 @@
 import {
   AllNewsResponse,
   AllReportResponse,
+  MyStock,
   ResponseContents,
   ResponseMyHistory,
   ResponseMyHistoryList,
@@ -12,6 +13,7 @@ import {
   getMyHistory,
   getMyHistoryList,
   getMyStock,
+  getMyStockId,
   getNews,
   getReports,
   getStock,
@@ -54,6 +56,18 @@ function useGetMyStock(
   return useQuery({
     queryKey: [queryKeys.STOCK, userId],
     queryFn: () => getMyStock(userId),
+    ...queryOptions,
+  });
+}
+
+function useGetMyStockId(
+  userId: number,
+  stockId: number,
+  queryOptions?: UseQueryCustomOptions<ResponseMyStock>,
+) {
+  return useQuery({
+    queryKey: [queryKeys.STOCK, userId, stockId],
+    queryFn: () => getMyStockId(userId, stockId),
     ...queryOptions,
   });
 }
@@ -152,6 +166,7 @@ function useStock() {
     useGetTodaysNews,
     useGetReports,
     useGetTodaysReports,
+    useGetMyStockId,
   };
 }
 

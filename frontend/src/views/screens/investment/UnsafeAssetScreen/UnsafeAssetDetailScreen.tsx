@@ -83,7 +83,7 @@ export default function UnsafeAssetDetailScreen({navigation}: any) {
       `Selected stock: ${selectedStock}, Index: ${getSelectedStockIndex()}`,
     );
     if (!isLoading && stockData) {
-      const stockprice = stockData.stockHistories[0]?.open;
+      const stockprice = stockData.stockHistories[0]?.close;
       setRealAssetMoney(stockprice);
       setRealAssetDollar(
         Number((stockprice ? stockprice / 1200 : 0).toFixed(2)),

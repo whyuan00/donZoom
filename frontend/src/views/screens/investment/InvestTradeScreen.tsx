@@ -15,6 +15,16 @@ import {fonts} from '@/constants/font';
 import useWebSocket from '@/hooks/useWebSocket';
 import useStock from '@/hooks/queries/useStock';
 import usePig from '@/hooks/queries/usePig';
+import {useSignupStore} from '@/stores/useAuthStore';
+
+type MyStock = {
+  stockWalletId: number;
+  stockId: number;
+  stockName: string;
+  totalInvestedPrice: number;
+  amount: number;
+  averagePrice: number;
+};
 
 const InvestTradeScreen = ({route, navigation}: any) => {
   const trade = route.params.trade || '';
@@ -28,9 +38,23 @@ const InvestTradeScreen = ({route, navigation}: any) => {
   const [modalVisible, setModalVisible] = useState(false);
   const {getMyCoinMutation} = usePig();
   const [myMoney, setMyMoney] = useState(0);
-
   const [stockMessage, setStockMessage] = useState<string>('');
-  const {useGetStock, buyStockMutation} = useStock();
+  const {buyStockMutation, useGetMyStockId, sellStockMutation} = useStock();
+  const {id} = useSignupStore();
+  const [myStocks, setMyStocks] = useState<MyStock[]>([]);
+
+  const {data} = useGetMyStockId(id, selectedStockIndex);
+
+  useEffect(() => {
+    if (data && Array.isArray(data.myStocks)) {
+      setMyStocks(data.myStocks);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    console.log('내 보유 주식:', myStocks);
+    setAbleSellNum(myStocks[0]?.amount);
+  }, [myStocks]);
 
   useEffect(() => {
     const myCoin = getMyCoinMutation?.data ? getMyCoinMutation?.data.coin : 0;
@@ -50,12 +74,13 @@ const InvestTradeScreen = ({route, navigation}: any) => {
   // console.log(useGetStock(5).data);
 
   const stockId = String(selectedStockIndex);
-  console.log('selectedStockIndex:', selectedStockIndex);
+  // console.log('selectedStockIndex:', selectedStockIndex);
 
-  const setModalState = () => {
+  const handelBuyStock = () => {
     if (currentValue <= ableBuyNum) {
       buyStockMutation.mutate({stockId, currentValue});
       setModalVisible(true);
+      getMyCoinMutation.refetch();
       setTimeout(() => {
         setModalVisible(false);
         navigation.goBack();
@@ -64,6 +89,20 @@ const InvestTradeScreen = ({route, navigation}: any) => {
       Alert.alert('잔액이 부족합니다.');
     }
   };
+
+  const handelSellStock = () => {
+    if (currentValue <= ableSellNum) {
+      sellStockMutation.mutate({stockId, currentValue});
+      setModalVisible(true);
+      setTimeout(() => {
+        setModalVisible(false);
+        navigation.goBack();
+      }, 1000);
+    } else {
+      Alert.alert('주식이 부족합니다.');
+    }
+  };
+
   const updateValue = (newValue: number) => {
     setCurrentValue(newValue);
   };
@@ -134,8 +173,7 @@ const InvestTradeScreen = ({route, navigation}: any) => {
                   fontFamily: fonts.LIGHT,
                   color: colors.BLACK,
                 }}>
-                핀매 가능 최대 {ableSellNum}주 | {currentValue * ableSellNum}{' '}
-                머니
+                핀매 가능 최대 {ableSellNum}주
               </Text>
             </View>
           )}
@@ -149,12 +187,11 @@ const InvestTradeScreen = ({route, navigation}: any) => {
                 ? [styles.buyButton, styles.buttonBox]
                 : [styles.sellButton, styles.buttonBox]
             }
-            onPress={setModalState}>
+            onPress={trade === 'buy' ? handelBuyStock : handelSellStock}>
             <Text
               style={{
                 color: colors.WHITE,
                 fontFamily: fonts.MEDIUM,
-                fontWeight: '500',
               }}>
               {trade === 'buy' ? '매수' : '매도'}
             </Text>
@@ -165,7 +202,6 @@ const InvestTradeScreen = ({route, navigation}: any) => {
               style={{
                 color: colors.WHITE,
                 fontFamily: fonts.MEDIUM,
-                fontWeight: '500',
               }}>
               {trade === 'buy' ? '매수' : '매도'}
             </Text>
@@ -178,7 +214,6 @@ const InvestTradeScreen = ({route, navigation}: any) => {
               <Text
                 style={{
                   fontFamily: fonts.MEDIUM,
-                  fontWeight: '500',
                   fontSize: 20,
                   color: colors.BLACK,
                 }}>

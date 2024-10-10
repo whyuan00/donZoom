@@ -77,6 +77,16 @@ const UnsafeAssetChartTabScreen = ({
       trade: 'buy',
       type: 'Unsafe',
       price: currentPrice,
+      selectedStockIndex: selectedStockIndex,
+    });
+  };
+
+  const handleSellStock = () => {
+    navigation.navigate('Trade', {
+      trade: 'sell',
+      type: 'Unsafe',
+      price: currentPrice,
+      selectedStockIndex: selectedStockIndex,
     });
   };
 
@@ -126,13 +136,7 @@ const UnsafeAssetChartTabScreen = ({
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.actionButton, styles.sellButton]}
-          onPress={() =>
-            navigation.navigate('Trade', {
-              trade: 'sell',
-              type: 'Unsafe',
-              selectedStockIndex: selectedStockIndex,
-            })
-          }>
+          onPress={handleSellStock}>
           <Text
             style={{
               color: colors.WHITE,

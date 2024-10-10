@@ -12,7 +12,7 @@ const AccountInitNavigator = () => {
       <Stack.Screen name="약관동의" component={TermsAgreementScreen} />
       <Stack.Screen name="비밀번호설정" component={NewPassWordScreen} />
       <Stack.Screen name="비밀번호확인" component={ConfirmPassWordScreen} />
-      <Stack.Screen name="계좌개설" component={AccountInitScreen} />
+      <Stack.Screen name="계좌시작하기" component={AccountInitScreen} />
     </Stack.Navigator>
   );
 };

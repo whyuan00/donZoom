@@ -22,7 +22,10 @@ const InvestRealAssetTabNavigator = ({selectedAssetType}: any) => {
       initialRouteName="차트"
       screenOptions={{
         tabBarActiveTintColor: colors.BLACK,
-        tabBarLabelStyle: {fontFamily: fonts.MEDIUM, fontSize: 16},
+        tabBarLabelStyle: {
+          fontFamily: fonts.BOLD,
+          fontSize: 16,
+        },
         tabBarIndicatorStyle: {backgroundColor: colors.YELLOW_100},
       }}
       style={styles.tabNavigator}>
