@@ -64,7 +64,7 @@ public class StockService {
     log.info("getAllStocks: {}", stockIds);
 
     List<StockDetailResponseDto> stockDtos = stockIds.stream().map(stockId -> {
-      StockHistory stockHistory = stockHistory1mRepository.findTop1ByStockIdOrderByCreatedAtDesc(
+      StockHistory1m stockHistory = stockHistory1mRepository.findTop1ByStockIdOrderByCreatedAtDesc(
           stockId);
       Stock stock = stockRepository.findById(stockId).orElseThrow(); // 필요시 예외 처리
 
@@ -206,7 +206,7 @@ public class StockService {
         .orElseThrow(() -> new NoSuchElementException("Stock not found"));
 
     // 주식 현재가 들고오기
-    StockHistory recentPrice = stockHistory1mRepository.findTop1ByStockIdOrderByCreatedAtDesc(
+    StockHistory1m recentPrice = stockHistory1mRepository.findTop1ByStockIdOrderByCreatedAtDesc(
         stockId);
 
     // 지갑 내 유동자산 비교
