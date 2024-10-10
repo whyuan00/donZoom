@@ -209,4 +209,16 @@ public class UserController {
       return new ResponseEntity<>("이미지 업로드 중 오류 발생", HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  @GetMapping("/exist-parent")
+  public ResponseEntity<?> getParent() {
+    Object response = userService.getParent();
+    if (response instanceof ParentInfoResponseDto) {
+      return ResponseEntity.ok(response);
+    } else if (response instanceof Boolean && !(Boolean) response) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Boolean.FALSE);
+    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("알 수 없는 오류가 발생했습니다.");
+  }
+
 }
