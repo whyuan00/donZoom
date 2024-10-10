@@ -16,6 +16,7 @@ import com.example.donzoom.dto.account.response.BankUserResponseDto;
 import com.example.donzoom.dto.account.response.CardListRecDto;
 import com.example.donzoom.dto.account.response.CardListResponseDto;
 import com.example.donzoom.dto.account.response.CreateCardResponseDto;
+import com.example.donzoom.dto.account.response.GetAccountNumberByEmailResponseDto;
 import com.example.donzoom.dto.account.response.GetUserByAccountNoResponseDto;
 import com.example.donzoom.dto.account.response.TransactionResponseDto;
 import com.example.donzoom.dto.account.response.TransferResponseDto;
@@ -179,6 +180,21 @@ public class AccountService {
 
     return GetUserByAccountNoResponseDto.builder().name(selectedUser.getName())
         .nickName(selectedUser.getNickname()).accountNo(selectedUser.getAccountNo()).build();
+  }
+  
+  //이메일로 계좌번호 조회
+  public GetAccountNumberByEmailResponseDto getAccountNumberByEmail(String email) {
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+
+    // 계좌번호가 있는지 확인하고 반환
+    if (user.getAccountNo() == null || user.getAccountNo().isEmpty()) {
+      throw new RuntimeException("No account number found for user with email: " + email);
+    }
+
+    return GetAccountNumberByEmailResponseDto.builder()
+        .accountNumber(user.getAccountNo())
+        .build();
   }
 
   public void setAutoTransfer(AutoTransferRequestDto autoTransferRequestDto) {
