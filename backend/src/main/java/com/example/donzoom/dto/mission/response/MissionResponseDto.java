@@ -2,6 +2,8 @@ package com.example.donzoom.dto.mission.response;
 
 import com.example.donzoom.constant.MissionStatus;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,6 +15,6 @@ public class MissionResponseDto {
   private String contents;
   private Long reward;
   private MissionStatus status;
-  private LocalDate dueDate;
+  private LocalDateTime dueDate;
 
 }

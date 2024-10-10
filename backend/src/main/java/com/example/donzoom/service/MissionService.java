@@ -25,7 +25,6 @@ public class MissionService {
   private static final Logger log = LoggerFactory.getLogger(MissionService.class);
   private final MissionRepository missionRepository;
   private final UserRepository userRepository;
-  private final UserService userService;
 
 
   public List<MissionResponseDto> getUserMissions(Long userId, MissionStatus status) {
@@ -45,7 +44,7 @@ public class MissionService {
     List<MissionResponseDto> list = missionRepository.findByUserIdAndStatus(userId, status).stream()
         .map(mission -> MissionResponseDto.builder().missionId(mission.getId())
             .contents(mission.getContents()).reward(mission.getReward()).status(mission.getStatus())
-            .dueDate(mission.getDueDate().toLocalDate()).build()).toList();
+            .dueDate(mission.getDueDate()).build()).toList();
 
     return list;
   }
@@ -76,7 +75,7 @@ public class MissionService {
     return mission;
   }
 
-  public Mission updateMission(Long missionId, MissionUpdateDto missionUpdateDto) {
+  public MissionResponseDto updateMission(Long missionId, MissionUpdateDto missionUpdateDto) {
 
     // 기존 미션 가져오기
     Mission mission = missionRepository.findById(missionId)
@@ -99,7 +98,13 @@ public class MissionService {
             log.error(e.getMessage());
         }
     }
-    return mission;
+    return MissionResponseDto.builder()
+            .missionId(mission.getId())
+            .contents(missionUpdateDto.getContents())
+            .dueDate(mission.getDueDate())
+            .reward(missionUpdateDto.getReward())
+            .status(mission.getStatus())
+            .build();
   }
 
   public Long deleteMission(Long missionId) {

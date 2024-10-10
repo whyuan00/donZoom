@@ -3,9 +3,13 @@ package com.example.donzoom.controller;
 import com.example.donzoom.constant.MissionStatus;
 import com.example.donzoom.dto.mission.request.MissionCreateDto;
 import com.example.donzoom.dto.mission.request.MissionUpdateDto;
+import com.example.donzoom.dto.mission.request.MissionUpdateRequestDto;
 import com.example.donzoom.dto.mission.response.MissionResponseDto;
 import com.example.donzoom.entity.Mission;
 import com.example.donzoom.service.MissionService;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -51,10 +55,19 @@ public class MissionController {
 
   @PatchMapping("/{missionId}")
   public ResponseEntity<?> updateMission(@PathVariable Long missionId,
-      @RequestBody MissionUpdateDto missionUpdateDto) {
+      @RequestBody MissionUpdateRequestDto missionUpdateRequestDto) {
     // 미션 수정
-    Mission mission = missionService.updateMission(missionId, missionUpdateDto);
-    return new ResponseEntity<>(mission, HttpStatus.OK);
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    String dateString = missionUpdateRequestDto.getDueDate()+" 23:59";
+    LocalDateTime dueDate = LocalDateTime.parse(dateString, formatter);
+    MissionUpdateDto missionUpdateDto = MissionUpdateDto.builder()
+            .contents(missionUpdateRequestDto.getContents())
+            .reward(missionUpdateRequestDto.getReward())
+            .status(missionUpdateRequestDto.getStatus())
+            .dueDate(dueDate)
+            .build();
+    MissionResponseDto missionResponseDto = missionService.updateMission(missionId, missionUpdateDto);
+    return new ResponseEntity<>(missionResponseDto, HttpStatus.OK);
   }
 
   @DeleteMapping("/{missionId}")
