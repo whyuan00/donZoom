@@ -1,6 +1,8 @@
 package com.example.donzoom.controller;
 
 import com.example.donzoom.dto.pig.response.PigResponseDto;
+import com.example.donzoom.dto.ticket.response.BuyTicketResponse;
+import com.example.donzoom.dto.ticket.response.BuyTicketResponseDto;
 import com.example.donzoom.repository.PigRepository;
 import com.example.donzoom.service.PigService;
 import com.example.donzoom.service.WalletService;
@@ -58,12 +60,12 @@ public class PigController {
   }
 
   @PostMapping("/ticket")
-  public ResponseEntity<Void> createReport(@RequestParam String amount) {
+  public ResponseEntity<?> createReport(@RequestParam String amount) {
     try {
-      walletService.buyTicket(amount);
-      return new ResponseEntity<>(HttpStatus.CREATED); // 성공 상태 코드
+      BuyTicketResponseDto buyTicketResponseDto = walletService.buyTicket(amount);
+      return new ResponseEntity<>(buyTicketResponseDto, HttpStatus.CREATED); // 성공 상태 코드
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error(e.getMessage());
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // 오류 상태 코드
     }
   }

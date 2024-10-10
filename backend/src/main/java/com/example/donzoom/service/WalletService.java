@@ -1,5 +1,6 @@
 package com.example.donzoom.service;
 
+import com.example.donzoom.dto.ticket.response.BuyTicketResponseDto;
 import com.example.donzoom.entity.User;
 import com.example.donzoom.entity.Wallet;
 import com.example.donzoom.repository.UserRepository;
@@ -45,7 +46,7 @@ public class WalletService {
   }
 
   //가상머니로 돼지뽑기권 구매하기
-  public void buyTicket(String count) {
+  public BuyTicketResponseDto buyTicket(String count) {
 
     int amount = Integer.parseInt(count);
     int totalPrice = amount * ticketPrice;
@@ -70,6 +71,7 @@ public class WalletService {
     // 변경된 지갑 정보를 저장
     walletRepository.save(wallet);
 
+    return BuyTicketResponseDto.builder().lastTicket(wallet.getTicket()).lastCoin(wallet.getCoin()).build();
   }
 
 
