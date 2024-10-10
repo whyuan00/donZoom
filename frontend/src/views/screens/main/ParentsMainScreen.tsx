@@ -8,6 +8,7 @@ import {
   View,
   Animated,
   Modal,
+  RefreshControl,
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/Octicons';
@@ -15,7 +16,7 @@ import SettingIcon from 'react-native-vector-icons/Ionicons';
 import NextIcon from 'react-native-vector-icons/MaterialIcons';
 
 import Profile from '@/views/components/ParentsProfile';
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import useAccountBalance from '@/hooks/useAccountInfo';
 
@@ -47,6 +48,14 @@ function ParentsMainScreen() {
   const {account, balance, refetch} = useAccountBalance();
   const [isMyScreen, setIsMyScreen] = useState(true);
   const {getAccount} = useAccount();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
 
   // 아이 정보 가져오기
   useEffect(() => {
@@ -116,7 +125,10 @@ function ParentsMainScreen() {
   };
 
   return (
-    <ScrollView>
+    <ScrollView
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
       <View style={styles.container}>
         <View style={styles.profiles}>
           <TouchableOpacity
