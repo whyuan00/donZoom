@@ -1,94 +1,56 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Button,
   Pressable,
   RefreshControl,
 } from 'react-native';
-import { colors } from '@/constants/colors';
-import { fonts } from '@/constants/font';
+import {colors} from '@/constants/colors';
+import {fonts} from '@/constants/font';
 import Icon from 'react-native-vector-icons/Octicons';
 import Icon2 from 'react-native-vector-icons/AntDesign';
 import useStock from '@/hooks/queries/useStock';
-import { useSignupStore } from '@/stores/useAuthStore';
+import {useSignupStore} from '@/stores/useAuthStore';
 import usePig from '@/hooks/queries/usePig';
-import axiosInstance from '@/api/axios';
+import {MyStock, ResponseMyStock} from '@/api/stock';
 
-interface SavingsDetail {
-  currentPaidAmount: number;
-  monthlyDeposit: number;
-  expectedMaturityAmount: number;
-  expectedMaturityProfit: number;
-  nextPaymentDue: string;
-  maturityDate: string;
-}
-
-export default function InvestmentHomeScreen({ navigation }: any) {
+export default function InvestmentHomeScreen({navigation}: any) {
   const [refreshing, setRefreshing] = useState(false);
-  const [savingsExists, setSavingsExists] = useState(false);
-  const [savingsDetail, setSavingsDetail] = useState<SavingsDetail | null>(null);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    fetchSavingsStatus(); // 새로고침 시 API 호출
     setTimeout(() => {
       setRefreshing(false);
     }, 2000);
   }, []);
-
-  const fetchSavingsStatus = async () => {
-    try {
-      const response = await axiosInstance.get('/savings');
-      if (response.status === 200 && response.data.exists) {
-        setSavingsExists(true);
-        fetchSavingsDetail(); // 적금이 존재하면 상세 정보 조회
-      } else {
-        setSavingsExists(false);
-        setSavingsDetail(null); // 적금이 없을 경우 초기화
-      }
-    } catch (error) {
-      console.error('Error fetching savings status:', error);
-    }
-  };
-
-  const fetchSavingsDetail = async () => {
-    try {
-      const response = await axiosInstance.get('/savings/detail');
-      if (response.status === 200) {
-        setSavingsDetail(response.data);
-      }
-    } catch (error) {
-      console.error('Error fetching savings detail:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchSavingsStatus();
-  }, []);
-
-  const { useGetMyStock } = useStock();
-  const { id } = useSignupStore();
-  const { getMyCoinMutation } = usePig();
+  const {useGetMyStock} = useStock();
+  const {id} = useSignupStore();
+  const {getMyCoinMutation} = usePig();
   const money = getMyCoinMutation.data?.coin;
 
-  const myStockData = useGetMyStock(id).data?.myStocks || []; // 기본값으로 빈 배열 할당
-  const stockData = myStockData.map(
-    (item: {
-      stockWalletId: number;
-      stockId: number;
-      stockName: string;
-      totalInvestedPrice: number;
-      amount: number;
-      averagePrice: number;
-    }) => ({
-      name: item.stockName,
-      currentPrice: item.averagePrice,
-      change: '10%',
-    }),
-  );
+  // console.log(useGetMyStock(id).data);
+
+  const myStockData = useGetMyStock(id).data?.myStocks;
+  const stockData = Array.isArray(myStockData)
+    ? myStockData.map(
+        (item: {
+          stockWalletId: number;
+          stockId: number;
+          stockName: string;
+          totalInvestedPrice: number;
+          amount: number;
+          averagePrice: number;
+        }) => ({
+          name: item.stockName,
+          currentPrice: item.averagePrice,
+          change: '10%',
+        }),
+      )
+    : [];
 
   return (
     <ScrollView
@@ -127,7 +89,7 @@ export default function InvestmentHomeScreen({ navigation }: any) {
             <Pressable
               style={styles.safeAssetHeaderContainer}
               onPress={() =>
-                navigation.navigate('Detail', { selectedAsset: '안전자산' })
+                navigation.navigate('Detail', {selectedAsset: '안전자산'})
               }>
               <Text style={styles.safeAssetHeaderText}>
                 안전 자산 <Icon2 name="right" size={15} color="black" />
@@ -140,219 +102,215 @@ export default function InvestmentHomeScreen({ navigation }: any) {
             <View style={styles.titleCell}>
               <Text style={styles.titleText}>적금 현황</Text>
             </View>
-            {savingsExists && savingsDetail ? (
-              <>
-                <View style={styles.row}>
-                  <View style={[styles.cell, styles.borderTop, styles.borderBottom]}>
-                    <Text style={styles.text}>납부 현황</Text>
-                  </View>
-                  <View
-                    style={[
-                      styles.cell,
-                      styles.borderTop,
-                      styles.borderRight,
-                      styles.borderBottom,
-                    ]}>
-                    <Text style={styles.text}>{savingsDetail.currentPaidAmount.toLocaleString()}머니</Text>
-                  </View>
-                  <View style={[styles.cell, styles.borderTop, styles.borderBottom]}>
-                    <Text style={styles.smallText}>만기 환급액</Text>
-                    <Text style={styles.smallText}>/만기 예상 수익</Text>
-                  </View>
-                  <View style={[styles.cell, styles.borderTop, styles.borderBottom]}>
-                    <Text style={styles.smallText}>{savingsDetail.expectedMaturityAmount.toLocaleString()}머니</Text>
-                    <Text style={styles.smallText}>/{savingsDetail.expectedMaturityProfit.toLocaleString()}머니</Text>
-                  </View>
-                </View>
-
-                <View style={styles.row}>
-                  <View style={[styles.cell, styles.bottomLeftRadiusCell]}>
-                    <Text style={styles.text}>월 납금액</Text>
-                  </View>
-                  <View style={[styles.cell, styles.borderRight]}>
-                    <Text style={styles.text}>{savingsDetail.monthlyDeposit.toLocaleString()}원</Text>
-                  </View>
-                  <View style={styles.cell}>
-                    <Text style={styles.smallText}>다음 납기일</Text>
-                    <Text style={styles.smallText}>/만기일</Text>
-                  </View>
-                  <View style={[styles.cell, styles.bottomRightRadiusCell]}>
-                    <Text style={styles.smallText}>{savingsDetail.nextPaymentDue}</Text>
-                    <Text style={styles.smallText}>/{savingsDetail.maturityDate}</Text>
-                  </View>
-                </View>
-              </>
-            ) : (
-              <View style={styles.noSavingsContainer}>
-                <Text style={[styles.text, { color: colors.WHITE }]}>가입된 적금이 없습니다.</Text>
+            <View style={styles.row}>
+              <View
+                style={[styles.cell, styles.borderTop, styles.borderBottom]}>
+                <Text style={styles.text}>납부 현황</Text>
               </View>
-            )}
-          </View>
-        </View>
-
-        {/* 위험 자산 버튼 */}
-        <TouchableOpacity style={{ marginTop: 20 }}>
-          <Pressable
-            style={styles.safeAssetHeaderContainer}
-            onPress={() =>
-              navigation.navigate('Detail', { selectedAsset: '실물자산' })
-            }>
-            <Text style={styles.safeAssetHeaderText}>
-              실물 자산 <Icon2 name="right" size={15} color="black" />
-            </Text>
-          </Pressable>
-        </TouchableOpacity>
-
-        {/* 금 수익 현황 */}
-        <View style={styles.statusContainer}>
-          <View style={styles.titleCell}>
-            <Text style={styles.titleText}>금 수익 현황</Text>
-          </View>
-          <View style={styles.row}>
-            <View
-              style={[styles.cell, styles.borderTop, styles.borderBottom]}>
-              <Text style={styles.text}>원화매입금액</Text>
-            </View>
-            <View
-              style={[
-                styles.cell,
-                styles.borderTop,
-                styles.borderBottom,
-                styles.borderRight,
-              ]}>
-              <Text style={styles.text}>10,000</Text>
-            </View>
-
-            <View
-              style={[styles.cell, styles.borderTop, styles.borderBottom]}>
-              <Text style={styles.text}>수익률(%)</Text>
-            </View>
-            <View
-              style={[styles.cell, styles.borderTop, styles.borderBottom]}>
-              <Text style={[styles.text, styles.redText]}>1%</Text>
-            </View>
-          </View>
-        </View>
-        
-        {/* 위험 자산 버튼 */}
-        <TouchableOpacity style={{ marginTop: 20 }}>
-          <Pressable
-            style={styles.safeAssetHeaderContainer}
-            onPress={() =>
-              navigation.navigate('Detail', { selectedAsset: '위험자산' })
-            }>
-            <Text style={styles.safeAssetHeaderText}>
-              위험 자산 <Icon2 name="right" size={15} color="black" />
-            </Text>
-          </Pressable>
-        </TouchableOpacity>
-
-        {/* 주식 수익 현황 */}
-        <View style={styles.statusContainer}>
-          <View style={styles.titleCell}>
-            <Text style={styles.titleText}>주식 수익 현황</Text>
-          </View>
-          <View style={styles.row}>
-            <View
-              style={[styles.cell, styles.borderTop, styles.borderBottom]}>
-              <Text style={styles.text}>원화매입금액</Text>
-            </View>
-            <View
-              style={[
-                styles.cell,
-                styles.borderTop,
-                styles.borderBottom,
-                styles.borderRight,
-              ]}>
-              <Text style={styles.text}>10,000</Text>
-            </View>
-            <View
-              style={[styles.cell, styles.borderTop, styles.borderBottom]}>
-              <Text style={styles.text}>원화평가손익</Text>
-            </View>
-            <View
-              style={[styles.cell, styles.borderTop, styles.borderBottom]}>
-              <Text style={[styles.text, styles.redText]}>1,500</Text>
-            </View>
-          </View>
-          <View style={styles.row}>
-            <View style={[styles.cell, styles.bottomLeftRadiusCell]}>
-              <Text style={styles.text}>원화평가금액</Text>
-            </View>
-            <View style={[styles.cell, styles.borderRight]}>
-              <Text style={styles.text}>3,000</Text>
-            </View>
-            <View style={styles.cell}>
-              <Text style={styles.text}>수익률(%)</Text>
-            </View>
-            <View style={[styles.cell, styles.bottomRightRadiusCell]}>
-              <Text style={[styles.text, styles.redText]}>3,000</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* 보유 주식 현황 */}
-        <View style={styles.statusContainer}>
-          <View style={styles.titleCell}>
-            <Text style={styles.titleText}>보유 주식 현황</Text>
-          </View>
-          <View style={styles.row}>
-            <View
-              style={[
-                styles.cell,
-                styles.borderTop,
-                styles.borderRight,
-                styles.yellow,
-              ]}>
-              <Text style={styles.unSafeTitleText}>종목명</Text>
-            </View>
-            <View
-              style={[
-                styles.cell,
-                styles.borderTop,
-                styles.borderRight,
-                styles.yellow,
-              ]}>
-              <Text style={styles.unSafeTitleText}>매입단가</Text>
-            </View>
-            <View style={[styles.cell, styles.borderTop, styles.yellow]}>
-              <Text style={styles.unSafeTitleText}>수익률</Text>
-            </View>
-          </View>
-
-          {/* 보유 주식 데이터 목록 */}
-          {stockData.map((stock, index) => (
-            <View key={index} style={styles.row}>
               <View
                 style={[
                   styles.cell,
                   styles.borderTop,
                   styles.borderRight,
-                  index === stockData.length - 1
-                    ? styles.bottomLeftRadiusCell
-                    : null, // 마지막 행의 왼쪽 셀
+                  styles.borderBottom,
                 ]}>
-                <Text style={styles.unSafeText}>{stock.name}</Text>
+                <Text style={styles.text}>10,000</Text>
               </View>
               <View
-                style={[styles.cell, styles.borderTop, styles.borderRight]}>
-                <Text style={styles.unSafeText}>{stock.currentPrice}</Text>
+                style={[styles.cell, styles.borderTop, styles.borderBottom]}>
+                <Text style={styles.smallText}>만기 환급액</Text>
+                <Text style={styles.smallText}>/만기 예상수익</Text>
               </View>
-              {/* 마지막 행 처리 */}
+              <View
+                style={[styles.cell, styles.borderTop, styles.borderBottom]}>
+                <Text style={styles.smallText}>20,000</Text>
+                <Text style={styles.smallText}>/1,500</Text>
+              </View>
+            </View>
+
+            <View style={styles.row}>
+              <View style={[styles.cell, styles.bottomLeftRadiusCell]}>
+                <Text style={styles.text}>월 납금액</Text>
+              </View>
+              <View style={[styles.cell, styles.borderRight]}>
+                <Text style={styles.text}>5,000</Text>
+              </View>
+              <View style={styles.cell}>
+                <Text style={styles.smallText}>다음 납기일</Text>
+                <Text style={styles.smallText}>/만기일</Text>
+              </View>
+              <View style={[styles.cell, styles.bottomRightRadiusCell]}>
+                <Text style={styles.smallText}>D-15</Text>
+                <Text style={styles.smallText}>/24.12.25</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* 위험 자산 버튼 */}
+          <TouchableOpacity style={{marginTop: 20}}>
+            <Pressable
+              style={styles.safeAssetHeaderContainer}
+              onPress={() =>
+                navigation.navigate('Detail', {selectedAsset: '실물자산'})
+              }>
+              <Text style={styles.safeAssetHeaderText}>
+                실물 자산 <Icon2 name="right" size={15} color="black" />
+              </Text>
+            </Pressable>
+          </TouchableOpacity>
+
+          {/* 금 수익 현황 */}
+          <View style={styles.statusContainer}>
+            <View style={styles.titleCell}>
+              <Text style={styles.titleText}>금 수익 현황</Text>
+            </View>
+            <View style={styles.row}>
+              <View
+                style={[styles.cell, styles.borderTop, styles.borderBottom]}>
+                <Text style={styles.text}>원화매입금액</Text>
+              </View>
               <View
                 style={[
                   styles.cell,
                   styles.borderTop,
-                  index === stockData.length - 1
-                    ? styles.bottomRightRadiusCell
-                    : null,
+                  styles.borderBottom,
+                  styles.borderRight,
                 ]}>
-                <Text style={[styles.unSafeText, styles.redText]}>
-                  {stock.change}
-                </Text>
+                <Text style={styles.text}>10,000</Text>
+              </View>
+
+              <View
+                style={[styles.cell, styles.borderTop, styles.borderBottom]}>
+                <Text style={styles.text}>수익률(%)</Text>
+              </View>
+              <View
+                style={[styles.cell, styles.borderTop, styles.borderBottom]}>
+                <Text style={[styles.text, styles.redText]}>1%</Text>
               </View>
             </View>
-          ))}
+          </View>
+        </View>
+        <View>
+          {/* 위험 자산 버튼 */}
+          <TouchableOpacity style={{marginTop: 20}}>
+            <Pressable
+              style={styles.safeAssetHeaderContainer}
+              onPress={() =>
+                navigation.navigate('Detail', {selectedAsset: '위험자산'})
+              }>
+              <Text style={styles.safeAssetHeaderText}>
+                위험 자산 <Icon2 name="right" size={15} color="black" />
+              </Text>
+            </Pressable>
+          </TouchableOpacity>
+
+          {/* 주식 수익 현황 */}
+          <View style={styles.statusContainer}>
+            <View style={styles.titleCell}>
+              <Text style={styles.titleText}>주식 수익 현황</Text>
+            </View>
+            <View style={styles.row}>
+              <View
+                style={[styles.cell, styles.borderTop, styles.borderBottom]}>
+                <Text style={styles.text}>원화매입금액</Text>
+              </View>
+              <View
+                style={[
+                  styles.cell,
+                  styles.borderTop,
+                  styles.borderBottom,
+                  styles.borderRight,
+                ]}>
+                <Text style={styles.text}>10,000</Text>
+              </View>
+              <View
+                style={[styles.cell, styles.borderTop, styles.borderBottom]}>
+                <Text style={styles.text}>원화평가손익</Text>
+              </View>
+              <View
+                style={[styles.cell, styles.borderTop, styles.borderBottom]}>
+                <Text style={[styles.text, styles.redText]}>1,500</Text>
+              </View>
+            </View>
+            <View style={styles.row}>
+              <View style={[styles.cell, styles.bottomLeftRadiusCell]}>
+                <Text style={styles.text}>원화평가금액</Text>
+              </View>
+              <View style={[styles.cell, styles.borderRight]}>
+                <Text style={styles.text}>3,000</Text>
+              </View>
+              <View style={styles.cell}>
+                <Text style={styles.text}>수익률(%)</Text>
+              </View>
+              <View style={[styles.cell, styles.bottomRightRadiusCell]}>
+                <Text style={[styles.text, styles.redText]}>3,000</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* 보유 주식 현황 */}
+          <View style={styles.statusContainer}>
+            <View style={styles.titleCell}>
+              <Text style={styles.titleText}>보유 주식 현황</Text>
+            </View>
+            <View style={styles.row}>
+              <View
+                style={[
+                  styles.cell,
+                  styles.borderTop,
+                  styles.borderRight,
+                  styles.yellow,
+                ]}>
+                <Text style={styles.unSafeTitleText}>종목명</Text>
+              </View>
+              <View
+                style={[
+                  styles.cell,
+                  styles.borderTop,
+                  styles.borderRight,
+                  styles.yellow,
+                ]}>
+                <Text style={styles.unSafeTitleText}>매입단가</Text>
+              </View>
+              <View style={[styles.cell, styles.borderTop, styles.yellow]}>
+                <Text style={styles.unSafeTitleText}>수익률</Text>
+              </View>
+            </View>
+
+            {/* 보유 주식 데이터 목록 */}
+            {stockData.map((stock, index) => (
+              <View key={index} style={styles.row}>
+                <View
+                  style={[
+                    styles.cell,
+                    styles.borderTop,
+                    styles.borderRight,
+                    index === stockData.length - 1
+                      ? styles.bottomLeftRadiusCell
+                      : null, // 마지막 행의 왼쪽 셀
+                  ]}>
+                  <Text style={styles.unSafeText}>{stock.name}</Text>
+                </View>
+                <View
+                  style={[styles.cell, styles.borderTop, styles.borderRight]}>
+                  <Text style={styles.unSafeText}>{stock.currentPrice}</Text>
+                </View>
+                {/* 마지막 행 처리 */}
+                <View
+                  style={[
+                    styles.cell,
+                    styles.borderTop,
+                    index === stockData.length - 1
+                      ? styles.bottomRightRadiusCell
+                      : null,
+                  ]}>
+                  <Text style={[styles.unSafeText, styles.redText]}>
+                    {stock.change}
+                  </Text>
+                </View>
+              </View>
+            ))}
+          </View>
         </View>
       </View>
     </ScrollView>
@@ -535,10 +493,5 @@ const styles = StyleSheet.create({
   },
   redText: {
     color: colors.RED_100,
-  },
-  noSavingsContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 50,
   },
 });
