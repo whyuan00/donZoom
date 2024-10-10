@@ -20,10 +20,10 @@ export default function TransferScreen3({navigation}: any) {
   const {name} = useSignupStore();
   const transfer: RequestTransfer = {
     depositAccountNo: accountNo,
-    depositTransactionSummary: name,
+    depositTransactionSummary: holderName,
     transactionBalance: amount,
     withdrawalAccountNo: account,
-    withdrawalTransactionSummary: holderName,
+    withdrawalTransactionSummary: name,
   };
 
   const onPressNext = () => {

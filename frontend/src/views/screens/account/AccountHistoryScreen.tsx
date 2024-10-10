@@ -16,9 +16,9 @@ function AccountHistoryScreen({navigation}: any) {
   const {data} = useGetAccountHistory(
     account,
     '20241001',
-    '20241004',
+    '20241010',
     'A',
-    'ASC',
+    'DESC',
   );
 
   const transactionList = data?.rec.list;
@@ -47,6 +47,7 @@ function AccountHistoryScreen({navigation}: any) {
   const transformTransactionData = (
     rawData: RawTransaction[] | undefined,
   ): TransformedTransaction[] => {
+    console.log(rawData);
     if (!rawData) return [];
 
     return rawData.map((transaction: RawTransaction) => {
@@ -86,7 +87,7 @@ function AccountHistoryScreen({navigation}: any) {
 
   return (
     <View style={styles.container}>
-      {isParent ? (
+      {true ? (
         <View style={styles.accountInfoContainer}>
           <View style={styles.parentAccountInfoContainer}>
             <View style={styles.parentInfoTop}>

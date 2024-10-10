@@ -64,7 +64,7 @@ export default function TransferScreen({route, navigation}: any) {
   const accountCheck = useGetAccountHolder(accountNo).isSuccess;
 
   const onPressNext = () => {
-    if (balance < amount) {
+    if (Number(balance) < Number(amount)) {
       console.log(balance);
       console.log(amount);
       Alert.alert('잔액이 부족합니다.');
