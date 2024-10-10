@@ -63,7 +63,7 @@ public class AccountController {
     }
   }
 
-  //거래내역조회
+  //계좌정보로 유저 조회
   @GetMapping(value = "/holder")
   public ResponseEntity<GetUserByAccountNoResponseDto> getUserByAccountNumber(
       @RequestParam("accountNo") String accountNo) {
