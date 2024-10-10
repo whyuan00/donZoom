@@ -1,6 +1,7 @@
 package com.example.donzoom.controller;
 
 import com.example.donzoom.dto.savings.response.SavingsDataResponseDto;
+import com.example.donzoom.dto.savings.response.SavingsDetailResponseDto;
 import com.example.donzoom.dto.savings.response.SavingsResponseDto;
 import com.example.donzoom.service.SavingsService;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,12 @@ public class SavingsController {
     SavingsResponseDto responseDto = savingsService.terminateSavingsAccount();
     return ResponseEntity.ok(responseDto);
   }
+  @GetMapping("/detail")
+  public ResponseEntity<SavingsDetailResponseDto> getSavingsDetail() {
+    SavingsDetailResponseDto responseDto = savingsService.getSavingsDetail();
+    return ResponseEntity.ok(responseDto);
+  }
+
 //
 //  @GetMapping("/can-terminate")
 //  public ResponseEntity<Boolean> canTerminate() {

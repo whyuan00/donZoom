@@ -1,6 +1,7 @@
 package com.example.donzoom.service;
 
 import com.example.donzoom.dto.savings.response.SavingsDataResponseDto;
+import com.example.donzoom.dto.savings.response.SavingsDetailResponseDto;
 import com.example.donzoom.dto.savings.response.SavingsResponseDto;
 import com.example.donzoom.entity.SavingAccount;
 import com.example.donzoom.entity.User;
@@ -8,6 +9,8 @@ import com.example.donzoom.entity.Wallet;
 import com.example.donzoom.repository.SavingAccountRepository;
 import com.example.donzoom.repository.UserRepository;
 import com.example.donzoom.util.SecurityUtil;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -179,4 +182,46 @@ public class SavingsService {
       }
     }
   }
+
+  @Transactional(readOnly = true)
+  public SavingsDetailResponseDto getSavingsDetail() {
+    String username = SecurityUtil.getAuthenticatedUsername();
+    User user = userRepository.findByEmail(username)
+        .orElseThrow(() -> new RuntimeException("User not found"));
+    SavingAccount account = savingAccountRepository.findByUser(user)
+        .orElseThrow(() -> new RuntimeException("No savings account found"));
+
+    // 현재 날짜와 만기일 계산
+    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime nextPaymentDate = account.getStartDate().plusMonths((long) Math.ceil(account.getTotalDepositedAmount() / account.getMonthlyDeposit()) + 1);
+    long daysUntilNextPayment = ChronoUnit.DAYS.between(now, nextPaymentDate);
+    long daysUntilMaturity = ChronoUnit.DAYS.between(now, account.getMaturityDate());
+
+    // 만기 예상 수익 및 환급액 계산
+    double totalExpectedDeposit = account.getMonthlyDeposit() * 3;
+    double expectedProfit = totalExpectedDeposit * (DEFAULT_INTEREST_RATE / 100);
+    double expectedMaturityAmount = totalExpectedDeposit + expectedProfit;
+
+    // 소수점 첫째 자리까지 반올림
+    double roundedCurrentPaidAmount = roundToFirstDecimalPlace(account.getTotalDepositedAmount());
+    double roundedMonthlyDeposit = roundToFirstDecimalPlace(account.getMonthlyDeposit());
+    double roundedExpectedProfit = roundToFirstDecimalPlace(expectedProfit);
+    double roundedExpectedMaturityAmount = roundToFirstDecimalPlace(expectedMaturityAmount);
+
+    return SavingsDetailResponseDto.builder()
+        .currentPaidAmount(roundedCurrentPaidAmount)
+        .monthlyDeposit(roundedMonthlyDeposit)
+        .expectedMaturityAmount(roundedExpectedMaturityAmount)
+        .expectedMaturityProfit(roundedExpectedProfit)
+        .nextPaymentDue(daysUntilNextPayment > 0 ? "D-" + daysUntilNextPayment : "D-Day")
+        .maturityDate(account.getMaturityDate().toLocalDate().toString())
+        .build();
+  }
+
+  // 소수점 첫째 자리까지 반올림하는 메서드
+  private double roundToFirstDecimalPlace(double value) {
+    BigDecimal bd = new BigDecimal(value).setScale(1, RoundingMode.CEILING);
+    return bd.doubleValue();
+  }
+
 }
