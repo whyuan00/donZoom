@@ -34,7 +34,8 @@ const submitQuizAnswer = async ({
   answer,
 }: QuizAnswer): Promise<void> => {
   // console.log(quizId, answer);
-  await axiosInstance.post(`/quiz/${quizId}`, {answer});
+  const response = await axiosInstance.post(`/quiz/${quizId}`, {answer});
+  return response.data;
 };
 
 const getSolvedQuiz = async (): Promise<string[]> => {

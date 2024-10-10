@@ -138,8 +138,7 @@ function DrawMachineScreen({}) {
       const {data} = body;
       const coin = data ? data.coin : 0;
       setMyCoin(coin);
-      setMaximumTicketValue(Math.floor(myCoin / 5));
-      console.log('maximumTicketValue: ', maximumTicketValue);
+      setMaximumTicketValue(Math.floor(coin / 1000000));
       setTicketModalVisible(true);
     });
   };

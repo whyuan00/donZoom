@@ -1,22 +1,16 @@
+import { Quiz } from '@/types/domain';
 import {create} from 'zustand';
 
-interface Quiz {
-  quizId: number;
-  question: string;
-  answers: string[];
-  correctAnswer: string;
-  explanations: string[];
-  correctExplanation: string;
-}
+
 
 interface QuizStore {
   todaysQuizQuestions: Quiz[];
-  reviewQuizQuestions: Quiz[][];
+  reviewQuizQuestions: Quiz[];
   currentQuestionIndex: number;
   selectedAnswer: string | null;
   currentQuizId: number | null;
   setTodaysQuizQuestions: (questions: Quiz[], quizId: number) => void;
-  setReviewQuizQuestions: (questions: Quiz[][]) => void;
+  setReviewQuizQuestions: (questions: any[]) => void;
   setCurrentQuestionIndex: (index: number) => void;
   setSelectedAnswer: (answer: string | null) => void;
   setQuizId: (quizId: number) => void;
@@ -31,7 +25,7 @@ export const useQuizStore = create<QuizStore>(set => ({
   currentQuizId: null,
   setTodaysQuizQuestions: (questions: Quiz[], quizId: number) =>
     set({todaysQuizQuestions: questions, currentQuizId: quizId}),
-  setReviewQuizQuestions: (quizGroup: Quiz[][]) =>
+  setReviewQuizQuestions: (quizGroup: any[]) =>
     set({reviewQuizQuestions: quizGroup}),
   setCurrentQuestionIndex: (index: number) =>
     set({currentQuestionIndex: index}),

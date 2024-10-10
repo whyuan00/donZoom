@@ -7,6 +7,9 @@ import {fonts} from '@/constants/font';
 import useQuiz from '@/hooks/queries/useQuiz';
 import Correct from '@/assets/correct.svg';
 import NotCorrect from '@/assets/notCorrect.svg';
+import { Quiz } from '@/types/domain';
+
+// Quiz 타입에 isCorrect 필드가 추가된 타입 정의
 
 function QuizScreen({navigation}: any) {
   const {
@@ -14,6 +17,8 @@ function QuizScreen({navigation}: any) {
     currentQuestionIndex,
     selectedAnswer,
     setSelectedAnswer,
+    setReviewQuizQuestions,
+    reviewQuizQuestions
   } = useQuizStore();
   const currentQuestion = todaysQuizQuestions[currentQuestionIndex];
 
@@ -36,7 +41,10 @@ function QuizScreen({navigation}: any) {
         answer: selectedAnswer!,
       },
       {
-        onSuccess: () => {
+        onSuccess: (data : any) => {
+          console.log("DATA",data);
+          const newarr = [...reviewQuizQuestions,data];
+          setReviewQuizQuestions(newarr)
           setModalVisible(true);
         },
         onError: (error: any) => {
@@ -90,7 +98,7 @@ function QuizScreen({navigation}: any) {
                 {isAnswerCorrect ? '정답입니다!' : '정답이 아니에요.'}
               </Text>
               <Text style={styles.explainText}>
-                {currentQuestion.correctExplanation}
+                {currentQuestion.answerExplanation}
               </Text>
             </View>
             <View style={styles.solutionButtonContainer}>

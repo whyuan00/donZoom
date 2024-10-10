@@ -19,4 +19,13 @@ interface Profile {
   children: Child[];
 }
 
-export type {ImageUri, Profile, Child};
+interface Quiz{
+  quizId: number;
+  question: string;
+  answers: string[];
+  correctAnswer: string;
+  explanations: string[];
+  answerExplanation: string;
+}
+
+export type {ImageUri, Profile, Child, Quiz};

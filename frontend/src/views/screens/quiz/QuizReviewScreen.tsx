@@ -18,9 +18,7 @@ function QuizReviewScreen({navigation}: any) {
     setSelectedAnswer,
   } = useQuizStore();
   const currentQuestion =
-    reviewQuizQuestions[groupIndex]?.[currentQuestionIndex];
-
-  // console.log('currentQuestion: ', currentQuestion);
+    reviewQuizQuestions[groupIndex*3+currentQuestionIndex];
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
@@ -79,7 +77,7 @@ function QuizReviewScreen({navigation}: any) {
                 {isAnswerCorrect ? '정답입니다!' : '정답이 아니에요.'}
               </Text>
               <Text style={styles.explainText}>
-                {currentQuestion.correctExplanation}
+                {currentQuestion?.answerExplanation}
               </Text>
             </View>
             <View style={styles.solutionButtonContainer}>
