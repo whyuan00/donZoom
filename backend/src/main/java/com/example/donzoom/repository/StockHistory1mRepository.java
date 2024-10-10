@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface StockHistory1mRepository extends JpaRepository<StockHistory1m, Long> {
 
   // 특정 주식 ID에 대한 가장 최근 기록 조회
-  StockHistory findTop1ByStockIdOrderByCreatedAtDesc(Long stockId);
+  StockHistory1m findTop1ByStockIdOrderByCreatedAtDesc(Long stockId);
 
   List<StockHistory1m> findByStockId(Long stockId);
 
