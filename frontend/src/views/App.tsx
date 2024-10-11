@@ -8,6 +8,7 @@ import queryClient from '@/api/queryClient';
 import RootNavigator from '@/navigation/root/RootNavigator';
 import {useSignupStore} from '@/stores/useAuthStore';
 import {RefreshControl, ScrollView} from 'react-native';
+import useFCMStore from '@/stores/useFCMStore';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDSUTJysXrGAo2kxrgyEAVNiiVcr4Xfj40',
@@ -42,6 +43,8 @@ function App() {
       console.log('Error getting FCM token:', error);
     }
   };
+
+  const {setToken} = useFCMStore();
 
   getToken(); // 앱이 시작될 때 토큰 확인
 
@@ -85,6 +88,7 @@ function App() {
           importance: AndroidImportance.HIGH,
         },
       });
+      setToken('asdf');
     });
 
     // 백그라운드 메시지 처리

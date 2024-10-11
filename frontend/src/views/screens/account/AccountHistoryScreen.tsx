@@ -138,7 +138,9 @@ function AccountHistoryScreen({navigation}: any) {
                 <Text style={styles.balanceHeader}>남은 금액</Text>
               </View>
               <View style={styles.balanceTextContainer}>
-                <Text style={styles.balanceText}>{balance}원</Text>
+                <Text style={styles.balanceText}>
+                  {Number(balance).toLocaleString()}원
+                </Text>
               </View>
             </View>
           </View>
