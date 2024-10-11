@@ -78,15 +78,15 @@ export default function UnsafeAssetDetailScreen({navigation}: any) {
     ]).start();
   };
 
-  useWebSocket([getSelectedStockIndex()], (message: string) => {
-    try {
-      const parsedMessage: WebSocketMessage = JSON.parse(message);
-      setRealAssetMoney(parsedMessage.close);
-      animateValue();
-    } catch (error) {
-      console.error('Error parsing WebSocket message:', error);
-    }
-  });
+  // useWebSocket([getSelectedStockIndex()], (message: string) => {
+  //   try {
+  //     const parsedMessage: WebSocketMessage = JSON.parse(message);
+  //     setRealAssetMoney(parsedMessage.close);
+  //     animateValue();
+  //   } catch (error) {
+  //     console.error('Error parsing WebSocket message:', error);
+  //   }
+  // });
 
   useEffect(() => {
     console.log('-------------------------------------------------');
