@@ -42,7 +42,7 @@ function QuizExplanationScreen({navigation}: any) {
           <View style={styles.conclusion}>
             <Text style={styles.conclusionText}>결론</Text>
             <Text style={styles.conclusionDescription}>
-              {currentQuestion.correctExplanation}
+              {currentQuestion.answerExplanation}
             </Text>
           </View>
         </View>

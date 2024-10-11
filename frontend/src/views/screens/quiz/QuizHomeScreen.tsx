@@ -236,27 +236,32 @@ function QuizHomeScreen({ navigation }: any) {
         groups.push(reviewQuizQuestions.slice(index, index + 3));
       }
       return groups;
-    }, []).map((group, groupIndex) => (
-      <View key={groupIndex} style={styles.reviewContentsBox}>
-        <View style={styles.reviewContentText}>
-          <Text style={styles.reviewContentTitle}>
-            다시풀기 {groupIndex + 1}
-          </Text>
-          <Text style={styles.reviewContentDescription}>
-            {group.length}문제
-          </Text>
+    }, []).map((group, groupIndex) => {
+      if(groupIndex < 3){
+        return (
+          <View key={groupIndex} style={styles.reviewContentsBox}>
+          <View style={styles.reviewContentText}>
+            <Text style={styles.reviewContentTitle}>
+              다시풀기 {groupIndex + 1}
+            </Text>
+            <Text style={styles.reviewContentDescription}>
+              {group.length}문제
+            </Text>
+          </View>
+          <TouchableOpacity
+            style={styles.reviewContentButton}
+            onPress={() => {
+              navigation.navigate('퀴즈 리뷰', {
+                groupIndex: groupIndex,
+              });
+            }}>
+            <Text style={styles.reviewContentButtonText}>다시풀기</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={styles.reviewContentButton}
-          onPress={() => {
-            navigation.navigate('퀴즈 리뷰', {
-              groupIndex: groupIndex,
-            });
-          }}>
-          <Text style={styles.reviewContentButtonText}>다시풀기</Text>
-        </TouchableOpacity>
-      </View>
-    ))}
+        )
+      }
+    }
+    )}
 </View>
 
         </View>

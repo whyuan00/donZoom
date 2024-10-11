@@ -17,8 +17,7 @@ function QuizReviewScreen({navigation}: any) {
     selectedAnswer,
     setSelectedAnswer,
   } = useQuizStore();
-  const currentQuestion =
-    reviewQuizQuestions[groupIndex*3+currentQuestionIndex];
+  const currentQuestion = reviewQuizQuestions[groupIndex*3+currentQuestionIndex];
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);

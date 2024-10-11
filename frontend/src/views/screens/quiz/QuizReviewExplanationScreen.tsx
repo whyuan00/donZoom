@@ -13,13 +13,12 @@ import {useRoute} from '@react-navigation/native';
 function QuizReviewExplanationScreen({navigation}: any) {
   const {params} = useRoute();
   const {groupIndex}: any = params;
-  const {reviewQuizQuestions, currentQuestionIndex, setCurrentQuestionIndex} =
-    useQuizStore();
+  const {reviewQuizQuestions, currentQuestionIndex, setCurrentQuestionIndex} = useQuizStore();
   const currentQuestion =
-    reviewQuizQuestions[groupIndex]?.[currentQuestionIndex];
-
+    reviewQuizQuestions[groupIndex*3+currentQuestionIndex];
+  console.log("CQ",currentQuestion);
   const handleNextQuestion = () => {
-    if (currentQuestionIndex < reviewQuizQuestions[groupIndex].length - 1) {
+    if (currentQuestionIndex < reviewQuizQuestions.length-groupIndex*3- 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       navigation.navigate('퀴즈 리뷰', {groupIndex: groupIndex}); // 다음 문제로 이동
     } else {
@@ -33,7 +32,7 @@ function QuizReviewExplanationScreen({navigation}: any) {
       <View style={styles.container}>
         <Text style={styles.questionText}>{currentQuestion.question}</Text>
         {currentQuestion.answers.map((answer, index) => (
-          <View>
+          <View key={index}>
             <Text style={styles.answerText}>
               {index + 1}. {answer}
             </Text>
@@ -46,7 +45,7 @@ function QuizReviewExplanationScreen({navigation}: any) {
           <View style={styles.conclusion}>
             <Text style={styles.conclusionText}>결론</Text>
             <Text style={styles.conclusionDescription}>
-              {currentQuestion.correctExplanation}
+              {currentQuestion.answerExplanation}
             </Text>
           </View>
         </View>
@@ -55,7 +54,7 @@ function QuizReviewExplanationScreen({navigation}: any) {
             onPress={handleNextQuestion}
             style={styles.nextButton}>
             <Text style={styles.nextButtonText}>
-              {currentQuestionIndex < reviewQuizQuestions[groupIndex].length - 1
+              {currentQuestionIndex < reviewQuizQuestions.length-groupIndex*3- 1
                 ? '다음 문제'
                 : '홈으로'}
             </Text>
