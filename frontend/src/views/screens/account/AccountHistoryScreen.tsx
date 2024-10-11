@@ -16,7 +16,7 @@ function AccountHistoryScreen({navigation}: any) {
   const {data} = useGetAccountHistory(
     account,
     '20241001',
-    '20241010',
+    '20241011',
     'A',
     'DESC',
   );
@@ -177,36 +177,44 @@ function AccountHistoryScreen({navigation}: any) {
         <ScrollView
           style={styles.scrollViewContent}
           showsVerticalScrollIndicator={false}>
-          {transactionData.map((transaction, index) => (
-            <View key={index} style={styles.accountHistoryCard}>
-              <View style={styles.cardTopContainer}>
-                <Text style={styles.amountText}>{transaction.date}</Text>
-              </View>
-              <View style={styles.cardMiddleContainer}>
-                <View>
-                  <Text style={styles.marketName}>
-                    {transaction.marketName}
-                  </Text>
-                </View>
-                <View style={styles.cardMiddleRightContainer}>
-                  <Text
-                    style={[
-                      styles.amount,
-                      transaction.historyType === '입금된 금액' &&
-                        styles.plusAmount,
-                    ]}>
-                    {transaction.amount}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.cardBottomContainer}>
-                <Text style={styles.amountText}>잔액 </Text>
-                <Text style={styles.amountText}>
-                  {transaction.remainingBalance}
-                </Text>
-              </View>
+          {transactionData.length === 0 ? (
+            <View style={styles.noTransactionContainer}>
+              <Text style={styles.noTransactionText}>
+                거래 내역이 없습니다.
+              </Text>
             </View>
-          ))}
+          ) : (
+            transactionData.map((transaction, index) => (
+              <View key={index} style={styles.accountHistoryCard}>
+                <View style={styles.cardTopContainer}>
+                  <Text style={styles.amountText}>{transaction.date}</Text>
+                </View>
+                <View style={styles.cardMiddleContainer}>
+                  <View>
+                    <Text style={styles.marketName}>
+                      {transaction.marketName}
+                    </Text>
+                  </View>
+                  <View style={styles.cardMiddleRightContainer}>
+                    <Text
+                      style={[
+                        styles.amount,
+                        transaction.historyType === '입금된 금액' &&
+                          styles.plusAmount,
+                      ]}>
+                      {transaction.amount}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.cardBottomContainer}>
+                  <Text style={styles.amountText}>잔액 </Text>
+                  <Text style={styles.amountText}>
+                    {transaction.remainingBalance}
+                  </Text>
+                </View>
+              </View>
+            ))
+          )}
         </ScrollView>
       </View>
     </View>
@@ -451,6 +459,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 7,
+  },
+  noTransactionContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 30,
+  },
+  noTransactionText: {
+    color: colors.BLACK,
+    fontFamily: fonts.MEDIUM,
+    fontSize: 20,
   },
 });
 
