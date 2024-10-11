@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 
 import Icon from 'react-native-vector-icons/Octicons';
 import SettingIcon from 'react-native-vector-icons/Ionicons';
@@ -22,6 +22,8 @@ import {useEffect} from 'react';
 import useAccountBalance from '@/hooks/useAccountInfo';
 import {useSignupStore} from '@/stores/useAuthStore';
 import useAuth from '@/hooks/queries/useAuth';
+import useFCMStore from '@/stores/useFCMStore';
+import React from 'react';
 
 function ChildrenMainScreen() {
   const navigation = useNavigation() as any;
@@ -37,6 +39,12 @@ function ChildrenMainScreen() {
   const refresh = () => {
     refetch();
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      refetch();
+    }, []),
+  );
 
   return (
     <ScrollView>
@@ -111,10 +119,12 @@ function ChildrenMainScreen() {
           </View>
           <TouchableOpacity
             style={styles.missionContainer}
-            onPress={() => navigation.navigate('아이미션',{
-              screen:'아이미션',
-              params:{profile:getProfileQuery.data}
-            })}>
+            onPress={() =>
+              navigation.navigate('아이미션', {
+                screen: '아이미션',
+                params: {profile: getProfileQuery.data},
+              })
+            }>
             <Text style={styles.missionText}>
               오늘의 <Text style={{fontFamily: fonts.BOLD}}>미션</Text> 수행하러
               가기
