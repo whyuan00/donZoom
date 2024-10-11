@@ -1,16 +1,20 @@
 import axios, {AxiosError} from 'axios';
 import axiosInstance from './axios';
 
-type ResponseStockList = {
+type Stocks = {
   stockId: number;
   stockName: string;
   stockPrice: number;
   lastCreatedAt: Date;
 };
 
+type ResponseStockList = {
+  stocks: Stocks[];
+};
+
 const getStockList = async (): Promise<ResponseStockList> => {
   const {data} = await axiosInstance.get('/stock');
-  // console.log(data);
+  console.log('stockList:', data);
   return data;
 };
 

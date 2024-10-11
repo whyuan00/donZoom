@@ -1,7 +1,7 @@
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/font';
-import React, {useCallback, useEffect, useState} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {View, Text, TouchableOpacity, StyleSheet, Animated} from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import InvestUnsafeAssetTabNavigator from '@/navigation/InvestUnsafeAssetTabNavigator';
@@ -22,9 +22,23 @@ const stockIndices = {
   LG전자: 2,
   네이버: 3,
   카카오: 4,
-  Apple: 5,
-  Google: 6,
-  Tesla: 7,
+  Apple: 6,
+  Google: 7,
+  Tesla: 8,
+};
+
+type WebSocketMessage = {
+  id: number;
+  stock: {
+    id: number;
+    stockName: string;
+  };
+  open: number;
+  close: number;
+  high: number;
+  low: number;
+  createdAt: string;
+  updatedAt: string | null;
 };
 
 const Tab = createMaterialTopTabNavigator();
@@ -47,10 +61,32 @@ export default function UnsafeAssetDetailScreen({navigation}: any) {
   };
 
   const [stockMessage, setStockMessage] = useState<string>('');
+  const fadeAnim = useRef(new Animated.Value(1)).current;
 
-  // useWebSocket([5], message => {
-  //   setStockMessage(message);
-  // });
+  const animateValue = () => {
+    Animated.sequence([
+      Animated.timing(fadeAnim, {
+        toValue: 0.5,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  useWebSocket([getSelectedStockIndex()], (message: string) => {
+    try {
+      const parsedMessage: WebSocketMessage = JSON.parse(message);
+      setRealAssetMoney(parsedMessage.close);
+      animateValue();
+    } catch (error) {
+      console.error('Error parsing WebSocket message:', error);
+    }
+  });
 
   useEffect(() => {
     console.log('-------------------------------------------------');
@@ -61,35 +97,20 @@ export default function UnsafeAssetDetailScreen({navigation}: any) {
     'min',
   );
 
-  useFocusEffect(
-    useCallback(() => {
-      const getData = async () => {
-        try {
-          // const response = await axiosInstance.get(`/stock`);
-          // const {stocks} = response.data;
-          // console.log(stocks)
-          // const news = response.data;
-          // setTodaysNews(news);
-        } catch (error) {
-          console.log(error);
-        }
-      };
-      getData();
-    }, []),
-  );
-
   useEffect(() => {
     console.log(
       `Selected stock: ${selectedStock}, Index: ${getSelectedStockIndex()}`,
     );
     if (!isLoading && stockData) {
-      const stockprice = stockData.stockHistories[0]?.close;
+      const stockprice =
+        stockData.stockHistories[stockData.stockHistories.length - 1]?.close;
       setRealAssetMoney(stockprice);
       setRealAssetDollar(
         Number((stockprice ? stockprice / 1200 : 0).toFixed(2)),
       );
+      animateValue();
     }
-  }, [selectedStock]);
+  }, [selectedStock, isLoading]);
 
   // 종목 선택 시
   const handleStockChange = (stock: string) => {

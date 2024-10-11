@@ -11,7 +11,7 @@ const useWebSocket = (stockIds: number[], onMessage: OnMessageType) => {
     const socketUrl = 'https://j11a108.p.ssafy.io/api/websocket';
     // const socketUrl = 'http://localhost:8081/api/websocket';
     const socket = new SockJS(socketUrl);
-    const client = Stomp.over(socket);
+    const client = Stomp.over(() => socket);
 
     client.debug = str => {
       console.log(str); // STOMP 클라이언트의 디버그 메시지 출력

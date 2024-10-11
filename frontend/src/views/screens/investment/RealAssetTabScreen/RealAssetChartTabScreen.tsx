@@ -102,7 +102,12 @@ const RealAssetChartTabScreen = ({navigation}: any) => {
         <TouchableOpacity
           style={[styles.actionButton, styles.buyButton]}
           onPress={() =>
-            navigation.navigate('Trade', {trade: 'buy', type: 'Real'})
+            navigation.navigate('Trade', {
+              trade: 'buy',
+              type: 'Real',
+              price: currentPrice,
+              selectedStockIndex: 5,
+            })
           }>
           <Text
             style={{
@@ -116,7 +121,12 @@ const RealAssetChartTabScreen = ({navigation}: any) => {
         <TouchableOpacity
           style={[styles.actionButton, styles.sellButton]}
           onPress={() =>
-            navigation.navigate('Trade', {trade: 'sell', type: 'Real'})
+            navigation.navigate('Trade', {
+              trade: 'sell',
+              type: 'Real',
+              price: currentPrice,
+              selectedStockIndex: 5,
+            })
           }>
           <Text
             style={{
