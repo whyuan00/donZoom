@@ -16,7 +16,7 @@ const RealAssetPastNewsScreen = ({navigation}:any) => {
   const [sortedByCreatedAt, setSortedByCreatedAt] = useState(true);
   const {useGetNews} = useStock();
   const {data: pastNewsData = [] } = useGetNews(5);
-console.log(pastNewsData)
+// console.log(pastNewsData)
 
   const sortedNews = useMemo(() => {
     if (pastNewsData.length >= 1)

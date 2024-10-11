@@ -43,16 +43,8 @@ function QRCodeScanner({navigation}: any) {
     console.log('이건가? 계좌번호: ', account);
     console.log('은행: ', bank);
 
-    Alert.alert('QR Code Data', `계좌번호: ${account}, 은행: ${bank}`, [
-      {
-        text: 'OK',
-        onPress: () => {
-          console.log('Navigating to 송금 screen with accountNo:', account);
-          setScaned(true);
-          navigation.navigate('송금', {accountNo: account});
-        },
-      },
-    ]);
+    setScaned(true);
+    navigation.navigate('송금', {accountNo: account});
   };
 
   return (

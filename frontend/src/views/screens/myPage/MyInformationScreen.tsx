@@ -4,6 +4,7 @@ import useAuth from '@/hooks/queries/useAuth';
 import useSignupForm from '@/hooks/useSignupForm';
 import {useSignupStore} from '@/stores/useAuthStore';
 import useLogout from '@/stores/useLogout';
+import useMissionStore from '@/stores/useMissionStore';
 import usePasswordStore from '@/stores/usePasswordStore';
 import CustomButton from '@/views/components/CustomButton';
 import InputField from '@/views/components/InputField';
@@ -19,6 +20,7 @@ import {
   Modal,
 } from 'react-native';
 import NextIcon from 'react-native-vector-icons/MaterialIcons';
+import SetRelationModal from '@/views/components/SetRelationModal';
 
 interface emailData {
   emailId: any;
@@ -26,65 +28,35 @@ interface emailData {
 }
 
 function MyInformationScreen() {
+  const getChildren = useMissionStore(state => state.getChildren());
   const navigation = useNavigation() as any;
-  const [isParents] = useState(true);
   const logout = useLogout();
   const {logoutMutation, childAddMutation} = useAuth();
   const {reset: signupReset} = useSignupForm();
   const {reset: passwordReset} = usePasswordStore();
   const {isParent} = useSignupStore();
-  const [modal, setModal] = useState(false);
-  const [text, setText] = useState<string>('');
-  const [emailData, setEmailData] = useState<emailData[]>([]); //아이 email데이터
 
-  const toggleModal = () => {
-    setModal(!modal);
-  };
+  const [modalVisible, setModalVisible] = useState(false);
 
-  const onChangeText = (input: string) => {
-    setText(input);
-  };
-
-  // 이메일 형식 유효성 검사 (정규식)
-  const isValidEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  // 이메일 추가 함수
-  const handleUpdateEmail = (email: string) => {
-    if (!isValidEmail(email)) {
+  // 모달 닫기->아이 정보 추가
+  const handleModalClose = (emails: string[]) => {
+    setModalVisible(false);
+    if (emails.length === 0) {
       return;
     }
-    const emailExists = emailData.some(item => item.emailAddress === email);
-    if (emailExists) {
-      return;
-    }
-    // 3. 유효성 검사를 통과한 경우 이메일 추가
-    const newEmail = {
-      emailId: Date.now(), // 고유한 id
-      emailAddress: email,
-    };
-    setEmailData([...emailData, newEmail]); // 이메일 리스트에 추가
-    setText(''); // 입력 필드를 초기화
-  };
-
-  const handleDelete = (id: number) => {
-    setEmailData(emailData.filter(email => email.emailId !== id));
-  };
-
-  const handleModalClose = () => {
-    const childEmails = emailData.map(email => email.emailAddress);
-    childAddMutation.mutate(childEmails);
-    setModal(false);
+    childAddMutation.mutate(emails, {
+      onSuccess: () => {
+        console.log('아이 이메일 전송 성공');
+      },
+    });
   };
 
   return (
     <ScrollView>
       <View style={styles.container}>
-        {isParents && (
+        {isParent && (
           <>
-            <View style={styles.menuContainer}>
+            {/* <View style={styles.menuContainer}>
               <View style={styles.inquireAutoTransferHeaderContainer}>
                 <Text style={styles.cardTitle}>자동 이체 등록</Text>
                 <Text style={styles.cardSubtitle}>
@@ -99,42 +71,72 @@ function MyInformationScreen() {
                   (최대 2개 등록 가능)
                 </Text>
               </View>
-              <TouchableOpacity style={styles.inquireAutoTransferTextContainer}>
-                <Text style={styles.inquireAccountText}>계좌 등록하기</Text>
+              <TouchableOpacity
+                style={[
+                  styles.inquireAutoTransferTextContainer,
+                  ,
+                  {marginBottom: 10},
+                ]}>
+                <Text style={[styles.inquireAccountText]}>계좌 등록하기</Text>
                 <NextIcon name="navigate-next" size={20} color={colors.BLACK} />
               </TouchableOpacity>
-            </View>
+            </View> */}
+
             {isParent ? (
               <View style={styles.menuContainer}>
                 <View style={styles.childInfoHeaderContainer}>
                   <Text style={styles.cardTitle}>등록된 아이 정보</Text>
                 </View>
-                <View style={styles.childInfoContainer}>
-                  <View style={styles.childInfoDetailContainer}>
-                    <Image
-                      source={require('@/assets/images/characterImage.webp')}
-                      style={styles.image}
-                    />
-                    <Text style={styles.childInfoText}>김싸피(닉네임)</Text>
-                  </View>
-                  <View style={styles.childInfoManageContainer}>
-                    <TouchableOpacity>
-                      <Text style={styles.manageText}>관리</Text>
+
+                {getChildren.length > 0 ? (
+                  <>
+                    {getChildren.map((child, index) => (
+                      <View key={child.id} style={styles.childInfoContainer}>
+                        <View style={styles.childInfoDetailContainer}>
+                          <Image
+                            source={require('@/assets/images/characterImage.webp')}
+                            style={styles.image}
+                          />
+                          <Text style={styles.childInfoText}>
+                            {child.name}(닉네임)
+                          </Text>
+                        </View>
+                        <View style={styles.childInfoManageContainer}>
+                          <TouchableOpacity>
+                            <Text style={styles.manageText}>관리</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity>
+                            <Text style={styles.deleteText}>삭제</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    ))}
+                    <TouchableOpacity
+                      style={styles.securityMenuContainer}
+                      onPress={() => setModalVisible(true)}>
+                      <Text style={styles.securityMenuText}>
+                        아이 정보 추가
+                      </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity>
-                      <Text style={styles.deleteText}>삭제</Text>
+                  </>
+                ) : (
+                  <View>
+                    <View style={[styles.securityMenuContainer]}>
+                      <Text style={styles.securityMenuText}>
+                        아직 등록된 아이가 없습니다
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      style={styles.securityMenuContainer}
+                      onPress={() => setModalVisible(true)}>
+                      <Text style={styles.securityMenuText}>
+                        아이 정보 추가
+                      </Text>
                     </TouchableOpacity>
                   </View>
-                </View>
-                <TouchableOpacity
-                  style={styles.securityMenuContainer}
-                  onPress={() => setModal(true)}>
-                  <Text style={styles.securityMenuText}>아이 정보 추가</Text>
-                </TouchableOpacity>
+                )}
               </View>
-            ) : (
-              <></>
-            )}
+            ) : null}
           </>
         )}
         <View style={styles.alarmMenuContainer}>
@@ -181,7 +183,7 @@ function MyInformationScreen() {
             <Text style={styles.alarmMenuText}>로그아웃</Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.alarmMenuContainer}>
+        {/* <View style={styles.alarmMenuContainer}>
           <View style={styles.securityHeaderContainer}>
             <Text style={styles.cardTitle}>결제한도 설정</Text>
           </View>
@@ -190,64 +192,10 @@ function MyInformationScreen() {
             onPress={() => {}}>
             <Text style={styles.alarmMenuText}>결제한도 설정</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
       </View>
       {/* 아이 정보 추가 모달 */}
-      <Modal transparent={true} visible={modal} onRequestClose={toggleModal}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            {/* 텍스트 박스 */}
-            <View style={{marginTop: 50, marginBottom: 20}}>
-              <Text
-                style={{
-                  textAlign: 'center',
-                  fontFamily: fonts.MEDIUM,
-                  fontSize: 20,
-                  color: colors.BLACK,
-                }}>
-                아이 정보를 추가해주세요
-              </Text>
-            </View>
-            <View
-              style={{
-                marginBottom: 10,
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
-              <InputField
-                style={styles.input}
-                inputMode="text"
-                placeholder="아이 이메일"
-                onChangeText={onChangeText}
-                value={text}
-              />
-              <TouchableOpacity
-                style={{alignItems: 'center'}}
-                onPress={() => handleUpdateEmail(text)}>
-                <Text style={[styles.textButton, {color: colors.BLUE_100}]}>
-                  추가
-                </Text>
-              </TouchableOpacity>
-            </View>
-            {emailData.map(email => (
-              <View key={email.emailId} style={styles.emailContainer}>
-                <View style={styles.emailBox}>
-                  <Text style={styles.emailText}> {email.emailAddress} </Text>
-                </View>
-                <TouchableOpacity onPress={() => handleDelete(email.emailId)}>
-                  <Text style={styles.textButton}>삭제</Text>
-                </TouchableOpacity>
-              </View>
-            ))}
-            <CustomButton
-              style={{marginTop: 50, marginBottom: 25}}
-              label="확인"
-              isParent={isParent}
-              onPress={handleModalClose}
-            />
-          </View>
-        </View>
-      </Modal>
+      <SetRelationModal visible={modalVisible} onClose={handleModalClose} />
     </ScrollView>
   );
 }

@@ -25,7 +25,11 @@ import SetRelationModal from '@/views/components/SetRelationModal';
 import {useChildrenStore} from '@/stores/useChildrenStore';
 import {Child} from '@/types/domain';
 import useAccount from '@/hooks/queries/useAccount';
+import useMissionStore from '@/stores/useMissionStore';
+import useMission from '@/hooks/queries/useMission';
 import {getChildrenAccount, getChildrenBalance} from '@/api/account';
+import {useSignupStore} from '@/stores/useAuthStore';
+
 
 interface ChildProfile {
   id: number;
@@ -34,26 +38,44 @@ interface ChildProfile {
   nickname: string;
   accountNumber: string;
   balance: number;
-  ongoingMissions: string;
-  completeMissions: string;
+  ongoingMissions?: string;
+  completeMissions?: string;
 }
 const childrenProfile: ChildProfile[] = [];
-interface emailData {
-  emailId: any;
-  emailAddress: string;
-}
+
 function ParentsMainScreen() {
   const {myChildren, setSelectedChild: setCurrentChild} = useChildrenStore();
   const [selectedProfileIndex, setSelectedProfileIndex] = useState(0);
   const [profileOrder, setProfileOrder] = useState(childrenProfile);
   const navigation = useNavigation() as any;
   const {account, balance, refetch} = useAccountBalance();
+  const {name} = useSignupStore();
   const [isMyScreen, setIsMyScreen] = useState(true);
-  const {getAccount} = useAccount();
   const [refreshing, setRefreshing] = useState(false);
-  const {useGetChildrenAccountWithParams, useGetChildrenBalanceWithParams} =
-    useAccount();
+  const setChildId = useMissionStore(state => state.setChildId);
+  const childId = useMissionStore(state => state.getChildId());
+  const setChildren = useMissionStore(state => state.setChildren);
+  const userId = useSignupStore(state => state.id);
+
+  const {children, childAddMutation} = useAuth();
+  const [modalVisible, setModalVisible] = useState(false);
+  const {useGetMissions, useDeleteMission, useModifyMission} = useMission();
+  const [created, setCreated] = useState<any>(null);
+  const [done, setDone] = useState<any>(null);
+  const {data: createdMissions,} = useGetMissions(childId || -1, 'CREATED');
+  const {data: doneMissions,} = useGetMissions(childId || -1, 'DONE');
+
   const [selectedChild, setSelectedChild] = useState<ChildProfile | null>(null);
+  
+  useEffect(() => {
+    if (createdMissions?.missions) {
+      setCreated(createdMissions.missions);
+    }
+    if (doneMissions?.missions) {
+      setDone(doneMissions.missions);
+    }
+  }, [createdMissions, doneMissions]);
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
@@ -71,10 +93,11 @@ function ParentsMainScreen() {
         ...child,
         accountNumber: '',
         balance: 0,
-        ongoingMissions: '안녕1',
-        completeMissions: '안녕2',
+        // ongoingMissions: '안녕1',
+        // completeMissions: '안녕2',
       }));
       setProfileOrder(updatedChildren);
+      setChildren(myChildren); // 스토어에 저장
     }
   }, [myChildren]);
 
@@ -127,8 +150,8 @@ function ParentsMainScreen() {
         nickname: updatedChild.nickname,
         accountNumber: updatedChild.accountNumber,
         balance: updatedChild.balance,
-        ongoingMissions: updatedChild.ongoingMissions,
-        completeMissions: updatedChild.completeMissions,
+        // ongoingMissions: updatedChild.ongoingMissions,
+        // completeMissions: updatedChild.completeMissions,
       });
       console.log('setCurrentChild: ', setCurrentChild);
     } catch (error) {
@@ -137,10 +160,6 @@ function ParentsMainScreen() {
 
     setSelectedProfileIndex(0);
   };
-
-  const {children, childAddMutation} = useAuth();
-  // const { children: childrenProfile } = children 아이 프로필 불러오면됨
-  const [modalVisible, setModalVisible] = useState(false);
 
   // 모달 닫기->아이 정보 추가
   const handleModalClose = (emails: string[]) => {
@@ -156,6 +175,7 @@ function ParentsMainScreen() {
   };
 
   const viewMyScreen = () => {
+    setChildId(userId);
     setIsMyScreen(true);
   };
 
@@ -169,7 +189,7 @@ function ParentsMainScreen() {
           <TouchableOpacity
             style={styles.parentsProfileContainer}
             onPress={viewMyScreen}>
-            <Profile name={'나'} />
+            <Profile name={name} />
           </TouchableOpacity>
           <View style={styles.profileContainer}>
             {profileOrder.map((profile, index) => {
@@ -276,7 +296,11 @@ function ParentsMainScreen() {
             </View>
             <TouchableOpacity
               style={styles.myMissionContainer}
-              onPress={() => navigation.navigate('아이미션')}>
+              onPress={() =>
+                navigation.navigate('부모미션', {
+                  screen: '부모미션',
+                })
+              }>
               <Text style={styles.myMissionText}>
                 <Text style={{fontFamily: fonts.BOLD}}>미션</Text> 생성하러 가기
               </Text>
@@ -369,27 +393,61 @@ function ParentsMainScreen() {
                     </View>
                   </View>
                 </View>
+
                 <View style={styles.missionContainer}>
                   <Text style={styles.missionTitleText}>미션내역</Text>
+
                   <View>
-                    <Text style={styles.missionText}>진행 중인 미션 (2)</Text>
-                    <TouchableOpacity style={styles.missionBox}>
-                      <Text style={styles.ongoingMissionText}>
-                        {profileOrder[0].ongoingMissions}
-                      </Text>
-                    </TouchableOpacity>
+                    <Text style={styles.missionText}>
+                      진행 중인 미션 ({created.length})
+                    </Text>
+                    {created.length > 0 ? (
+                      createdMissions?.missions?.map(mission => (
+                        <TouchableOpacity style={styles.missionBox}>
+                          <Text style={styles.ongoingMissionText}>
+                            {mission.contents}
+                          </Text>
+                        </TouchableOpacity>
+                      ))
+                    ) : (
+                      <TouchableOpacity style={styles.missionBox}>
+                        <Text style={styles.ongoingMissionText}>
+                          진행중인 미션이 없습니다
+                        </Text>
+                      </TouchableOpacity>
+                    )}
                   </View>
+
                   <View>
-                    <Text style={styles.missionText}>완료 요청 대기 (2)</Text>
-                    <TouchableOpacity style={styles.missionBox}>
-                      <Text style={styles.ongoingMissionText}>
-                        {profileOrder[0].completeMissions}
-                      </Text>
-                    </TouchableOpacity>
+                    <Text style={[styles.missionText, {margin: 10}]}>
+                      완료 요청 대기 ({done.length})
+                    </Text>
+                    {done.length > 0 ? (
+                      doneMissions?.missions?.map(mission => (
+                        <TouchableOpacity style={styles.missionBox}>
+                          <Text style={styles.ongoingMissionText}>
+                            {mission.contents}
+                          </Text>
+                        </TouchableOpacity>
+                      ))
+                    ) : (
+                      <TouchableOpacity style={styles.missionBox}>
+                        <Text style={styles.ongoingMissionText}>
+                          완료한 미션이 없습니다
+                        </Text>
+                      </TouchableOpacity>
+                    )}
                   </View>
+
                   <TouchableOpacity
-                    style={styles.nextButton}
-                    onPress={() => navigation.navigate('부모미션')}>
+                    style={[styles.nextButton, {marginBottom: 20}]}
+                    onPress={() => {
+                      setChildId(profileOrder[0].id); // 먼저 setChildId 호출
+                      navigation.navigate('부모미션', {
+                        screen: '부모미션',
+                        params: {child: profileOrder[0]}, // params로 id 전달
+                      });
+                    }}>
                     <Text style={styles.detailMission}>자세히 보기</Text>
                     <NextIcon
                       name="navigate-next"
@@ -398,6 +456,7 @@ function ParentsMainScreen() {
                     />
                   </TouchableOpacity>
                 </View>
+
                 <View style={styles.buttonContainer}>
                   <TouchableOpacity
                     style={styles.childSituation}
@@ -591,12 +650,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   missionContainer: {
-    width: 340,
-    height: 310,
     borderRadius: 10,
     backgroundColor: colors.YELLOW_50,
-    justifyContent: 'center',
-    alignItems: 'center',
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    paddingLeft:20,
     marginBottom: 20,
     paddingTop: 20,
   },
@@ -619,17 +677,17 @@ const styles = StyleSheet.create({
     color: colors.BLACK,
     fontFamily: fonts.MEDIUM,
     fontSize: 16,
-    marginBottom: 6,
-    marginLeft: 10,
+    marginBottom: 10,
+    // marginLeft: 10,
   },
   missionBox: {
     width: 300,
-    height: 60,
+    height: 50,
     backgroundColor: colors.WHITE,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 5,
   },
   ongoingMissionText: {
     color: colors.BLACK,
