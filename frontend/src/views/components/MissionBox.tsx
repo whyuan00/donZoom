@@ -61,7 +61,7 @@ const MissionBox = ({
           <Text style={styles.largetext}> {missionTitle} </Text>
           <Text style={styles.largetext}>{missionPay.toLocaleString()}원</Text>
           <Text style={styles.smalltext}>
-            {missionDate && missionDate.replaceAll('-', '.')}까지
+            {missionDate}까지
           </Text>
         </Animated.View>
       </TouchableOpacity>

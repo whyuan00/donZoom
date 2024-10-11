@@ -7,44 +7,30 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
-  ActivityIndicator,
 } from 'react-native';
 import axiosInstance from '@/api/axios';
 import {colors} from '@/constants/colors';
-import { fonts } from '@/constants/font';
-
-interface Mission {
-  missionId: number;
-  contents: string;
-  dueDate: string;
-  reward: number;
-}
+import {fonts} from '@/constants/font';
+import useMissionStore from '@/stores/useMissionStore';
+import useMission from '@/hooks/queries/useMission';
 
 const MissionPastChildScreen = () => {
-  const [childId, setChildId] = useState<number>(0); //TODO: childId zustand에 저장한다음에 불러와야함
-  const [isLoading, setIsLoading] = useState(true);
+  const childId = useMissionStore(state => state.getChildId());
+  const {useGetMissions, useDeleteMission, useModifyMission} = useMission();
+  const {data: missionPastData, refetch} = useGetMissions(
+    childId || -1,
+    'ACCEPTED',
+  );
+  const {mutate: deleteMission} = useDeleteMission();
+
   const [selectedMissionBox, setSelectedMissionBox] = useState<number | null>(
     null,
   );
-  const [missionPastData, setMissionPastData] = useState<Mission[]>([]);
 
   useFocusEffect(
     useCallback(() => {
-      const getData = async (childId: number) => {
-        try {
-          const response = await axiosInstance.get(
-            `/mission?status=accepted&childId=${childId}`,
-          );
-          const {missions} = response.data;
-          setMissionPastData(missions);
-        } catch (error) {
-          console.error(error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      getData(childId);
-    }, []),
+      refetch();
+    }, [refetch]),
   );
 
   const handleMissionPress = useCallback((missionId: number) => {
@@ -53,26 +39,24 @@ const MissionPastChildScreen = () => {
 
   const handleMissionDelete = useCallback(async (missionId: number) => {
     try {
-      await axiosInstance.delete(`/mission/${missionId}`);
-      setMissionPastData(prevData =>
-        prevData.filter(mission => mission.missionId !== missionId),
-      );
+      deleteMission(missionId, {
+        onSuccess: () => console.log('미션삭제'),
+      });
     } catch (error) {
       console.log(error);
     }
-  }, []);
+  }, [deleteMission,refetch]);
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.WHITE}}>
       <View style={styles.container}>
-        {isLoading ? (
+        {missionPastData && missionPastData?.missions?.length < 1 ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={colors.BLUE_100} />
-            <Text style={styles.loadingText}>미션 데이터를 불러오는 중...</Text>
+            <Text style={styles.loadingText}> 지난 미션이 없습니다.</Text>
           </View>
         ) : (
           <ScrollView>
-            {missionPastData.map((mission: Mission) => (
+            {missionPastData?.missions?.map(mission => (
               <View key={mission.missionId}>
                 <TouchableOpacity
                   onPress={() => handleMissionPress(mission.missionId)}
@@ -110,7 +94,11 @@ const MissionPastChildScreen = () => {
                       {mission.reward.toLocaleString()}원
                     </Text>
                     <Text style={styles.smalltext}>
-                      {mission.dueDate.replaceAll('-', '.')}까지
+                      {mission.dueDate
+                        .toLocaleString()
+                        .slice(0, 10)
+                        .replaceAll('-', '.')}
+                      까지
                     </Text>
                   </View>
                 </TouchableOpacity>

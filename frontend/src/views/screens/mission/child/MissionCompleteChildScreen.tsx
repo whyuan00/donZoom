@@ -5,14 +5,14 @@ import {
   View,
   StyleSheet,
   ScrollView,
-  ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
 import {colors} from '@/constants/colors';
 import {useFocusEffect} from '@react-navigation/native';
+import {fonts} from '@/constants/font';
+import useMissionStore from '@/stores/useMissionStore';
+import useMission from '@/hooks/queries/useMission';
 import axiosInstance from '@/api/axios';
-import axios from 'axios';
-import { fonts } from '@/constants/font';
 
 interface Mission {
   missionId: number;
@@ -22,66 +22,63 @@ interface Mission {
 }
 
 const MissionCompleteChildScreen = () => {
-  const [childId, setChildId] = useState<number>(0); //TODO: childId zustand에 저장한다음에 불러와야함
-  const [isLoading, setIsLoading] = useState(true);
+  const childId = useMissionStore(state => state.getChildId());
   const [selectedMissionBox, setSelectedMissionBox] = useState<number | null>(
     null,
   );
-  const [requireCompleteMission, setRequireCompleteMission] = useState<
-    Mission[]
-  >([]);
+  const {useGetMissions, useDeleteMission, useModifyMission} = useMission();
+  const {mutate: deleteMission} = useDeleteMission();
+  const {mutate: modifyMission} = useModifyMission();
+  const {data: requireCompleteMission, refetch} = useGetMissions(
+    childId || -1,
+    'DONE',
+  );
 
   useFocusEffect(
     useCallback(() => {
-      const getData = async (childId: number) => {
-        try {
-          const response = await axiosInstance.get(
-            `/mission?status=done&childId=${childId}`,
-          );
-          console.log('완료요청한 미션업데이트');
-          const {missions} = response.data;
-          setRequireCompleteMission(missions);
-        } catch (error) {
-          console.error(error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      getData(childId);
-    }, []),
+      refetch();
+    }, [refetch]),
   );
 
   const handleMissionPress = (missionId: number) => {
-    setSelectedMissionBox(missionId == selectedMissionBox ? null : missionId);
+    setSelectedMissionBox(missionId === selectedMissionBox ? null : missionId);
   };
 
-  // 완료취소: created로 이동
-  const handleMissionDelete = useCallback(async (missionId: number) => {
-    try {
-      await axiosInstance.patch(`/mission/${missionId}`, {
-        status: 'created',
-      });
-      console.log('미션 완료요청 취소');
-      setRequireCompleteMission(prevData =>
-        prevData.filter(mission => mission.missionId !== missionId),
-      ); // api호출없이 데이터 수정
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
+  const formatDate = (dateStr: Date | undefined) => {
+    if (!dateStr) return '';
+    return new Date(dateStr).toISOString().slice(0, 10).replaceAll('-', '.');
+  };
+
+  const handleMissionDelete = useCallback(
+    async (missionId: number) => {
+      try {
+        const response = await axiosInstance.patch(`/mission/${missionId}`, {
+          status: 'CREATED',
+        });
+        console.log('미션 완료 취소')
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [modifyMission],
+  );
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.WHITE}}>
       <View style={styles.container}>
-        {isLoading ? (
+        {requireCompleteMission &&
+        requireCompleteMission.missions.length < 1 ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={colors.BLUE_100} />
-            <Text style={styles.loadingText}>미션 데이터를 불러오는 중...</Text>
+            <Text style={styles.loadingText}>
+              {' '}
+              완료 요청 중인 미션이 없습니다
+            </Text>
           </View>
         ) : (
           <ScrollView>
-            {requireCompleteMission?.map((mission: Mission, index) => (
+            {requireCompleteMission?.missions?.map(mission => (
               <TouchableOpacity
+                key={mission.missionId}
                 onPress={() => handleMissionPress(mission.missionId)}
                 style={[
                   styles.boxContainer,
@@ -124,7 +121,7 @@ const MissionCompleteChildScreen = () => {
                     {mission.reward.toLocaleString()}원
                   </Text>
                   <Text style={styles.smalltext}>
-                    {mission.dueDate.replaceAll('-', '.')}까지
+                    {formatDate(mission.dueDate)}까지
                   </Text>
                 </View>
               </TouchableOpacity>

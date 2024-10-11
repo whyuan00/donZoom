@@ -9,32 +9,25 @@ import { fonts } from '@/constants/font';
 
 const Tab = createMaterialTopTabNavigator();
 
-export default function MissionTabNavigator() {
+export default function MissionTabNavigator({childId}:any) {
   return (
-      <Tab.Navigator
-        initialRouteName="진행중" 
-        screenOptions={{
-          tabBarActiveTintColor: colors.BLUE_100,
-          tabBarInactiveTintColor: colors.BLACK,
-          tabBarLabelStyle: {fontFamily:fonts.MEDIUM,fontSize: 16,},
-          tabBarStyle: {backgroundColor: 'white'},
-          
-        }}>
-        <Tab.Screen
-          name="진행중"
-          component={MissionOngoingScreen}
-          options={{tabBarLabel: '진행중'}}
-        />
-        <Tab.Screen
-          name="완료요청"
-          component={MissionCompleteScreen}
-          options={{tabBarLabel: '완료요청'}}
-        />
-        <Tab.Screen
-          name="지난미션"
-          component={MissionPastScreen}
-          options={{tabBarLabel: '지난미션'}}
-        />
-      </Tab.Navigator>
+    <Tab.Navigator
+      initialRouteName="진행중"
+      screenOptions={{
+        tabBarActiveTintColor: colors.BLUE_100,
+        tabBarInactiveTintColor: colors.BLACK,
+        tabBarLabelStyle: {fontFamily: fonts.MEDIUM, fontSize: 16},
+        tabBarStyle: {backgroundColor: 'white'},
+      }}>
+      <Tab.Screen name="진행중" options={{tabBarLabel: '진행중'}}>
+        {props => <MissionOngoingScreen {...props} childId={childId} />}
+      </Tab.Screen>
+      <Tab.Screen name="완료요청" options={{tabBarLabel: '완료요청'}}>
+        {props => <MissionCompleteScreen {...props} childId={childId} />}
+      </Tab.Screen>
+      <Tab.Screen name="지난미션" options={{tabBarLabel: '지난미션'}}>
+        {props => <MissionPastScreen {...props} childId={childId} />}
+      </Tab.Screen>
+    </Tab.Navigator>
   );
 }

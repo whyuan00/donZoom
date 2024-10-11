@@ -1,4 +1,4 @@
-import React, {useCallback,useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   SafeAreaView,
   Text,
@@ -9,26 +9,34 @@ import {
 import {colors} from '@/constants/colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axiosInstance from '@/api/axios';
-import { fonts } from '@/constants/font';
+import {fonts} from '@/constants/font';
+import useMissionStore from '@/stores/useMissionStore';
+import useMission from '@/hooks/queries/useMission';
 
 const MakeNewMissionCompleteScreen = ({navigation, route}: any) => {
   const {text, selectedDate, pay} = route.params;
-  const [childId, setChildId] = useState<number>(0); //TODO: childId zustand에 저장한다음에 불러와야함
+  const {usePostMission} = useMission();
+  const childId = useMissionStore(state => state.getChildId());
+  const {mutate: postMission} = usePostMission();
+  const [alertText, setAlertText] = useState('');
 
-  const sendMissionInfo= async(text:String,pay:number,selectedDate:string) =>{
-    try{
-      await axiosInstance.post(`/mission&childId=${childId}`,{
-        contents:text,
-        due_date:selectedDate,
-        reward:pay
-      })
-      console.log('새로운 미션 생성')
+  const sendMissionInfo = (text: string, pay: number, selectedDate: string) => {
+    if (!childId) {
+      setAlertText('아이 정보가 없어 미션을 생성할 수 없습니다.');
+      return;
     }
-    catch(error){
-      console.log(error)
-    }
+    postMission({
+      childId: childId,
+      contents: text,
+      dueDate: selectedDate,
+      reward: pay,
+    });
   };
 
+  const formatDate = (dateStr: Date | undefined) => {
+    if (!dateStr) return '';
+    return new Date(dateStr).toISOString().slice(0, 10).replaceAll('-', '.');
+  };
   return (
     <SafeAreaView style={styles.container}>
       <Icon name="clipboard-text-outline" size={135} />
@@ -47,17 +55,20 @@ const MakeNewMissionCompleteScreen = ({navigation, route}: any) => {
         <Text style={styles.payText}>{pay.toLocaleString()} 원</Text>
         <Text style={styles.missionText}>
           <Text style={{color: colors.BLUE_100}}>
-            {selectedDate.replaceAll('-', '.')}
+            {formatDate(selectedDate)}
           </Text>{' '}
           까지 미션을 완료해주세요!
         </Text>
       </View>
+      <Text style={{marginTop: 200, color: colors.RED_100}}>{alertText}</Text>
       <TouchableOpacity
         style={styles.confirmButton}
         onPress={() => {
           console.log('Button pressed');
           sendMissionInfo(text, pay, selectedDate);
-          navigation.navigate('MissionParent', {screen: '진행중'});
+          setTimeout(() => {
+            navigation.navigate('부모미션');
+          }, 500);
         }}>
         <Text
           style={{
