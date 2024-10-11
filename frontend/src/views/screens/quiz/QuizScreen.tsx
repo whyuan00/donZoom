@@ -30,6 +30,16 @@ function QuizScreen({navigation}: any) {
   const clickAnswerPress = (answer: string) => {
     setSelectedAnswer(answer);
   };
+  const transformQuizData = (quizes: any[]) => {
+    return quizes.map(quiz => ({
+      quizId: quiz.id,
+      question: quiz.question,
+      answers: [quiz.option1, quiz.option2, quiz.option3, quiz.option4],
+      correctAnswer: quiz.answer,
+      explanations: quiz.explanations.split('\n'),
+      answerExplanation: quiz.answerExplanation,
+    }));
+  };
 
   const handleSubmit = () => { 
     const isCorrect = currentQuestion?.correctAnswer === selectedAnswer;
@@ -43,7 +53,7 @@ function QuizScreen({navigation}: any) {
       {
         onSuccess: (data : any) => {
           console.log("DATA",data);
-          const newarr = [...reviewQuizQuestions,data];
+          const newarr = [...reviewQuizQuestions,...transformQuizData([data])];
           setReviewQuizQuestions(newarr)
           setModalVisible(true);
         },
