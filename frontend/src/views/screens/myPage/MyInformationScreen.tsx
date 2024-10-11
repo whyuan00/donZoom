@@ -30,7 +30,6 @@ interface emailData {
 function MyInformationScreen() {
   const getChildren = useMissionStore(state => state.getChildren());
   const navigation = useNavigation() as any;
-  const [isParents] = useState(true);
   const logout = useLogout();
   const {logoutMutation, childAddMutation} = useAuth();
   const {reset: signupReset} = useSignupForm();
@@ -52,13 +51,12 @@ function MyInformationScreen() {
     });
   };
 
-
   return (
     <ScrollView>
       <View style={styles.container}>
-        {isParents && (
+        {isParent && (
           <>
-            <View style={styles.menuContainer}>
+            {/* <View style={styles.menuContainer}>
               <View style={styles.inquireAutoTransferHeaderContainer}>
                 <Text style={styles.cardTitle}>자동 이체 등록</Text>
                 <Text style={styles.cardSubtitle}>
@@ -82,7 +80,7 @@ function MyInformationScreen() {
                 <Text style={[styles.inquireAccountText]}>계좌 등록하기</Text>
                 <NextIcon name="navigate-next" size={20} color={colors.BLACK} />
               </TouchableOpacity>
-            </View>
+            </View> */}
 
             {isParent ? (
               <View style={styles.menuContainer}>
@@ -185,7 +183,7 @@ function MyInformationScreen() {
             <Text style={styles.alarmMenuText}>로그아웃</Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.alarmMenuContainer}>
+        {/* <View style={styles.alarmMenuContainer}>
           <View style={styles.securityHeaderContainer}>
             <Text style={styles.cardTitle}>결제한도 설정</Text>
           </View>
@@ -194,7 +192,7 @@ function MyInformationScreen() {
             onPress={() => {}}>
             <Text style={styles.alarmMenuText}>결제한도 설정</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
       </View>
       {/* 아이 정보 추가 모달 */}
       <SetRelationModal visible={modalVisible} onClose={handleModalClose} />
