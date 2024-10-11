@@ -83,14 +83,14 @@ public class MissionService {
 
     mission.updateMission(missionUpdateDto);
     missionRepository.save(mission);
-    if(mission.getStatus().equals(MissionStatus.ACCEPTED)){
+    if(mission.getStatus().equals(MissionStatus.DONE)){
       User parent = mission.getUser().getParent();
       try {
         fcmService.sendNotification(parent, "미션 완료 요청", "미션 완료 요청이 도착하였습니다.", "5", "default_status");
       } catch (FirebaseMessagingException e) {
         log.error(e.getMessage());
       }
-    }else if(mission.getStatus().equals(MissionStatus.DONE)){
+    }else if(mission.getStatus().equals(MissionStatus.ACCEPTED)){
         // 송금 로직
         try {
             fcmService.sendNotification(mission.getUser(), "미션 완료", "미션이 완료되었습니다..", "6", "default_status");
