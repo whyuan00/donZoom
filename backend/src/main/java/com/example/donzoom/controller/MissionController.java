@@ -10,6 +10,7 @@ import com.example.donzoom.service.MissionService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -57,10 +58,16 @@ public class MissionController {
   public ResponseEntity<?> updateMission(@PathVariable Long missionId,
       @RequestBody MissionUpdateRequestDto missionUpdateRequestDto) {
     // 미션 수정
+
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     String dateString = missionUpdateRequestDto.getDueDate()+" 23:59";
-    LocalDateTime dueDate = LocalDateTime.parse(dateString, formatter);
-    MissionUpdateDto missionUpdateDto = MissionUpdateDto.builder()
+    LocalDateTime dueDate ;
+    try {
+      dueDate = LocalDateTime.parse(dateString, formatter);
+    }catch (Exception e) {
+      dueDate = null;
+    }
+        MissionUpdateDto missionUpdateDto = MissionUpdateDto.builder()
             .contents(missionUpdateRequestDto.getContents())
             .reward(missionUpdateRequestDto.getReward())
             .status(missionUpdateRequestDto.getStatus())
