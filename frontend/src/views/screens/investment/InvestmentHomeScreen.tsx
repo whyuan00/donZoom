@@ -377,6 +377,7 @@ export default function InvestmentHomeScreen({navigation}: any) {
                   styles.borderTop,
                   styles.borderRight,
                   styles.yellow,
+                  {flex: 1},
                 ]}>
                 <Text style={styles.unSafeTitleText}>종목명</Text>
               </View>
@@ -386,6 +387,7 @@ export default function InvestmentHomeScreen({navigation}: any) {
                   styles.borderTop,
                   styles.borderRight,
                   styles.yellow,
+                  {flex: 1},
                 ]}>
                 <Text style={styles.unSafeTitleText}>매입단가</Text>
               </View>
@@ -395,11 +397,17 @@ export default function InvestmentHomeScreen({navigation}: any) {
                   styles.borderTop,
                   styles.borderRight,
                   styles.yellow,
-                  {flex: 1.5},
+                  {flex: 1},
                 ]}>
                 <Text style={styles.unSafeTitleText}>보유수량</Text>
               </View>
-              <View style={[styles.cell, styles.borderTop, styles.yellow]}>
+              <View
+                style={[
+                  styles.cell,
+                  styles.borderTop,
+                  styles.yellow,
+                  {flex: 1},
+                ]}>
                 <Text style={styles.unSafeTitleText}>수익률</Text>
               </View>
             </View>
@@ -414,7 +422,7 @@ export default function InvestmentHomeScreen({navigation}: any) {
                       styles.cell,
                       styles.borderTop,
                       styles.borderRight,
-                      {flex: 2},
+                      {flex: 1},
                       index === filteredArray.length - 1
                         ? styles.bottomLeftRadiusCell
                         : null,
@@ -426,7 +434,7 @@ export default function InvestmentHomeScreen({navigation}: any) {
                       styles.cell,
                       styles.borderTop,
                       styles.borderRight,
-                      {flex: 1.5},
+                      {flex: 1},
                     ]}>
                     <Text style={styles.unSafeText}>
                       {stock.currentPrice.toLocaleString()}
@@ -437,7 +445,7 @@ export default function InvestmentHomeScreen({navigation}: any) {
                       styles.cell,
                       styles.borderTop,
                       styles.borderRight,
-                      {flex: 1.5},
+                      {flex: 1},
                     ]}>
                     <Text style={styles.unSafeText}>{stock.quantity}</Text>
                   </View>
@@ -445,7 +453,7 @@ export default function InvestmentHomeScreen({navigation}: any) {
                     style={[
                       styles.cell,
                       styles.borderTop,
-                      {flex: 1.5},
+                      {flex: 1},
                       index === filteredArray.length - 1
                         ? styles.bottomRightRadiusCell
                         : null,
@@ -632,6 +640,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.WHITE,
     width: '100%',
+    flexGrow: 1,
   },
   menuContainer: {
     backgroundColor: colors.YELLOW_100,

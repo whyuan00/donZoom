@@ -30,7 +30,6 @@ import useMission from '@/hooks/queries/useMission';
 import {getChildrenAccount, getChildrenBalance} from '@/api/account';
 import {useSignupStore} from '@/stores/useAuthStore';
 
-
 interface ChildProfile {
   id: number;
   name: string;
@@ -62,11 +61,11 @@ function ParentsMainScreen() {
   const {useGetMissions, useDeleteMission, useModifyMission} = useMission();
   const [created, setCreated] = useState<any>(null);
   const [done, setDone] = useState<any>(null);
-  const {data: createdMissions,} = useGetMissions(childId || -1, 'CREATED');
-  const {data: doneMissions,} = useGetMissions(childId || -1, 'DONE');
+  const {data: createdMissions} = useGetMissions(childId || -1, 'CREATED');
+  const {data: doneMissions} = useGetMissions(childId || -1, 'DONE');
 
   const [selectedChild, setSelectedChild] = useState<ChildProfile | null>(null);
-  
+
   useEffect(() => {
     if (createdMissions?.missions) {
       setCreated(createdMissions.missions);
@@ -492,7 +491,7 @@ function ParentsMainScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: colors.WHITE,
     justifyContent: 'center',
     alignItems: 'center',
@@ -654,7 +653,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.YELLOW_50,
     // justifyContent: 'center',
     // alignItems: 'center',
-    paddingLeft:20,
+    paddingLeft: 20,
     marginBottom: 20,
     paddingTop: 20,
   },
