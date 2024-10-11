@@ -84,37 +84,33 @@ public class SavingsService {
     SavingAccount account = savingAccountRepository.findByUser(user)
         .orElseThrow(() -> new RuntimeException("No savings account found"));
 
-    double monthlyDeposit = account.getMonthlyDeposit(); // 매달 적립하는 금액
-    double monthlyRate = EARLY_TERMINATION_RATE / 100 / 12; // 월 이자율로 변환
-    LocalDateTime now = LocalDateTime.now(); // 현재 날짜
-    LocalDateTime startDate = account.getStartDate(); // 적금 시작 날짜
+    double monthlyDeposit = account.getMonthlyDeposit();
+    double monthlyRate = EARLY_TERMINATION_RATE / 100 / 12;
+    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime startDate = account.getStartDate();
 
-    // 적금 시작일과 현재 날짜 간의 차이를 월 단위로 계산
     long monthsPaid = ChronoUnit.MONTHS.between(startDate, now);
     if (monthsPaid < 0) {
-      monthsPaid = 0; // 시작일이 현재 날짜보다 미래인 경우
+      monthsPaid = 0;
     }
 
-    // 총 납부된 금액과 이자 계산
     double totalDepositedAmount = monthlyDeposit * monthsPaid;
     double totalInterest = 0.0;
 
-    // 각 월별로 이자 계산
     for (int i = 0; i < monthsPaid; i++) {
       totalInterest += monthlyDeposit * monthlyRate * (monthsPaid - i);
     }
 
     double totalAmount = totalDepositedAmount + totalInterest;
 
-    // 소수점 첫째 자리까지 올림하여 double로 유지
-    double roundedPrincipal = roundToFirstDecimalPlace(totalDepositedAmount);
-    double roundedInterest = roundToFirstDecimalPlace(totalInterest);
-    double roundedTotalAmount = roundToFirstDecimalPlace(totalAmount);
+    double roundedPrincipal = roundToNearestWholeNumber(totalDepositedAmount);
+    double roundedInterest = roundToNearestWholeNumber(totalInterest);
+    double roundedTotalAmount = roundToNearestWholeNumber(totalAmount);
 
     return SavingsResponseDto.builder()
-        .principal(roundedPrincipal) // 총 납부 금액
-        .interest(roundedInterest)   // 이자
-        .totalAmount(roundedTotalAmount) // 총 금액
+        .principal(roundedPrincipal)
+        .interest(roundedInterest)
+        .totalAmount(roundedTotalAmount)
         .build();
   }
 
@@ -126,22 +122,20 @@ public class SavingsService {
     SavingAccount account = savingAccountRepository.findByUser(user)
         .orElseThrow(() -> new RuntimeException("No savings account found"));
 
-    double monthlyDeposit = account.getMonthlyDeposit(); // 매달 적립하는 금액
-    double monthlyRate = DEFAULT_INTEREST_RATE / 100 / 12; // 월 이자율로 변환
+    double monthlyDeposit = account.getMonthlyDeposit();
+    double monthlyRate = DEFAULT_INTEREST_RATE / 100 / 12;
 
-    // 이자 계산
     double totalInterest = 0.0;
-    for (int i = 0; i < 3; i++) { // 3개월 동안
-      totalInterest += monthlyDeposit * monthlyRate * (3 - i); // 남은 개월 수에 따라 이자 계산
+    for (int i = 0; i < 3; i++) {
+      totalInterest += monthlyDeposit * monthlyRate * (3 - i);
     }
 
-    double totalDepositedAmount = monthlyDeposit * 3; // 총 예치금
-    double totalAmount = totalDepositedAmount + totalInterest; // 만기 총 금액
+    double totalDepositedAmount = monthlyDeposit * 3;
+    double totalAmount = totalDepositedAmount + totalInterest;
 
-    // 소수점 첫째 자리까지 올림하여 double로 유지
-    double roundedPrincipal = roundToFirstDecimalPlace(totalDepositedAmount);
-    double roundedInterest = roundToFirstDecimalPlace(totalInterest);
-    double roundedTotalAmount = roundToFirstDecimalPlace(totalAmount);
+    double roundedPrincipal = roundToNearestWholeNumber(totalDepositedAmount);
+    double roundedInterest = roundToNearestWholeNumber(totalInterest);
+    double roundedTotalAmount = roundToNearestWholeNumber(totalAmount);
 
     return SavingsResponseDto.builder()
         .principal(roundedPrincipal)
@@ -164,20 +158,18 @@ public class SavingsService {
     double totalAmount = account.getTotalDepositedAmount() + interest;
 
     Wallet wallet = user.getWallet();
-    wallet.updateCoin(wallet.getCoin() + (int) roundToFirstDecimalPlace(totalAmount));
+    wallet.updateCoin(wallet.getCoin() + (int) roundToNearestWholeNumber(totalAmount));
 
-    // User와의 관계 해제
     user.updateSavingAccount(null);
     userRepository.save(user);
 
-    // SavingAccount 삭제
     savingAccountRepository.delete(account);
     savingAccountRepository.flush();
 
     return SavingsResponseDto.builder()
-        .principal((int) roundToFirstDecimalPlace(account.getTotalDepositedAmount()))
-        .interest((int) roundToFirstDecimalPlace(interest))
-        .totalAmount((int) roundToFirstDecimalPlace(totalAmount))
+        .principal((int) roundToNearestWholeNumber(account.getTotalDepositedAmount()))
+        .interest((int) roundToNearestWholeNumber(interest))
+        .totalAmount((int) roundToNearestWholeNumber(totalAmount))
         .build();
   }
 
@@ -228,11 +220,11 @@ public class SavingsService {
     double expectedProfit = calculateTotalInterest(account.getMonthlyDeposit(), DEFAULT_INTEREST_RATE, 3); // 3개월 이자 계산
     double expectedMaturityAmount = totalExpectedDeposit + expectedProfit;
 
-    // 소수점 첫째 자리까지 올림하여 double로 유지
-    double roundedCurrentPaidAmount = roundToFirstDecimalPlace(account.getTotalDepositedAmount());
-    double roundedMonthlyDeposit = roundToFirstDecimalPlace(account.getMonthlyDeposit());
-    double roundedExpectedProfit = roundToFirstDecimalPlace(expectedProfit);
-    double roundedExpectedMaturityAmount = roundToFirstDecimalPlace(expectedMaturityAmount);
+    // 소수점 없이 정수로 변환하여 반환
+    int roundedCurrentPaidAmount = (int) Math.round(account.getTotalDepositedAmount());
+    int roundedMonthlyDeposit = (int) Math.round(account.getMonthlyDeposit());
+    int roundedExpectedProfit = (int) Math.round(expectedProfit);
+    int roundedExpectedMaturityAmount = (int) Math.round(expectedMaturityAmount);
 
     return SavingsDetailResponseDto.builder()
         .currentPaidAmount(roundedCurrentPaidAmount)
@@ -266,9 +258,9 @@ public class SavingsService {
     return nextPaymentDate;
   }
 
-  // 소수점 첫째 자리까지 올림하여 변환하는 메서드
-  private double roundToFirstDecimalPlace(double value) {
-    BigDecimal bd = new BigDecimal(value).setScale(1, RoundingMode.CEILING); // 소수점 첫째 자리까지 올림
+  // 소수점 첫째 자리에서 반올림하는 메서드
+  private double roundToNearestWholeNumber(double value) {
+    BigDecimal bd = new BigDecimal(value).setScale(0, RoundingMode.HALF_UP);
     return bd.doubleValue();
   }
 }
