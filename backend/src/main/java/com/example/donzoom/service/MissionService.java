@@ -94,13 +94,15 @@ public class MissionService {
       }
     }else if(mission.getStatus().equals(MissionStatus.ACCEPTED)){
         // 송금 로직
-        accountService.transfer(TransferRequestDto.builder()
+        accountService.transfer(
+            TransferRequestDto.builder()
             .depositAccountNo(mission.getUser().getAccountNo())
             .depositTransactionSummary("미션 보상금")
             .transactionBalance(mission.getReward())
             .withdrawalAccountNo(mission.getUser().getParent().getAccountNo())
-            .withdrawalAccountNo("미션 보상금 지급")
-            .build());
+            .withdrawalTransactionSummary("미션 보상금 지급")
+            .build()
+        );
         try {
             fcmService.sendNotification(mission.getUser(), "미션 완료", "미션이 완료되었습니다.", "6", "default_status");
         } catch (FirebaseMessagingException e) {
