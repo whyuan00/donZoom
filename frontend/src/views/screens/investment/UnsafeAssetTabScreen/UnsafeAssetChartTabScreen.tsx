@@ -13,6 +13,20 @@ import useStock from '@/hooks/queries/useStock';
 import useWebSocket from '@/hooks/useWebSocket';
 import transformStockData from '../StockDataConvertor';
 
+type WebSocketMessage = {
+  id: number;
+  stock: {
+    id: number;
+    stockName: string;
+  };
+  open: number;
+  close: number;
+  high: number;
+  low: number;
+  createdAt: string;
+  updatedAt: string | null;
+};
+
 const UnsafeAssetChartTabScreen = ({
   navigation,
   selectedStock,
@@ -22,10 +36,8 @@ const UnsafeAssetChartTabScreen = ({
   const [stockMessage, setStockMessage] = useState<string>('');
   const [selectedPeriod, setSelectedPeriod] = useState<string>('1달'); // 기본 기간 선택
   const [currentPrice, setCurrentPrice] = useState<number | null>(null);
-
-  const handlePeriodChange = (period: string) => {
-    setSelectedPeriod(period);
-  };
+  const [realAssetMoney, setRealAssetMoney] = useState<number>(0);
+  const [candleData, setCandleData] = useState<CandleData[]>([]);
 
   const mapPeriodToApiParam = (period: string): string => {
     switch (period) {
@@ -38,39 +50,54 @@ const UnsafeAssetChartTabScreen = ({
       case '1달':
         return 'month';
       default:
-        return 'month'; // 기본값
+        return 'month';
     }
   };
 
-  let candleData: CandleData[] = [];
-
-  const {
-    data: rawData,
-    isLoading,
-    error,
-  } = useGetStock(selectedStockIndex, mapPeriodToApiParam(selectedPeriod));
-
-  if (isLoading) {
-    console.log('Loading stock data...');
-  } else if (error) {
-    console.error('Error fetching stock data:', error);
-  } else if (rawData) {
-    candleData = transformStockData(rawData);
-  } else {
-    console.log('No stock data available');
-  }
-
-  const {
-    data: currentPriceData,
-    isLoading: isLoadingCurrentPrice,
-    error: currentPriceError,
-  } = useGetStock(selectedStockIndex, 'min');
+  const {data: stockData, refetch} = useGetStock(
+    selectedStockIndex,
+    mapPeriodToApiParam(selectedPeriod),
+  );
 
   useEffect(() => {
-    if (currentPriceData && currentPriceData.stockHistories.length > 0) {
-      setCurrentPrice(currentPriceData.stockHistories[0].open);
+    if (stockData) {
+      const transformedData = transformStockData(stockData);
+      setCandleData(transformedData);
     }
-  }, [currentPriceData]);
+  }, [stockData]);
+
+  const handlePeriodChange = (period: string) => {
+    setSelectedPeriod(period);
+    refetch();
+  };
+
+  useWebSocket([selectedStockIndex], (message: string) => {
+    if (selectedPeriod === '1분') {
+      try {
+        const parsedMessage: WebSocketMessage = JSON.parse(message);
+        setCurrentPrice(parsedMessage.close);
+
+        const newCandle: CandleData = {
+          x: new Date(parsedMessage.createdAt).toISOString(),
+          open: parsedMessage.open,
+          shadowH: parsedMessage.high,
+          shadowL: parsedMessage.low,
+          close: parsedMessage.close,
+        };
+
+        setCandleData(prevData => {
+          const updatedData = [...prevData, newCandle];
+          return updatedData.slice(-100); // 최근 100개의 데이터 포인트만 유지
+        });
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
+    }
+  });
+
+  useEffect(() => {
+    refetch();
+  }, [selectedPeriod, refetch]);
 
   const handleBuyStock = () => {
     navigation.navigate('Trade', {

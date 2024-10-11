@@ -51,20 +51,22 @@ export default function RealAssetDetailScreen({navigation}: any) {
       stockData.stockHistories &&
       stockData.stockHistories.length > 0
     ) {
-      setRealAssetMoney(stockData.stockHistories[0].open);
+      setRealAssetMoney(
+        stockData.stockHistories[stockData.stockHistories.length - 1].open,
+      );
       animateValue();
     }
   }, [stockData]);
 
-  useWebSocket([5], (message: string) => {
-    try {
-      const parsedMessage: WebSocketMessage = JSON.parse(message);
-      setRealAssetMoney(parsedMessage.open);
-      animateValue();
-    } catch (error) {
-      console.error('Error parsing WebSocket message:', error);
-    }
-  });
+  // useWebSocket([5], (message: string) => {
+  //   try {
+  //     const parsedMessage: WebSocketMessage = JSON.parse(message);
+  //     setRealAssetMoney(parsedMessage.close);
+  //     animateValue();
+  //   } catch (error) {
+  //     console.error('Error parsing WebSocket message:', error);
+  //   }
+  // });
 
   useEffect(() => {
     setRealAssetDollar(Math.floor(realAssetMoney * 0.12));

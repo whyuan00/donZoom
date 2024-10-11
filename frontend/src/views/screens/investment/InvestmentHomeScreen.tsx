@@ -29,39 +29,93 @@ export default function InvestmentHomeScreen({navigation}: any) {
       setRefreshing(false);
     }, 2000);
   }, []);
-  const {useGetMyStock, useGetStock} = useStock();
+  const {useGetMyStock, useGetStockList} = useStock();
   const {id} = useSignupStore();
   const {getMyCoinMutation} = usePig();
   const money = getMyCoinMutation.data?.coin;
-  const {data: myStockData, refetch} = useGetMyStock(id);
+  const {data: myStockData, refetch: myStockRefetch} = useGetMyStock(id);
+  const {data: stockListData, refetch: stockListRefetch} = useGetStockList();
 
   useFocusEffect(
     useCallback(() => {
-      refetch();
-    }, [refetch]),
+      myStockRefetch();
+      stockListRefetch();
+    }, [myStockRefetch, stockListRefetch]),
   );
 
-  const stockData = useMemo(() => {
-    if (Array.isArray(myStockData)) {
-      return myStockData.map(
-        (item: {
-          stockWalletId: number;
-          stockId: number;
-          stockName: string;
-          totalInvestedPrice: number;
-          amount: number;
-          averagePrice: number;
-        }) => ({
-          name: item.stockName,
-          currentPrice: item.averagePrice,
-          change: '10%',
-        }),
-      );
+  const stockPrices = useMemo(() => {
+    if (stockListData && stockListData.stocks) {
+      return stockListData.stocks.map(stock => ({
+        stockId: stock.stockId,
+        stockPrice: stock.stockPrice,
+      }));
     }
     return [];
-  }, [myStockData]);
+  }, [stockListData]);
 
-  console.log('stockData:', stockData);
+  const stockData = useMemo(() => {
+    if (
+      myStockData &&
+      Array.isArray(myStockData.myStocks) &&
+      stockPrices.length > 0
+    ) {
+      return myStockData.myStocks.map(item => {
+        const currentPrice =
+          stockPrices.find(sp => sp.stockId === item.stockId)?.stockPrice || 0;
+        const profitRate =
+          ((currentPrice - item.averagePrice) / item.averagePrice) * 100;
+        return {
+          stockId: item.stockId,
+          name: item.stockName,
+          currentPrice: currentPrice,
+          averagePrice: item.averagePrice,
+          quantity: item.amount, // 보유 수량 추가
+          profiteRate: profitRate.toFixed(2) + '%',
+        };
+      });
+    }
+    return [];
+  }, [myStockData, stockPrices]);
+
+  const totalProfit = useMemo(() => {
+    if (stockData.length > 0) {
+      const totalInvestment = stockData.reduce(
+        (sum, stock) => sum + stock.averagePrice,
+        0,
+      );
+      const totalCurrentValue = stockData.reduce(
+        (sum, stock) => sum + stock.currentPrice,
+        0,
+      );
+      const profitAmount = totalCurrentValue - totalInvestment;
+      const profitRate = (profitAmount / totalInvestment) * 100;
+      return {
+        amount: profitAmount.toFixed(0),
+        rate: profitRate.toFixed(2) + '%',
+      };
+    }
+    return {amount: '0', rate: '0%'};
+  }, [stockData]);
+
+  const goldData = useMemo(() => {
+    const goldStock = myStockData?.myStocks.find(stock => stock.stockId === 5);
+    const currentGoldPrice =
+      stockPrices.find(sp => sp.stockId === 5)?.stockPrice || 0;
+
+    if (goldStock) {
+      const profitRate =
+        ((currentGoldPrice - goldStock.averagePrice) / goldStock.averagePrice) *
+        100;
+      return {
+        name: '금',
+        currentPrice: currentGoldPrice,
+        averagePrice: goldStock.averagePrice,
+        quantity: goldStock.amount,
+        profitRate: profitRate.toFixed(2) + '%',
+      };
+    }
+    return null;
+  }, [myStockData, stockPrices]);
 
   return (
     <ScrollView
@@ -86,10 +140,28 @@ export default function InvestmentHomeScreen({navigation}: any) {
 
           <View style={styles.assetInfoContainer}>
             <View style={styles.assetTextConainer}>
-              <Text style={styles.assetAmount}>{money}머니</Text>
+              <Text style={styles.assetAmount}>
+                {money?.toLocaleString()}머니
+              </Text>
               <View style={styles.profitSection}>
                 <Text style={styles.profitText}>수익률 변동</Text>
-                <Text style={styles.profitAmount}>▲ 1,500머니 (100%)</Text>
+                <Text
+                  style={[
+                    styles.profitAmount,
+                    parseFloat(totalProfit.rate) > 0
+                      ? styles.revenueText
+                      : parseFloat(totalProfit.rate) < 0
+                      ? styles.lossText
+                      : styles.neutralText,
+                  ]}>
+                  {parseFloat(totalProfit.amount) > 0
+                    ? '▲'
+                    : parseFloat(totalProfit.amount) < 0
+                    ? '▼'
+                    : ''}{' '}
+                  {Math.abs(parseInt(totalProfit.amount))}머니 (
+                  {totalProfit.rate})
+                </Text>
               </View>
             </View>
           </View>
@@ -171,35 +243,69 @@ export default function InvestmentHomeScreen({navigation}: any) {
           </TouchableOpacity>
 
           {/* 금 수익 현황 */}
-          <View style={styles.statusContainer}>
-            <View style={styles.titleCell}>
-              <Text style={styles.titleText}>금 수익 현황</Text>
-            </View>
-            <View style={styles.row}>
-              <View
-                style={[styles.cell, styles.borderTop, styles.borderBottom]}>
-                <Text style={styles.text}>원화매입금액</Text>
+          {goldData ? (
+            <View style={styles.statusContainer}>
+              <View style={styles.titleCell}>
+                <Text style={styles.titleText}>금 수익 현황</Text>
               </View>
-              <View
-                style={[
-                  styles.cell,
-                  styles.borderTop,
-                  styles.borderBottom,
-                  styles.borderRight,
-                ]}>
-                <Text style={styles.text}>10,000</Text>
-              </View>
+              <View style={styles.row}>
+                <View
+                  style={[styles.cell, styles.borderTop, styles.borderBottom]}>
+                  <Text style={styles.text}>원화매입금액</Text>
+                </View>
+                <View
+                  style={[
+                    styles.cell,
+                    styles.borderTop,
+                    styles.borderBottom,
+                    styles.borderRight,
+                  ]}>
+                  <Text style={styles.text}>
+                    {goldData.averagePrice.toLocaleString()}
+                  </Text>
+                </View>
 
-              <View
-                style={[styles.cell, styles.borderTop, styles.borderBottom]}>
-                <Text style={styles.text}>수익률(%)</Text>
-              </View>
-              <View
-                style={[styles.cell, styles.borderTop, styles.borderBottom]}>
-                <Text style={[styles.text, styles.redText]}>1%</Text>
+                <View
+                  style={[styles.cell, styles.borderTop, styles.borderBottom]}>
+                  <Text style={styles.text}>보유 수량</Text>
+                </View>
+                <View
+                  style={[
+                    styles.cell,
+                    styles.borderTop,
+                    styles.borderRight,
+                    styles.borderBottom,
+                  ]}>
+                  <Text style={styles.text}>{goldData.quantity}</Text>
+                </View>
+
+                <View
+                  style={[styles.cell, styles.borderTop, styles.borderBottom]}>
+                  <Text style={styles.text}>수익률(%)</Text>
+                </View>
+                <View
+                  style={[styles.cell, styles.borderTop, styles.borderBottom]}>
+                  <Text
+                    style={[
+                      styles.text,
+                      parseFloat(goldData.profitRate) > 0
+                        ? styles.revenueText
+                        : parseFloat(goldData.profitRate) < 0
+                        ? styles.lossText
+                        : styles.neutralText,
+                    ]}>
+                    {goldData.profitRate}
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
+          ) : (
+            <View style={[styles.row, styles.emptyStateRow]}>
+              <Text style={styles.emptyStateText}>
+                보유하고 있는 금이 없습니다.
+              </Text>
+            </View>
+          )}
         </View>
         <View style={{width: '100%'}}>
           {/* 위험 자산 버튼 */}
@@ -216,7 +322,7 @@ export default function InvestmentHomeScreen({navigation}: any) {
           </TouchableOpacity>
 
           {/* 주식 수익 현황 */}
-          <View style={styles.statusContainer}>
+          {/* <View style={styles.statusContainer}>
             <View style={styles.titleCell}>
               <Text style={styles.titleText}>주식 수익 현황</Text>
             </View>
@@ -257,7 +363,7 @@ export default function InvestmentHomeScreen({navigation}: any) {
                 <Text style={[styles.text, styles.redText]}>3,000</Text>
               </View>
             </View>
-          </View>
+          </View> */}
 
           {/* 보유 주식 현황 */}
           <View style={styles.statusContainer}>
@@ -283,44 +389,81 @@ export default function InvestmentHomeScreen({navigation}: any) {
                 ]}>
                 <Text style={styles.unSafeTitleText}>매입단가</Text>
               </View>
+              <View
+                style={[
+                  styles.cell,
+                  styles.borderTop,
+                  styles.borderRight,
+                  styles.yellow,
+                  {flex: 1.5},
+                ]}>
+                <Text style={styles.unSafeTitleText}>보유수량</Text>
+              </View>
               <View style={[styles.cell, styles.borderTop, styles.yellow]}>
                 <Text style={styles.unSafeTitleText}>수익률</Text>
               </View>
             </View>
 
             {/* 보유 주식 데이터 목록 */}
-            {stockData.map((stock, index) => (
-              <View key={index} style={styles.row}>
-                <View
-                  style={[
-                    styles.cell,
-                    styles.borderTop,
-                    styles.borderRight,
-                    index === stockData.length - 1
-                      ? styles.bottomLeftRadiusCell
-                      : null, // 마지막 행의 왼쪽 셀
-                  ]}>
-                  <Text style={styles.unSafeText}>{stock.name}</Text>
+            {stockData
+              .filter(stock => stock.stockId !== 5) // 금(stockId: 5)을 제외
+              .map((stock, index, filteredArray) => (
+                <View key={index} style={styles.row}>
+                  <View
+                    style={[
+                      styles.cell,
+                      styles.borderTop,
+                      styles.borderRight,
+                      {flex: 2},
+                      index === filteredArray.length - 1
+                        ? styles.bottomLeftRadiusCell
+                        : null,
+                    ]}>
+                    <Text style={styles.unSafeText}>{stock.name}</Text>
+                  </View>
+                  <View
+                    style={[
+                      styles.cell,
+                      styles.borderTop,
+                      styles.borderRight,
+                      {flex: 1.5},
+                    ]}>
+                    <Text style={styles.unSafeText}>
+                      {stock.currentPrice.toLocaleString()}
+                    </Text>
+                  </View>
+                  <View
+                    style={[
+                      styles.cell,
+                      styles.borderTop,
+                      styles.borderRight,
+                      {flex: 1.5},
+                    ]}>
+                    <Text style={styles.unSafeText}>{stock.quantity}</Text>
+                  </View>
+                  <View
+                    style={[
+                      styles.cell,
+                      styles.borderTop,
+                      {flex: 1.5},
+                      index === filteredArray.length - 1
+                        ? styles.bottomRightRadiusCell
+                        : null,
+                    ]}>
+                    <Text
+                      style={[
+                        styles.unSafeText,
+                        parseFloat(stock.profiteRate) > 0
+                          ? styles.revenueText
+                          : parseFloat(stock.profiteRate) < 0
+                          ? styles.lossText
+                          : styles.neutralText,
+                      ]}>
+                      {stock.profiteRate}
+                    </Text>
+                  </View>
                 </View>
-                <View
-                  style={[styles.cell, styles.borderTop, styles.borderRight]}>
-                  <Text style={styles.unSafeText}>{stock.currentPrice}</Text>
-                </View>
-                {/* 마지막 행 처리 */}
-                <View
-                  style={[
-                    styles.cell,
-                    styles.borderTop,
-                    index === stockData.length - 1
-                      ? styles.bottomRightRadiusCell
-                      : null,
-                  ]}>
-                  <Text style={[styles.unSafeText, styles.redText]}>
-                    {stock.change}
-                  </Text>
-                </View>
-              </View>
-            ))}
+              ))}
           </View>
         </View>
       </View>
@@ -450,7 +593,7 @@ const styles = StyleSheet.create({
   assetInfoContainer: {
     backgroundColor: colors.WHITE,
     height: 69,
-    width: '100%',
+    width: '90%',
     paddingHorizontal: 20,
     borderRadius: 10,
     justifyContent: 'center',
@@ -506,5 +649,24 @@ const styles = StyleSheet.create({
   },
   redText: {
     color: colors.RED_100,
+  },
+  revenueText: {
+    color: colors.RED_100,
+  },
+  lossText: {
+    color: colors.BLUE_100,
+  },
+  neutralText: {
+    color: colors.BLACK,
+  },
+  emptyStateRow: {
+    flex: 1,
+    padding: 20,
+  },
+  emptyStateText: {
+    textAlign: 'center',
+    color: colors.GRAY_75,
+    fontFamily: fonts.MEDIUM,
+    fontSize: 14,
   },
 });
