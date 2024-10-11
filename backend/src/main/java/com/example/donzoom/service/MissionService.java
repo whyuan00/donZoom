@@ -1,6 +1,7 @@
 package com.example.donzoom.service;
 
 import com.example.donzoom.constant.MissionStatus;
+import com.example.donzoom.dto.account.request.TransferRequestDto;
 import com.example.donzoom.dto.mission.request.MissionCreateDto;
 import com.example.donzoom.dto.mission.request.MissionUpdateDto;
 import com.example.donzoom.dto.mission.response.MissionResponseDto;
@@ -25,6 +26,7 @@ public class MissionService {
   private static final Logger log = LoggerFactory.getLogger(MissionService.class);
   private final MissionRepository missionRepository;
   private final UserRepository userRepository;
+  private final AccountService accountService;
 
 
   public List<MissionResponseDto> getUserMissions(Long userId, MissionStatus status) {
@@ -92,8 +94,15 @@ public class MissionService {
       }
     }else if(mission.getStatus().equals(MissionStatus.ACCEPTED)){
         // 송금 로직
+        accountService.transfer(TransferRequestDto.builder()
+            .depositAccountNo(mission.getUser().getAccountNo())
+            .depositTransactionSummary("미션 보상금")
+            .transactionBalance(mission.getReward())
+            .withdrawalAccountNo(mission.getUser().getParent().getAccountNo())
+            .withdrawalAccountNo("미션 보상금 지급")
+            .build());
         try {
-            fcmService.sendNotification(mission.getUser(), "미션 완료", "미션이 완료되었습니다..", "6", "default_status");
+            fcmService.sendNotification(mission.getUser(), "미션 완료", "미션이 완료되었습니다.", "6", "default_status");
         } catch (FirebaseMessagingException e) {
             log.error(e.getMessage());
         }
