@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import { useFocusEffect } from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 import {
   SafeAreaView,
   StyleSheet,
@@ -11,7 +11,9 @@ import {
 } from 'react-native';
 import axiosInstance from '@/api/axios';
 import {colors} from '@/constants/colors';
-import { fonts } from '@/constants/font';
+import {fonts} from '@/constants/font';
+import useMission from '@/hooks/queries/useMission';
+import useMissionStore from '@/stores/useMissionStore';
 
 interface Mission {
   missionId: number;
@@ -20,30 +22,25 @@ interface Mission {
   reward: number;
 }
 
-const MissionPastScreen = () => {
-  const [childId, setChildId] = useState<number>(0); //TODO: childId zustand에 저장한다음에 불러와야함
-  const [isLoading, setIsLoading] = useState(true);
+const MissionPastScreen = ({route}: any) => {
+  const childId = useMissionStore(state => state.getChildId());
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedMissionBox, setSelectedMissionBox] = useState<number | null>(
     null,
   );
-  const [missionPastData, setMissionPastData] = useState<Mission[]>([]);
+  const {useGetMissions, useDeleteMission, useModifyMission} = useMission();
+  const {data: missionPastData, refetch} = useGetMissions(
+    childId || -1,
+    'ACCEPTED',
+  );
+  const {mutate: deleteMission} = useDeleteMission();
 
+  // 화면 포커스 시 데이터 새로고침
   useFocusEffect(
     useCallback(() => {
-    const getData = async (childId:number) => {
-      try {
-        const response = await axiosInstance.get(`/mission?status=accepted&childId=${childId}`);
-        const {missions} = response.data;
-        setMissionPastData(missions);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    getData(childId);
-  },[]));
-
+      refetch();
+    }, [refetch]),
+  );
 
   const handleMissionPress = useCallback((missionId: number) => {
     setSelectedMissionBox(missionId === selectedMissionBox ? null : missionId);
@@ -51,26 +48,28 @@ const MissionPastScreen = () => {
 
   const handleMissionDelete = useCallback(async (missionId: number) => {
     try {
-      await axiosInstance.delete(`/mission/${missionId}`);
-      setMissionPastData(prevData =>
-        prevData.filter(mission => mission.missionId !== missionId),
-      );
+      deleteMission(missionId, {
+        onSuccess: () => console.log('미션삭제'),
+      });
     } catch (error) {
       console.log(error);
     }
-  }, []);
+  }, [deleteMission,refetch]);
 
+  const formatDate = (dateStr: Date | undefined) => {
+    if (!dateStr) return '';
+    return new Date(dateStr).toISOString().slice(0, 10).replaceAll('-', '.');
+  };
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.WHITE}}>
       <View style={styles.container}>
-        {isLoading ? (
+        {missionPastData && missionPastData?.missions?.length < 1 ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={colors.BLUE_100} />
-            <Text style={styles.loadingText}>미션 데이터를 불러오는 중...</Text>
+            <Text style={styles.loadingText}> 지난 미션이 없습니다.</Text>
           </View>
         ) : (
           <ScrollView>
-            {missionPastData?.map((mission: Mission) => (
+            {missionPastData?.missions.map(mission => (
               <View key={mission.missionId}>
                 <TouchableOpacity
                   onPress={() => handleMissionPress(mission.missionId)}
@@ -108,7 +107,7 @@ const MissionPastScreen = () => {
                       {mission.reward.toLocaleString()}원
                     </Text>
                     <Text style={styles.smalltext}>
-                      {mission.dueDate.replaceAll('-', '.')}까지
+                      {formatDate(mission.dueDate)}까지
                     </Text>
                   </View>
                 </TouchableOpacity>
@@ -122,9 +121,17 @@ const MissionPastScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  loadingContainer: {},
-  loadingText: {},
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: colors.GRAY_50,
+  },
   container: {
+    flex: 1,
     margin: 20,
     alignItems: 'center',
   },
@@ -150,17 +157,17 @@ const styles = StyleSheet.create({
     fontSize: 20,
     margin: 3,
     color: colors.BLACK,
-    fontFamily: fonts.MEDIUM,
+    fontFamily: fonts.BOLD,
     textAlign: 'right',
-    fontWeight: '500',
+    fontWeight: '700',
   },
   smalltext: {
-    fontFamily: fonts.MEDIUM,
     fontSize: 15,
     margin: 3,
+    fontFamily: fonts.MEDIUM,
     color: colors.BLACK,
     textAlign: 'right',
-    fontWeight: '500',
+    fontWeight: '400',
   },
 });
 

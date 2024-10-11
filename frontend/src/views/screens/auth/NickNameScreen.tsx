@@ -86,6 +86,9 @@ function NickNameScreen() {
                   onSuccess: () => {
                     console.log('아이 정보전송 성공');
                   },
+                  onError: error => {
+                    console.log('아이정보전송실패', error);
+                  },
                 });
               }
             },

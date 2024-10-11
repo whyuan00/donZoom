@@ -8,8 +8,8 @@ interface ChildInfo {
   nickname: string;
   accountNumber: string;
   balance: number;
-  ongoingMissions: string;
-  completeMissions: string;
+  ongoingMissions?: string;
+  completeMissions?: string;
 }
 
 interface ChildrenStore {
