@@ -16,5 +16,6 @@ public class MissionResponseDto {
   private Long reward;
   private MissionStatus status;
   private LocalDateTime dueDate;
+  private Integer money;
 
 }
