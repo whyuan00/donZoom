@@ -1,7 +1,7 @@
 import firebase from '@react-native-firebase/app';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyDSUTJysXrGAo2kxrgyEAVNiiVcr4Xfj40',
+  apiKey: '',
   authDomain: 'donzoom.firebaseapp.com',
   projectId: 'donzoom',
   storageBucket: 'donzoom.appspot.com',

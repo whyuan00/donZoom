@@ -11,7 +11,6 @@ import {RefreshControl, ScrollView} from 'react-native';
 import useFCMStore from '@/stores/useFCMStore';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyDSUTJysXrGAo2kxrgyEAVNiiVcr4Xfj40',
   authDomain: 'donzoom.firebaseapp.com',
   projectId: 'donzoom',
   storageBucket: 'donzoom.appspot.com',
